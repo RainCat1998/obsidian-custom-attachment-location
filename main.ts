@@ -1,60 +1,35 @@
-import { App, Modal, Notice, Plugin, PluginSettingTab, Setting } from 'obsidian';
+import { App, Editor, MarkdownView, Plugin, PluginSettingTab, Setting } from 'obsidian';
 
-interface MyPluginSettings {
+interface CustomAttachmentLocationSettings {
 	mySetting: string;
 }
 
-const DEFAULT_SETTINGS: MyPluginSettings = {
+const DEFAULT_SETTINGS: CustomAttachmentLocationSettings = {
 	mySetting: 'default'
 }
 
-export default class MyPlugin extends Plugin {
-	settings: MyPluginSettings;
+let triggered = false;
+let originalSettings = {
+	newLinkFormat: "",
+	attachmentFolderPath: ""
+};
+
+export default class CustomAttachmentLocation extends Plugin {
+	settings: CustomAttachmentLocationSettings;
 
 	async onload() {
 		console.log('loading plugin');
 
 		await this.loadSettings();
+		this.backupSettings();
 
-		this.addRibbonIcon('dice', 'Sample Plugin', () => {
-			new Notice('This is a notice!');
-		});
-
-		this.addStatusBarItem().setText('Status Bar Text');
-
-		this.addCommand({
-			id: 'open-sample-modal',
-			name: 'Open Sample Modal',
-			// callback: () => {
-			// 	console.log('Simple Callback');
-			// },
-			checkCallback: (checking: boolean) => {
-				let leaf = this.app.workspace.activeLeaf;
-				if (leaf) {
-					if (!checking) {
-						new SampleModal(this.app).open();
-					}
-					return true;
-				}
-				return false;
-			}
-		});
-
-		this.addSettingTab(new SampleSettingTab(this.app, this));
-
-		this.registerCodeMirror((cm: CodeMirror.Editor) => {
-			console.log('codemirror', cm);
-		});
-
-		this.registerDomEvent(document, 'click', (evt: MouseEvent) => {
-			console.log('click', evt);
-		});
-
-		this.registerInterval(window.setInterval(() => console.log('setInterval'), 5 * 60 * 1000));
+		this.addSettingTab(new CustomAttachmentLocationSettingTab(this.app, this));
+		this.registerEvent(this.app.workspace.on('editor-paste', this.handlePaste));
 	}
 
 	onunload() {
 		console.log('unloading plugin');
+		this.restoreSettings();
 	}
 
 	async loadSettings() {
@@ -64,28 +39,43 @@ export default class MyPlugin extends Plugin {
 	async saveSettings() {
 		await this.saveData(this.settings);
 	}
+
+	backupSettings(){
+		//@ts-ignore
+		originalSettings.newLinkFormat = this.app.vault.getConfig("newLinkFormat");
+		//@ts-ignore
+		originalSettings.attachmentFolderPath = this.app.vault.getConfig("attachmentFolderPath");
+	}
+
+	restoreSettings(){
+		//@ts-ignore
+		this.app.vault.setConfig("newLinkFormat", originalSettings.newLinkFormat);
+		//@ts-ignore
+		this.app.vault.setConfig("attachmentFolderPath", originalSettings.attachmentFolderPath);
+	}
+
+	handlePaste(event: ClipboardEvent, editor: Editor, view: MarkdownView){
+		console.log("Handle Paste");
+		if(triggered)
+			return;
+		
+		let filename = view.file.basename;
+
+		//@ts-ignore
+		app.vault.setConfig("attachmentFolderPath", `./assets/${filename}`);
+		
+		triggered = true;
+		//@ts-ignore
+        editor.cm._handlers.paste[0](null, event);
+		event.preventDefault();
+		triggered = false;
+	}
 }
 
-class SampleModal extends Modal {
-	constructor(app: App) {
-		super(app);
-	}
+class CustomAttachmentLocationSettingTab extends PluginSettingTab {
+	plugin: CustomAttachmentLocation;
 
-	onOpen() {
-		let {contentEl} = this;
-		contentEl.setText('Woah!');
-	}
-
-	onClose() {
-		let {contentEl} = this;
-		contentEl.empty();
-	}
-}
-
-class SampleSettingTab extends PluginSettingTab {
-	plugin: MyPlugin;
-
-	constructor(app: App, plugin: MyPlugin) {
+	constructor(app: App, plugin: CustomAttachmentLocation) {
 		super(app, plugin);
 		this.plugin = plugin;
 	}
@@ -95,11 +85,11 @@ class SampleSettingTab extends PluginSettingTab {
 
 		containerEl.empty();
 
-		containerEl.createEl('h2', {text: 'Settings for my awesome plugin.'});
+		containerEl.createEl('h2', {text: 'Custom Attachment Location'});
 
 		new Setting(containerEl)
-			.setName('Setting #1')
-			.setDesc('It\'s a secret')
+			.setName('Location for New Attachments')
+			.setDesc('${filename}, ${date}')
 			.addText(text => text
 				.setPlaceholder('Enter your secret')
 				.setValue(this.plugin.settings.mySetting)

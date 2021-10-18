@@ -8,7 +8,6 @@ const DEFAULT_SETTINGS: CustomAttachmentLocationSettings = {
 	mySetting: 'default'
 }
 
-let triggered = false;
 let originalSettings = {
 	newLinkFormat: "",
 	attachmentFolderPath: ""
@@ -56,19 +55,12 @@ export default class CustomAttachmentLocation extends Plugin {
 
 	handlePaste(event: ClipboardEvent, editor: Editor, view: MarkdownView){
 		console.log("Handle Paste");
-		if(triggered)
-			return;
 		
 		let filename = view.file.basename;
 
 		//@ts-ignore
 		app.vault.setConfig("attachmentFolderPath", `./assets/${filename}`);
 		
-		triggered = true;
-		//@ts-ignore
-        editor.cm._handlers.paste[0](null, event);
-		event.preventDefault();
-		triggered = false;
 	}
 }
 

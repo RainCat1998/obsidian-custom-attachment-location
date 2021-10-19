@@ -13,6 +13,14 @@ let originalSettings = {
 	attachmentFolderPath: ""
 };
 
+const blobToArrayBuffer = (blob: Blob) => {
+    return new Promise((resolve) => {
+      const reader = new FileReader()
+      reader.onloadend = () => resolve(reader.result)
+      reader.readAsArrayBuffer(blob)
+    })
+}
+
 export default class CustomAttachmentLocation extends Plugin {
 	settings: CustomAttachmentLocationSettings;
 
@@ -53,14 +61,41 @@ export default class CustomAttachmentLocation extends Plugin {
 		this.app.vault.setConfig("attachmentFolderPath", originalSettings.attachmentFolderPath);
 	}
 
-	handlePaste(event: ClipboardEvent, editor: Editor, view: MarkdownView){
+	async handlePaste(event: ClipboardEvent, editor: Editor, view: MarkdownView){
 		console.log("Handle Paste");
-		
+
 		let filename = view.file.basename;
 
 		//@ts-ignore
 		app.vault.setConfig("attachmentFolderPath", `./assets/${filename}`);
-		
+        let clipBoardData = event.clipboardData;
+        let clipBoardItems = clipBoardData.items;
+        if(!clipBoardData.getData("text/plain")){
+	        for(let i in clipBoardItems){
+		        if(!clipBoardItems.hasOwnProperty(i))
+			        continue;
+                let item = clipBoardItems[i];
+                if(item.kind !== "file")
+                    continue;
+                let pasteImage = item.getAsFile();
+                if(!pasteImage)
+                    continue;
+                    
+                let extension = "";
+                item.type === "image/png" ? extension = "png" : item.type === "image/jpeg" && (extension = "jpeg");
+                
+                event.preventDefault();
+
+                let data = await blobToArrayBuffer(pasteImage);
+                let name = "image-" + window.moment().format("YYYYMMDDHHmmssSSS");
+                //@ts-ignore
+                let imageFile = await app.saveAttachment(name, extension, data);
+                //@ts-ignore
+                let markdownLink = await app.fileManager.generateMarkdownLink(imageFile, view.file.path);
+                markdownLink += "\n\n";
+                editor.replaceSelection(markdownLink);
+            }
+        }
 	}
 }
 
@@ -81,12 +116,12 @@ class CustomAttachmentLocationSettingTab extends PluginSettingTab {
 
 		new Setting(containerEl)
 			.setName('Location for New Attachments')
-			.setDesc('${filename}, ${date}')
+			.setDesc('${filename}')
 			.addText(text => text
-				.setPlaceholder('Enter your secret')
+				.setPlaceholder('Not available now')
 				.setValue(this.plugin.settings.mySetting)
 				.onChange(async (value) => {
-					console.log('Secret: ' + value);
+					console.log('filename: ' + value);
 					this.plugin.settings.mySetting = value;
 					await this.plugin.saveSettings();
 				}));

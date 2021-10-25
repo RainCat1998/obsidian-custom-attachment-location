@@ -87,8 +87,12 @@ export default class CustomAttachmentLocation extends Plugin {
         });
 
         //@ts-ignore
+        app.vault.setConfig("newLinkFormat", "relative");
+
+        //@ts-ignore
         app.vault.setConfig("attachmentFolderPath", path);
         // app.vault.setConfig("attachmentFolderPath", `./assets/${filename}`);
+
         let clipBoardData = event.clipboardData;
         let clipBoardItems = clipBoardData.items;
         if(!clipBoardData.getData("text/plain")){

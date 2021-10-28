@@ -79,7 +79,7 @@ export default class CustomAttachmentLocation extends Plugin {
         console.log("Handle Paste");
         
         //@ts-ignore
-        let settings = app.plugins.getPlugin('obsidian-custom-attachment-location-plugin').settings
+        let settings = app.plugins.getPlugin('obsidian-custom-attachment-location').settings;
         let mdFileName = view.file.basename;
 
         let path = new TemplateString("./" + settings.attachmentFolder).interpolate({

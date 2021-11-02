@@ -1,4 +1,4 @@
-import { App, Editor, MarkdownView, Plugin, PluginSettingTab, Setting } from 'obsidian';
+import { App, Editor, MarkdownView, Plugin, PluginSettingTab, Setting, moment } from 'obsidian';
 
 interface CustomAttachmentLocationSettings {
     attachmentFolder: string;
@@ -45,7 +45,11 @@ export default class CustomAttachmentLocation extends Plugin {
         this.backupSettings();
 
         this.addSettingTab(new CustomAttachmentLocationSettingTab(this.app, this));
-        this.registerEvent(this.app.workspace.on('editor-paste', this.handlePaste));
+        /*
+            bind this pointer to handlePaste
+            this.registerEvent(this.app.workspace.on('editor-paste', this.handlePaste));
+        */
+        this.registerEvent(this.app.workspace.on('editor-paste', this.handlePaste.bind(this)));
     }
 
     onunload() {
@@ -78,20 +82,18 @@ export default class CustomAttachmentLocation extends Plugin {
     async handlePaste(event: ClipboardEvent, editor: Editor, view: MarkdownView){
         console.log("Handle Paste");
         
-        //@ts-ignore
-        let settings = app.plugins.getPlugin('obsidian-custom-attachment-location').settings;
         let mdFileName = view.file.basename;
 
-        let path = new TemplateString("./" + settings.attachmentFolder).interpolate({
+        let path = new TemplateString("./" + this.settings.attachmentFolder).interpolate({
             filename: mdFileName
         });
 
         //@ts-ignore
-        app.vault.setConfig("newLinkFormat", "relative");
+        this.app.vault.setConfig("newLinkFormat", "relative");
 
         //@ts-ignore
-        app.vault.setConfig("attachmentFolderPath", path);
-        // app.vault.setConfig("attachmentFolderPath", `./assets/${filename}`);
+        this.app.vault.setConfig("attachmentFolderPath", path);
+        // this.app.vault.setConfig("attachmentFolderPath", `./assets/${filename}`);
 
         let clipBoardData = event.clipboardData;
         let clipBoardItems = clipBoardData.items;
@@ -116,16 +118,16 @@ export default class CustomAttachmentLocation extends Plugin {
 
                 let img = await blobToArrayBuffer(pasteImage);
                 
-                let datetime = window.moment().format(settings.dateTimeFormat);
-                let name = new TemplateString(settings.pastedImageFileName).interpolate({
+                let datetime = moment().format(this.settings.dateTimeFormat);
+                let name = new TemplateString(this.settings.pastedImageFileName).interpolate({
                     date: datetime
                 });
-                // let name = "image-" + window.moment().format("YYYYMMDDHHmmssSSS");
+                // let name = "image-" + moment().format("YYYYMMDDHHmmssSSS");
 
                 //@ts-ignore
-                let imageFile = await app.saveAttachment(name, extension, img);
+                let imageFile = await this.app.saveAttachment(name, extension, img);
                 //@ts-ignore
-                let markdownLink = await app.fileManager.generateMarkdownLink(imageFile, view.file.path);
+                let markdownLink = await this.app.fileManager.generateMarkdownLink(imageFile, view.file.path);
                 markdownLink += "\n\n";
                 editor.replaceSelection(markdownLink);
             }

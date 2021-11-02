@@ -6,7 +6,7 @@ Customize attachment location with variables($filename, $data, etc) like typora.
 * Modify location for attachment folder.
 * Modify filename for **Pasted Image**.
 
-⚠️ ⚠️ ⚠️**IMPORTANT:** This plugin will overwrite the following **two settings** and restored when the plugin is disabled. ⚠️ ⚠️ ⚠️
+⚠️  **IMPORTANT:** This plugin will overwrite the following **two settings** and restored when the plugin is disabled.
 - **"Files & Links -> New link format -> Relative path to file"** for generating md links.
 - **"Files & Links -> Default location for new attachments"** for custom attachment folder. 
 

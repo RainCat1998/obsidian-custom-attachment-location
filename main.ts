@@ -50,6 +50,7 @@ export default class CustomAttachmentLocation extends Plugin {
             this.registerEvent(this.app.workspace.on('editor-paste', this.handlePaste));
         */
         this.registerEvent(this.app.workspace.on('editor-paste', this.handlePaste.bind(this)));
+        this.registerEvent(this.app.workspace.on('editor-drop', this.handleDrop.bind(this)));
     }
 
     onunload() {
@@ -132,6 +133,22 @@ export default class CustomAttachmentLocation extends Plugin {
                 editor.replaceSelection(markdownLink);
             }
         }
+    }
+
+    handleDrop(event: DragEvent, editor: Editor, view: MarkdownView){
+        console.log("Handle Paste");
+        
+        let mdFileName = view.file.basename;
+
+        let path = new TemplateString("./" + this.settings.attachmentFolder).interpolate({
+            filename: mdFileName
+        });
+
+        //@ts-ignore
+        this.app.vault.setConfig("newLinkFormat", "relative");
+
+        //@ts-ignore
+        this.app.vault.setConfig("attachmentFolderPath", path);
     }
 }
 

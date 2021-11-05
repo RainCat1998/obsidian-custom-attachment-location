@@ -6,7 +6,7 @@ Customize attachment location with variables($filename, $data, etc) like typora.
 * Modify location for attachment folder.
 * Modify filename for **Pasted Image**.
 
-⚠️  **IMPORTANT:** This plugin will overwrite the following **two settings** and restored when the plugin is disabled.
+⚠️  **IMPORTANT:** This plugin will overwrite the following **two settings** and restore them when the plugin is disabled.
 - **"Files & Links -> New link format -> Relative path to file"** for generating md links.
 - **"Files & Links -> Default location for new attachments"** for custom attachment folder. 
 
@@ -25,13 +25,13 @@ Customize attachment location with variables($filename, $data, etc) like typora.
 - **Location for New Attachments**
   - Same to "Files & Links -> Default location for new attachments".
   - ${filename} representing for current note filename.
-  - example: **"assets/${filename}"** . **DO NOT start with "./" or end with "/"**
+  - example: **"assets/${filename}"**. **DO NOT start with "./" or end with "/"**
   - (Wrong example: "./assets/${filename}/")
-- **Pated Image Name**
+- **Pasted Image Name**
   - ${date} representing for current datetime in custom Date Format.
   - example: **"image-${date}"**
   - Obsidian default: "Pasted image YYYYMMDDHHmmss"
-  - **Note**: This setting only changes image filename from clipboard. If your attachment is copied from explorer, obsidian just copy the original file to the attachment folder without renaming.
+  - **Note**: This setting only changes image filename from clipboard. If your attachment is copied from the explorer, obsidian will just copy the original file to the attachment folder without renaming.
 - **Date Format**
   - Date format string for moment.js.
   - More info: [Format](https://momentjs.com/docs/#/displaying/format/)

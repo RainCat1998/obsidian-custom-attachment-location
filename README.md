@@ -18,7 +18,7 @@ Customize attachment location with variables($filename, $data, etc) like typora.
 
 ## Manual Install
 - Download `main.js`, `manifest.json` in the [latest release](https://github.com/RainCat1998/obsidian-custom-attachment-location-plugin/releases/latest).
-- Copy `main.js`, `manifest.json` to your vault `VaultFolder/.obsidian/plugins/obsidian-custom-attachment-location-plugin/`.
+- Copy `main.js`, `manifest.json` to your vault `VaultFolder/.obsidian/plugins/obsidian-custom-attachment-location/`.
 - Enable plugin in Obsidian setting.
 
 ## Settings

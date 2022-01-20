@@ -1,20 +1,26 @@
-import { App, Editor, MarkdownView, Plugin, PluginSettingTab, Setting, moment } from 'obsidian';
+import { App, Editor, MarkdownView, Plugin, PluginSettingTab, Setting, moment, normalizePath, TAbstractFile, FileSystemAdapter, ListedFiles, TFile } from 'obsidian';
+import * as Path from 'path';
+import { basename } from 'path/posix';
+import { threadId } from 'worker_threads';
 
 interface CustomAttachmentLocationSettings {
-    attachmentFolder: string;
+    attachmentFolderPath: string;
     pastedImageFileName: string;
     dateTimeFormat: string;
+    autoRenameFolder: boolean;
+    autoRenameFiles: boolean;
 }
 
 const DEFAULT_SETTINGS: CustomAttachmentLocationSettings = {
-    attachmentFolder: "assets/${filename}",
-    pastedImageFileName: "image-${date}",
-    dateTimeFormat: "YYYYMMDDHHmmssSSS"
+    attachmentFolderPath: 'assets/${filename}',
+    pastedImageFileName: 'image-${date}',
+    dateTimeFormat: 'YYYYMMDDHHmmssSSS',
+    autoRenameFolder: true,
+    autoRenameFiles: false
 }
 
 let originalSettings = {
-    newLinkFormat: "",
-    attachmentFolderPath: ""
+    attachmentFolderPath: ''
 };
 
 const blobToArrayBuffer = (blob: Blob) => {
@@ -37,12 +43,15 @@ class TemplateString extends String{
 
 export default class CustomAttachmentLocation extends Plugin {
     settings: CustomAttachmentLocationSettings;
+    useRelativePath: boolean = false;
+    adapter: FileSystemAdapter;
 
     async onload() {
         console.log('loading plugin');
 
+        this.adapter = this.app.vault.adapter as FileSystemAdapter;
         await this.loadSettings();
-        this.backupSettings();
+        this.backupConfigs();
 
         this.addSettingTab(new CustomAttachmentLocationSettingTab(this.app, this));
         /*
@@ -51,104 +60,204 @@ export default class CustomAttachmentLocation extends Plugin {
         */
         this.registerEvent(this.app.workspace.on('editor-paste', this.handlePaste.bind(this)));
         this.registerEvent(this.app.workspace.on('editor-drop', this.handleDrop.bind(this)));
+        this.registerEvent(this.app.vault.on('rename', this.handleRename.bind(this)));
     }
 
     onunload() {
         console.log('unloading plugin');
-        this.restoreSettings();
+        this.restoreConfigs();
     }
 
     async loadSettings() {
         this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
+        if(this.settings.attachmentFolderPath.startsWith('./'))
+            this.useRelativePath = true;
+        else
+            this.useRelativePath = false;
     }
 
     async saveSettings() {
         await this.saveData(this.settings);
     }
 
-    backupSettings(){
+    backupConfigs(){
         //@ts-ignore
-        originalSettings.newLinkFormat = this.app.vault.getConfig("newLinkFormat");
-        //@ts-ignore
-        originalSettings.attachmentFolderPath = this.app.vault.getConfig("attachmentFolderPath");
+        originalSettings.attachmentFolderPath = this.app.vault.getConfig('attachmentFolderPath');
     }
 
-    restoreSettings(){
+    restoreConfigs(){
         //@ts-ignore
-        this.app.vault.setConfig("newLinkFormat", originalSettings.newLinkFormat);
-        //@ts-ignore
-        this.app.vault.setConfig("attachmentFolderPath", originalSettings.attachmentFolderPath);
+        this.app.vault.setConfig('attachmentFolderPath', originalSettings.attachmentFolderPath);
     }
 
-    async handlePaste(event: ClipboardEvent, editor: Editor, view: MarkdownView){
-        console.log("Handle Paste");
-        
-        let mdFileName = view.file.basename;
+    updateAttachmentFolderConfig(path: string)
+    {
+        //@ts-ignore
+        this.app.vault.setConfig('attachmentFolderPath', path);
+    }
 
-        let path = new TemplateString("./" + this.settings.attachmentFolder).interpolate({
+    getAttachmentFolderPath(mdFileName: string)
+    {
+        let path = new TemplateString(this.settings.attachmentFolderPath).interpolate({
             filename: mdFileName
         });
+        return path;
+    }
 
-        //@ts-ignore
-        this.app.vault.setConfig("newLinkFormat", "relative");
+    getAttachmentFolderFullPath(mdFolderPath: string, mdFileName: string)
+    {
+        let attachmentFolder = '';
+        
+        if(this.useRelativePath)
+            attachmentFolder = Path.join(mdFolderPath, this.getAttachmentFolderPath(mdFileName));
+        else
+        {
+            attachmentFolder = this.getAttachmentFolderPath(mdFileName);
+        }
+        return normalizePath(attachmentFolder);
+    }
 
-        //@ts-ignore
-        this.app.vault.setConfig("attachmentFolderPath", path);
-        // this.app.vault.setConfig("attachmentFolderPath", `./assets/${filename}`);
+    getPastedImageFileName(mdFileName: string)
+    {
+        let datetime = moment().format(this.settings.dateTimeFormat);
+        let name = new TemplateString(this.settings.pastedImageFileName).interpolate({
+            filename: mdFileName,
+            date: datetime
+        });
+        return name;
+    }
+
+
+    async handlePaste(event: ClipboardEvent, editor: Editor, view: MarkdownView){
+        console.log('Handle Paste');
+        
+        let mdFileName = view.file.basename;
+        let mdFolderPath: string = Path.dirname(view.file.path);
+
+        let path = this.getAttachmentFolderPath(mdFileName);
+        let fullPath = this.getAttachmentFolderFullPath(mdFolderPath, mdFileName);
+
+        this.updateAttachmentFolderConfig(path);
+        // this.app.vault.setConfig('attachmentFolderPath', `./assets/${filename}`);
 
         let clipBoardData = event.clipboardData;
         let clipBoardItems = clipBoardData.items;
-        if(!clipBoardData.getData("text/plain")){
+        if(!clipBoardData.getData('text/plain')){
             for(let i in clipBoardItems){
                 if(!clipBoardItems.hasOwnProperty(i))
                     continue;
                 let item = clipBoardItems[i];
-                if(item.kind !== "file")
+                if(item.kind !== 'file')
                     continue;
-                if(!(item.type === "image/png" || item.type === "image/jpeg"))
+                if(!(item.type === 'image/png' || item.type === 'image/jpeg'))
                     continue;
                 
                 let pasteImage = item.getAsFile();
                 if(!pasteImage)
                     continue;
                     
-                let extension = "";
-                item.type === "image/png" ? extension = "png" : item.type === "image/jpeg" && (extension = "jpeg");
+                let extension = '';
+                item.type === 'image/png' ? extension = 'png' : item.type === 'image/jpeg' && (extension = 'jpeg');
                 
                 event.preventDefault();
 
+                //if folder not exist, mkdir first.
+                if(!await this.adapter.exists(fullPath))
+                    await this.adapter.mkdir(fullPath);
+
                 let img = await blobToArrayBuffer(pasteImage);
                 
-                let datetime = moment().format(this.settings.dateTimeFormat);
-                let name = new TemplateString(this.settings.pastedImageFileName).interpolate({
-                    date: datetime
-                });
-                // let name = "image-" + moment().format("YYYYMMDDHHmmssSSS");
+                let name = this.getPastedImageFileName(mdFileName);
+                // let name = 'image-' + moment().format('YYYYMMDDHHmmssSSS');
+                
 
                 //@ts-ignore
                 let imageFile = await this.app.saveAttachment(name, extension, img);
-                //@ts-ignore
                 let markdownLink = await this.app.fileManager.generateMarkdownLink(imageFile, view.file.path);
-                markdownLink += "\n\n";
+                markdownLink += '\n\n';
                 editor.replaceSelection(markdownLink);
             }
         }
     }
 
-    handleDrop(event: DragEvent, editor: Editor, view: MarkdownView){
-        console.log("Handle Paste");
+    async handleDrop(event: DragEvent, editor: Editor, view: MarkdownView){
+        console.log('Handle Drop');
         
         let mdFileName = view.file.basename;
+        let mdFolderPath: string = Path.dirname(view.file.path);
 
-        let path = new TemplateString("./" + this.settings.attachmentFolder).interpolate({
-            filename: mdFileName
-        });
+        let path = this.getAttachmentFolderPath(mdFileName);
+        let fullPath = this.getAttachmentFolderFullPath(mdFolderPath, mdFileName);
 
-        //@ts-ignore
-        this.app.vault.setConfig("newLinkFormat", "relative");
+        this.updateAttachmentFolderConfig(path);
 
-        //@ts-ignore
-        this.app.vault.setConfig("attachmentFolderPath", path);
+        if(!await this.adapter.exists(fullPath))
+            await this.adapter.mkdir(fullPath);
+    }
+
+    async handleRename(newFile: TFile, oldFilePath: string){
+        console.log('Handle Rename');
+
+        //if autoRename is off or not a markdown file
+        if(!this.settings.autoRenameFolder || newFile.extension !== 'md')
+            return;
+
+        let newName = newFile.basename;
+
+        let oldName = Path.basename(oldFilePath, '.md');
+
+        let mdFolderPath: string = Path.dirname(newFile.path);
+        let oldAttachmentFolderPath: string = this.getAttachmentFolderFullPath(mdFolderPath, oldName);
+        let newAttachmentFolderPath: string = this.getAttachmentFolderFullPath(mdFolderPath, newName);
+        
+        //check if old attachment folder exists and is necessary to rename Folder
+        if(await this.adapter.exists(oldAttachmentFolderPath) && (oldAttachmentFolderPath !== newAttachmentFolderPath))
+        {
+            let tfolder: TAbstractFile = this.app.vault.getAbstractFileByPath(oldAttachmentFolderPath);
+
+            if(tfolder == null)
+                return;
+                    
+            await this.app.fileManager.renameFile(tfolder, newAttachmentFolderPath);     
+            this.updateAttachmentFolderConfig(this.getAttachmentFolderPath(newName));
+        }
+
+        //if autoRenameFiles is off
+        if(!this.settings.autoRenameFiles)
+            return;
+
+        let embeds = this.app.metadataCache.getCache(newFile.path)?.embeds;
+        if(!embeds)
+            return;
+
+        let files: string[] = [];
+
+        for(let embed of embeds)
+        {
+            let link = embed.link;
+            if(link.endsWith('.png') || link.endsWith('jpeg'))
+                files.push(Path.basename(link));
+            else
+                continue;
+
+        }
+
+        let attachmentFiles: ListedFiles= await this.adapter.list(newAttachmentFolderPath);
+        for(let file of attachmentFiles.files)
+        {
+            console.log(file);
+            let filePath = file;
+            let fileName = Path.basename(filePath);
+            if((files.indexOf(fileName) > -1) && fileName.contains(oldName))
+            {
+                fileName = fileName.replace(oldName, newName);
+                let newFilePath = normalizePath(Path.join(newAttachmentFolderPath, fileName));
+                let tfile = this.app.vault.getAbstractFileByPath(filePath);
+                await this.app.fileManager.renameFile(tfile, newFilePath);
+            }
+            else
+                continue; 
+        }
     }
 }
 
@@ -167,25 +276,34 @@ class CustomAttachmentLocationSettingTab extends PluginSettingTab {
 
         containerEl.createEl('h2', {text: 'Custom Attachment Location'});
 
-        new Setting(containerEl)
+        let el = new Setting(containerEl)
             .setName('Location for New Attachments')
-            .setDesc('${filename}')
+            .setDesc('Start with "./" to use relative path. Available variables: ${filename}.(NOTE: DO NOT start with "/" or end with "/". )')
             .addText(text => text
-                .setPlaceholder('assets/${filename}')
-                .setValue(this.plugin.settings.attachmentFolder)
-                .onChange(async (value) => {
+                .setPlaceholder('./assets/${filename}')
+                .setValue(this.plugin.settings.attachmentFolderPath)
+                .onChange(async (value: string) => {
                     console.log('attachmentFolder: ' + value);
-                    this.plugin.settings.attachmentFolder = value;
+                    value = normalizePath(value);
+                    console.log('normalized attachmentFolder: ' + value);
+
+                    this.plugin.settings.attachmentFolderPath = value;
+                    if(value.startsWith('./'))
+                        this.plugin.useRelativePath = true;
+                    else
+                        this.plugin.useRelativePath = false;
                     await this.plugin.saveSettings();
                 }));
+        el.controlEl.addEventListener('change',  function(){this.display()}.bind(this));
+        
 
         new Setting(containerEl)
             .setName('Pasted Image Name')
-            .setDesc('${date}')
+            .setDesc('Available variables: ${filename}, ${date}.')
             .addText(text => text
                 .setPlaceholder('image-${date}')
                 .setValue(this.plugin.settings.pastedImageFileName)
-                .onChange(async (value) => {
+                .onChange(async (value: string) => {
                     console.log('pastedImageFileName: ' + value);
                     this.plugin.settings.pastedImageFileName = value;
                     await this.plugin.saveSettings();
@@ -194,12 +312,35 @@ class CustomAttachmentLocationSettingTab extends PluginSettingTab {
         new Setting(containerEl)
             .setName('Date Format')
             .setDesc('YYYYMMDDHHmmssSSS')
-            .addText(text => text
-                .setPlaceholder('YYYYMMDDHHmmssSSS')
+            .addMomentFormat(text => text
+                .setDefaultFormat('YYYYMMDDHHmmssSSS')
                 .setValue(this.plugin.settings.dateTimeFormat)
-                .onChange(async (value) => {
+                .onChange(async (value: string) => {
                     console.log('dateTimeFormat: ' + value);
-                    this.plugin.settings.dateTimeFormat = value;
+                    this.plugin.settings.dateTimeFormat = value || 'YYYYMMDDHHmmssSSS';
+                    await this.plugin.saveSettings();
+                }));
+
+        
+        new Setting(containerEl)
+            .setName('Automatically rename attachment folder')
+            .setDesc('When renaming md files, automatically rename attachment folder if fodler name contains "${filename}".')
+            .addToggle(toggle => toggle
+                .setValue(this.plugin.settings.autoRenameFolder)
+                .onChange(async (value: boolean) => {
+                    this.plugin.settings.autoRenameFolder = value;
+                    this.display();
+                    await this.plugin.saveSettings();
+                }));
+        
+        if(this.plugin.settings.autoRenameFolder)
+            new Setting(containerEl)
+            .setName('Automatically rename attachment files [Experimental]')
+            .setDesc('When renaming md files, automatically rename attachment files if file name contains "${filename}".')
+            .addToggle(toggle => toggle
+                .setValue(this.plugin.settings.autoRenameFiles)
+                .onChange(async (value: boolean) => {
+                    this.plugin.settings.autoRenameFiles = value;
                     await this.plugin.saveSettings();
                 }));
     }

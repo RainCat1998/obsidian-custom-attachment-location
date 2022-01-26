@@ -107,7 +107,7 @@ export default class CustomAttachmentLocation extends Plugin {
     getAttachmentFolderFullPath(mdFolderPath: string, mdFileName: string)
     {
         let attachmentFolder = '';
-        
+
         if(this.useRelativePath)
             attachmentFolder = Path.join(mdFolderPath, this.getAttachmentFolderPath(mdFileName));
         else
@@ -130,7 +130,7 @@ export default class CustomAttachmentLocation extends Plugin {
 
     async handlePaste(event: ClipboardEvent, editor: Editor, view: MarkdownView){
         console.log('Handle Paste');
-        
+
         let mdFileName = view.file.basename;
         let mdFolderPath: string = Path.dirname(view.file.path);
 
@@ -151,14 +151,14 @@ export default class CustomAttachmentLocation extends Plugin {
                     continue;
                 if(!(item.type === 'image/png' || item.type === 'image/jpeg'))
                     continue;
-                
+
                 let pasteImage = item.getAsFile();
                 if(!pasteImage)
                     continue;
-                    
+
                 let extension = '';
                 item.type === 'image/png' ? extension = 'png' : item.type === 'image/jpeg' && (extension = 'jpeg');
-                
+
                 event.preventDefault();
 
                 //if folder not exist, mkdir first.
@@ -166,10 +166,10 @@ export default class CustomAttachmentLocation extends Plugin {
                     await this.adapter.mkdir(fullPath);
 
                 let img = await blobToArrayBuffer(pasteImage);
-                
+
                 let name = this.getPastedImageFileName(mdFileName);
                 // let name = 'image-' + moment().format('YYYYMMDDHHmmssSSS');
-                
+
 
                 //@ts-ignore
                 let imageFile = await this.app.saveAttachment(name, extension, img);
@@ -182,7 +182,7 @@ export default class CustomAttachmentLocation extends Plugin {
 
     async handleDrop(event: DragEvent, editor: Editor, view: MarkdownView){
         console.log('Handle Drop');
-        
+
         let mdFileName = view.file.basename;
         let mdFolderPath: string = Path.dirname(view.file.path);
 
@@ -209,7 +209,7 @@ export default class CustomAttachmentLocation extends Plugin {
         let mdFolderPath: string = Path.dirname(newFile.path);
         let oldAttachmentFolderPath: string = this.getAttachmentFolderFullPath(mdFolderPath, oldName);
         let newAttachmentFolderPath: string = this.getAttachmentFolderFullPath(mdFolderPath, newName);
-        
+
         //check if old attachment folder exists and is necessary to rename Folder
         if(await this.adapter.exists(oldAttachmentFolderPath) && (oldAttachmentFolderPath !== newAttachmentFolderPath))
         {
@@ -217,8 +217,8 @@ export default class CustomAttachmentLocation extends Plugin {
 
             if(tfolder == null)
                 return;
-                    
-            await this.app.fileManager.renameFile(tfolder, newAttachmentFolderPath);     
+
+            await this.app.fileManager.renameFile(tfolder, newAttachmentFolderPath);
             this.updateAttachmentFolderConfig(this.getAttachmentFolderPath(newName));
         }
 
@@ -256,7 +256,7 @@ export default class CustomAttachmentLocation extends Plugin {
                 await this.app.fileManager.renameFile(tfile, newFilePath);
             }
             else
-                continue; 
+                continue;
         }
     }
 }
@@ -295,7 +295,7 @@ class CustomAttachmentLocationSettingTab extends PluginSettingTab {
                     await this.plugin.saveSettings();
                 }));
         el.controlEl.addEventListener('change',  function(){this.display()}.bind(this));
-        
+
 
         new Setting(containerEl)
             .setName('Pasted Image Name')
@@ -321,10 +321,10 @@ class CustomAttachmentLocationSettingTab extends PluginSettingTab {
                     await this.plugin.saveSettings();
                 }));
 
-        
+
         new Setting(containerEl)
             .setName('Automatically rename attachment folder')
-            .setDesc('When renaming md files, automatically rename attachment folder if fodler name contains "${filename}".')
+            .setDesc('When renaming md files, automatically rename attachment folder if folder name contains "${filename}".')
             .addToggle(toggle => toggle
                 .setValue(this.plugin.settings.autoRenameFolder)
                 .onChange(async (value: boolean) => {
@@ -332,7 +332,7 @@ class CustomAttachmentLocationSettingTab extends PluginSettingTab {
                     this.display();
                     await this.plugin.saveSettings();
                 }));
-        
+
         if(this.plugin.settings.autoRenameFolder)
             new Setting(containerEl)
             .setName('Automatically rename attachment files [Experimental]')

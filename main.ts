@@ -294,7 +294,7 @@ class CustomAttachmentLocationSettingTab extends PluginSettingTab {
                         this.plugin.useRelativePath = false;
                     await this.plugin.saveSettings();
                 }));
-        el.controlEl.addEventListener('change',  function(){this.display()}.bind(this));
+        el.controlEl.addEventListener('change',  (()=>{this.display();}));
 
 
         new Setting(containerEl)

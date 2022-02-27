@@ -1,7 +1,5 @@
 import { App, Editor, MarkdownView, Plugin, PluginSettingTab, Setting, moment, normalizePath, TAbstractFile, FileSystemAdapter, ListedFiles, TFile } from 'obsidian';
 import * as Path from 'path';
-import { basename } from 'path/posix';
-import { threadId } from 'worker_threads';
 
 interface CustomAttachmentLocationSettings {
     attachmentFolderPath: string;
@@ -12,7 +10,7 @@ interface CustomAttachmentLocationSettings {
 }
 
 const DEFAULT_SETTINGS: CustomAttachmentLocationSettings = {
-    attachmentFolderPath: 'assets/${filename}',
+    attachmentFolderPath: './assets/${filename}',
     pastedImageFileName: 'image-${date}',
     dateTimeFormat: 'YYYYMMDDHHmmssSSS',
     autoRenameFolder: true,
@@ -61,6 +59,8 @@ export default class CustomAttachmentLocation extends Plugin {
         this.registerEvent(this.app.workspace.on('editor-paste', this.handlePaste.bind(this)));
         this.registerEvent(this.app.workspace.on('editor-drop', this.handleDrop.bind(this)));
         this.registerEvent(this.app.vault.on('rename', this.handleRename.bind(this)));
+
+
     }
 
     onunload() {
@@ -189,10 +189,10 @@ export default class CustomAttachmentLocation extends Plugin {
         let path = this.getAttachmentFolderPath(mdFileName);
         let fullPath = this.getAttachmentFolderFullPath(mdFolderPath, mdFileName);
 
+        if(!this.useRelativePath && !await this.adapter.exists(fullPath))
+            await this.app.vault.createFolder(fullPath);
+        
         this.updateAttachmentFolderConfig(path);
-
-        if(!await this.adapter.exists(fullPath))
-            await this.adapter.mkdir(fullPath);
     }
 
     async handleRename(newFile: TFile, oldFilePath: string){

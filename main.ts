@@ -225,6 +225,13 @@ export default class CustomAttachmentLocation extends Plugin {
             }
 
             await this.app.fileManager.renameFile(tfolder, newAttachmentFolderPath);
+
+            let oldAttachmentParentFolderPath: string = Path.dirname(oldAttachmentFolderPath)
+            let oldAttachmentParentFolderList: ListedFiles = await this.adapter.list(oldAttachmentParentFolderPath);
+            if (oldAttachmentParentFolderList.folders.length === 0 && oldAttachmentParentFolderList.files.length === 0) {
+              await this.adapter.rmdir(oldAttachmentParentFolderPath, true);
+            }
+    
             this.updateAttachmentFolderConfig(this.getAttachmentFolderPath(newName));
         }
 

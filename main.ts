@@ -219,6 +219,11 @@ export default class CustomAttachmentLocation extends Plugin {
             if(tfolder == null)
                 return;
 
+            let newAttachmentParentFolderPath: string = Path.dirname(newAttachmentFolderPath)
+            if (!(await this.adapter.exists(newAttachmentParentFolderPath))) {
+                await this.app.vault.createFolder(newAttachmentParentFolderPath);
+            }
+
             await this.app.fileManager.renameFile(tfolder, newAttachmentFolderPath);
             this.updateAttachmentFolderConfig(this.getAttachmentFolderPath(newName));
         }

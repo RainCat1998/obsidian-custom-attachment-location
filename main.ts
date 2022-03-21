@@ -207,7 +207,8 @@ export default class CustomAttachmentLocation extends Plugin {
         let oldName = Path.basename(oldFilePath, '.md');
 
         let mdFolderPath: string = Path.dirname(newFile.path);
-        let oldAttachmentFolderPath: string = this.getAttachmentFolderFullPath(mdFolderPath, oldName);
+        let oldMdFolderPath: string = Path.dirname(oldFilePath);
+        let oldAttachmentFolderPath: string = this.getAttachmentFolderFullPath(oldMdFolderPath, oldName);
         let newAttachmentFolderPath: string = this.getAttachmentFolderFullPath(mdFolderPath, newName);
 
         //check if old attachment folder exists and is necessary to rename Folder

@@ -197,8 +197,13 @@ export default class CustomAttachmentLocation extends Plugin {
         this.updateAttachmentFolderConfig(path);
     }
 
-    async handleFileOpen(file: TFile){
+    async handleFileOpen(file: TFile | null){
         console.log('Handle File Open');
+        
+        if (file == null) {
+            console.log("No file open");
+            return;
+        }
 
         let mdFileName = file.basename;
 

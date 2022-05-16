@@ -207,7 +207,8 @@ export default class CustomAttachmentLocation extends Plugin {
         let oldName = Path.basename(oldFilePath, '.md');
 
         let mdFolderPath: string = Path.dirname(newFile.path);
-        let oldAttachmentFolderPath: string = this.getAttachmentFolderFullPath(mdFolderPath, oldName);
+        let oldMdFolderPath: string = Path.dirname(oldFilePath);
+        let oldAttachmentFolderPath: string = this.getAttachmentFolderFullPath(oldMdFolderPath, oldName);
         let newAttachmentFolderPath: string = this.getAttachmentFolderFullPath(mdFolderPath, newName);
 
         //check if old attachment folder exists and is necessary to rename Folder
@@ -218,7 +219,19 @@ export default class CustomAttachmentLocation extends Plugin {
             if(tfolder == null)
                 return;
 
+            let newAttachmentParentFolderPath: string = Path.dirname(newAttachmentFolderPath)
+            if (!(await this.adapter.exists(newAttachmentParentFolderPath))) {
+                await this.app.vault.createFolder(newAttachmentParentFolderPath);
+            }
+
             await this.app.fileManager.renameFile(tfolder, newAttachmentFolderPath);
+
+            let oldAttachmentParentFolderPath: string = Path.dirname(oldAttachmentFolderPath)
+            let oldAttachmentParentFolderList: ListedFiles = await this.adapter.list(oldAttachmentParentFolderPath);
+            if (oldAttachmentParentFolderList.folders.length === 0 && oldAttachmentParentFolderList.files.length === 0) {
+              await this.adapter.rmdir(oldAttachmentParentFolderPath, true);
+            }
+    
             this.updateAttachmentFolderConfig(this.getAttachmentFolderPath(newName));
         }
 

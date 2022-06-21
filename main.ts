@@ -215,11 +215,16 @@ export default class CustomAttachmentLocation extends Plugin {
     async handleRename(newFile: TFile, oldFilePath: string){
         console.log('Handle Rename');
 
-        //if autoRename is off or not a markdown file
-        if(!this.settings.autoRenameFolder || newFile.extension !== 'md')
+        if (newFile.extension !== 'md')
             return;
 
         let newName = newFile.basename;
+
+        this.updateAttachmentFolderConfig(this.getAttachmentFolderPath(newName));
+
+        if (!this.settings.autoRenameFolder) {
+            return;
+        }
 
         let oldName = Path.basename(oldFilePath, '.md');
 
@@ -248,8 +253,6 @@ export default class CustomAttachmentLocation extends Plugin {
             if (oldAttachmentParentFolderList.folders.length === 0 && oldAttachmentParentFolderList.files.length === 0) {
               await this.adapter.rmdir(oldAttachmentParentFolderPath, true);
             }
-    
-            this.updateAttachmentFolderConfig(this.getAttachmentFolderPath(newName));
         }
 
         //if autoRenameFiles is off

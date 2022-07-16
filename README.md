@@ -30,15 +30,15 @@ Customize attachment location with variables($filename, $data, etc) like typora.
 
 * **Location for New Attachments**
   * Same to "Files & Links -> Default location for new attachments".
-  * ${filename} representing for current note filename.
+  * `${filename}` representing for current note filename.
   * **Put "./" at the beginning of the path if you want to use relative path.**
-  * example: **"assets/${filename}", "./assets/${filename}"**
+  * example: **`assets/${filename}`, `./assets/${filename}`**
   * **DO NOT start with "/" or end with "/"**
-  * (Wrong example: "/assets/${filename}/")
+  * (Wrong example: `/assets/${filename}/`)
 
 * **Pasted Image Name**
-  * ${filename} representing for current note filename. ${date} representing for current datetime in custom Date Format.
-  * example: **"image-${date}", "${filename}-img-${date}"**
+  * `${filename}` representing for current note filename. ${date} representing for current datetime in custom Date Format.
+  * example: **`image-${date}`, `${filename}-img-${date}`**
   * Obsidian default: "Pasted image YYYYMMDDHHmmss"
   * **Note**: This setting only changes image filename from clipboard. If your attachment is copied from the explorer, obsidian will just copy the original file to the attachment folder without renaming.
 
@@ -48,11 +48,11 @@ Customize attachment location with variables($filename, $data, etc) like typora.
   * example: "YYYYMMDDHHmmssSSS".
 
 * **Automatically rename attachment folder**
-  * Automatically update attachment folder name if "Location for New Attachments" contains ${filename}.
+  * Automatically update attachment folder name if "Location for New Attachments" contains `${filename}`.
 
 * **Automatically rename attachment files [Experimental]**
-  * Automatically update attachment files in target md file if "Pasted Image Name" contains ${filename}.
-  * Just simply substitute ${filename} string in attachment filename. So it may be dangerous if multiple files share the same prefix.
+  * Automatically update attachment files in target md file if "Pasted Image Name" contains `${filename}`.
+  * Just simply substitute `${filename}` string in attachment filename. So it may be dangerous if multiple files share the same prefix.
 
 ## Screenshots
 

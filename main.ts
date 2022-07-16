@@ -7,6 +7,8 @@ interface CustomAttachmentLocationSettings {
     dateTimeFormat: string;
     autoRenameFolder: boolean;
     autoRenameFiles: boolean;
+    pngToJpeg: boolean;
+    jpegQuality: string;
 }
 
 const DEFAULT_SETTINGS: CustomAttachmentLocationSettings = {
@@ -14,7 +16,9 @@ const DEFAULT_SETTINGS: CustomAttachmentLocationSettings = {
     pastedImageFileName: 'image-${date}',
     dateTimeFormat: 'YYYYMMDDHHmmssSSS',
     autoRenameFolder: true,
-    autoRenameFiles: false
+    autoRenameFiles: false,
+    pngToJpeg: false,
+    jpegQuality: '0.8',
 }
 
 let originalSettings = {
@@ -29,6 +33,53 @@ const blobToArrayBuffer = (blob: Blob) => {
     })
 }
 
+const pngToJpeg = (blob: Blob, quality: number) => {
+    const base64ToArrayBuffer = (code: string): ArrayBuffer => {
+        const parts = code.split(";base64,");
+        const raw = window.atob(parts[1]);
+        const rawLength = raw.length;
+    
+        const uInt8Array = new Uint8Array(rawLength);
+    
+        for (let i = 0; i < rawLength; ++i) {
+            uInt8Array[i] = raw.charCodeAt(i);
+        }
+        return uInt8Array.buffer;
+    };
+
+    return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onloadend = (e) => {
+            let image = new Image();
+            image.onload = () => {
+                let canvas = document.createElement('canvas');
+                let context = canvas.getContext('2d');
+                let imageWidth = image.width;
+                let imageHeight = image.height;
+                let data = '';
+
+                canvas.width = imageWidth;
+                canvas.height = imageHeight;
+
+                context!.fillStyle = '#fff';
+                context!.fillRect(0, 0, imageWidth, imageHeight);
+                context!.save();
+
+                context!.translate(imageWidth / 2, imageHeight / 2);
+                context!.drawImage(image, 0, 0, imageWidth, imageHeight,-imageWidth/2,-imageHeight/2,imageWidth,imageHeight);
+                context!.restore();
+
+                data = canvas.toDataURL('image/jpeg', quality);
+
+                var arrayBuffer = base64ToArrayBuffer(data);
+                resolve(arrayBuffer);
+            }
+
+            image.src = e.target!.result!.toString();
+        }
+        reader.readAsDataURL(blob);
+    })
+}
 
 class TemplateString extends String {
     interpolate(params: Object) {
@@ -169,6 +220,12 @@ export default class CustomAttachmentLocation extends Plugin {
 
                 let img = await blobToArrayBuffer(pasteImage);
                 
+                //convert png to jpeg
+                if (this.settings.pngToJpeg && extension == 'png') {
+                    img = await pngToJpeg(pasteImage, Number(this.settings.jpegQuality));
+                    extension = 'jpeg';
+                }
+
                 /* 
                 sample
                 let name = 'image-' + moment().format('YYYYMMDDHHmmssSSS');
@@ -345,6 +402,31 @@ class CustomAttachmentLocationSettingTab extends PluginSettingTab {
                     this.plugin.settings.pastedImageFileName = value;
                     await this.plugin.saveSettings();
                 }));
+
+        new Setting(containerEl)
+            .setName('Pasted Png to Jpeg')
+            .setDesc(`Paste images from ClipBoard to notes by copying them through various screenshot software, turn on this feature will automatically convert png to jpeg, and more quality compression volume.`)
+            .addToggle(toggle => toggle
+                .setValue(this.plugin.settings.pngToJpeg)
+                .onChange(async (value) => {
+                    console.log('pngToJpeg: ' + value);
+                    this.plugin.settings.pngToJpeg = value;
+                    await this.plugin.saveSettings();
+                }
+            ));
+
+        new Setting(containerEl)
+            .setName('Quality')
+            .setDesc(`The smaller the Quality, the greater the compression ratio.`)
+            .addDropdown(toggle => toggle
+                .addOptions({'0.1':'0.1','0.2':'0.2','0.3':'0.3','0.4':'0.4','0.5':'0.5','0.6':'0.6','0.7':'0.7','0.8':'0.8','0.9':'0.9','1.0':'1.0'})
+                .setValue(this.plugin.settings.jpegQuality)
+                .onChange(async (value) => {
+                    console.log('jpegQuality: ' + value);
+                    this.plugin.settings.jpegQuality = value;
+                    await this.plugin.saveSettings();
+                }
+            ));
 
         new Setting(containerEl)
             .setName('Date Format')

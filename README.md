@@ -58,3 +58,8 @@ Customize attachment location with variables($filename, $data, etc) like typora.
 
 ![image](https://user-images.githubusercontent.com/36730607/138717686-1f62b499-25ae-4662-bd50-6187c142b747.png)
 ![image](https://user-images.githubusercontent.com/36730607/150306765-f7acb4e2-fd8c-472b-a952-5491b530ed6d.png)
+
+## Contributing
+- Make changes
+- Run `yarn install --dev`
+- Run `yarn build` to generate `main.js`

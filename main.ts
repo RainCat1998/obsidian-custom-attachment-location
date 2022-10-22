@@ -7,6 +7,8 @@ interface CustomAttachmentLocationSettings {
     dateTimeFormat: string;
     autoRenameFolder: boolean;
     autoRenameFiles: boolean;
+    replaceWhitespace: boolean;
+    toLowerCase: boolean;
 }
 
 const DEFAULT_SETTINGS: CustomAttachmentLocationSettings = {
@@ -14,7 +16,9 @@ const DEFAULT_SETTINGS: CustomAttachmentLocationSettings = {
     pastedImageFileName: 'image-${date}',
     dateTimeFormat: 'YYYYMMDDHHmmssSSS',
     autoRenameFolder: true,
-    autoRenameFiles: false
+    autoRenameFiles: false,
+    replaceWhitespace: true,
+    toLowerCase: true
 }
 
 let originalSettings = {
@@ -101,6 +105,18 @@ export default class CustomAttachmentLocation extends Plugin {
         let path = new TemplateString(this.settings.attachmentFolderPath).interpolate({
             filename: mdFileName
         });
+
+        if (this.settings.toLowerCase) {
+            path = path.toLowerCase();
+        }
+
+        if (this.settings.replaceWhitespace) {
+            path = path.replace(/\s/g, '-');
+
+            // replace 2 or more '-' with a single '-'
+            path = path.replace(/-{2,}/g, '-');
+        }
+
         return path;
     }
 
@@ -121,6 +137,13 @@ export default class CustomAttachmentLocation extends Plugin {
             filename: mdFileName,
             date: datetime
         });
+        if (this.settings.toLowerCase) {
+            name = name.toLowerCase();
+        }
+
+        if (this.settings.replaceWhitespace) {
+            name = name.replace(/\s/g, '-');
+        }
         return name;
     }
 
@@ -380,5 +403,27 @@ class CustomAttachmentLocationSettingTab extends PluginSettingTab {
                         this.plugin.settings.autoRenameFiles = value;
                         await this.plugin.saveSettings();
                     }));
+
+        new Setting(containerEl)
+            .setName('Replace whitespace with hyphen')
+            .setDesc('Automatically replace whitespace in attachment folder and file name with hyphens.')
+            .addToggle(toggle => toggle
+                .setValue(this.plugin.settings.replaceWhitespace)
+                .onChange(async (value: boolean) => {
+                    this.plugin.settings.replaceWhitespace = value;
+                    this.display();
+                    await this.plugin.saveSettings();
+                }));
+
+        new Setting(containerEl)
+            .setName('All lowercase names')
+            .setDesc('Automatically set all characters in folder name and pasted image name to be lowercase.')
+            .addToggle(toggle => toggle
+                .setValue(this.plugin.settings.toLowerCase)
+                .onChange(async (value: boolean) => {
+                    this.plugin.settings.toLowerCase = value;
+                    this.display();
+                    await this.plugin.saveSettings();
+                }));
     }
 }

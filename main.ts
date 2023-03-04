@@ -1,5 +1,5 @@
 import { App, Editor, MarkdownView, Plugin, PluginSettingTab, Setting, moment, normalizePath, TAbstractFile, FileSystemAdapter, ListedFiles, TFile } from 'obsidian';
-import * as Path from 'path';
+import * as Path from './path';
 
 interface CustomAttachmentLocationSettings {
     attachmentFolderPath: string;

@@ -22,11 +22,10 @@
 'use strict';
 
 var obsidian = require('obsidian')
-if (obsidian.Platform.isMobile) {
+if (obsidian.Platform.isMobile)
   var isWindows = false;
-} else {
+else
   var isWindows = process.platform === 'win32';
-}
 var util = require('util');
 
 

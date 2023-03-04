@@ -6,5 +6,5 @@
 	"description": "Customize attachment location with variables($filename, $data, etc) like typora.",
 	"author": "RainCat1998",
 	"authorUrl": "https://github.com/RainCat1998",
-	"isDesktopOnly": true
+	"isDesktopOnly": false
 }

@@ -440,7 +440,7 @@ posix.resolve = function() {
     var path = (i >= 0) ? arguments[i] : process.cwd();
 
     // Skip empty and invalid entries
-    if (!util.isString(path)) {
+    if (obsidian.Platform.isDesktop && (!util.isString(path))) {
       throw new TypeError('Arguments to path.resolve must be strings');
     } else if (!path) {
       continue;
@@ -489,7 +489,7 @@ posix.join = function() {
   var path = '';
   for (var i = 0; i < arguments.length; i++) {
     var segment = arguments[i];
-    if (!util.isString(segment)) {
+    if (obsidian.Platform.isDesktop && (!util.isString(segment))) {
       throw new TypeError('Arguments to path.join must be strings');
     }
     if (segment) {
@@ -573,7 +573,7 @@ posix.extname = function(path) {
 
 
 posix.format = function(pathObject) {
-  if (!util.isObject(pathObject)) {
+  if (obsidian.Platform.isDesktop && (!util.isObject(pathObject))) {
     throw new TypeError(
         "Parameter 'pathObject' must be an object, not " + typeof pathObject
     );
@@ -581,7 +581,7 @@ posix.format = function(pathObject) {
 
   var root = pathObject.root || '';
 
-  if (!util.isString(root)) {
+  if (obsidian.Platform.isDesktop && (!util.isString(root))) {
     throw new TypeError(
         "'pathObject.root' must be a string or undefined, not " +
         typeof pathObject.root
@@ -595,7 +595,7 @@ posix.format = function(pathObject) {
 
 
 posix.parse = function(pathString) {
-  if (!util.isString(pathString)) {
+  if (obsidian.Platform.isDesktop && (!util.isString(pathString))) {
     throw new TypeError(
         "Parameter 'pathString' must be a string, not " + typeof pathString
     );

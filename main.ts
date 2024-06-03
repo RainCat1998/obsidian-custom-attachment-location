@@ -38,6 +38,19 @@ class TemplateString extends String {
     }
 }
 
+function interpolateDateRelatedVars(rawPath: string): string {
+    // match ${date:date_format} pattern
+    const regex = /\$\{date:(.*?)\}/g;
+
+    const newPath = rawPath.replace(regex, (match, dateFormat) => {
+        // use moment to reformat date string
+        const date = moment().format(dateFormat);
+        return date;
+    });
+
+    return newPath;
+}
+
 
 export default class CustomAttachmentLocation extends Plugin {
     settings: CustomAttachmentLocationSettings;
@@ -98,7 +111,7 @@ export default class CustomAttachmentLocation extends Plugin {
     }
 
     getAttachmentFolderPath(mdFileName: string) {
-        let path = new TemplateString(this.settings.attachmentFolderPath).interpolate({
+        let path = new TemplateString(interpolateDateRelatedVars(this.settings.attachmentFolderPath)).interpolate({
             filename: mdFileName
         });
         return path;

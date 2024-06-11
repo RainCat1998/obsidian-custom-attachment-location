@@ -228,8 +228,11 @@ export default class CustomAttachmentLocation extends Plugin {
                 this.updateAttachmentFolderConfig(path);
 
                 //if folder not exist, mkdir first.
-                if (!await this.adapter.exists(fullPath))
+                if (!await this.adapter.exists(fullPath)) {
                     await this.adapter.mkdir(fullPath);
+                    // for git tracking empty folder 
+                    await this.app.vault.create(Path.join(fullPath, ".gitkeep"), "");
+                }
 
                 let img = await blobToArrayBuffer(pasteImage);
                 

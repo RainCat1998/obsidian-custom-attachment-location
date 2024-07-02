@@ -1,5 +1,6 @@
 import { App, Editor, MarkdownView, Plugin, PluginSettingTab, Setting, moment, normalizePath, TAbstractFile, TFolder, FileSystemAdapter, ListedFiles, TFile, Stat} from 'obsidian';
 import * as Path from 'path';
+import * as fs from 'fs';
 
 interface CustomAttachmentLocationSettings {
     attachmentFolderPath: string;
@@ -145,20 +146,19 @@ export default class CustomAttachmentLocation extends Plugin {
         return newPath;
     }
 
-    async getEarliestAttachmentFolder(attachmentFolderTemplate: string, targetFileName: string) {
+    getEarliestAttachmentFolder(attachmentFolderTemplate: string, targetFileName: string) {
         const targetRegex = this.interpolateToDigitRegex(attachmentFolderTemplate, targetFileName)
         let folders = this.app.vault.getAllLoadedFiles()
         .filter((f: TAbstractFile) => f instanceof TFolder)
         .filter((f: TAbstractFile) => targetRegex.test(f.path));
 
-        const folderStats = await Promise.all(folders.map(async (folder: TFolder) => {
-            const stat = await this.app.vault.adapter.stat(folder.path);
+        const folderStats = folders.map((folder: TFolder) => {
+            const stat = fs.statSync(Path.join(this.app.vault.adapter.getBasePath(), folder.path))
             return {
                 path: folder.path,
-                mtime: stat.mtime,
-                ctime: stat.ctime
+                ctime: stat.ctimeMs
             };
-        }));
+        });
 
         if (folderStats.length > 0) {
             // creat time asceding
@@ -169,17 +169,17 @@ export default class CustomAttachmentLocation extends Plugin {
     
     }
 
-    async getAttachmentFolderPath(mdFileName: string) {
-        return await this.getEarliestAttachmentFolder(this.settings.attachmentFolderPath, mdFileName);
+    getAttachmentFolderPath(mdFileName: string) {
+        return this.getEarliestAttachmentFolder(this.settings.attachmentFolderPath, mdFileName);
     }
 
-    async getAttachmentFolderFullPath(mdFolderPath: string, mdFileName: string) {
+    getAttachmentFolderFullPath(mdFolderPath: string, mdFileName: string) {
         let attachmentFolder = '';
 
         if (this.useRelativePath)
-            attachmentFolder = Path.join(mdFolderPath, await this.getAttachmentFolderPath(mdFileName));
+            attachmentFolder = Path.join(mdFolderPath, this.getAttachmentFolderPath(mdFileName));
         else {
-            attachmentFolder = await this.getAttachmentFolderPath(mdFileName);
+            attachmentFolder = this.getAttachmentFolderPath(mdFileName);
         }
         return normalizePath(attachmentFolder);
     }
@@ -218,8 +218,8 @@ export default class CustomAttachmentLocation extends Plugin {
                 let mdFileName = view.file.basename;
                 let mdFolderPath: string = Path.dirname(view.file.path);
         
-                let path = await this.getAttachmentFolderPath(mdFileName);
-                let fullPath = await this.getAttachmentFolderFullPath(mdFolderPath, mdFileName);
+                let path = this.getAttachmentFolderPath(mdFileName);
+                let fullPath = this.getAttachmentFolderFullPath(mdFolderPath, mdFileName);
         
                 /* 
                 sample
@@ -257,8 +257,8 @@ export default class CustomAttachmentLocation extends Plugin {
         let mdFileName = view.file.basename;
         let mdFolderPath: string = Path.dirname(view.file.path);
 
-        let path = await this.getAttachmentFolderPath(mdFileName);
-        let fullPath = await this.getAttachmentFolderFullPath(mdFolderPath, mdFileName);
+        let path = this.getAttachmentFolderPath(mdFileName);
+        let fullPath = this.getAttachmentFolderFullPath(mdFolderPath, mdFileName);
 
         if (!this.useRelativePath && !await this.adapter.exists(fullPath))
             await this.app.vault.createFolder(fullPath);
@@ -280,7 +280,7 @@ export default class CustomAttachmentLocation extends Plugin {
 
         let mdFileName = file.basename;
 
-        let path = await this.getAttachmentFolderPath(mdFileName);
+        let path = this.getAttachmentFolderPath(mdFileName);
 
         this.updateAttachmentFolderConfig(path);
     }
@@ -297,7 +297,7 @@ export default class CustomAttachmentLocation extends Plugin {
 
         let mdFolderPath: string = Path.dirname(newFile.path);
         let oldMdFolderPath: string = Path.dirname(oldFilePath);
-        let oldAttachmentFolderPath: string = await this.getAttachmentFolderFullPath(oldMdFolderPath, oldName);
+        let oldAttachmentFolderPath: string = this.getAttachmentFolderFullPath(oldMdFolderPath, oldName);
         let newAttachmentFolderPath: string = Path.join(Path.dirname(oldAttachmentFolderPath), newName)
 
         // why this ? 

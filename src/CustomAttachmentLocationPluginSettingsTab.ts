@@ -69,16 +69,14 @@ export default class CustomAttachmentLocationPluginSettingsTab extends PluginSet
           await this.plugin.saveSettings(settings);
         }));
 
-    if (settings.autoRenameFolder) {
-      new Setting(this.containerEl)
-        .setName("Automatically rename attachment files")
-        .setDesc("When renaming md files, automatically rename attachment files if file name contains \"${filename}\".")
-        .addToggle(toggle => toggle
-          .setValue(settings.autoRenameFiles)
-          .onChange(async (value: boolean) => {
-            settings.autoRenameFiles = value;
-            await this.plugin.saveSettings(settings);
-          }));
-    }
+    new Setting(this.containerEl)
+      .setName("Automatically rename attachment files")
+      .setDesc("When renaming md files, automatically rename attachment files if file name contains \"${filename}\".")
+      .addToggle(toggle => toggle
+        .setValue(settings.autoRenameFiles)
+        .onChange(async (value: boolean) => {
+          settings.autoRenameFiles = value;
+          await this.plugin.saveSettings(settings);
+        }));
   }
 }

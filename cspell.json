@@ -1,0 +1,19 @@
+{
+  "version": "0.2",
+  "ignorePaths": [],
+  "dictionaryDefinitions": [],
+  "dictionaries": [],
+  "words": [
+    "collab",
+    "hotreload",
+    "lezer",
+    "mnaoumov",
+    "outfile",
+    "postversion",
+    "preversion",
+    "typora"
+  ],
+  "ignoreWords": [],
+  "import": [],
+  "enabled": true
+}

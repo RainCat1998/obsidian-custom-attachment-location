@@ -1,24 +1,40 @@
 {
-	"name": "obsidian-custom-attachment-location",
-	"version": "0.0.9",
-	"description": "Customize attachment location with variables($filename, $data, etc) like typora",
-	"main": "main.js",
-	"scripts": {
-		"dev": "node esbuild.config.mjs",
-		"build": "tsc -noEmit -skipLibCheck && node esbuild.config.mjs production",
-		"version": "node version-bump.mjs && git add manifest.json versions.json"
-	},
-	"keywords": [],
-	"author": "",
-	"license": "MIT",
-	"devDependencies": {
-		"@types/node": "^16.11.6",
-		"@typescript-eslint/eslint-plugin": "5.29.0",
-		"@typescript-eslint/parser": "5.29.0",
-		"builtin-modules": "3.3.0",
-		"esbuild": "0.14.47",
-		"obsidian": "latest",
-		"tslib": "2.4.0",
-		"typescript": "4.7.4"
-	}
+  "name": "obsidian-custom-attachment-location",
+  "version": "0.0.9",
+  "description": "Customize attachment location with variables($filename, $data, etc) like typora.",
+  "main": "main.js",
+  "scripts": {
+    "dev": "tsx scripts/npmScriptExecutor.ts dev",
+    "build": "tsx scripts/npmScriptExecutor.ts build",
+    "version": "tsx scripts/npmScriptExecutor.ts version",
+    "lint": "tsx scripts/npmScriptExecutor.ts lint",
+    "postversion": "tsx scripts/npmScriptExecutor.ts postversion",
+    "preversion": "tsx scripts/npmScriptExecutor.ts preversion",
+    "spellcheck": "tsx scripts/npmScriptExecutor.ts spellcheck"
+  },
+  "keywords": [],
+  "author": "RainCat1998",
+  "license": "MIT",
+  "devDependencies": {
+    "@stylistic/eslint-plugin": "^2.3.0",
+    "@tsconfig/strictest": "^2.0.5",
+    "@types/eslint": "^8.56.10",
+    "@types/node": "^20.14.9",
+    "@typescript-eslint/eslint-plugin": "^7.15.0",
+    "@typescript-eslint/parser": "^7.15.0",
+    "builtin-modules": "^4.0.0",
+    "cspell": "^8.12.1",
+    "esbuild": "^0.23.0",
+    "eslint": "^8.57.0",
+    "eslint-import-resolver-typescript": "^3.6.1",
+    "eslint-plugin-import": "^2.29.1",
+    "eslint-plugin-modules-newlines": "^0.0.7",
+    "globals": "^15.8.0",
+    "obsidian": "^1.6.6",
+    "obsidian-typings": "mnaoumov/obsidian-typings#main",
+    "tslib": "2.6.3",
+    "tsx": "^4.16.2",
+    "typescript": "^5.5.4"
+  },
+  "type": "module"
 }

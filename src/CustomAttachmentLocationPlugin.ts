@@ -19,6 +19,7 @@ import {
 } from "node:path/posix";
 import moment from "moment";
 import { convertAsyncToSync } from "./Async.ts";
+import * as fs from 'fs';
 
 export default class CustomAttachmentLocationPlugin extends Plugin {
   private _settings!: CustomAttachmentLocationPluginSettings;
@@ -75,11 +76,80 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
     this.app.vault.setConfig("attachmentFolderPath", path);
   }
 
-  private getAttachmentFolderPath(mdFileName: string): string {
-    const path = new TemplateString(this._settings.attachmentFolderPath).interpolate({
-      filename: mdFileName
+  /**
+   * exmpale:
+   *   /dir/${date:YYYY}/${date:MM}/${filename} -> /^\/dir\/\d{4}\/\d{2}\/targetFileName$/
+   * @param template raw path contains meta vars
+   * @param targetFileName
+   * @returns interpolate vars begin with ${date:**} (moment.js format) and ${filename} to regex
+   */
+  interpolateToDigitRegex(template: string, targetFileName: string) {
+    const dateRegex = /\$\{date:(.*?)\}/g;
+    // match ${date:date_format} pattern
+    let regexString = template.replace(dateRegex, (match, p1) => {
+      // replace ${date} with \d{x} regex
+      return `\\d{${p1.length}}`;
     });
-    return path;
+
+    const filenameRegx = /\$\{filename\}/g;
+    // match ${filename} pattern
+    regexString = regexString.replace(filenameRegx, (match, p1) => {
+      return targetFileName;
+    });
+
+    return new RegExp(`^${regexString}$`);
+  }
+
+  /**
+   * exmpale:
+   *   /dir1/${date:YYYY}/${date:MM}/${filename} -> /dir1/2024/06/targetFileName
+   * @param template template path contains meta vars
+   * @returns interpolate vars begin with ${date:**} (moment.js format) and ${filename} to string path, using now time
+   */
+  interpolateDateToString(template: string, targetFileName: string): string {
+    // match ${date:date_format} pattern
+    const dateRegex = /\$\{date:(.*?)\}/g;
+
+    let newPath = template.replace(dateRegex, (match, dateFormat) => {
+      // use moment to reformat date string
+      const date = moment().format(dateFormat);
+      return date;
+    });
+
+    const filenameRegx = /\$\{filename\}/g;
+    // match ${filename} pattern
+    newPath = newPath.replace(filenameRegx, (match, p1) => {
+      return targetFileName;
+    });
+
+    return newPath;
+  }
+
+  getEarliestAttachmentFolder(attachmentFolderTemplate: string, targetFileName: string) {
+    const targetRegex = this.interpolateToDigitRegex(attachmentFolderTemplate, targetFileName)
+    let folders = this.app.vault.getAllLoadedFiles()
+      .filter((f: TAbstractFile) => f instanceof TFolder)
+      .filter((f: TAbstractFile) => targetRegex.test(f.path));
+
+    const folderStats = folders.map((folder: TFolder) => {
+      const stat = fs.statSync(Path.join(this.app.vault.adapter.getBasePath(), folder.path))
+      return {
+        path: folder.path,
+        ctime: stat.ctimeMs
+      };
+    });
+
+    if (folderStats.length > 0) {
+      // creat time asceding
+      return folderStats.sort((a, b) => a.ctime - b.ctime).map(f => f.path)[0];
+    } else {
+      return this.interpolateDateToString(attachmentFolderTemplate, targetFileName);
+    }
+
+  }
+
+  getAttachmentFolderPath(mdFileName: string) {
+    return this.getEarliestAttachmentFolder(this.settings.attachmentFolderPath, mdFileName);
   }
 
   private getAttachmentFolderFullPath(mdFolderPath: string, mdFileName: string): string {
@@ -94,12 +164,7 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
   }
 
   private getPastedImageFileName(mdFileName: string): string {
-    const dateTime = moment().format(this._settings.dateTimeFormat);
-    const name = new TemplateString(this._settings.pastedImageFileName).interpolate({
-      filename: mdFileName,
-      date: dateTime
-    });
-    return name;
+    return this.interpolateDateToString(this.settings.pastedImageFileName, mdFileName);
   }
 
   private async handlePaste(event: ClipboardEvent, editor: Editor, view: MarkdownView | MarkdownFileInfo): Promise<void> {
@@ -108,14 +173,6 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
     if (!view.file) {
       return;
     }
-
-    const mdFileName = view.file.basename;
-    const mdFolderPath: string = dirname(view.file.path);
-
-    const path = this.getAttachmentFolderPath(mdFileName);
-    const fullPath = this.getAttachmentFolderFullPath(mdFolderPath, mdFileName);
-
-    this.updateAttachmentFolderConfig(path);
 
     const clipBoardData = event.clipboardData;
     if (clipBoardData == null || clipBoardData.items == null) {
@@ -157,8 +214,16 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
       if (pastedImageEntries.length) {
         event.preventDefault();
 
+        const mdFileName = view.file.basename;
+        const mdFolderPath: string = dirname(view.file.path);
+        const path = this.getAttachmentFolderPath(mdFileName);
+        const fullPath = this.getAttachmentFolderFullPath(mdFolderPath, mdFileName);
+        this.updateAttachmentFolderConfig(path);
+
         if (!await this.adapter.exists(fullPath)) {
           await this.adapter.mkdir(fullPath);
+          // for git tracking empty folder
+          await this.app.vault.create(join(fullPath, ".gitkeep"), "");
         }
 
         for (const entry of pastedImageEntries) {
@@ -226,18 +291,20 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
 
     const newName = newFile.basename;
 
-    this.updateAttachmentFolderConfig(this.getAttachmentFolderPath(newName));
-
-    if (!this._settings.autoRenameFolder) {
-      return;
-    }
-
     const oldName = basename(oldFilePath, ".md");
 
     const mdFolderPath: string = dirname(newFile.path);
     const oldMdFolderPath: string = dirname(oldFilePath);
     const oldAttachmentFolderPath: string = this.getAttachmentFolderFullPath(oldMdFolderPath, oldName);
-    const newAttachmentFolderPath: string = this.getAttachmentFolderFullPath(mdFolderPath, newName);
+    let newAttachmentFolderPath: string = join(dirname(oldAttachmentFolderPath), newName)
+
+    // why this ?
+    // hints: after rename seems attachmentFolderConfig will be reset
+    this.updateAttachmentFolderConfig(await this.getAttachmentFolderPath(newName));
+
+    if (!this.settings.autoRenameFolder) {
+      return;
+    }
 
     if (await this.adapter.exists(oldAttachmentFolderPath) && (oldAttachmentFolderPath !== newAttachmentFolderPath)) {
       const folder = this.app.vault.getAbstractFileByPath(oldAttachmentFolderPath);

@@ -21,10 +21,10 @@ let originalSettings = {
     attachmentFolderPath: ''
 };
 
-const blobToArrayBuffer = (blob: Blob) => {
+const blobToArrayBuffer = (blob: Blob): Promise<ArrayBuffer> => {
     return new Promise((resolve) => {
         const reader = new FileReader()
-        reader.onloadend = () => resolve(reader.result)
+        reader.onloadend = () => resolve(reader.result as ArrayBuffer)
         reader.readAsArrayBuffer(blob)
     })
 }
@@ -145,6 +145,13 @@ export default class CustomAttachmentLocation extends Plugin {
             return;
         let clipBoardItems = clipBoardData.items;
         if (!clipBoardData.getData('text/plain')) {
+            type PastedImageEntry = {
+                extension: string;
+                pasteImage: File;
+            };
+
+            const pastedImageEntries: PastedImageEntry[] = [];
+
             for (let i in clipBoardItems) {
                 if (!clipBoardItems.hasOwnProperty(i))
                     continue;
@@ -160,28 +167,28 @@ export default class CustomAttachmentLocation extends Plugin {
 
                 let extension = '';
                 item.type === 'image/png' ? extension = 'png' : item.type === 'image/jpeg' && (extension = 'jpeg');
+                pastedImageEntries.push({ extension, pasteImage });
+            }
 
+            let insertedMarkdown = '';
+
+            if (pastedImageEntries.length) {
                 event.preventDefault();
 
-                //if folder not exist, mkdir first.
-                if (!await this.adapter.exists(fullPath))
+                if (!await this.adapter.exists(fullPath)) {
                     await this.adapter.mkdir(fullPath);
+                }
 
-                let img = await blobToArrayBuffer(pasteImage);
-                
-                /* 
-                sample
-                let name = 'image-' + moment().format('YYYYMMDDHHmmssSSS');
-                */
-
-                let name = this.getPastedImageFileName(mdFileName);
-
-                //@ts-ignore
-                let imageFile = await this.app.saveAttachment(name, extension, img);
-                let markdownLink = await this.app.fileManager.generateMarkdownLink(imageFile, view.file.path);
-                markdownLink += '\n\n';
-                editor.replaceSelection(markdownLink);
+                for (const entry of pastedImageEntries) {
+                    let img = await blobToArrayBuffer(entry.pasteImage);
+                    let name = this.getPastedImageFileName(mdFileName);
+                    let imageFile = await this.app.saveAttachment(name, entry.extension, img);
+                    insertedMarkdown += this.app.fileManager.generateMarkdownLink(imageFile, view.file.path);
+                    insertedMarkdown += '\n\n';
+                }
             }
+
+            editor.replaceSelection(insertedMarkdown);
         }
     }
 

@@ -1,25 +1,25 @@
 {
   "extends": "@tsconfig/strictest/tsconfig.json",
   "compilerOptions": {
+    "allowImportingTsExtensions": true,
+    "allowJs": true,
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true,
+    "importHelpers": true,
     "inlineSourceMap": true,
     "inlineSources": true,
-    "module": "NodeNext",
-    "target": "ESNext",
-    "allowJs": true,
-    "noImplicitAny": true,
-    "moduleResolution": "NodeNext",
-    "importHelpers": true,
     "isolatedModules": true,
-    "strictNullChecks": true,
     "lib": [
       "DOM",
       "ESNext"
     ],
-    "allowImportingTsExtensions": true,
-    "allowSyntheticDefaultImports": true,
-    "forceConsistentCasingInFileNames": true,
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
     "noEmit": true,
+    "noImplicitAny": true,
     "skipLibCheck": false,
+    "strictNullChecks": true,
+    "target": "ESNext",
     "types": [
       "node",
       "obsidian-typings"

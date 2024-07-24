@@ -218,8 +218,6 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
 
         if (!await this.adapter.exists(fullPath)) {
           await this.adapter.mkdir(fullPath);
-          // for git tracking empty folder
-          await this.app.vault.create(join(fullPath, ".gitkeep"), "");
         }
 
         for (const entry of pastedImageEntries) {

@@ -19,7 +19,7 @@ import {
 } from "node:path/posix";
 import moment from "moment";
 import { convertAsyncToSync } from "./Async.ts";
-import { statSync } from "fs";
+import { statSync } from "node:fs";
 
 export default class CustomAttachmentLocationPlugin extends Plugin {
   private _settings!: CustomAttachmentLocationPluginSettings;

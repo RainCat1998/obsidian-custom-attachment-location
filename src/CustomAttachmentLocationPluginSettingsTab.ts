@@ -85,5 +85,38 @@ export default class CustomAttachmentLocationPluginSettingsTab extends PluginSet
           settings.toLowerCase = value;
           await this.plugin.saveSettings(settings);
         }));
+
+    new Setting(this.containerEl)
+      .setName("Convert pasted PNG to JPEG")
+      .setDesc("Paste images from clipboard converting them from PNG to JPEG.")
+      .addToggle(toggle => toggle
+        .setValue(settings.pngToJpeg)
+        .onChange(async (value) => {
+          console.log("pngToJpeg: " + value);
+          settings.pngToJpeg = value;
+          await this.plugin.saveSettings(settings);
+        }));
+
+    new Setting(this.containerEl)
+      .setName("JPEG Quality")
+      .setDesc("The smaller the quality, the greater the compression ratio.")
+      .addDropdown(toggle => toggle
+        .addOptions(generateJpegQualityOptions())
+        .setValue(settings.jpegQuality.toString())
+        .onChange(async (value) => {
+          console.log("jpegQuality: " + value);
+          settings.jpegQuality = Number(value);
+          await this.plugin.saveSettings(settings);
+        }));
   }
+}
+
+function generateJpegQualityOptions(): Record<string, string> {
+  const ans: Record<string, string> = {};
+  for (let i = 1; i <= 10; i++) {
+    const valueStr = (i / 10).toFixed(1);
+    ans[valueStr] = valueStr;
+  }
+
+  return ans;
 }

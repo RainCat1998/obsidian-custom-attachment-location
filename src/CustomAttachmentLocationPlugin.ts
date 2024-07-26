@@ -233,7 +233,14 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
         }
 
         for (const entry of pastedImageEntries) {
-          const img = await this.blobToArrayBuffer(entry.pasteImage);
+          let img: ArrayBuffer;
+          if (this._settings.pngToJpeg && entry.extension == "png") {
+            img = await this.pngToJpeg(entry.pasteImage, this.settings.jpegQuality);
+            entry.extension = "jpg";
+          } else {
+            img = await this.blobToArrayBuffer(entry.pasteImage);
+          }
+
           const name = this.getPastedImageFileName(mdFileName);
           const imageFile = await this.app.saveAttachment(name, entry.extension, img);
           insertedMarkdown += this.app.fileManager.generateMarkdownLink(imageFile, view.file.path);
@@ -377,6 +384,54 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
       const reader = new FileReader();
       reader.onloadend = (): void => resolve(reader.result as ArrayBuffer);
       reader.readAsArrayBuffer(blob);
+    });
+  }
+
+  private async pngToJpeg(blob: Blob, quality: number): Promise<ArrayBuffer> {
+    const base64ToArrayBuffer = (code: string): ArrayBuffer => {
+      const parts = code.split(";base64,");
+      const raw = window.atob(parts[1]!);
+      const rawLength = raw.length;
+
+      const uInt8Array = new Uint8Array(rawLength);
+
+      for (let i = 0; i < rawLength; ++i) {
+        uInt8Array[i] = raw.charCodeAt(i);
+      }
+      return uInt8Array.buffer;
+    };
+
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onloadend = (e): void => {
+        const image = new Image();
+        image.onload = (): void => {
+          const canvas = document.createElement("canvas");
+          const context = canvas.getContext("2d");
+          const imageWidth = image.width;
+          const imageHeight = image.height;
+          let data = "";
+
+          canvas.width = imageWidth;
+          canvas.height = imageHeight;
+
+          context!.fillStyle = "#fff";
+          context!.fillRect(0, 0, imageWidth, imageHeight);
+          context!.save();
+
+          context!.translate(imageWidth / 2, imageHeight / 2);
+          context!.drawImage(image, 0, 0, imageWidth, imageHeight, -imageWidth / 2, -imageHeight / 2, imageWidth, imageHeight);
+          context!.restore();
+
+          data = canvas.toDataURL("image/jpeg", quality);
+
+          const arrayBuffer = base64ToArrayBuffer(data);
+          resolve(arrayBuffer);
+        };
+
+        image.src = e.target!.result as string;
+      };
+      reader.readAsDataURL(blob);
     });
   }
 }

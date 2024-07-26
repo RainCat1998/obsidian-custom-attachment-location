@@ -3,7 +3,9 @@ export default class CustomAttachmentLocationPluginSettings {
   public autoRenameFiles: boolean = false;
   public autoRenameFolder: boolean = true;
   public dateTimeFormat: string = "YYYYMMDDHHmmssSSS";
+  public jpegQuality: number = 0.8;
   public pastedImageFileName: string = "image-${date:YYYYMMDDHHmmssSSS}";
+  public pngToJpeg: boolean = false;
   public replaceWhitespace: boolean = false;
   public toLowerCase: boolean = false;
 

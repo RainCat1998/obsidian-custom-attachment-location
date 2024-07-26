@@ -37,7 +37,7 @@ export function interpolateToDigitRegex(template: string, targetFileName: string
  * @param template template path contains meta vars
  * @returns interpolate vars begin with ${date:**} (moment.js format) and ${filename} to string path, using now time
  */
-export function interpolateDateToString(template: string, targetFileName: string, settings: CustomAttachmentLocationPluginSettings): string {
+export function interpolateDateToString(settings: CustomAttachmentLocationPluginSettings, template: string, targetFileName: string, originalCopiedFilename?: string): string {
   // match ${date:date_format} pattern
   const dateRegExp = /\$\{date:(.*?)\}/g;
 
@@ -47,9 +47,10 @@ export function interpolateDateToString(template: string, targetFileName: string
     return date;
   });
 
-  const filenameRegExp = /\$\{filename\}/g;
-  // match ${filename} pattern
-  newPath = newPath.replaceAll(filenameRegExp, targetFileName);
+  newPath = newPath.replaceAll("${filename}", targetFileName);
+  if (originalCopiedFilename) {
+    newPath = newPath.replaceAll("${originalCopiedFilename}", originalCopiedFilename);
+  }
 
   if (settings.toLowerCase) {
     newPath = newPath.toLowerCase();
@@ -82,7 +83,7 @@ export async function getEarliestAttachmentFolder(plugin: CustomAttachmentLocati
     // create time ascending
     return folderStats.sort((a, b) => a.ctime - b.ctime).map(f => f.path)[0]!;
   } else {
-    return interpolateDateToString(attachmentFolderTemplate, targetFileName, plugin.settings);
+    return interpolateDateToString(plugin.settings, attachmentFolderTemplate, targetFileName);
   }
 }
 
@@ -103,6 +104,6 @@ export async function getAttachmentFolderFullPath(plugin: CustomAttachmentLocati
   return normalizePath(attachmentFolder);
 }
 
-export function getPastedImageFileName(plugin: CustomAttachmentLocationPlugin, mdFileName: string): string {
-  return interpolateDateToString(plugin.settings.pastedImageFileName, mdFileName, plugin.settings);
+export function getPastedImageFileName(plugin: CustomAttachmentLocationPlugin, mdFileName: string, originalCopiedFilename: string): string {
+  return interpolateDateToString(plugin.settings, plugin.settings.pastedImageFileName, mdFileName, originalCopiedFilename);
 }

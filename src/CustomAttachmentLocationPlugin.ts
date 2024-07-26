@@ -151,7 +151,7 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
             img = await blobToImageArrayBuffer(entry.pasteImage);
           }
 
-          const name = getPastedImageFileName(this, mdFileName);
+          const name = getPastedImageFileName(this, mdFileName, posix.basename(entry.pasteImage.name, posix.extname(entry.pasteImage.name)));
           const imageFile = await this.app.saveAttachment(name, entry.extension, img);
           insertedMarkdown += this.app.fileManager.generateMarkdownLink(imageFile, view.file.path);
           insertedMarkdown += "\n\n";

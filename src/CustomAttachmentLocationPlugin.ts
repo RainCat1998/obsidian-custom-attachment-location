@@ -15,7 +15,7 @@ import CustomAttachmentLocationPluginSettingsTab from "./CustomAttachmentLocatio
 import { posix } from "@jinder/path";
 import { convertAsyncToSync } from "./Async.ts";
 import {
-  blobToImageArrayBuffer,
+  blobToArrayBuffer,
   blobToJpegArrayBuffer,
   isImageFile
 } from "./Blob.ts";
@@ -99,10 +99,10 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
   private async handlePaste(event: ClipboardEvent, editor: Editor, view: MarkdownView | MarkdownFileInfo): Promise<void> {
     console.debug("Handle Paste");
     event.preventDefault();
-    await this.handleDataTransfer(event.clipboardData, editor, view);
+    await this.handleDataTransfer(event.clipboardData, editor, view, true);
   }
 
-  private async handleDataTransfer(dataTransfer: DataTransfer | null, editor: Editor, view: MarkdownView | MarkdownFileInfo): Promise<void> {
+  private async handleDataTransfer(dataTransfer: DataTransfer | null, editor: Editor, view: MarkdownView | MarkdownFileInfo, shouldRenameFiles: boolean): Promise<void> {
     if (!dataTransfer || !dataTransfer.items || dataTransfer.items.length === 0) {
       return;
     }
@@ -147,16 +147,16 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
         insertedMarkdown += await entry.textPromise;
       } else if (entry.file) {
         let extension = posix.extname(entry.file.name).slice(1);
-        const originalCopiedFileName = posix.basename(entry.file.name, "." + + extension);
+        const originalCopiedFileName = posix.basename(entry.file.name, "." + extension);
         let fileArrayBuffer: ArrayBuffer;
-        if (this._settings.pngToJpeg && isImageFile(entry.file)) {
+        if (shouldRenameFiles && this._settings.convertImagesToJpeg && isImageFile(entry.file)) {
           fileArrayBuffer = await blobToJpegArrayBuffer(entry.file, this._settings.jpegQuality);
           extension = ".jpg";
         } else {
-          fileArrayBuffer = await blobToImageArrayBuffer(entry.file);
+          fileArrayBuffer = await blobToArrayBuffer(entry.file);
         }
 
-        const name = getPastedImageFileName(this, mdFileName, originalCopiedFileName);
+        const name = shouldRenameFiles ? getPastedImageFileName(this, mdFileName, originalCopiedFileName) : originalCopiedFileName;
         const imageFile = await this.app.saveAttachment(name, extension, fileArrayBuffer);
         insertedMarkdown += this.app.fileManager.generateMarkdownLink(imageFile, view.file.path);
         insertedMarkdown += "\n\n";
@@ -169,7 +169,7 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
   private async handleDrop(event: DragEvent, editor: Editor, view: MarkdownView | MarkdownFileInfo): Promise<void> {
     console.debug("Handle Drop");
     event.preventDefault();
-    await this.handleDataTransfer(event.dataTransfer, editor, view);
+    await this.handleDataTransfer(event.dataTransfer, editor, view, false);
   }
 
   private async handleRename(newFile: TAbstractFile, oldFilePath: string): Promise<void> {

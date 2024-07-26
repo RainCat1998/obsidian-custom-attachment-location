@@ -131,10 +131,10 @@ export default class CustomAttachmentLocationPluginSettingsTab extends PluginSet
       .setName("Convert pasted PNG to JPEG")
       .setDesc("Paste images from clipboard converting them from PNG to JPEG.")
       .addToggle(toggle => toggle
-        .setValue(settings.pngToJpeg)
+        .setValue(settings.convertImagesToJpeg)
         .onChange(async (value) => {
           console.debug("pngToJpeg: " + value);
-          settings.pngToJpeg = value;
+          settings.convertImagesToJpeg = value;
           await this.plugin.saveSettings(settings);
         }));
 

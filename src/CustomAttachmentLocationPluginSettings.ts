@@ -5,7 +5,7 @@ export default class CustomAttachmentLocationPluginSettings {
   public dateTimeFormat: string = "YYYYMMDDHHmmssSSS";
   public jpegQuality: number = 0.8;
   public pastedImageFileName: string = "image-${date:YYYYMMDDHHmmssSSS}";
-  public pngToJpeg: boolean = false;
+  public convertImagesToJpeg: boolean = false;
   public replaceWhitespace: boolean = false;
   public toLowerCase: boolean = false;
 

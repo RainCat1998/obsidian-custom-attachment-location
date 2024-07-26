@@ -1,4 +1,4 @@
-export async function blobToImageArrayBuffer(blob: Blob): Promise<ArrayBuffer> {
+export async function blobToArrayBuffer(blob: Blob): Promise<ArrayBuffer> {
   return await new Promise((resolve) => {
     const reader = new FileReader();
     reader.onloadend = (): void => resolve(reader.result as ArrayBuffer);

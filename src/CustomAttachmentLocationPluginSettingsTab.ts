@@ -32,17 +32,27 @@ export default class CustomAttachmentLocationPluginSettingsTab extends PluginSet
           console.debug("attachmentFolder: " + value);
 
           if (value.startsWith("/")) {
-            text.inputEl.setCustomValidity("Don't start with /");
+            text.inputEl.setCustomValidity("Can't start with /");
           } else if (value.endsWith("/")) {
-            text.inputEl.setCustomValidity("Don't end with /");
-          } else if (value.includes("\\")) {
-            text.inputEl.setCustomValidity("Don't use backslashes");
+            text.inputEl.setCustomValidity("Can't end with /");
           } else {
             const parts = value.split("/");
-            const dotFolderPart = parts.filter(part => part.startsWith(".") && part !== ".")[0];
-            if (dotFolderPart) {
-              text.inputEl.setCustomValidity(`Don't use dot-folders like "${dotFolderPart}"`);
-            } else {
+            let isBadName = false;
+            for (const part of parts) {
+              if (/[\\:*?"<>|]/.test(part.replaceAll(/\$\{date:.+?\}/g, ""))) {
+                text.inputEl.setCustomValidity("Invalid path symbols");
+                isBadName = true;
+                break;
+              }
+
+              if (part.startsWith(".") && part !== ".") {
+                text.inputEl.setCustomValidity(`Dot-folders like "${part}" are not allowed`);
+                isBadName = true;
+                break;
+              }
+            }
+
+            if (!isBadName) {
               text.inputEl.setCustomValidity("");
               value = normalizePath(value);
               console.debug("normalized attachmentFolder: " + value);
@@ -56,14 +66,24 @@ export default class CustomAttachmentLocationPluginSettingsTab extends PluginSet
 
     new Setting(this.containerEl)
       .setName("Pasted Image Name")
-      .setDesc("Available variables: ${filename}, ${date:format}.")
+      .setDesc("Available variables: ${filename}, ${date:format}, ${originalCopiedFilename}.")
       .addText(text => text
         .setPlaceholder("image-${date:YYYYMMDDHHmmssSSS}")
         .setValue(settings.pastedImageFileName)
         .onChange(async (value: string) => {
           console.debug("pastedImageFileName: " + value);
-          settings.pastedImageFileName = value;
-          await this.plugin.saveSettings(settings);
+
+          if (!value) {
+            text.inputEl.setCustomValidity("Can't be empty");
+          } else if (/[\\/:*?"<>|]/.test(value.replaceAll(/\$\{date:.+?\}/g, ""))) {
+            text.inputEl.setCustomValidity("Invalid file name symbols");
+          } else {
+            text.inputEl.setCustomValidity("");
+            settings.pastedImageFileName = value;
+            await this.plugin.saveSettings(settings);
+          }
+
+          text.inputEl.reportValidity();
         }));
 
     new Setting(this.containerEl)

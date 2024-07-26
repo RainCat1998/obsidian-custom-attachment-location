@@ -105,5 +105,5 @@ export async function getAttachmentFolderFullPath(plugin: CustomAttachmentLocati
 }
 
 export function getPastedImageFileName(plugin: CustomAttachmentLocationPlugin, mdFileName: string, originalCopiedFilename: string): string {
-  return interpolateDateToString(plugin.settings, plugin.settings.pastedImageFileName, mdFileName, originalCopiedFilename);
+  return interpolateDateToString(plugin.settings, plugin.settings.pastedFileName, mdFileName, originalCopiedFilename);
 }

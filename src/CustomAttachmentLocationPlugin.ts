@@ -75,11 +75,11 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
     this._settings = CustomAttachmentLocationPluginSettings.load(await this.loadData());
     const dateTimeFormat = this._settings.dateTimeFormat || "YYYYMMDDHHmmssSSS";
     const attachmentFolderPath = this._settings.attachmentFolderPath.replaceAll("{date}", `{date:${dateTimeFormat}}`);
-    const pastedImageFileName = this._settings.pastedImageFileName.replaceAll("{date}", `{date:${dateTimeFormat}}`);
+    const pastedImageFileName = this._settings.pastedFileName.replaceAll("{date}", `{date:${dateTimeFormat}}`);
 
-    if (this._settings.attachmentFolderPath !== attachmentFolderPath || this._settings.pastedImageFileName !== pastedImageFileName) {
+    if (this._settings.attachmentFolderPath !== attachmentFolderPath || this._settings.pastedFileName !== pastedImageFileName) {
       this._settings.attachmentFolderPath = attachmentFolderPath;
-      this._settings.pastedImageFileName = pastedImageFileName;
+      this._settings.pastedFileName = pastedImageFileName;
       await this.saveSettings(this._settings);
     }
   }

@@ -65,11 +65,11 @@ export default class CustomAttachmentLocationPluginSettingsTab extends PluginSet
         }));
 
     new Setting(this.containerEl)
-      .setName("Pasted Image Name")
+      .setName("Pasted File Name")
       .setDesc("Available variables: ${filename}, ${date:format}, ${originalCopiedFilename}.")
       .addText(text => text
-        .setPlaceholder("image-${date:YYYYMMDDHHmmssSSS}")
-        .setValue(settings.pastedImageFileName)
+        .setPlaceholder("file-${date:YYYYMMDDHHmmssSSS}")
+        .setValue(settings.pastedFileName)
         .onChange(async (value: string) => {
           console.debug("pastedImageFileName: " + value);
 
@@ -79,7 +79,7 @@ export default class CustomAttachmentLocationPluginSettingsTab extends PluginSet
             text.inputEl.setCustomValidity("Invalid file name symbols");
           } else {
             text.inputEl.setCustomValidity("");
-            settings.pastedImageFileName = value;
+            settings.pastedFileName = value;
             await this.plugin.saveSettings(settings);
           }
 
@@ -128,8 +128,8 @@ export default class CustomAttachmentLocationPluginSettingsTab extends PluginSet
         }));
 
     new Setting(this.containerEl)
-      .setName("Convert pasted PNG to JPEG")
-      .setDesc("Paste images from clipboard converting them from PNG to JPEG.")
+      .setName("Convert pasted images to JPEG")
+      .setDesc("Paste images from clipboard converting them to JPEG.")
       .addToggle(toggle => toggle
         .setValue(settings.convertImagesToJpeg)
         .onChange(async (value) => {

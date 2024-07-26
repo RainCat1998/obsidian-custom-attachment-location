@@ -20,17 +20,36 @@ export default class CustomAttachmentLocationPluginSettingsTab extends PluginSet
 
     new Setting(this.containerEl)
       .setName("Location for New Attachments")
-      .setDesc("Start with \"./\" to use relative path. Available variables: ${filename}.(NOTE: DO NOT start with \"/\" or end with \"/\". )")
+      .setDesc(createFragment(f => {
+        f.appendText("Start with \"./\" to use relative path. Available variables: ${filename}, ${date:format}.");
+        f.appendChild(createEl("br"));
+        f.appendText("Don't use dot-folders like \".attachments\", because Obsidian doesn't track them");
+      }))
       .addText(text => text
         .setPlaceholder("./assets/${filename}")
         .setValue(settings.attachmentFolderPath)
         .onChange(async (value: string) => {
           console.log("attachmentFolder: " + value);
-          value = normalizePath(value);
-          console.log("normalized attachmentFolder: " + value);
 
-          settings.attachmentFolderPath = value;
-          await this.plugin.saveSettings(settings);
+          if (value.startsWith("/")) {
+            text.inputEl.setCustomValidity("Don't start with /");
+          } else if (value.endsWith("/")) {
+            text.inputEl.setCustomValidity("Don't end with /");
+          } else {
+            const parts = value.split("/");
+            const dotFolderPart = parts.filter(part => part.startsWith(".") && part !== ".")[0];
+            if (dotFolderPart) {
+              text.inputEl.setCustomValidity(`Don't use dot-folders like "${dotFolderPart}"`);
+            } else {
+              text.inputEl.setCustomValidity("");
+              value = normalizePath(value);
+              console.log("normalized attachmentFolder: " + value);
+              settings.attachmentFolderPath = value;
+              await this.plugin.saveSettings(settings);
+            }
+          }
+
+          text.inputEl.reportValidity();
         }));
 
     new Setting(this.containerEl)

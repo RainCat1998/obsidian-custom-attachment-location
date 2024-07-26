@@ -2,10 +2,12 @@ import {
   Editor,
   MarkdownView,
   normalizePath,
+  Notice,
   Plugin,
   TAbstractFile,
   TFile,
   TFolder,
+  Vault,
   type ListedFiles,
   type MarkdownFileInfo
 } from "obsidian";
@@ -40,6 +42,7 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
     this.registerEvent(this.app.workspace.on("editor-drop", convertAsyncToSync(this.handleDrop.bind(this))));
     this.registerEvent(this.app.workspace.on("file-open", convertAsyncToSync(this.handleFileOpen.bind(this))));
 
+    this.registerEvent(this.app.vault.on("delete", convertAsyncToSync(this.handleDelete.bind(this))));
     this.registerEvent(this.app.vault.on("rename", convertAsyncToSync(this.handleRename.bind(this))));
 
     this.register(this.restoreConfigs.bind(this));
@@ -433,5 +436,50 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
       };
       reader.readAsDataURL(blob);
     });
+  }
+
+  private async handleDelete(file: TAbstractFile): Promise<void> {
+    if (!(file instanceof TFile)) {
+      return;
+    }
+
+    if (file.extension.toLowerCase() !== "md") {
+      return;
+    }
+
+    const mdFileName = file.basename;
+    const mdFolderPath: string = posix.dirname(file.path);
+    const fullPath = await this.getAttachmentFolderFullPath(mdFolderPath, mdFileName);
+
+    const attachmentFolder = this.app.vault.getFolderByPath(fullPath);
+
+    if (!attachmentFolder) {
+      return;
+    }
+
+    const childFiles: TFile[] = [];
+
+    Vault.recurseChildren(attachmentFolder, (child: TAbstractFile) => {
+      if (child instanceof TFile) {
+        childFiles.push(child);
+      }
+    });
+
+    let canRemoveFolder = true;
+
+    for (const child of childFiles) {
+      const backlinks = this.app.metadataCache.getBacklinksForFile(child);
+      backlinks.removeKey(file.path);
+      if (backlinks.count() !== 0) {
+        canRemoveFolder = false;
+        new Notice(`Attachment ${child.path} is still used by other notes. It will not be deleted.`);
+      } else {
+        await this.app.vault.delete(child);
+      }
+    }
+
+    if (canRemoveFolder) {
+      await this.app.vault.delete(attachmentFolder, true);
+    }
   }
 }

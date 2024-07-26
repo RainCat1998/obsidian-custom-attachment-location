@@ -18,6 +18,7 @@ import { posix } from "@jinder/path";
 
 import moment from "moment";
 import { convertAsyncToSync } from "./Async.ts";
+import { escapeRegExp } from "./RegExp.ts";
 
 export default class CustomAttachmentLocationPlugin extends Plugin {
   private _settings!: CustomAttachmentLocationPluginSettings;
@@ -99,7 +100,7 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
 
     const filenameRegExp = /\$\{filename\}/g;
     // match ${filename} pattern
-    regExpString = regExpString.replaceAll(filenameRegExp, targetFileName);
+    regExpString = regExpString.replaceAll(filenameRegExp, escapeRegExp(targetFileName));
 
     return new RegExp(`^${regExpString}$`);
   }

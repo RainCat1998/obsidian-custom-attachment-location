@@ -83,14 +83,14 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
   private interpolateToDigitRegex(template: string, targetFileName: string): RegExp {
     const dateRegExp = /\$\{date:(.*?)\}/g;
     // match ${date:date_format} pattern
-    let regExpString = template.replace(dateRegExp, (_, p1: string) => {
+    let regExpString = template.replaceAll(dateRegExp, (_, p1: string) => {
       // replace ${date} with \d{x} regex
       return `\\d{${p1.length}}`;
     });
 
     const filenameRegExp = /\$\{filename\}/g;
     // match ${filename} pattern
-    regExpString = regExpString.replace(filenameRegExp, targetFileName);
+    regExpString = regExpString.replaceAll(filenameRegExp, targetFileName);
 
     return new RegExp(`^${regExpString}$`);
   }
@@ -105,7 +105,7 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
     // match ${date:date_format} pattern
     const dateRegExp = /\$\{date:(.*?)\}/g;
 
-    let newPath = template.replace(dateRegExp, (_, dateFormat: string) => {
+    let newPath = template.replaceAll(dateRegExp, (_, dateFormat: string) => {
       // use moment to reformat date string
       const date = moment().format(dateFormat);
       return date;
@@ -113,7 +113,7 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
 
     const filenameRegExp = /\$\{filename\}/g;
     // match ${filename} pattern
-    newPath = newPath.replace(filenameRegExp, targetFileName);
+    newPath = newPath.replaceAll(filenameRegExp, targetFileName);
 
     return newPath;
   }

@@ -1,6 +1,5 @@
 import {
   Editor,
-  FileSystemAdapter,
   MarkdownView,
   normalizePath,
   Plugin,
@@ -21,7 +20,6 @@ import { convertAsyncToSync } from "./Async.ts";
 export default class CustomAttachmentLocationPlugin extends Plugin {
   private _settings!: CustomAttachmentLocationPluginSettings;
   private useRelativePath: boolean = false;
-  private adapter!: FileSystemAdapter;
   private originalAttachmentFolderPath: string = "";
 
   public get settings(): CustomAttachmentLocationPluginSettings {
@@ -35,7 +33,6 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
 
     console.log("loading plugin");
 
-    this.adapter = this.app.vault.adapter as FileSystemAdapter;
     await this.loadSettings();
     this.backupConfigs();
 
@@ -222,8 +219,8 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
         const fullPath = await this.getAttachmentFolderFullPath(mdFolderPath, mdFileName);
         this.updateAttachmentFolderConfig(path);
 
-        if (!await this.adapter.exists(fullPath)) {
-          await this.adapter.mkdir(fullPath);
+        if (!await this.app.vault.adapter.exists(fullPath)) {
+          await this.app.vault.adapter.mkdir(fullPath);
         }
 
         for (const entry of pastedImageEntries) {
@@ -252,7 +249,7 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
     const path = await this.getAttachmentFolderPath(mdFileName);
     const fullPath = await this.getAttachmentFolderFullPath(mdFolderPath, mdFileName);
 
-    if (!this.useRelativePath && !await this.adapter.exists(fullPath)) {
+    if (!this.useRelativePath && !await this.app.vault.adapter.exists(fullPath)) {
       await this.app.vault.createFolder(fullPath);
     }
 
@@ -305,7 +302,7 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
       return;
     }
 
-    if (await this.adapter.exists(oldAttachmentFolderPath) && (oldAttachmentFolderPath !== newAttachmentFolderPath)) {
+    if (await this.app.vault.adapter.exists(oldAttachmentFolderPath) && (oldAttachmentFolderPath !== newAttachmentFolderPath)) {
       const folder = this.app.vault.getAbstractFileByPath(oldAttachmentFolderPath);
 
       if (folder == null) {
@@ -313,16 +310,16 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
       }
 
       const newAttachmentParentFolderPath: string = posix.dirname(newAttachmentFolderPath);
-      if (!(await this.adapter.exists(newAttachmentParentFolderPath))) {
+      if (!(await this.app.vault.adapter.exists(newAttachmentParentFolderPath))) {
         await this.app.vault.createFolder(newAttachmentParentFolderPath);
       }
 
       await this.app.fileManager.renameFile(folder, newAttachmentFolderPath);
 
       const oldAttachmentParentFolderPath: string = posix.dirname(oldAttachmentFolderPath);
-      const oldAttachmentParentFolderList: ListedFiles = await this.adapter.list(oldAttachmentParentFolderPath);
+      const oldAttachmentParentFolderList: ListedFiles = await this.app.vault.adapter.list(oldAttachmentParentFolderPath);
       if (oldAttachmentParentFolderList.folders.length === 0 && oldAttachmentParentFolderList.files.length === 0) {
-        await this.adapter.rmdir(oldAttachmentParentFolderPath, true);
+        await this.app.vault.adapter.rmdir(oldAttachmentParentFolderPath, true);
       }
     }
 
@@ -348,7 +345,7 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
 
     }
 
-    const attachmentFiles: ListedFiles = await this.adapter.list(newAttachmentFolderPath);
+    const attachmentFiles: ListedFiles = await this.app.vault.adapter.list(newAttachmentFolderPath);
     for (const file of attachmentFiles.files) {
       console.log(file);
       const filePath = file;

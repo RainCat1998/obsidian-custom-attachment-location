@@ -107,59 +107,63 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
     if (clipBoardData == null || clipBoardData.items == null) {
       return;
     }
-    const clipBoardItems = clipBoardData.items;
-    if (!clipBoardData.getData("text/plain")) {
-      type PastedImageEntry = {
-        extension: string;
-        pasteImage: File;
-      };
 
-      const pastedImageEntries: PastedImageEntry[] = [];
-
-      for (const item of Array.from(clipBoardItems)) {
-        if (item.kind !== "file") {
-          continue;
-        }
-        if (!(item.type === "image/png" || item.type === "image/jpeg")) {
-          continue;
-        }
-
-        const pasteImage = item.getAsFile();
-        if (!pasteImage) {
-          continue;
-        }
-
-        let extension = "";
-        item.type === "image/png" ? extension = "png" : item.type === "image/jpeg" && (extension = "jpeg");
-        pastedImageEntries.push({ extension, pasteImage });
-      }
-
-      let insertedMarkdown = "";
-
-      if (pastedImageEntries.length) {
-        event.preventDefault();
-
-        await this.updateAttachmentFolderConfigForNote(view.file, true);
-        const mdFileName = view.file.basename;
-
-        for (const entry of pastedImageEntries) {
-          let img: ArrayBuffer;
-          if (this._settings.pngToJpeg && entry.extension == "png") {
-            img = await blobToJpegArrayBuffer(entry.pasteImage, this._settings.jpegQuality);
-            entry.extension = "jpg";
-          } else {
-            img = await blobToImageArrayBuffer(entry.pasteImage);
-          }
-
-          const name = getPastedImageFileName(this, mdFileName, posix.basename(entry.pasteImage.name, posix.extname(entry.pasteImage.name)));
-          const imageFile = await this.app.saveAttachment(name, entry.extension, img);
-          insertedMarkdown += this.app.fileManager.generateMarkdownLink(imageFile, view.file.path);
-          insertedMarkdown += "\n\n";
-        }
-      }
-
-      editor.replaceSelection(insertedMarkdown);
+    if (clipBoardData.getData("text/plain")) {
+      return;
     }
+
+    const clipBoardItems = clipBoardData.items;
+
+    type PastedImageEntry = {
+      extension: string;
+      pasteImage: File;
+    };
+
+    const pastedImageEntries: PastedImageEntry[] = [];
+
+    for (const item of Array.from(clipBoardItems)) {
+      if (item.kind !== "file") {
+        continue;
+      }
+      if (!(item.type === "image/png" || item.type === "image/jpeg")) {
+        continue;
+      }
+
+      const pasteImage = item.getAsFile();
+      if (!pasteImage) {
+        continue;
+      }
+
+      let extension = "";
+      item.type === "image/png" ? extension = "png" : item.type === "image/jpeg" && (extension = "jpeg");
+      pastedImageEntries.push({ extension, pasteImage });
+    }
+
+    let insertedMarkdown = "";
+
+    if (pastedImageEntries.length) {
+      event.preventDefault();
+
+      await this.updateAttachmentFolderConfigForNote(view.file, true);
+      const mdFileName = view.file.basename;
+
+      for (const entry of pastedImageEntries) {
+        let img: ArrayBuffer;
+        if (this._settings.pngToJpeg && entry.extension == "png") {
+          img = await blobToJpegArrayBuffer(entry.pasteImage, this._settings.jpegQuality);
+          entry.extension = "jpg";
+        } else {
+          img = await blobToImageArrayBuffer(entry.pasteImage);
+        }
+
+        const name = getPastedImageFileName(this, mdFileName, posix.basename(entry.pasteImage.name, posix.extname(entry.pasteImage.name)));
+        const imageFile = await this.app.saveAttachment(name, entry.extension, img);
+        insertedMarkdown += this.app.fileManager.generateMarkdownLink(imageFile, view.file.path);
+        insertedMarkdown += "\n\n";
+      }
+    }
+
+    editor.replaceSelection(insertedMarkdown);
   }
 
   private async handleDrop(_: DragEvent, _2: Editor, view: MarkdownView | MarkdownFileInfo): Promise<void> {

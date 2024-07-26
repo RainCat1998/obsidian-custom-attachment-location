@@ -16,7 +16,8 @@ import { posix } from "@jinder/path";
 import { convertAsyncToSync } from "./Async.ts";
 import {
   blobToImageArrayBuffer,
-  blobToJpegArrayBuffer
+  blobToJpegArrayBuffer,
+  isImageFile
 } from "./Blob.ts";
 import {
   getAttachmentFolderFullPath,
@@ -97,66 +98,66 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
 
   private async handlePaste(event: ClipboardEvent, editor: Editor, view: MarkdownView | MarkdownFileInfo): Promise<void> {
     console.debug("Handle Paste");
+    event.preventDefault();
+    await this.handleDataTransfer(event.clipboardData, editor, view);
+  }
+
+  private async handleDataTransfer(dataTransfer: DataTransfer | null, editor: Editor, view: MarkdownView | MarkdownFileInfo): Promise<void> {
+    if (!dataTransfer || !dataTransfer.items || dataTransfer.items.length === 0) {
+      return;
+    }
 
     if (!view.file) {
       return;
     }
 
-    const clipBoardData = event.clipboardData;
-    if (clipBoardData == null || clipBoardData.items == null) {
-      return;
-    }
-
-    if (clipBoardData.getData("text/plain")) {
-      return;
-    }
-
-    const clipBoardItems = clipBoardData.items;
-
-    type PastedImageEntry = {
-      extension: string;
-      pasteImage: File;
+    type PastedEntry = {
+      file?: File;
+      textPromise?: Promise<string>;
     };
 
-    const pastedImageEntries: PastedImageEntry[] = [];
+    let hasFiles = false;
 
-    for (const item of Array.from(clipBoardItems)) {
-      if (item.kind !== "file") {
-        continue;
+    const pastedEntries: PastedEntry[] = Array.from(dataTransfer.items).map((item) => {
+      if (item.kind === "file") {
+        const file = item.getAsFile();
+        if (!file) {
+          throw new Error("Could not get file from item");
+        }
+        hasFiles = true;
+        return { file };
+      } else if (item.kind === "string") {
+        const textPromise = new Promise<string>(resolve => item.getAsString(text => resolve(text)));
+        return { textPromise };
+      } else {
+        throw new Error(`Unsupported item kind ${item.kind}`);
       }
-      if (!(item.type === "image/png" || item.type === "image/jpeg")) {
-        continue;
-      }
-
-      const pasteImage = item.getAsFile();
-      if (!pasteImage) {
-        continue;
-      }
-
-      let extension = "";
-      item.type === "image/png" ? extension = "png" : item.type === "image/jpeg" && (extension = "jpeg");
-      pastedImageEntries.push({ extension, pasteImage });
-    }
+    });
 
     let insertedMarkdown = "";
 
-    if (pastedImageEntries.length) {
-      event.preventDefault();
-
+    if (hasFiles) {
       await this.updateAttachmentFolderConfigForNote(view.file, true);
-      const mdFileName = view.file.basename;
+    }
 
-      for (const entry of pastedImageEntries) {
-        let img: ArrayBuffer;
-        if (this._settings.pngToJpeg && entry.extension == "png") {
-          img = await blobToJpegArrayBuffer(entry.pasteImage, this._settings.jpegQuality);
-          entry.extension = "jpg";
+    const mdFileName = view.file.basename;
+
+    for (const entry of pastedEntries) {
+      if (entry.textPromise) {
+        insertedMarkdown += await entry.textPromise;
+      } else if (entry.file) {
+        let extension = posix.extname(entry.file.name).slice(1);
+        const originalCopiedFileName = posix.basename(entry.file.name, "." + + extension);
+        let fileArrayBuffer: ArrayBuffer;
+        if (this._settings.pngToJpeg && isImageFile(entry.file)) {
+          fileArrayBuffer = await blobToJpegArrayBuffer(entry.file, this._settings.jpegQuality);
+          extension = ".jpg";
         } else {
-          img = await blobToImageArrayBuffer(entry.pasteImage);
+          fileArrayBuffer = await blobToImageArrayBuffer(entry.file);
         }
 
-        const name = getPastedImageFileName(this, mdFileName, posix.basename(entry.pasteImage.name, posix.extname(entry.pasteImage.name)));
-        const imageFile = await this.app.saveAttachment(name, entry.extension, img);
+        const name = getPastedImageFileName(this, mdFileName, originalCopiedFileName);
+        const imageFile = await this.app.saveAttachment(name, extension, fileArrayBuffer);
         insertedMarkdown += this.app.fileManager.generateMarkdownLink(imageFile, view.file.path);
         insertedMarkdown += "\n\n";
       }
@@ -165,14 +166,10 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
     editor.replaceSelection(insertedMarkdown);
   }
 
-  private async handleDrop(_: DragEvent, _2: Editor, view: MarkdownView | MarkdownFileInfo): Promise<void> {
+  private async handleDrop(event: DragEvent, editor: Editor, view: MarkdownView | MarkdownFileInfo): Promise<void> {
     console.debug("Handle Drop");
-
-    if (!view.file) {
-      return;
-    }
-
-    await this.updateAttachmentFolderConfigForNote(view.file, true);
+    event.preventDefault();
+    await this.handleDataTransfer(event.dataTransfer, editor, view);
   }
 
   private async handleRename(newFile: TAbstractFile, oldFilePath: string): Promise<void> {

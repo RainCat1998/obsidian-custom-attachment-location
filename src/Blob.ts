@@ -53,3 +53,7 @@ export async function blobToJpegArrayBuffer(blob: Blob, jpegQuality: number): Pr
     reader.readAsDataURL(blob);
   });
 }
+
+export function isImageFile(file: File): boolean {
+  return file.type.startsWith("image/");
+}

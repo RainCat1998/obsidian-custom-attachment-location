@@ -56,7 +56,7 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
 
     const editAttachFileCommand = this.app.commands.findCommand("editor:attach-file")!;
     this.register(around(editAttachFileCommand, {
-      "editorCallback": (originalFn?: EditorCallbackFn): EditorCallbackFn => async (editor: Editor, ctx: MarkdownView | MarkdownFileInfo): Promise<unknown> => {
+      "editorCallback": (originalFn?: EditorCallbackFn): EditorCallbackFn => async (editor, ctx): Promise<unknown> => {
         await this.updateAttachmentFolderConfigForNote(this.app.workspace.getActiveFile());
         return originalFn?.call(editAttachFileCommand, editor, ctx);
       }

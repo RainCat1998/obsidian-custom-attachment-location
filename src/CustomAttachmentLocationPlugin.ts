@@ -121,6 +121,15 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
     // match ${filename} pattern
     newPath = newPath.replaceAll(filenameRegExp, targetFileName);
 
+    if (this._settings.toLowerCase) {
+      newPath = newPath.toLowerCase();
+    }
+
+    if (this.settings.replaceWhitespace) {
+      newPath = newPath.replace(/\s/g, "-");
+      newPath = newPath.replace(/-{2,}/g, "-");
+    }
+
     return newPath;
   }
 

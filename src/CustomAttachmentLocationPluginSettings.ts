@@ -4,6 +4,8 @@ export default class CustomAttachmentLocationPluginSettings {
   public dateTimeFormat: string = "YYYYMMDDHHmmssSSS";
   public autoRenameFolder: boolean = true;
   public autoRenameFiles: boolean = false;
+  public replaceWhitespace: boolean = false;
+  public toLowerCase: boolean = false;
 
   public static load(data: unknown): CustomAttachmentLocationPluginSettings {
     return CustomAttachmentLocationPluginSettings.clone(data as CustomAttachmentLocationPluginSettings);

@@ -65,5 +65,25 @@ export default class CustomAttachmentLocationPluginSettingsTab extends PluginSet
           settings.autoRenameFiles = value;
           await this.plugin.saveSettings(settings);
         }));
+
+    new Setting(this.containerEl)
+      .setName("Replace whitespace with hyphen")
+      .setDesc("Automatically replace whitespace in attachment folder and file name with hyphens.")
+      .addToggle(toggle => toggle
+        .setValue(settings.replaceWhitespace)
+        .onChange(async (value: boolean) => {
+          settings.replaceWhitespace = value;
+          await this.plugin.saveSettings(settings);
+        }));
+
+    new Setting(this.containerEl)
+      .setName("All lowercase names")
+      .setDesc("Automatically set all characters in folder name and pasted image name to be lowercase.")
+      .addToggle(toggle => toggle
+        .setValue(settings.toLowerCase)
+        .onChange(async (value: boolean) => {
+          settings.toLowerCase = value;
+          await this.plugin.saveSettings(settings);
+        }));
   }
 }

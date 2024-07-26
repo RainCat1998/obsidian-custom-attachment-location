@@ -133,7 +133,7 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
       newPath = newPath.toLowerCase();
     }
 
-    if (this.settings.replaceWhitespace) {
+    if (this._settings.replaceWhitespace) {
       newPath = newPath.replace(/\s/g, "-");
       newPath = newPath.replace(/-{2,}/g, "-");
     }
@@ -165,7 +165,7 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
   }
 
   private async getAttachmentFolderPath(mdFileName: string): Promise<string> {
-    return await this.getEarliestAttachmentFolder(this.settings.attachmentFolderPath, mdFileName);
+    return await this.getEarliestAttachmentFolder(this._settings.attachmentFolderPath, mdFileName);
   }
 
   private async getAttachmentFolderFullPath(mdFolderPath: string, mdFileName: string): Promise<string> {
@@ -180,7 +180,7 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
   }
 
   private getPastedImageFileName(mdFileName: string): string {
-    return this.interpolateDateToString(this.settings.pastedImageFileName, mdFileName);
+    return this.interpolateDateToString(this._settings.pastedImageFileName, mdFileName);
   }
 
   private async handlePaste(event: ClipboardEvent, editor: Editor, view: MarkdownView | MarkdownFileInfo): Promise<void> {
@@ -243,7 +243,7 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
         for (const entry of pastedImageEntries) {
           let img: ArrayBuffer;
           if (this._settings.pngToJpeg && entry.extension == "png") {
-            img = await blobToJpegArrayBuffer(entry.pasteImage, this.settings.jpegQuality);
+            img = await blobToJpegArrayBuffer(entry.pasteImage, this._settings.jpegQuality);
             entry.extension = "jpg";
           } else {
             img = await blobToImageArrayBuffer(entry.pasteImage);
@@ -322,7 +322,7 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
     // hints: after rename seems attachmentFolderConfig will be reset
     this.updateAttachmentFolderConfig(await this.getAttachmentFolderPath(newName));
 
-    if (!this.settings.autoRenameFolder) {
+    if (!this._settings.autoRenameFolder) {
       return;
     }
 

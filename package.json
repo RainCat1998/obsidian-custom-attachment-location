@@ -30,6 +30,7 @@
     "eslint-plugin-import": "^2.29.1",
     "eslint-plugin-modules-newlines": "^0.0.7",
     "globals": "^15.8.0",
+    "monkey-around": "^3.0.0",
     "obsidian": "^1.6.6",
     "obsidian-typings": "mnaoumov/obsidian-typings#main",
     "tslib": "2.6.3",

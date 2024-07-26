@@ -18,9 +18,13 @@ import {
   blobToImageArrayBuffer,
   blobToJpegArrayBuffer
 } from "./Blob.ts";
-import { getAttachmentFolderFullPath,
+import {
+  getAttachmentFolderFullPath,
   getAttachmentFolderPath,
-  getPastedImageFileName } from "./AttachmentPath.ts";
+  getPastedImageFileName
+} from "./AttachmentPath.ts";
+import { around } from "monkey-around";
+import { createFolderSafe } from "./Vault.ts";
 
 export default class CustomAttachmentLocationPlugin extends Plugin {
   private _settings!: CustomAttachmentLocationPluginSettings;
@@ -42,12 +46,21 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
 
     this.registerEvent(this.app.workspace.on("editor-paste", convertAsyncToSync(this.handlePaste.bind(this))));
     this.registerEvent(this.app.workspace.on("editor-drop", convertAsyncToSync(this.handleDrop.bind(this))));
-    this.registerEvent(this.app.workspace.on("file-open", convertAsyncToSync(this.handleFileOpen.bind(this))));
 
     this.registerEvent(this.app.vault.on("delete", convertAsyncToSync(this.handleDelete.bind(this))));
     this.registerEvent(this.app.vault.on("rename", convertAsyncToSync(this.handleRename.bind(this))));
 
     this.register(this.restoreConfigs.bind(this));
+
+    type EditorCallbackFn = (editor: Editor, ctx: MarkdownView | MarkdownFileInfo) => unknown;
+
+    const editAttachFileCommand = this.app.commands.findCommand("editor:attach-file")!;
+    this.register(around(editAttachFileCommand, {
+      "editorCallback": (originalFn?: EditorCallbackFn): EditorCallbackFn => async (editor: Editor, ctx: MarkdownView | MarkdownFileInfo): Promise<unknown> => {
+        await this.updateAttachmentFolderConfigForNote(this.app.workspace.getActiveFile());
+        return originalFn?.call(editAttachFileCommand, editor, ctx);
+      }
+    }));
   }
 
   public async saveSettings(newSettings: CustomAttachmentLocationPluginSettings): Promise<void> {
@@ -130,15 +143,8 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
       if (pastedImageEntries.length) {
         event.preventDefault();
 
+        await this.updateAttachmentFolderConfigForNote(view.file, true);
         const mdFileName = view.file.basename;
-        const mdFolderPath: string = posix.dirname(view.file.path);
-        const path = await getAttachmentFolderPath(this, mdFileName);
-        const fullPath = await getAttachmentFolderFullPath(this, mdFolderPath, mdFileName);
-        this.updateAttachmentFolderConfig(path);
-
-        if (!await this.app.vault.adapter.exists(fullPath)) {
-          await this.app.vault.adapter.mkdir(fullPath);
-        }
 
         for (const entry of pastedImageEntries) {
           let img: ArrayBuffer;
@@ -167,36 +173,7 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
       return;
     }
 
-    const mdFileName = view.file.basename;
-    const mdFolderPath: string = posix.dirname(view.file.path);
-
-    const path = await getAttachmentFolderPath(this, mdFileName);
-    const fullPath = await getAttachmentFolderFullPath(this, mdFolderPath, mdFileName);
-
-    if (!await this.app.vault.adapter.exists(fullPath)) {
-      await this.app.vault.createFolder(fullPath);
-    }
-
-    this.updateAttachmentFolderConfig(path);
-  }
-
-  private async handleFileOpen(file: TFile | null): Promise<void> {
-    console.debug("Handle File Open");
-
-    if (file == null) {
-      console.debug("No file open");
-      return;
-    }
-
-    if (file.extension !== "md") {
-      return;
-    }
-
-    const mdFileName = file.basename;
-
-    const path = await getAttachmentFolderPath(this, mdFileName);
-
-    this.updateAttachmentFolderConfig(path);
+    await this.updateAttachmentFolderConfigForNote(view.file, true);
   }
 
   private async handleRename(newFile: TAbstractFile, oldFilePath: string): Promise<void> {
@@ -234,9 +211,7 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
       }
 
       const newAttachmentParentFolderPath: string = posix.dirname(newAttachmentFolderPath);
-      if (!(await this.app.vault.adapter.exists(newAttachmentParentFolderPath))) {
-        await this.app.vault.createFolder(newAttachmentParentFolderPath);
-      }
+      await createFolderSafe(this.app, newAttachmentParentFolderPath);
 
       await this.app.fileManager.renameFile(folder, newAttachmentFolderPath);
 
@@ -329,6 +304,28 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
 
     if (canRemoveFolder) {
       await this.app.vault.delete(attachmentFolder, true);
+    }
+  }
+
+  private async updateAttachmentFolderConfigForNote(note: TFile | null, createAttachmentFolderIfMissing?: boolean): Promise<void> {
+    if (!note) {
+      console.debug("No file open");
+      return;
+    }
+
+    if (note.extension.toLowerCase() !== "md") {
+      return;
+    }
+
+    const mdFileName = note.basename;
+
+    const path = await getAttachmentFolderPath(this, mdFileName);
+    this.updateAttachmentFolderConfig(path);
+
+    if (createAttachmentFolderIfMissing) {
+      const mdFolderPath: string = posix.dirname(note.path);
+      const fullPath = await getAttachmentFolderFullPath(this, mdFolderPath, mdFileName);
+      await createFolderSafe(this.app, fullPath);
     }
   }
 }

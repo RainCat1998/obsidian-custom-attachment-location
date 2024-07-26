@@ -116,11 +116,7 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
 
       const pastedImageEntries: PastedImageEntry[] = [];
 
-      for (const i in clipBoardItems) {
-        if (!clipBoardItems.hasOwnProperty(i)) {
-          continue;
-        }
-        const item = clipBoardItems[i]!;
+      for (const item of Array.from(clipBoardItems)) {
         if (item.kind !== "file") {
           continue;
         }

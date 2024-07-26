@@ -12,14 +12,11 @@ import {
 } from "obsidian";
 import CustomAttachmentLocationPluginSettings from "./CustomAttachmentLocationPluginSettings.ts";
 import CustomAttachmentLocationPluginSettingsTab from "./CustomAttachmentLocationPluginSettingsTab.ts";
-import {
-  basename,
-  dirname,
-  join
-} from "node:path/posix";
+
+import { posix } from "@jinder/path";
+
 import moment from "moment";
 import { convertAsyncToSync } from "./Async.ts";
-import { statSync } from "node:fs";
 
 export default class CustomAttachmentLocationPlugin extends Plugin {
   private _settings!: CustomAttachmentLocationPluginSettings;
@@ -44,7 +41,7 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
 
     this.registerEvent(this.app.workspace.on("editor-paste", convertAsyncToSync(this.handlePaste.bind(this))));
     this.registerEvent(this.app.workspace.on("editor-drop", convertAsyncToSync(this.handleDrop.bind(this))));
-    this.registerEvent(this.app.workspace.on("file-open", this.handleFileOpen.bind(this)));
+    this.registerEvent(this.app.workspace.on("file-open", convertAsyncToSync(this.handleFileOpen.bind(this))));
 
     this.registerEvent(this.app.vault.on("rename", convertAsyncToSync(this.handleRename.bind(this))));
 
@@ -121,19 +118,19 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
     return newPath;
   }
 
-  private getEarliestAttachmentFolder(attachmentFolderTemplate: string, targetFileName: string): string {
+  private async getEarliestAttachmentFolder(attachmentFolderTemplate: string, targetFileName: string): Promise<string> {
     const targetRegex = this.interpolateToDigitRegex(attachmentFolderTemplate, targetFileName);
     const folders = this.app.vault.getAllLoadedFiles()
       .filter((f: TAbstractFile) => f instanceof TFolder)
       .filter((f: TAbstractFile) => targetRegex.test(f.path));
 
-    const folderStats = folders.map((folder: TFolder) => {
-      const stat = statSync(join(this.app.vault.adapter.getBasePath(), folder.path));
+    const folderStats = await Promise.all(folders.map(async (folder: TFolder) => {
+      const stat = await this.app.vault.adapter.stat(posix.join(this.app.vault.adapter.getBasePath(), folder.path));
       return {
         path: folder.path,
-        ctime: stat.ctimeMs
+        ctime: stat?.ctime ?? 0
       };
-    });
+    }));
 
     if (folderStats.length > 0) {
       // create time ascending
@@ -144,17 +141,17 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
 
   }
 
-  private getAttachmentFolderPath(mdFileName: string): string {
-    return this.getEarliestAttachmentFolder(this.settings.attachmentFolderPath, mdFileName);
+  private async getAttachmentFolderPath(mdFileName: string): Promise<string> {
+    return await this.getEarliestAttachmentFolder(this.settings.attachmentFolderPath, mdFileName);
   }
 
-  private getAttachmentFolderFullPath(mdFolderPath: string, mdFileName: string): string {
+  private async getAttachmentFolderFullPath(mdFolderPath: string, mdFileName: string): Promise<string> {
     let attachmentFolder = "";
 
     if (this.useRelativePath) {
-      attachmentFolder = join(mdFolderPath, this.getAttachmentFolderPath(mdFileName));
+      attachmentFolder = posix.join(mdFolderPath, await this.getAttachmentFolderPath(mdFileName));
     } else {
-      attachmentFolder = this.getAttachmentFolderPath(mdFileName);
+      attachmentFolder = await this.getAttachmentFolderPath(mdFileName);
     }
     return normalizePath(attachmentFolder);
   }
@@ -211,9 +208,9 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
         event.preventDefault();
 
         const mdFileName = view.file.basename;
-        const mdFolderPath: string = dirname(view.file.path);
-        const path = this.getAttachmentFolderPath(mdFileName);
-        const fullPath = this.getAttachmentFolderFullPath(mdFolderPath, mdFileName);
+        const mdFolderPath: string = posix.dirname(view.file.path);
+        const path = await this.getAttachmentFolderPath(mdFileName);
+        const fullPath = await this.getAttachmentFolderFullPath(mdFolderPath, mdFileName);
         this.updateAttachmentFolderConfig(path);
 
         if (!await this.adapter.exists(fullPath)) {
@@ -241,10 +238,10 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
     }
 
     const mdFileName = view.file.basename;
-    const mdFolderPath: string = dirname(view.file.path);
+    const mdFolderPath: string = posix.dirname(view.file.path);
 
-    const path = this.getAttachmentFolderPath(mdFileName);
-    const fullPath = this.getAttachmentFolderFullPath(mdFolderPath, mdFileName);
+    const path = await this.getAttachmentFolderPath(mdFileName);
+    const fullPath = await this.getAttachmentFolderFullPath(mdFolderPath, mdFileName);
 
     if (!this.useRelativePath && !await this.adapter.exists(fullPath)) {
       await this.app.vault.createFolder(fullPath);
@@ -253,7 +250,7 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
     this.updateAttachmentFolderConfig(path);
   }
 
-  private handleFileOpen(file: TFile | null): void {
+  private async handleFileOpen(file: TFile | null): Promise<void> {
     console.log("Handle File Open");
 
     if (file == null) {
@@ -267,7 +264,7 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
 
     const mdFileName = file.basename;
 
-    const path = this.getAttachmentFolderPath(mdFileName);
+    const path = await this.getAttachmentFolderPath(mdFileName);
 
     this.updateAttachmentFolderConfig(path);
   }
@@ -285,15 +282,15 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
 
     const newName = newFile.basename;
 
-    const oldName = basename(oldFilePath, ".md");
+    const oldName = posix.basename(oldFilePath, ".md");
 
-    const oldMdFolderPath: string = dirname(oldFilePath);
-    const oldAttachmentFolderPath: string = this.getAttachmentFolderFullPath(oldMdFolderPath, oldName);
-    const newAttachmentFolderPath: string = join(dirname(oldAttachmentFolderPath), newName);
+    const oldMdFolderPath: string = posix.dirname(oldFilePath);
+    const oldAttachmentFolderPath: string = await this.getAttachmentFolderFullPath(oldMdFolderPath, oldName);
+    const newAttachmentFolderPath: string = posix.join(posix.dirname(oldAttachmentFolderPath), newName);
 
     // why this ?
     // hints: after rename seems attachmentFolderConfig will be reset
-    this.updateAttachmentFolderConfig(this.getAttachmentFolderPath(newName));
+    this.updateAttachmentFolderConfig(await this.getAttachmentFolderPath(newName));
 
     if (!this.settings.autoRenameFolder) {
       return;
@@ -306,14 +303,14 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
         return;
       }
 
-      const newAttachmentParentFolderPath: string = dirname(newAttachmentFolderPath);
+      const newAttachmentParentFolderPath: string = posix.dirname(newAttachmentFolderPath);
       if (!(await this.adapter.exists(newAttachmentParentFolderPath))) {
         await this.app.vault.createFolder(newAttachmentParentFolderPath);
       }
 
       await this.app.fileManager.renameFile(folder, newAttachmentFolderPath);
 
-      const oldAttachmentParentFolderPath: string = dirname(oldAttachmentFolderPath);
+      const oldAttachmentParentFolderPath: string = posix.dirname(oldAttachmentFolderPath);
       const oldAttachmentParentFolderList: ListedFiles = await this.adapter.list(oldAttachmentParentFolderPath);
       if (oldAttachmentParentFolderList.folders.length === 0 && oldAttachmentParentFolderList.files.length === 0) {
         await this.adapter.rmdir(oldAttachmentParentFolderPath, true);
@@ -335,7 +332,7 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
     for (const embed of embeds) {
       const link = embed.link;
       if (link.endsWith(".png") || link.endsWith("jpeg")) {
-        files.push(basename(link));
+        files.push(posix.basename(link));
       } else {
         continue;
       }
@@ -346,10 +343,10 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
     for (const file of attachmentFiles.files) {
       console.log(file);
       const filePath = file;
-      let fileName = basename(filePath);
+      let fileName = posix.basename(filePath);
       if ((files.indexOf(fileName) > -1) && fileName.contains(oldName)) {
         fileName = fileName.replace(oldName, newName);
-        const newFilePath = normalizePath(join(newAttachmentFolderPath, fileName));
+        const newFilePath = normalizePath(posix.join(newAttachmentFolderPath, fileName));
         const file = this.app.vault.getAbstractFileByPath(filePath);
         if (file == null) {
           continue;

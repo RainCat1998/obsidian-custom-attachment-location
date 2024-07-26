@@ -36,5 +36,8 @@
     "tsx": "^4.16.2",
     "typescript": "^5.5.4"
   },
-  "type": "module"
+  "type": "module",
+  "dependencies": {
+    "path": "^0.12.7"
+  }
 }

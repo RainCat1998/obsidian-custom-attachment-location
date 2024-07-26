@@ -2,9 +2,20 @@ export default class CustomAttachmentLocationPluginSettings {
   public attachmentFolderPath: string = "./assets/${filename}";
   public autoRenameFiles: boolean = false;
   public autoRenameFolder: boolean = true;
-  public dateTimeFormat: string = "YYYYMMDDHHmmssSSS";
+
+  /**
+   * @deprecated
+   */
+  public dateTimeFormat: string = "";
+
   public jpegQuality: number = 0.8;
   public pastedFileName: string = "file-${date:YYYYMMDDHHmmssSSS}";
+
+  /**
+   * @deprecated
+   */
+  public pastedImageFileName: string = "";
+
   public convertImagesToJpeg: boolean = false;
   public replaceWhitespace: boolean = false;
   public toLowerCase: boolean = false;

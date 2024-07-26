@@ -99,6 +99,16 @@ if you want to view the source, please visit the github repository of this plugi
             // HACK: The ${""} part is used to ensure Obsidian loads the plugin properly otherwise it stops loading it after the first line of the sourceMappingURL comment.
             contents = contents.replace(/\`\r?\n\/\/# sourceMappingURL/g, "`\n//#${\"\"} sourceMappingURL");
 
+
+            if (/\bprocess\./.test(contents)) {
+              contents = `globalThis.process ??= {
+  platform: "mobile",
+  cwd: () => "/",
+  env: {}
+};
+` + contents;
+            }
+
             return {
               contents,
               loader: "ts"

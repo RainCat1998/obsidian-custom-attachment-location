@@ -31,7 +31,7 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
     this.addSettingTab(new CustomAttachmentLocationPluginSettingsTab(this));
     this.app.workspace.onLayoutReady(this.onLayoutReady.bind(this));
 
-    console.log("loading plugin");
+    console.debug("loading plugin");
 
     await this.loadSettings();
     this.backupConfigs();
@@ -176,7 +176,7 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
   }
 
   private async handlePaste(event: ClipboardEvent, editor: Editor, view: MarkdownView | MarkdownFileInfo): Promise<void> {
-    console.log("Handle Paste");
+    console.debug("Handle Paste");
 
     if (!view.file) {
       return;
@@ -253,7 +253,7 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
   }
 
   private async handleDrop(_: DragEvent, _2: Editor, view: MarkdownView | MarkdownFileInfo): Promise<void> {
-    console.log("Handle Drop");
+    console.debug("Handle Drop");
 
     if (!view.file) {
       return;
@@ -273,10 +273,10 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
   }
 
   private async handleFileOpen(file: TFile | null): Promise<void> {
-    console.log("Handle File Open");
+    console.debug("Handle File Open");
 
     if (file == null) {
-      console.log("No file open");
+      console.debug("No file open");
       return;
     }
 
@@ -292,7 +292,7 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
   }
 
   private async handleRename(newFile: TAbstractFile, oldFilePath: string): Promise<void> {
-    console.log("Handle Rename");
+    console.debug("Handle Rename");
 
     if (!(newFile instanceof TFile)) {
       return;
@@ -362,7 +362,7 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
 
     const attachmentFiles: ListedFiles = await this.app.vault.adapter.list(newAttachmentFolderPath);
     for (const file of attachmentFiles.files) {
-      console.log(file);
+      console.debug(file);
       const filePath = file;
       let fileName = posix.basename(filePath);
       if ((files.indexOf(fileName) > -1) && fileName.contains(oldName)) {

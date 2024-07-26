@@ -29,7 +29,7 @@ export default class CustomAttachmentLocationPluginSettingsTab extends PluginSet
         .setPlaceholder("./assets/${filename}")
         .setValue(settings.attachmentFolderPath)
         .onChange(async (value: string) => {
-          console.log("attachmentFolder: " + value);
+          console.debug("attachmentFolder: " + value);
 
           if (value.startsWith("/")) {
             text.inputEl.setCustomValidity("Don't start with /");
@@ -43,7 +43,7 @@ export default class CustomAttachmentLocationPluginSettingsTab extends PluginSet
             } else {
               text.inputEl.setCustomValidity("");
               value = normalizePath(value);
-              console.log("normalized attachmentFolder: " + value);
+              console.debug("normalized attachmentFolder: " + value);
               settings.attachmentFolderPath = value;
               await this.plugin.saveSettings(settings);
             }
@@ -59,7 +59,7 @@ export default class CustomAttachmentLocationPluginSettingsTab extends PluginSet
         .setPlaceholder("image-${date:YYYYMMDDHHmmssSSS}")
         .setValue(settings.pastedImageFileName)
         .onChange(async (value: string) => {
-          console.log("pastedImageFileName: " + value);
+          console.debug("pastedImageFileName: " + value);
           settings.pastedImageFileName = value;
           await this.plugin.saveSettings(settings);
         }));
@@ -111,7 +111,7 @@ export default class CustomAttachmentLocationPluginSettingsTab extends PluginSet
       .addToggle(toggle => toggle
         .setValue(settings.pngToJpeg)
         .onChange(async (value) => {
-          console.log("pngToJpeg: " + value);
+          console.debug("pngToJpeg: " + value);
           settings.pngToJpeg = value;
           await this.plugin.saveSettings(settings);
         }));
@@ -123,7 +123,7 @@ export default class CustomAttachmentLocationPluginSettingsTab extends PluginSet
         .addOptions(generateJpegQualityOptions())
         .setValue(settings.jpegQuality.toString())
         .onChange(async (value) => {
-          console.log("jpegQuality: " + value);
+          console.debug("jpegQuality: " + value);
           settings.jpegQuality = Number(value);
           await this.plugin.saveSettings(settings);
         }));

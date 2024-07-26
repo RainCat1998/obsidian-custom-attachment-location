@@ -35,28 +35,15 @@ export default class CustomAttachmentLocationPluginSettingsTab extends PluginSet
 
     new Setting(this.containerEl)
       .setName("Pasted Image Name")
-      .setDesc("Available variables: ${filename}, ${date}.")
+      .setDesc("Available variables: ${filename}, ${date:format}.")
       .addText(text => text
-        .setPlaceholder("image-${date}")
+        .setPlaceholder("image-${date:YYYYMMDDHHmmssSSS}")
         .setValue(settings.pastedImageFileName)
         .onChange(async (value: string) => {
           console.log("pastedImageFileName: " + value);
           settings.pastedImageFileName = value;
           await this.plugin.saveSettings(settings);
         }));
-
-    new Setting(this.containerEl)
-      .setName("Date Format")
-      .setDesc("YYYYMMDDHHmmssSSS")
-      .addMomentFormat(text => text
-        .setDefaultFormat("YYYYMMDDHHmmssSSS")
-        .setValue(settings.dateTimeFormat)
-        .onChange(async (value: string) => {
-          console.log("dateTimeFormat: " + value);
-          settings.dateTimeFormat = value || "YYYYMMDDHHmmssSSS";
-          await this.plugin.saveSettings(settings);
-        }));
-
 
     new Setting(this.containerEl)
       .setName("Automatically rename attachment folder")

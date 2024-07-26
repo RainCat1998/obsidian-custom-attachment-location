@@ -1,6 +1,6 @@
 export default class CustomAttachmentLocationPluginSettings {
   public attachmentFolderPath: string = "./assets/${filename}";
-  public pastedImageFileName: string = "image-${date}";
+  public pastedImageFileName: string = "image-${date:YYYYMMDDHHmmssSSS}";
   public dateTimeFormat: string = "YYYYMMDDHHmmssSSS";
   public autoRenameFolder: boolean = true;
   public autoRenameFiles: boolean = false;

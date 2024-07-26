@@ -59,6 +59,15 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
   private async loadSettings(): Promise<void> {
     this._settings = CustomAttachmentLocationPluginSettings.load(await this.loadData());
     this.useRelativePath = this._settings.attachmentFolderPath.startsWith("./");
+    const dateTimeFormat = this._settings.dateTimeFormat || "YYYYMMDDHHmmssSSS";
+    const attachmentFolderPath = this._settings.attachmentFolderPath.replaceAll("{date}", `{date:${dateTimeFormat}}`);
+    const pastedImageFileName = this._settings.pastedImageFileName.replaceAll("{date}", `{date:${dateTimeFormat}}`);
+
+    if (this._settings.attachmentFolderPath !== attachmentFolderPath || this._settings.pastedImageFileName !== pastedImageFileName) {
+      this._settings.attachmentFolderPath = attachmentFolderPath;
+      this._settings.pastedImageFileName = pastedImageFileName;
+      await this.saveSettings(this._settings);
+    }
   }
 
   private backupConfigs(): void {

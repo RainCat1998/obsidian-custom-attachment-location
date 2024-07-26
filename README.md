@@ -5,60 +5,57 @@ Customize attachment location with variables($filename, $data, etc) like typora.
 ## Features
 
 - Modify location for attachment folder.
-- Modify filename for **Pasted Image**.
+- Modify filename for **Pasted Files**.
 
-⚠️ **IMPORTANT:** This plugin will overwrite the following **two settings** and restore them when the plugin is disabled.
+## Settings
 
-- **"Files & Links -> New link format -> Relative path to file"** for generating md links.
+### Location for New Attachments
 
-- **"Files & Links -> Default location for new attachments"** for custom attachment folder.
+- Same to "Files & Links -> Default location for new attachments".
+- `${filename}` representing for current note filename.
+- `${date:format}` representing for the current date/time using [Moment.js formatting][Moment.js formatting].
+- **Put "./" at the beginning of the path if you want to use relative path.**
+- example: `assets/${filename}`, `./assets/${filename}`, `./assets/${filename}/${date:YYYY}`
 
-## How to use
+### Pasted File Name
 
-### Plugin Manager
+- `${filename}` representing for current note filename.
+- `${date:format}` representing for the current date/time using [Moment.js formatting][Moment.js formatting].
+- `${originalCopiedFilename}` representing for original copied to clipboard filename.
+- example: `${originalCopiedFilename}-${date:YYYYMMDDHHmmssSSS}`, `${filename}-img-${date:YYYYMMDD}`
+- Obsidian default: `Pasted image YYYYMMDDHHmmss`.
+- **Note**: This setting only changes image filename from clipboard. If your attachment is copied from the explorer, obsidian will just copy the original file to the attachment folder without renaming.
 
-- Install via the Third Party plugins setting. Search for **Custom Attachment location**.
-- Activate the plugin in the settings.
+### Automatically rename attachment folder
 
-### Manual Install
+Automatically update attachment folder name if "Location for New Attachments" contains `${filename}`.
 
-- Download `main.js`, `manifest.json` in the [latest release](https://github.com/RainCat1998/obsidian-custom-attachment-location-plugin/releases/latest).
-- Copy `main.js`, `manifest.json` to your vault `VaultFolder/.obsidian/plugins/obsidian-custom-attachment-location/`.
-- Enable plugin in Obsidian setting.
+### Automatically rename attachment files
 
-### Settings
+- Automatically update attachment files in target md file if "Pasted Image Name" contains `${filename}`.
+- Just simply substitute `${filename}` string in attachment filename. So it may be dangerous if multiple files share the same prefix.
 
-- **Location for New Attachments**
+### Replace whitespace with hyphen
 
-  - Same to "Files & Links -> Default location for new attachments".
-  - `${filename}` representing for current note filename.
-  - **Put "./" at the beginning of the path if you want to use relative path.**
-  - example: **`assets/${filename}`, `./assets/${filename}`**
-  - **DO NOT start with "/" or end with "/"**
-  - (Wrong example: `/assets/${filename}/`)
+Automatically replace whitespace in attachment folder and file name with hyphens.
 
-- **Pasted Image Name**
+### All lowercase names
 
-  - `${filename}` representing for current note filename. ${date} representing for current datetime in custom Date Format.
-  - example: **`image-${date}`, `${filename}-img-${date}`**
-  - Obsidian default: "Pasted image YYYYMMDDHHmmss"
-  - **Note**: This setting only changes image filename from clipboard. If your attachment is copied from the explorer, obsidian will just copy the original file to the attachment folder without renaming.
+Automatically set all characters in folder name and pasted image name to be lowercase.
 
-- **Date Format**
+### Convert pasted images to JPEG
 
-  - Date format string for moment.js.
-  - More info: [Format](https://momentjs.com/docs/#/displaying/format/)
-  - example: "YYYYMMDDHHmmssSSS".
+Paste images from clipboard converting them to JPEG.
 
-- **Automatically rename attachment folder**
+### JPEG Quality
 
-  - Automatically update attachment folder name if "Location for New Attachments" contains `${filename}`.
+The smaller the quality, the greater the compression ratio.
 
-- **Automatically rename attachment files [Experimental]**
-  - Automatically update attachment files in target md file if "Pasted Image Name" contains `${filename}`.
-  - Just simply substitute `${filename}` string in attachment filename. So it may be dangerous if multiple files share the same prefix.
+## Installation
 
-## Screenshots
+- `Custom Attachment Location` is available in [the official Community Plugins repository](https://obsidian.md/plugins?id=obsidian-custom-attachment-location).
+- Beta releases can be installed through [BRAT](https://obsidian.md/plugins?id=obsidian42-brat).
 
-![image](https://user-images.githubusercontent.com/36730607/138717686-1f62b499-25ae-4662-bd50-6187c142b747.png)
-![image](https://user-images.githubusercontent.com/36730607/150306765-f7acb4e2-fd8c-472b-a952-5491b530ed6d.png)
+© [RainCat1998](https://github.com/RainCat1998/)
+
+[Moment.js formatting]: https://momentjs.com/docs/#/displaying/format/

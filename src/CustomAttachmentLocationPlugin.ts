@@ -342,7 +342,6 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
       } else {
         continue;
       }
-
     }
 
     const attachmentFiles: ListedFiles = await this.app.vault.adapter.list(newAttachmentFolderPath);

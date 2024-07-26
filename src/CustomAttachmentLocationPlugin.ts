@@ -51,7 +51,14 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
     this.registerEvent(this.app.vault.on("rename", convertAsyncToSync(this.handleRename.bind(this))));
 
     this.register(this.restoreConfigs.bind(this));
+  }
 
+  public async saveSettings(newSettings: CustomAttachmentLocationPluginSettings): Promise<void> {
+    this._settings = CustomAttachmentLocationPluginSettings.clone(newSettings);
+    await this.saveData(this._settings);
+  }
+
+  private onLayoutReady(): void {
     type EditorCallbackFn = (editor: Editor, ctx: MarkdownView | MarkdownFileInfo) => unknown;
 
     const editAttachFileCommand = this.app.commands.findCommand("editor:attach-file")!;
@@ -61,14 +68,6 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
         return originalFn?.call(editAttachFileCommand, editor, ctx);
       }
     }));
-  }
-
-  public async saveSettings(newSettings: CustomAttachmentLocationPluginSettings): Promise<void> {
-    this._settings = CustomAttachmentLocationPluginSettings.clone(newSettings);
-    await this.saveData(this._settings);
-  }
-
-  private async onLayoutReady(): Promise<void> {
   }
 
   private async loadSettings(): Promise<void> {

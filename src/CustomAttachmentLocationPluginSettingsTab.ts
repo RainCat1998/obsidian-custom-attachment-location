@@ -35,6 +35,8 @@ export default class CustomAttachmentLocationPluginSettingsTab extends PluginSet
             text.inputEl.setCustomValidity("Don't start with /");
           } else if (value.endsWith("/")) {
             text.inputEl.setCustomValidity("Don't end with /");
+          } else if (value.includes("\\")) {
+            text.inputEl.setCustomValidity("Don't use backslashes");
           } else {
             const parts = value.split("/");
             const dotFolderPart = parts.filter(part => part.startsWith(".") && part !== ".")[0];

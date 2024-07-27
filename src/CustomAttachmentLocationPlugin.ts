@@ -92,76 +92,14 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
     return str.replaceAll("${date}", `\${date:${dateTimeFormat}}`);
   }
 
-  private async handlePaste(event: ClipboardEvent, editor: Editor, view: MarkdownView | MarkdownFileInfo): Promise<void> {
+  private async handlePaste(event: ClipboardEvent, _: Editor, view: MarkdownView | MarkdownFileInfo): Promise<void> {
     console.debug("Handle Paste");
-    event.preventDefault();
-    await this.handleDataTransfer(event.clipboardData, editor, view, true);
+    await this.handleTransferEvent(event, view.file);
   }
 
-  private async handleDataTransfer(dataTransfer: DataTransfer | null, editor: Editor, view: MarkdownView | MarkdownFileInfo, isPaste: boolean): Promise<void> {
-    if (!dataTransfer || !dataTransfer.items || dataTransfer.items.length === 0) {
-      return;
-    }
-
-    if (!view.file) {
-      return;
-    }
-
-    type PastedEntry = {
-      file?: File;
-      textPromise?: Promise<string>;
-    };
-
-    const pastedEntries: PastedEntry[] = Array.from(dataTransfer.items).map((item) => {
-      if (item.kind === "file") {
-        const file = item.getAsFile();
-        if (!file) {
-          throw new Error("Could not get file from item");
-        }
-        return { file };
-      } else if (item.kind === "string") {
-        const textPromise = new Promise<string>(resolve => item.getAsString(text => resolve(text)));
-        return { textPromise };
-      } else {
-        throw new Error(`Unsupported item kind ${item.kind}`);
-      }
-    });
-
-    let insertedMarkdown = "";
-
-    const mdFileName = view.file.basename;
-    const shouldRenameAttachments = isPaste || this._settings.renameAttachmentsOnDragAndDrop;
-    const shouldConvertImages = this._settings.convertImagesToJpeg && (isPaste || this._settings.convertImagesOnDragAndDrop);
-
-    for (const entry of pastedEntries) {
-      if (entry.textPromise) {
-        insertedMarkdown += await entry.textPromise;
-      } else if (entry.file) {
-        let extension = posix.extname(entry.file.name).slice(1);
-        const originalCopiedFileName = posix.basename(entry.file.name, "." + extension);
-        let fileArrayBuffer: ArrayBuffer;
-        if (shouldConvertImages && isImageFile(entry.file)) {
-          fileArrayBuffer = await blobToJpegArrayBuffer(entry.file, this._settings.jpegQuality);
-          extension = "jpg";
-        } else {
-          fileArrayBuffer = await blobToArrayBuffer(entry.file);
-        }
-
-        const name = shouldRenameAttachments ? await getPastedFileName(this, mdFileName, originalCopiedFileName) : originalCopiedFileName;
-        const imageFile = await this.app.saveAttachment(name, extension, fileArrayBuffer);
-        insertedMarkdown += this.app.fileManager.generateMarkdownLink(imageFile, view.file.path);
-        insertedMarkdown += "\n\n";
-      }
-    }
-
-    editor.replaceSelection(insertedMarkdown);
-  }
-
-  private async handleDrop(event: DragEvent, editor: Editor, view: MarkdownView | MarkdownFileInfo): Promise<void> {
+  private async handleDrop(event: DragEvent, _: Editor, view: MarkdownView | MarkdownFileInfo): Promise<void> {
     console.debug("Handle Drop");
-    event.preventDefault();
-    editor.setSelection(editor.posAtMouse(event));
-    await this.handleDataTransfer(event.dataTransfer, editor, view, false);
+    await this.handleTransferEvent(event, view.file);
   }
 
   private async handleRename(newFile: TAbstractFile, oldFilePath: string): Promise<void> {
@@ -307,5 +245,106 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
     const attachmentFolderFullPath = await getAttachmentFolderFullPath(this, noteFolderPath, noteFileName);
     await createFolderSafe(this.app, attachmentFolderFullPath);
     return this.app.vault.getAvailablePath(posix.join(attachmentFolderFullPath, filename), extension);
+  }
+
+  private async handleTransferEvent(event: ClipboardEvent | DragEvent, noteFile: TFile | null): Promise<void> {
+    type HandledEvent = {
+      handled?: boolean
+    };
+
+    if ((event as HandledEvent).handled) {
+      return;
+    }
+
+    if (!noteFile) {
+      return;
+    }
+
+    const isPaste = event instanceof ClipboardEvent;
+    const dataTransfer = isPaste ? event.clipboardData : event.dataTransfer;
+
+    if (!dataTransfer) {
+      return;
+    }
+
+    if (!event.target) {
+      return;
+    }
+
+    event.preventDefault();
+
+    type PastedEntry = {
+      file?: File;
+      textPromise?: Promise<string>;
+      type: string;
+    };
+
+    const pastedEntries: PastedEntry[] = Array.from(dataTransfer.items).map((item) => {
+      const type = item.type;
+      if (item.kind === "file") {
+        const file = item.getAsFile();
+        if (!file) {
+          throw new Error("Could not get file from item");
+        }
+        return {
+          file,
+          type
+        };
+      } else if (item.kind === "string") {
+        const textPromise = new Promise<string>(resolve => item.getAsString(text => resolve(text)));
+        return {
+          textPromise,
+          type
+        };
+      } else {
+        throw new Error(`Unsupported item kind ${item.kind}`);
+      }
+    });
+
+    const newDataTransfer = new DataTransfer();
+
+    const shouldRenameAttachments = isPaste || this._settings.renameAttachmentsOnDragAndDrop;
+    const shouldConvertImages = this._settings.convertImagesToJpeg && (isPaste || this._settings.convertImagesOnDragAndDrop);
+
+
+    for (const entry of pastedEntries) {
+      if (entry.textPromise) {
+        newDataTransfer.items.add(await entry.textPromise, entry.type);
+      } else if (entry.file) {
+        let extension = posix.extname(entry.file.name).slice(1);
+        const originalCopiedFileName = posix.basename(entry.file.name, "." + extension);
+
+        let fileArrayBuffer: ArrayBuffer;
+        if (shouldConvertImages && isImageFile(entry.file)) {
+          fileArrayBuffer = await blobToJpegArrayBuffer(entry.file, this._settings.jpegQuality);
+          extension = "jpg";
+        } else {
+          fileArrayBuffer = await blobToArrayBuffer(entry.file);
+        }
+
+        const filename = shouldRenameAttachments ? await getPastedFileName(this, noteFile.basename, originalCopiedFileName) : originalCopiedFileName;
+
+        const renamedFile = new File([new Blob([fileArrayBuffer])], filename + "." + extension, { type: "application/octet-stream" });
+        newDataTransfer.items.add(renamedFile);
+      }
+    }
+
+    const newEvent = isPaste ? new ClipboardEvent("paste", {
+      clipboardData: newDataTransfer,
+      bubbles: event.bubbles,
+      cancelable: event.cancelable,
+      composed: event.composed
+    }) : new DragEvent("drop", {
+      dataTransfer: newDataTransfer,
+      bubbles: event.bubbles,
+      cancelable: event.cancelable,
+      composed: event.composed,
+      clientX: event.clientX,
+      clientY: event.clientY
+    });
+
+    (newEvent as HandledEvent).handled = true;
+
+    event.target.dispatchEvent(newEvent);
   }
 }

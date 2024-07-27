@@ -1,6 +1,5 @@
 import moment from "moment";
 import { escapeRegExp } from "./RegExp.ts";
-import type CustomAttachmentLocationPluginSettings from "./CustomAttachmentLocationPluginSettings.ts";
 import {
   normalizePath,
   type TAbstractFile,
@@ -8,6 +7,8 @@ import {
 } from "obsidian";
 import { posix } from "@jinder/path";
 import type CustomAttachmentLocationPlugin from "./CustomAttachmentLocationPlugin.ts";
+import prompt from "./Prompt.ts";
+import { validateFilename } from "./PathValidator.ts";
 
 /**
  * example:
@@ -35,26 +36,34 @@ export function interpolateToDigitRegex(template: string, targetFileName: string
  * @param template template path contains meta vars
  * @returns interpolate vars begin with ${date:**} (moment.js format) and ${filename} to string path, using now time
  */
-export function interpolateDateToString(settings: CustomAttachmentLocationPluginSettings, template: string, targetFileName: string, originalCopiedFilename?: string): string {
+export async function interpolateDateToString(plugin: CustomAttachmentLocationPlugin, template: string, targetFileName: string, originalCopiedFilename?: string): Promise<string> {
   // match ${date:date_format} pattern
   const dateRegExp = /\$\{date:(.*?)\}/g;
 
-  let newPath = template.replaceAll(dateRegExp, (_, dateFormat: string) => {
-    // use moment to reformat date string
-    const date = moment().format(dateFormat);
-    return date;
-  });
+  let newPath = template.replaceAll(dateRegExp, (_, dateFormat: string) => moment().format(dateFormat));
 
   newPath = newPath.replaceAll("${filename}", targetFileName);
   if (originalCopiedFilename) {
     newPath = newPath.replaceAll("${originalCopiedFilename}", originalCopiedFilename);
+
+    if (newPath.includes("${prompt}")) {
+      const newFileName = await prompt({
+        app: plugin.app,
+        title:"Rename attachment file",
+        defaultValue: originalCopiedFilename,
+        valueValidator: (value): string => {
+          return validateFilename(value);
+        }
+      }) ?? originalCopiedFilename;
+      newPath = newPath.replaceAll("${prompt}", newFileName);
+    }
   }
 
-  if (settings.toLowerCase) {
+  if (plugin.settings.toLowerCase) {
     newPath = newPath.toLowerCase();
   }
 
-  if (settings.replaceWhitespace) {
+  if (plugin.settings.replaceWhitespace) {
     newPath = newPath.replace(/\s/g, "-");
     newPath = newPath.replace(/-{2,}/g, "-");
   }
@@ -81,7 +90,7 @@ export async function getEarliestAttachmentFolder(plugin: CustomAttachmentLocati
     // create time ascending
     return folderStats.sort((a, b) => a.ctime - b.ctime).map(f => f.path)[0]!;
   } else {
-    return interpolateDateToString(plugin.settings, attachmentFolderTemplate, targetFileName);
+    return interpolateDateToString(plugin, attachmentFolderTemplate, targetFileName);
   }
 }
 
@@ -102,6 +111,6 @@ export async function getAttachmentFolderFullPath(plugin: CustomAttachmentLocati
   return normalizePath(attachmentFolder);
 }
 
-export function getPastedImageFileName(plugin: CustomAttachmentLocationPlugin, mdFileName: string, originalCopiedFilename: string): string {
-  return interpolateDateToString(plugin.settings, plugin.settings.pastedFileName, mdFileName, originalCopiedFilename);
+export async function getPastedImageFileName(plugin: CustomAttachmentLocationPlugin, mdFileName: string, originalCopiedFilename: string): Promise<string> {
+  return await interpolateDateToString(plugin, plugin.settings.pastedFileName, mdFileName, originalCopiedFilename);
 }

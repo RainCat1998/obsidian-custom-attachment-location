@@ -22,6 +22,7 @@ Customize attachment location with variables($filename, $data, etc) like typora.
 - `${filename}` representing for current note filename.
 - `${date:format}` representing for the current date/time using [Moment.js formatting][Moment.js formatting].
 - `${originalCopiedFilename}` representing for original copied to clipboard filename.
+- `${prompt}` representing the value asked from the user prompt.
 - example: `${originalCopiedFilename}-${date:YYYYMMDDHHmmssSSS}`, `${filename}-img-${date:YYYYMMDD}`
 - Obsidian default: `Pasted image YYYYMMDDHHmmss`.
 - **Note**: This setting only changes image filename from clipboard. If your attachment is copied from the explorer, obsidian will just copy the original file to the attachment folder without renaming.

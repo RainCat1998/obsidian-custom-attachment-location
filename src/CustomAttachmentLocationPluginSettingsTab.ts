@@ -49,7 +49,7 @@ export default class CustomAttachmentLocationPluginSettingsTab extends PluginSet
 
     new Setting(this.containerEl)
       .setName("Pasted File Name")
-      .setDesc("Available variables: ${filename}, ${date:format}, ${originalCopiedFilename}.")
+      .setDesc("Available variables: ${filename}, ${date:format}, ${originalCopiedFilename}, ${prompt}.")
       .addText(text => text
         .setPlaceholder("file-${date:YYYYMMDDHHmmssSSS}")
         .setValue(settings.pastedFileName)

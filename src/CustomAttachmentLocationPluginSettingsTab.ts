@@ -120,7 +120,7 @@ export default class CustomAttachmentLocationPluginSettingsTab extends PluginSet
     new Setting(this.containerEl)
       .setName("JPEG Quality")
       .setDesc("The smaller the quality, the greater the compression ratio.")
-      .addDropdown(toggle => toggle
+      .addDropdown(dropDown => dropDown
         .addOptions(generateJpegQualityOptions())
         .setValue(settings.jpegQuality.toString())
         .onChange(async (value) => {

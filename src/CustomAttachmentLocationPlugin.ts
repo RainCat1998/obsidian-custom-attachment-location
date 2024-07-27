@@ -79,15 +79,15 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
     }
 
     const dateTimeFormat = this._settings.dateTimeFormat || "YYYYMMDDHHmmssSSS";
-    const attachmentFolderPath = this._settings.attachmentFolderPath.replaceAll("{date}", `{date:${dateTimeFormat}}`);
-    let pastedFileName = this._settings.pastedFileName || this._settings.pastedImageFileName || "file-${date:YYYYMMDDHHmmssSSS}";
-    pastedFileName = pastedFileName.replaceAll("${date}", `\${date:${dateTimeFormat}}`);
-
-    this._settings.attachmentFolderPath = attachmentFolderPath;
-    this._settings.pastedFileName = pastedFileName;
+    this._settings.attachmentFolderPath = this.addDateTimeFormat(this._settings.attachmentFolderPath, dateTimeFormat);
+    this._settings.pastedFileName = this.addDateTimeFormat(this._settings.pastedFileName || this._settings.pastedImageFileName || "file-${date}", dateTimeFormat);
     this._settings.dateTimeFormat = "";
     this._settings.pastedImageFileName = "";
     await this.saveSettings(this._settings);
+  }
+
+  private addDateTimeFormat(str: string, dateTimeFormat: string): string {
+    return str.replaceAll("${date}", `\${date:${dateTimeFormat}}`);
   }
 
   private backupConfigs(): void {

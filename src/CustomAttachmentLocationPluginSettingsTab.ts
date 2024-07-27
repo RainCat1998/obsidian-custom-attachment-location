@@ -4,6 +4,10 @@ import {
   Setting
 } from "obsidian";
 import type CustomAttachmentLocationPlugin from "./CustomAttachmentLocationPlugin.ts";
+import {
+  validateFilename,
+  validatePath
+} from "./PathValidator.ts";
 
 export default class CustomAttachmentLocationPluginSettingsTab extends PluginSettingTab {
   public override plugin: CustomAttachmentLocationPlugin;
@@ -31,37 +35,16 @@ export default class CustomAttachmentLocationPluginSettingsTab extends PluginSet
         .onChange(async (value: string) => {
           console.debug("attachmentFolder: " + value);
 
-          if (value.startsWith("/")) {
-            text.inputEl.setCustomValidity("Can't start with /");
-          } else if (value.endsWith("/")) {
-            text.inputEl.setCustomValidity("Can't end with /");
-          } else {
-            const parts = value.split("/");
-            let isBadName = false;
-            for (const part of parts) {
-              if (/[\\:*?"<>|]/.test(part.replaceAll(/\$\{date:.+?\}/g, ""))) {
-                text.inputEl.setCustomValidity("Invalid path symbols");
-                isBadName = true;
-                break;
-              }
-
-              if (part.startsWith(".") && part !== ".") {
-                text.inputEl.setCustomValidity(`Dot-folders like "${part}" are not allowed`);
-                isBadName = true;
-                break;
-              }
-            }
-
-            if (!isBadName) {
-              text.inputEl.setCustomValidity("");
-              value = normalizePath(value);
-              console.debug("normalized attachmentFolder: " + value);
-              settings.attachmentFolderPath = value;
-              await this.plugin.saveSettings(settings);
-            }
-          }
-
+          const validationError = validatePath(value);
+          text.inputEl.setCustomValidity(validationError);
           text.inputEl.reportValidity();
+
+          if (!validationError) {
+            value = normalizePath(value);
+            console.debug("normalized attachmentFolder: " + value);
+            settings.attachmentFolderPath = value;
+            await this.plugin.saveSettings(settings);
+          }
         }));
 
     new Setting(this.containerEl)
@@ -72,18 +55,14 @@ export default class CustomAttachmentLocationPluginSettingsTab extends PluginSet
         .setValue(settings.pastedFileName)
         .onChange(async (value: string) => {
           console.debug("pastedImageFileName: " + value);
+          const validationError = validateFilename(value);
+          text.inputEl.setCustomValidity(validationError);
+          text.inputEl.reportValidity();
 
-          if (!value) {
-            text.inputEl.setCustomValidity("Can't be empty");
-          } else if (/[\\/:*?"<>|]/.test(value.replaceAll(/\$\{date:.+?\}/g, ""))) {
-            text.inputEl.setCustomValidity("Invalid file name symbols");
-          } else {
-            text.inputEl.setCustomValidity("");
+          if (!validationError) {
             settings.pastedFileName = value;
             await this.plugin.saveSettings(settings);
           }
-
-          text.inputEl.reportValidity();
         }));
 
     new Setting(this.containerEl)

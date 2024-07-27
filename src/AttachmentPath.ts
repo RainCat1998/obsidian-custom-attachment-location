@@ -94,23 +94,22 @@ export async function getEarliestAttachmentFolder(plugin: CustomAttachmentLocati
   }
 }
 
-export async function getAttachmentFolderPath(plugin: CustomAttachmentLocationPlugin, mdFileName: string): Promise<string> {
-  return await getEarliestAttachmentFolder(plugin, plugin.settings.attachmentFolderPath, mdFileName);
+export async function getAttachmentFolderPath(plugin: CustomAttachmentLocationPlugin, noteFileName: string): Promise<string> {
+  return await getEarliestAttachmentFolder(plugin, plugin.settings.attachmentFolderPath, noteFileName);
 }
 
-
-export async function getAttachmentFolderFullPath(plugin: CustomAttachmentLocationPlugin, mdFolderPath: string, mdFileName: string): Promise<string> {
+export async function getAttachmentFolderFullPath(plugin: CustomAttachmentLocationPlugin, noteFolderPath: string, noteFileName: string): Promise<string> {
   let attachmentFolder = "";
   const useRelativePath = plugin.settings.attachmentFolderPath.startsWith("./");
 
   if (useRelativePath) {
-    attachmentFolder = posix.join(mdFolderPath, await getAttachmentFolderPath(plugin, mdFileName));
+    attachmentFolder = posix.join(noteFolderPath, await getAttachmentFolderPath(plugin, noteFileName));
   } else {
-    attachmentFolder = await getAttachmentFolderPath(plugin, mdFileName);
+    attachmentFolder = await getAttachmentFolderPath(plugin, noteFileName);
   }
   return normalizePath(attachmentFolder);
 }
 
-export async function getPastedImageFileName(plugin: CustomAttachmentLocationPlugin, mdFileName: string, originalCopiedFilename: string): Promise<string> {
-  return await interpolateDateToString(plugin, plugin.settings.pastedFileName, mdFileName, originalCopiedFilename);
+export async function getPastedFileName(plugin: CustomAttachmentLocationPlugin, noteFileName: string, originalCopiedFilename: string): Promise<string> {
+  return await interpolateDateToString(plugin, plugin.settings.pastedFileName, noteFileName, originalCopiedFilename);
 }

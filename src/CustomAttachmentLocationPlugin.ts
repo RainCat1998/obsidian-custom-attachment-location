@@ -21,15 +21,15 @@ import {
 } from "./Blob.ts";
 import {
   getAttachmentFolderFullPath,
-  getAttachmentFolderPath,
-  getPastedImageFileName
+  getPastedFileName
 } from "./AttachmentPath.ts";
 import { around } from "monkey-around";
 import { createFolderSafe } from "./Vault.ts";
 
+type GetAvailablePathForAttachmentsFn = (filename: string, extension: string, file: TAbstractFile) => Promise<string>;
+
 export default class CustomAttachmentLocationPlugin extends Plugin {
   private _settings!: CustomAttachmentLocationPluginSettings;
-  private originalAttachmentFolderPath: string = "";
 
   public get settings(): CustomAttachmentLocationPluginSettings {
     return CustomAttachmentLocationPluginSettings.clone(this._settings);
@@ -43,15 +43,12 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
     console.debug("loading plugin");
 
     await this.loadSettings();
-    this.backupConfigs();
 
     this.registerEvent(this.app.workspace.on("editor-paste", convertAsyncToSync(this.handlePaste.bind(this))));
     this.registerEvent(this.app.workspace.on("editor-drop", convertAsyncToSync(this.handleDrop.bind(this))));
 
     this.registerEvent(this.app.vault.on("delete", convertAsyncToSync(this.handleDelete.bind(this))));
     this.registerEvent(this.app.vault.on("rename", convertAsyncToSync(this.handleRename.bind(this))));
-
-    this.register(this.restoreConfigs.bind(this));
   }
 
   public async saveSettings(newSettings: CustomAttachmentLocationPluginSettings): Promise<void> {
@@ -60,14 +57,9 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
   }
 
   private onLayoutReady(): void {
-    type EditorCallbackFn = (editor: Editor, ctx: MarkdownView | MarkdownFileInfo) => unknown;
-
-    const editAttachFileCommand = this.app.commands.findCommand("editor:attach-file")!;
-    this.register(around(editAttachFileCommand, {
-      "editorCallback": (originalFn?: EditorCallbackFn): EditorCallbackFn => async (editor, ctx): Promise<unknown> => {
-        await this.updateAttachmentFolderConfigForNote(this.app.workspace.getActiveFile());
-        return originalFn?.call(editAttachFileCommand, editor, ctx);
-      }
+    this.register(around(this.app.vault, {
+      getAvailablePathForAttachments: (originalFn: GetAvailablePathForAttachmentsFn): GetAvailablePathForAttachmentsFn => async (filename, extension, file): Promise<string> =>
+        this.getAvailablePathForAttachments(filename, extension, file, originalFn)
     }));
   }
 
@@ -100,18 +92,6 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
     return str.replaceAll("${date}", `\${date:${dateTimeFormat}}`);
   }
 
-  private backupConfigs(): void {
-    this.originalAttachmentFolderPath = this.app.vault.getConfig("attachmentFolderPath") as string;
-  }
-
-  private restoreConfigs(): void {
-    this.updateAttachmentFolderConfig(this.originalAttachmentFolderPath);
-  }
-
-  private updateAttachmentFolderConfig(path: string): void {
-    this.app.vault.setConfig("attachmentFolderPath", path);
-  }
-
   private async handlePaste(event: ClipboardEvent, editor: Editor, view: MarkdownView | MarkdownFileInfo): Promise<void> {
     console.debug("Handle Paste");
     event.preventDefault();
@@ -132,15 +112,12 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
       textPromise?: Promise<string>;
     };
 
-    let hasFiles = false;
-
     const pastedEntries: PastedEntry[] = Array.from(dataTransfer.items).map((item) => {
       if (item.kind === "file") {
         const file = item.getAsFile();
         if (!file) {
           throw new Error("Could not get file from item");
         }
-        hasFiles = true;
         return { file };
       } else if (item.kind === "string") {
         const textPromise = new Promise<string>(resolve => item.getAsString(text => resolve(text)));
@@ -151,10 +128,6 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
     });
 
     let insertedMarkdown = "";
-
-    if (hasFiles) {
-      await this.updateAttachmentFolderConfigForNote(view.file, true);
-    }
 
     const mdFileName = view.file.basename;
     const shouldRenameAttachments = isPaste || this._settings.renameAttachmentsOnDragAndDrop;
@@ -174,7 +147,7 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
           fileArrayBuffer = await blobToArrayBuffer(entry.file);
         }
 
-        const name = shouldRenameAttachments ? await getPastedImageFileName(this, mdFileName, originalCopiedFileName) : originalCopiedFileName;
+        const name = shouldRenameAttachments ? await getPastedFileName(this, mdFileName, originalCopiedFileName) : originalCopiedFileName;
         const imageFile = await this.app.saveAttachment(name, extension, fileArrayBuffer);
         insertedMarkdown += this.app.fileManager.generateMarkdownLink(imageFile, view.file.path);
         insertedMarkdown += "\n\n";
@@ -209,10 +182,6 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
     const oldMdFolderPath: string = posix.dirname(oldFilePath);
     const oldAttachmentFolderPath: string = await getAttachmentFolderFullPath(this, oldMdFolderPath, oldName);
     const newAttachmentFolderPath: string = posix.join(posix.dirname(oldAttachmentFolderPath), newName);
-
-    // why this ?
-    // hints: after rename seems attachmentFolderConfig will be reset
-    this.updateAttachmentFolderConfig(await getAttachmentFolderPath(this, newName));
 
     if (!this._settings.autoRenameFolder) {
       return;
@@ -322,25 +291,21 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
     }
   }
 
-  private async updateAttachmentFolderConfigForNote(note: TFile | null, createAttachmentFolderIfMissing?: boolean): Promise<void> {
-    if (!note) {
-      console.debug("No file open");
-      return;
+  private async getAvailablePathForAttachments(filename: string, extension: string, file: TAbstractFile, originalFn: GetAvailablePathForAttachmentsFn): Promise<string> {
+    if (!(file instanceof TFile)) {
+      return await originalFn.call(this.app.vault, filename, extension, file);
     }
 
-    if (note.extension.toLowerCase() !== "md") {
-      return;
+    const fileExtension = file.extension.toLowerCase();
+
+    if (fileExtension !== "md" && fileExtension !== "canvas") {
+      return await originalFn.call(this.app.vault, filename, extension, file);
     }
 
-    const mdFileName = note.basename;
-
-    const path = await getAttachmentFolderPath(this, mdFileName);
-    this.updateAttachmentFolderConfig(path);
-
-    if (createAttachmentFolderIfMissing) {
-      const mdFolderPath: string = posix.dirname(note.path);
-      const fullPath = await getAttachmentFolderFullPath(this, mdFolderPath, mdFileName);
-      await createFolderSafe(this.app, fullPath);
-    }
+    const noteFileName = file.basename;
+    const noteFolderPath: string = posix.dirname(file.path);
+    const attachmentFolderFullPath = await getAttachmentFolderFullPath(this, noteFolderPath, noteFileName);
+    await createFolderSafe(this.app, attachmentFolderFullPath);
+    return this.app.vault.getAvailablePath(posix.join(attachmentFolderFullPath, filename), extension);
   }
 }

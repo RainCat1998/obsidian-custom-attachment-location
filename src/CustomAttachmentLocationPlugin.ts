@@ -157,7 +157,7 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
         let fileArrayBuffer: ArrayBuffer;
         if (shouldRenameFiles && this._settings.convertImagesToJpeg && isImageFile(entry.file)) {
           fileArrayBuffer = await blobToJpegArrayBuffer(entry.file, this._settings.jpegQuality);
-          extension = ".jpg";
+          extension = "jpg";
         } else {
           fileArrayBuffer = await blobToArrayBuffer(entry.file);
         }

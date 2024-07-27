@@ -24,9 +24,7 @@ export function interpolateToDigitRegex(template: string, targetFileName: string
     return `\\d{${p1.length}}`;
   });
 
-  const filenameRegExp = /\$\{filename\}/g;
-  // match ${filename} pattern
-  regExpString = regExpString.replaceAll(filenameRegExp, escapeRegExp(targetFileName));
+  regExpString = regExpString.replaceAll("${filename}", escapeRegExp(targetFileName));
 
   return new RegExp(`^${regExpString}$`);
 }

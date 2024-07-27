@@ -5,9 +5,8 @@ import stylisticEslintPlugin from "@stylistic/eslint-plugin";
 import eslintPluginModulesNewlines from "eslint-plugin-modules-newlines";
 import globals from "globals";
 import "eslint-import-resolver-typescript";
-import type {
-  Linter
-} from "eslint";
+import type { Linter } from "eslint";
+import eslintPluginDeprecation from "eslint-plugin-deprecation";
 
 const configs: Linter.FlatConfig[] = [
   {
@@ -28,7 +27,8 @@ const configs: Linter.FlatConfig[] = [
       "@typescript-eslint": typescriptEslintPlugin,
       "import": eslintPluginImport,
       "modules-newlines": eslintPluginModulesNewlines,
-      "@stylistic": stylisticEslintPlugin
+      "@stylistic": stylisticEslintPlugin,
+      deprecation: eslintPluginDeprecation
     },
     rules: {
       ...typescriptEslintPlugin.configs["eslint-recommended"]!.overrides[0]!.rules,
@@ -45,7 +45,8 @@ const configs: Linter.FlatConfig[] = [
       semi: "error",
       "no-extra-semi": "error",
       "@typescript-eslint/explicit-member-accessibility": "error",
-      curly: ["error"]
+      curly: ["error"],
+      "deprecation/deprecation": "error"
     },
     settings: {
       "import/resolver": {

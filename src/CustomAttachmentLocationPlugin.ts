@@ -177,6 +177,7 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
   private async handleDrop(event: DragEvent, editor: Editor, view: MarkdownView | MarkdownFileInfo): Promise<void> {
     console.debug("Handle Drop");
     event.preventDefault();
+    editor.setSelection(editor.posAtMouse(event));
     await this.handleDataTransfer(event.dataTransfer, editor, view, false);
   }
 

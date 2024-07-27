@@ -52,6 +52,14 @@ Paste images from clipboard converting them to JPEG.
 
 The smaller the quality, the greater the compression ratio.
 
+### Convert images on drag&drop
+
+If enabled and `Convert pasted images to JPEG` setting is enabled, images drag&dropped into the editor will be converted to JPEG.
+
+### Rename attachments on drag&drop
+
+If enabled, attachments dragged and dropped into the editor will be renamed according to the `Pasted File Name` setting.
+
 ## Installation
 
 - `Custom Attachment Location` is available in [the official Community Plugins repository](https://obsidian.md/plugins?id=obsidian-custom-attachment-location).

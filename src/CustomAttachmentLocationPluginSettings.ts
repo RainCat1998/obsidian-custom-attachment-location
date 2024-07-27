@@ -2,6 +2,8 @@ export default class CustomAttachmentLocationPluginSettings {
   public attachmentFolderPath: string = "./assets/${filename}";
   public autoRenameFiles: boolean = false;
   public autoRenameFolder: boolean = true;
+  public convertImagesToJpeg: boolean = false;
+  public convertImagesOnDragAndDrop: boolean = false;
 
   /**
    * @deprecated
@@ -16,7 +18,7 @@ export default class CustomAttachmentLocationPluginSettings {
    */
   public pastedImageFileName: string = "";
 
-  public convertImagesToJpeg: boolean = false;
+  public renameAttachmentsOnDragAndDrop: boolean = false;
   public replaceWhitespace: boolean = false;
   public toLowerCase: boolean = false;
 

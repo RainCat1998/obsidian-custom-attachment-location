@@ -128,6 +128,37 @@ export default class CustomAttachmentLocationPluginSettingsTab extends PluginSet
           settings.jpegQuality = Number(value);
           await this.plugin.saveSettings(settings);
         }));
+
+    new Setting(this.containerEl)
+      .setName("Convert images on drag&drop")
+      .setDesc(createFragment(f => {
+        f.appendText("If enabled and ");
+        f.appendChild(createEl("code", { text: "Convert pasted images to JPEG" }));
+        f.appendText(" setting is enabled, images drag&dropped into the editor will be converted to JPEG.");
+      }))
+      .addToggle(toggle => toggle
+        .setValue(settings.convertImagesOnDragAndDrop)
+        .onChange(async (value) => {
+          console.debug("convertImagesOnDragAndDrop: " + value);
+          settings.convertImagesOnDragAndDrop = value;
+          await this.plugin.saveSettings(settings);
+        }));
+
+    new Setting(this.containerEl)
+      .setName("Rename attachments on drag&drop")
+      .setDesc(createFragment(f => {
+        f.appendText("If enabled, attachments dragged and dropped into the editor will be renamed according to the ");
+        f.appendChild(createEl("code", { text: "Pasted File Name" }));
+        f.appendText(" setting.");
+      }))
+      .addToggle(toggle => toggle
+        .setValue(settings.renameAttachmentsOnDragAndDrop)
+        .onChange(async (value) => {
+          console.debug("renameAttachmentsOnDragAndDrop: " + value);
+          settings.renameAttachmentsOnDragAndDrop = value;
+          await this.plugin.saveSettings(settings);
+        }));
+
   }
 }
 

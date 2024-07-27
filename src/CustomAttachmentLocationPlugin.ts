@@ -108,7 +108,7 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
     await this.handleDataTransfer(event.clipboardData, editor, view, true);
   }
 
-  private async handleDataTransfer(dataTransfer: DataTransfer | null, editor: Editor, view: MarkdownView | MarkdownFileInfo, shouldRenameFiles: boolean): Promise<void> {
+  private async handleDataTransfer(dataTransfer: DataTransfer | null, editor: Editor, view: MarkdownView | MarkdownFileInfo, isPaste: boolean): Promise<void> {
     if (!dataTransfer || !dataTransfer.items || dataTransfer.items.length === 0) {
       return;
     }
@@ -147,6 +147,8 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
     }
 
     const mdFileName = view.file.basename;
+    const shouldRenameAttachments = isPaste || this._settings.renameAttachmentsOnDragAndDrop;
+    const shouldConvertImages = this._settings.convertImagesToJpeg && (isPaste || this._settings.convertImagesOnDragAndDrop);
 
     for (const entry of pastedEntries) {
       if (entry.textPromise) {
@@ -155,14 +157,14 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
         let extension = posix.extname(entry.file.name).slice(1);
         const originalCopiedFileName = posix.basename(entry.file.name, "." + extension);
         let fileArrayBuffer: ArrayBuffer;
-        if (shouldRenameFiles && this._settings.convertImagesToJpeg && isImageFile(entry.file)) {
+        if (shouldConvertImages && isImageFile(entry.file)) {
           fileArrayBuffer = await blobToJpegArrayBuffer(entry.file, this._settings.jpegQuality);
           extension = "jpg";
         } else {
           fileArrayBuffer = await blobToArrayBuffer(entry.file);
         }
 
-        const name = shouldRenameFiles ? await getPastedImageFileName(this, mdFileName, originalCopiedFileName) : originalCopiedFileName;
+        const name = shouldRenameAttachments ? await getPastedImageFileName(this, mdFileName, originalCopiedFileName) : originalCopiedFileName;
         const imageFile = await this.app.saveAttachment(name, extension, fileArrayBuffer);
         insertedMarkdown += this.app.fileManager.generateMarkdownLink(imageFile, view.file.path);
         insertedMarkdown += "\n\n";

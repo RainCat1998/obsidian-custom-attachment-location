@@ -1,7 +1,7 @@
 declare module "globals" {
-  interface Globals {
+  type Globals = {
     [name: string]: boolean | "writable" | "readonly" | "off";
-  }
+  };
 
   const globals: {
     browser: Globals;

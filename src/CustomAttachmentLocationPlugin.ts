@@ -1,6 +1,4 @@
 import {
-  Editor,
-  MarkdownView,
   normalizePath,
   Notice,
   Plugin,
@@ -8,7 +6,6 @@ import {
   TFile,
   Vault,
   type ListedFiles,
-  type MarkdownFileInfo
 } from "obsidian";
 import CustomAttachmentLocationPluginSettings from "./CustomAttachmentLocationPluginSettings.ts";
 import CustomAttachmentLocationPluginSettingsTab from "./CustomAttachmentLocationPluginSettingsTab.ts";
@@ -44,11 +41,10 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
 
     await this.loadSettings();
 
-    this.registerEvent(this.app.workspace.on("editor-paste", convertAsyncToSync(this.handlePaste.bind(this))));
-    this.registerEvent(this.app.workspace.on("editor-drop", convertAsyncToSync(this.handleDrop.bind(this))));
-
     this.registerEvent(this.app.vault.on("delete", convertAsyncToSync(this.handleDelete.bind(this))));
     this.registerEvent(this.app.vault.on("rename", convertAsyncToSync(this.handleRename.bind(this))));
+    this.registerDomEvent(document, "paste", convertAsyncToSync(this.handlePasteAndDrop.bind(this)), { capture: true });
+    this.registerDomEvent(document, "drop", convertAsyncToSync(this.handlePasteAndDrop.bind(this)), { capture: true });
   }
 
   public async saveSettings(newSettings: CustomAttachmentLocationPluginSettings): Promise<void> {
@@ -90,16 +86,6 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
 
   private addDateTimeFormat(str: string, dateTimeFormat: string): string {
     return str.replaceAll("${date}", `\${date:${dateTimeFormat}}`);
-  }
-
-  private async handlePaste(event: ClipboardEvent, _: Editor, view: MarkdownView | MarkdownFileInfo): Promise<void> {
-    console.debug("Handle Paste");
-    await this.handleTransferEvent(event, view.file);
-  }
-
-  private async handleDrop(event: DragEvent, _: Editor, view: MarkdownView | MarkdownFileInfo): Promise<void> {
-    console.debug("Handle Drop");
-    await this.handleTransferEvent(event, view.file);
   }
 
   private async handleRename(newFile: TAbstractFile, oldFilePath: string): Promise<void> {
@@ -234,9 +220,7 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
       return await originalFn.call(this.app.vault, filename, extension, file);
     }
 
-    const fileExtension = file.extension.toLowerCase();
-
-    if (fileExtension !== "md" && fileExtension !== "canvas") {
+    if (!this.isNote(file)) {
       return await originalFn.call(this.app.vault, filename, extension, file);
     }
 
@@ -247,20 +231,33 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
     return this.app.vault.getAvailablePath(posix.join(attachmentFolderFullPath, filename), extension);
   }
 
-  private async handleTransferEvent(event: ClipboardEvent | DragEvent, noteFile: TFile | null): Promise<void> {
+  private async handlePasteAndDrop(event: ClipboardEvent | DragEvent): Promise<void> {
     type HandledEvent = {
       handled?: boolean
     };
 
-    if ((event as HandledEvent).handled) {
+    let handledEvent = event as HandledEvent;
+
+    if (handledEvent.handled) {
       return;
     }
 
-    if (!noteFile) {
+    const targetType = this.getTargetType(event.target);
+
+    if (!targetType) {
       return;
     }
 
     const isPaste = event instanceof ClipboardEvent;
+
+    console.debug(`Handle ${targetType} ${isPaste ? "Paste" : "Drop"}`);
+
+    const noteFile = this.app.workspace.getActiveFile();
+
+    if (!this.isNote(noteFile)) {
+      return;
+    }
+
     const dataTransfer = isPaste ? event.clipboardData : event.dataTransfer;
 
     if (!dataTransfer) {
@@ -306,7 +303,6 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
     const shouldRenameAttachments = isPaste || this._settings.renameAttachmentsOnDragAndDrop;
     const shouldConvertImages = this._settings.convertImagesToJpeg && (isPaste || this._settings.convertImagesOnDragAndDrop);
 
-
     for (const entry of pastedEntries) {
       if (entry.textPromise) {
         newDataTransfer.items.add(await entry.textPromise, entry.type);
@@ -343,8 +339,34 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
       clientY: event.clientY
     });
 
-    (newEvent as HandledEvent).handled = true;
+    handledEvent = newEvent as HandledEvent;
+    handledEvent.handled = true;
 
     event.target.dispatchEvent(newEvent);
+  }
+
+  private isNote(file: TFile | null): file is TFile {
+    if (!file) {
+      return false;
+    }
+
+    const extension = file.extension.toLowerCase();
+    return extension === "md" || extension === "canvas";
+  }
+
+  private getTargetType(target: EventTarget | null): string | null {
+    if (!(target instanceof HTMLElement)) {
+      return null;
+    }
+
+    if (target.closest(".markdown-source-view")) {
+      return "Note";
+    }
+
+    if (target.closest(".canvas-wrapper")) {
+      return "Canvas";
+    }
+
+    return null;
   }
 }

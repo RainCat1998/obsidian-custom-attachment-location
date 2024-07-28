@@ -60,6 +60,14 @@ If enabled and `Convert pasted images to JPEG` setting is enabled, images drag&d
 
 If enabled, attachments dragged and dropped into the editor will be renamed according to the `Pasted File Name` setting.
 
+### Duplicate name separator
+
+When you are pasting/dragging a file with the same name as an existing file, this separator will be added to the file name.
+
+E.g., when you are dragging file `existingFile.pdf`, it will be renamed to `existingFile 1.pdf`, `existingFile 2.pdf`, etc, getting the first name available.
+
+Default value is ` ` (`space`).
+
 ## Installation
 
 - `Custom Attachment Location` is available in [the official Community Plugins repository](https://obsidian.md/plugins?id=obsidian-custom-attachment-location).

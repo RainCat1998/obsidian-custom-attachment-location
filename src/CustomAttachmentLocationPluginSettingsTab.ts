@@ -185,6 +185,33 @@ export default class CustomAttachmentLocationPluginSettingsTab extends PluginSet
           await this.plugin.saveSettings(settings);
         }));
 
+    new Setting(this.containerEl)
+      .setName("Duplicate name separator")
+      .setDesc(createFragment(f => {
+        f.appendText("When you are pasting/dragging a file with the same name as an existing file, this separator will be added to the file name.");
+        f.appendChild(createEl("br"));
+        f.appendText("E.g., when you are dragging file ");
+        appendCodeBlock(f, "existingFile.pdf");
+        f.appendText(", it will be renamed to ");
+        appendCodeBlock(f, "existingFile 1.pdf");
+        f.appendText(", ");
+        appendCodeBlock(f, "existingFile 2.pdf");
+        f.appendText(", etc, getting the first name available.");
+      }))
+      .addText(text => text
+        .setPlaceholder(" ")
+        .setValue(settings.duplicateNameSeparator)
+        .onChange(async (value: string) => {
+          console.debug("duplicateNameSeparator: " + value);
+          const validationError = value === "" ? "" : validateFilename(value);
+          text.inputEl.setCustomValidity(validationError);
+          text.inputEl.reportValidity();
+
+          if (!validationError) {
+            settings.duplicateNameSeparator = value;
+            await this.plugin.saveSettings(settings);
+          }
+        }));
   }
 }
 

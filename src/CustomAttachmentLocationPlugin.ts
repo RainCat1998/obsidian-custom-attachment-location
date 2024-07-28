@@ -11,7 +11,10 @@ import CustomAttachmentLocationPluginSettings from "./CustomAttachmentLocationPl
 import CustomAttachmentLocationPluginSettingsTab from "./CustomAttachmentLocationPluginSettingsTab.ts";
 import { posix } from "@jinder/path";
 import { convertAsyncToSync } from "./Async.ts";
-import { getAttachmentFolderFullPath } from "./AttachmentPath.ts";
+import {
+  getAttachmentFolderFullPath,
+  makeFileName
+} from "./AttachmentPath.ts";
 import { around } from "monkey-around";
 import {
   createFolderSafe,
@@ -20,6 +23,7 @@ import {
 import { registerPasteDropEventHandlers } from "./PasteDropEvent.ts";
 
 type GetAvailablePathForAttachmentsFn = (filename: string, extension: string, file: TAbstractFile) => Promise<string>;
+type GetAvailablePathFn = (path: string, extension: string) => string;
 
 export default class CustomAttachmentLocationPlugin extends Plugin {
   private _settings!: CustomAttachmentLocationPluginSettings;
@@ -50,7 +54,8 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
   private onLayoutReady(): void {
     this.register(around(this.app.vault, {
       getAvailablePathForAttachments: (originalFn: GetAvailablePathForAttachmentsFn): GetAvailablePathForAttachmentsFn => async (filename, extension, file): Promise<string> =>
-        this.getAvailablePathForAttachments(filename, extension, file, originalFn)
+        this.getAvailablePathForAttachments(filename, extension, file, originalFn),
+      getAvailablePath: (): GetAvailablePathFn => (filename, extension): string => this.getAvailablePath(filename, extension)
     }));
   }
 
@@ -224,5 +229,19 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
     const attachmentFolderFullPath = await getAttachmentFolderFullPath(this, noteFolderPath, noteFileName);
     await createFolderSafe(this.app, attachmentFolderFullPath);
     return this.app.vault.getAvailablePath(posix.join(attachmentFolderFullPath, filename), extension);
+  }
+
+  private getAvailablePath(filename: string, extension: string): string {
+    let suffixNum = 0;
+
+    while (true) {
+      const path = makeFileName(suffixNum == 0 ? filename : `${filename}${this._settings.duplicateNameSeparator}${suffixNum}`, extension);
+
+      if (!this.app.vault.getAbstractFileByPathInsensitive(path)) {
+        return path;
+      }
+
+      suffixNum++;
+    }
   }
 }

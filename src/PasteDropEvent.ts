@@ -4,7 +4,10 @@ import {
   blobToJpegArrayBuffer,
   isImageFile
 } from "./Blob.ts";
-import { getPastedFileName } from "./AttachmentPath.ts";
+import {
+  getPastedFileName,
+  makeFileName
+} from "./AttachmentPath.ts";
 import type CustomAttachmentLocationPlugin from "./CustomAttachmentLocationPlugin.ts";
 import { isNote } from "./Vault.ts";
 import { convertAsyncToSync } from "./Async.ts";
@@ -127,7 +130,7 @@ abstract class EventWrapper {
 
         const filename = this.shouldRenameAttachments() ? await getPastedFileName(this.plugin, noteFile.basename, originalCopiedFileName) : originalCopiedFileName;
 
-        const renamedFile = new File([new Blob([fileArrayBuffer])], filename + "." + extension, { type: "application/octet-stream" });
+        const renamedFile = new File([new Blob([fileArrayBuffer])], makeFileName(filename, extension), { type: "application/octet-stream" });
         newDataTransfer.items.add(renamedFile);
       }
     }

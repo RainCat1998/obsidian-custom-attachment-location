@@ -1,4 +1,7 @@
-import type { App } from "obsidian";
+import type {
+  App,
+  TFile
+} from "obsidian";
 
 export async function createFolderSafe(app: App, path: string): Promise<void> {
   if (await app.vault.adapter.exists(path)) {
@@ -12,4 +15,13 @@ export async function createFolderSafe(app: App, path: string): Promise<void> {
       throw e;
     }
   }
+}
+
+export function isNote(file: TFile | null): file is TFile {
+  if (!file) {
+    return false;
+  }
+
+  const extension = file.extension.toLowerCase();
+  return extension === "md" || extension === "canvas";
 }

@@ -11,17 +11,13 @@ import CustomAttachmentLocationPluginSettings from "./CustomAttachmentLocationPl
 import CustomAttachmentLocationPluginSettingsTab from "./CustomAttachmentLocationPluginSettingsTab.ts";
 import { posix } from "@jinder/path";
 import { convertAsyncToSync } from "./Async.ts";
-import {
-  blobToArrayBuffer,
-  blobToJpegArrayBuffer,
-  isImageFile
-} from "./Blob.ts";
-import {
-  getAttachmentFolderFullPath,
-  getPastedFileName
-} from "./AttachmentPath.ts";
+import { getAttachmentFolderFullPath } from "./AttachmentPath.ts";
 import { around } from "monkey-around";
-import { createFolderSafe } from "./Vault.ts";
+import {
+  createFolderSafe,
+  isNote
+} from "./Vault.ts";
+import { registerPasteDropEventHandlers } from "./PasteDropEvent.ts";
 
 type GetAvailablePathForAttachmentsFn = (filename: string, extension: string, file: TAbstractFile) => Promise<string>;
 
@@ -43,8 +39,7 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
 
     this.registerEvent(this.app.vault.on("delete", convertAsyncToSync(this.handleDelete.bind(this))));
     this.registerEvent(this.app.vault.on("rename", convertAsyncToSync(this.handleRename.bind(this))));
-    this.registerDomEvent(document, "paste", convertAsyncToSync(this.handlePasteAndDrop.bind(this)), { capture: true });
-    this.registerDomEvent(document, "drop", convertAsyncToSync(this.handlePasteAndDrop.bind(this)), { capture: true });
+    registerPasteDropEventHandlers(this);
   }
 
   public async saveSettings(newSettings: CustomAttachmentLocationPluginSettings): Promise<void> {
@@ -220,7 +215,7 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
       return await originalFn.call(this.app.vault, filename, extension, file);
     }
 
-    if (!this.isNote(file)) {
+    if (!isNote(file)) {
       return await originalFn.call(this.app.vault, filename, extension, file);
     }
 
@@ -229,144 +224,5 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
     const attachmentFolderFullPath = await getAttachmentFolderFullPath(this, noteFolderPath, noteFileName);
     await createFolderSafe(this.app, attachmentFolderFullPath);
     return this.app.vault.getAvailablePath(posix.join(attachmentFolderFullPath, filename), extension);
-  }
-
-  private async handlePasteAndDrop(event: ClipboardEvent | DragEvent): Promise<void> {
-    type HandledEvent = {
-      handled?: boolean
-    };
-
-    let handledEvent = event as HandledEvent;
-
-    if (handledEvent.handled) {
-      return;
-    }
-
-    const targetType = this.getTargetType(event.target);
-
-    if (!targetType) {
-      return;
-    }
-
-    const isPaste = event instanceof ClipboardEvent;
-
-    console.debug(`Handle ${targetType} ${isPaste ? "Paste" : "Drop"}`);
-
-    const noteFile = this.app.workspace.getActiveFile();
-
-    if (!this.isNote(noteFile)) {
-      return;
-    }
-
-    const dataTransfer = isPaste ? event.clipboardData : event.dataTransfer;
-
-    if (!dataTransfer) {
-      return;
-    }
-
-    if (!event.target) {
-      return;
-    }
-
-    event.preventDefault();
-
-    type PastedEntry = {
-      file?: File;
-      textPromise?: Promise<string>;
-      type: string;
-    };
-
-    const pastedEntries: PastedEntry[] = Array.from(dataTransfer.items).map((item) => {
-      const type = item.type;
-      if (item.kind === "file") {
-        const file = item.getAsFile();
-        if (!file) {
-          throw new Error("Could not get file from item");
-        }
-        return {
-          file,
-          type
-        };
-      } else if (item.kind === "string") {
-        const textPromise = new Promise<string>(resolve => item.getAsString(text => resolve(text)));
-        return {
-          textPromise,
-          type
-        };
-      } else {
-        throw new Error(`Unsupported item kind ${item.kind}`);
-      }
-    });
-
-    const newDataTransfer = new DataTransfer();
-
-    const shouldRenameAttachments = isPaste || this._settings.renameAttachmentsOnDragAndDrop;
-    const shouldConvertImages = this._settings.convertImagesToJpeg && (isPaste || this._settings.convertImagesOnDragAndDrop);
-
-    for (const entry of pastedEntries) {
-      if (entry.textPromise) {
-        newDataTransfer.items.add(await entry.textPromise, entry.type);
-      } else if (entry.file) {
-        let extension = posix.extname(entry.file.name).slice(1);
-        const originalCopiedFileName = posix.basename(entry.file.name, "." + extension);
-
-        let fileArrayBuffer: ArrayBuffer;
-        if (shouldConvertImages && isImageFile(entry.file)) {
-          fileArrayBuffer = await blobToJpegArrayBuffer(entry.file, this._settings.jpegQuality);
-          extension = "jpg";
-        } else {
-          fileArrayBuffer = await blobToArrayBuffer(entry.file);
-        }
-
-        const filename = shouldRenameAttachments ? await getPastedFileName(this, noteFile.basename, originalCopiedFileName) : originalCopiedFileName;
-
-        const renamedFile = new File([new Blob([fileArrayBuffer])], filename + "." + extension, { type: "application/octet-stream" });
-        newDataTransfer.items.add(renamedFile);
-      }
-    }
-
-    const newEvent = isPaste ? new ClipboardEvent("paste", {
-      clipboardData: newDataTransfer,
-      bubbles: event.bubbles,
-      cancelable: event.cancelable,
-      composed: event.composed
-    }) : new DragEvent("drop", {
-      dataTransfer: newDataTransfer,
-      bubbles: event.bubbles,
-      cancelable: event.cancelable,
-      composed: event.composed,
-      clientX: event.clientX,
-      clientY: event.clientY
-    });
-
-    handledEvent = newEvent as HandledEvent;
-    handledEvent.handled = true;
-
-    event.target.dispatchEvent(newEvent);
-  }
-
-  private isNote(file: TFile | null): file is TFile {
-    if (!file) {
-      return false;
-    }
-
-    const extension = file.extension.toLowerCase();
-    return extension === "md" || extension === "canvas";
-  }
-
-  private getTargetType(target: EventTarget | null): string | null {
-    if (!(target instanceof HTMLElement)) {
-      return null;
-    }
-
-    if (target.closest(".markdown-source-view")) {
-      return "Note";
-    }
-
-    if (target.closest(".canvas-wrapper")) {
-      return "Canvas";
-    }
-
-    return null;
   }
 }

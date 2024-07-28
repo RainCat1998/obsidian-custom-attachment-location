@@ -6,6 +6,7 @@ import {
   TFolder
 } from "obsidian";
 import { posix } from "@jinder/path";
+const { join } = posix;
 import type CustomAttachmentLocationPlugin from "./CustomAttachmentLocationPlugin.ts";
 import prompt from "./Prompt.ts";
 import { validateFilename } from "./PathValidator.ts";
@@ -49,7 +50,7 @@ export async function interpolateDateToString(plugin: CustomAttachmentLocationPl
     if (newPath.includes("${prompt}")) {
       const newFileName = await prompt({
         app: plugin.app,
-        title:"Rename attachment file",
+        title: "Rename attachment file",
         defaultValue: originalCopiedFilename,
         valueValidator: (value): string => {
           return validateFilename(value);
@@ -79,7 +80,7 @@ export async function getEarliestAttachmentFolder(plugin: CustomAttachmentLocati
     .filter((f: TAbstractFile) => targetRegex.test(f.path));
 
   const folderStats = await Promise.all(folders.map(async (folder: TFolder) => {
-    const stat = await app.vault.adapter.stat(posix.join(app.vault.adapter.getBasePath(), folder.path));
+    const stat = await app.vault.adapter.stat(join(app.vault.adapter.getBasePath(), folder.path));
     return {
       path: folder.path,
       ctime: stat?.ctime ?? 0
@@ -103,7 +104,7 @@ export async function getAttachmentFolderFullPath(plugin: CustomAttachmentLocati
   const useRelativePath = plugin.settings.attachmentFolderPath.startsWith("./");
 
   if (useRelativePath) {
-    attachmentFolder = posix.join(noteFolderPath, await getAttachmentFolderPath(plugin, noteFileName));
+    attachmentFolder = join(noteFolderPath, await getAttachmentFolderPath(plugin, noteFileName));
   } else {
     attachmentFolder = await getAttachmentFolderPath(plugin, noteFileName);
   }

@@ -1,8 +1,8 @@
 declare module "@jinder/path" {
   export const posix: {
-    basename(path: string, ext?: string): string;
-    dirname(path: string): string;
-    extname(path: string): string;
-    join(...paths: string[]): string;
+    basename(this: void, path: string, ext?: string): string;
+    dirname(this: void, path: string): string;
+    extname(this: void, path: string): string;
+    join(this: void, ...paths: string[]): string;
   };
 }

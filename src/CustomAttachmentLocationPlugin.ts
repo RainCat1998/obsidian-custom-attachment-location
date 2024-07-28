@@ -10,6 +10,11 @@ import {
 import CustomAttachmentLocationPluginSettings from "./CustomAttachmentLocationPluginSettings.ts";
 import CustomAttachmentLocationPluginSettingsTab from "./CustomAttachmentLocationPluginSettingsTab.ts";
 import { posix } from "@jinder/path";
+const {
+  basename,
+  dirname,
+  join
+} = posix;
 import { convertAsyncToSync } from "./Async.ts";
 import {
   getAttachmentFolderFullPath,
@@ -101,11 +106,11 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
 
     const newName = newFile.basename;
 
-    const oldName = posix.basename(oldFilePath, ".md");
+    const oldName = basename(oldFilePath, ".md");
 
-    const oldMdFolderPath: string = posix.dirname(oldFilePath);
+    const oldMdFolderPath: string = dirname(oldFilePath);
     const oldAttachmentFolderPath: string = await getAttachmentFolderFullPath(this, oldMdFolderPath, oldName);
-    const newAttachmentFolderPath: string = posix.join(posix.dirname(oldAttachmentFolderPath), newName);
+    const newAttachmentFolderPath: string = join(dirname(oldAttachmentFolderPath), newName);
 
     if (!this._settings.autoRenameFolder) {
       return;
@@ -118,12 +123,12 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
         return;
       }
 
-      const newAttachmentParentFolderPath: string = posix.dirname(newAttachmentFolderPath);
+      const newAttachmentParentFolderPath: string = dirname(newAttachmentFolderPath);
       await createFolderSafe(this.app, newAttachmentParentFolderPath);
 
       await this.app.fileManager.renameFile(folder, newAttachmentFolderPath);
 
-      const oldAttachmentParentFolderPath: string = posix.dirname(oldAttachmentFolderPath);
+      const oldAttachmentParentFolderPath: string = dirname(oldAttachmentFolderPath);
       const oldAttachmentParentFolderList: ListedFiles = await this.app.vault.adapter.list(oldAttachmentParentFolderPath);
       if (oldAttachmentParentFolderList.folders.length === 0 && oldAttachmentParentFolderList.files.length === 0) {
         await this.app.vault.adapter.rmdir(oldAttachmentParentFolderPath, true);
@@ -145,7 +150,7 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
     for (const embed of embeds) {
       const link = embed.link;
       if (link.endsWith(".png") || link.endsWith("jpeg")) {
-        files.push(posix.basename(link));
+        files.push(basename(link));
       } else {
         continue;
       }
@@ -155,10 +160,10 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
     for (const file of attachmentFiles.files) {
       console.debug(file);
       const filePath = file;
-      let fileName = posix.basename(filePath);
+      let fileName = basename(filePath);
       if ((files.indexOf(fileName) > -1) && fileName.contains(oldName)) {
         fileName = fileName.replace(oldName, newName);
-        const newFilePath = normalizePath(posix.join(newAttachmentFolderPath, fileName));
+        const newFilePath = normalizePath(join(newAttachmentFolderPath, fileName));
         const file = this.app.vault.getAbstractFileByPath(filePath);
         if (file == null) {
           continue;
@@ -180,7 +185,7 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
     }
 
     const mdFileName = file.basename;
-    const mdFolderPath: string = posix.dirname(file.path);
+    const mdFolderPath: string = dirname(file.path);
     const fullPath = await getAttachmentFolderFullPath(this, mdFolderPath, mdFileName);
 
     const attachmentFolder = this.app.vault.getFolderByPath(fullPath);
@@ -225,10 +230,10 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
     }
 
     const noteFileName = file.basename;
-    const noteFolderPath: string = posix.dirname(file.path);
+    const noteFolderPath: string = dirname(file.path);
     const attachmentFolderFullPath = await getAttachmentFolderFullPath(this, noteFolderPath, noteFileName);
     await createFolderSafe(this.app, attachmentFolderFullPath);
-    return this.app.vault.getAvailablePath(posix.join(attachmentFolderFullPath, filename), extension);
+    return this.app.vault.getAvailablePath(join(attachmentFolderFullPath, filename), extension);
   }
 
   private getAvailablePath(filename: string, extension: string): string {

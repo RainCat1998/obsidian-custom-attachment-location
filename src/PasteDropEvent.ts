@@ -1,4 +1,9 @@
 import { posix } from "@jinder/path";
+const {
+  basename,
+  extname
+} = posix;
+
 import {
   blobToArrayBuffer,
   blobToJpegArrayBuffer,
@@ -117,8 +122,8 @@ abstract class EventWrapper {
       if (entry.textPromise) {
         newDataTransfer.items.add(await entry.textPromise, entry.type);
       } else if (entry.file) {
-        let extension = posix.extname(entry.file.name).slice(1);
-        const originalCopiedFileName = posix.basename(entry.file.name, "." + extension);
+        let extension = extname(entry.file.name).slice(1);
+        const originalCopiedFileName = basename(entry.file.name, "." + extension);
 
         let fileArrayBuffer: ArrayBuffer;
         if (this.shouldConvertImages() && isImageFile(entry.file)) {

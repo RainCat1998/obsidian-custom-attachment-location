@@ -25,9 +25,17 @@ export default class CustomAttachmentLocationPluginSettingsTab extends PluginSet
     new Setting(this.containerEl)
       .setName("Location for New Attachments")
       .setDesc(createFragment(f => {
-        f.appendText("Start with \"./\" to use relative path. Available variables: ${filename}, ${date:format}.");
+        f.appendText("Start with ");
+        appendCodeBlock(f, ".");
+        f.appendText(" to use relative path. Available variables: ");
+        appendCodeBlock(f, "${filename}");
+        f.appendText(", ");
+        appendCodeBlock(f, "${date:format}");
+        f.appendText(".");
         f.appendChild(createEl("br"));
-        f.appendText("Don't use dot-folders like \".attachments\", because Obsidian doesn't track them");
+        f.appendText("Don't use dot-folders like ");
+        appendCodeBlock(f, ".attachments");
+        f.appendText(", because Obsidian doesn't track them");
       }))
       .addText(text => text
         .setPlaceholder("./assets/${filename}")
@@ -49,7 +57,17 @@ export default class CustomAttachmentLocationPluginSettingsTab extends PluginSet
 
     new Setting(this.containerEl)
       .setName("Pasted File Name")
-      .setDesc("Available variables: ${filename}, ${date:format}, ${originalCopiedFilename}, ${prompt}.")
+      .setDesc(createFragment(f => {
+        f.appendText("Available variables: ");
+        appendCodeBlock(f, "${filename}");
+        f.appendText(", ");
+        appendCodeBlock(f, "${date:format}");
+        f.appendText(", ");
+        appendCodeBlock(f, "${originalCopiedFilename}");
+        f.appendText(", ");
+        appendCodeBlock(f, "${prompt}");
+        f.appendText(".");
+      }))
       .addText(text => text
         .setPlaceholder("file-${date:YYYYMMDDHHmmssSSS}")
         .setValue(settings.pastedFileName)
@@ -67,7 +85,11 @@ export default class CustomAttachmentLocationPluginSettingsTab extends PluginSet
 
     new Setting(this.containerEl)
       .setName("Automatically rename attachment folder")
-      .setDesc("When renaming md files, automatically rename attachment folder if folder name contains \"${filename}\".")
+      .setDesc(createFragment(f => {
+        f.appendText("When renaming md files, automatically rename attachment folder if folder name contains ");
+        appendCodeBlock(f, "${filename}");
+        f.appendText(".");
+      }))
       .addToggle(toggle => toggle
         .setValue(settings.autoRenameFolder)
         .onChange(async (value: boolean) => {
@@ -78,7 +100,11 @@ export default class CustomAttachmentLocationPluginSettingsTab extends PluginSet
 
     new Setting(this.containerEl)
       .setName("Automatically rename attachment files")
-      .setDesc("When renaming md files, automatically rename attachment files if file name contains \"${filename}\".")
+      .setDesc(createFragment(f => {
+        f.appendText("When renaming md files, automatically rename attachment files if file name contains ");
+        appendCodeBlock(f, "${filename}");
+        f.appendText(".");
+      }))
       .addToggle(toggle => toggle
         .setValue(settings.autoRenameFiles)
         .onChange(async (value: boolean) => {
@@ -133,7 +159,7 @@ export default class CustomAttachmentLocationPluginSettingsTab extends PluginSet
       .setName("Convert images on drag&drop")
       .setDesc(createFragment(f => {
         f.appendText("If enabled and ");
-        f.appendChild(createEl("code", { text: "Convert pasted images to JPEG" }));
+        appendCodeBlock(f, "Convert pasted images to JPEG");
         f.appendText(" setting is enabled, images drag&dropped into the editor will be converted to JPEG.");
       }))
       .addToggle(toggle => toggle
@@ -148,7 +174,7 @@ export default class CustomAttachmentLocationPluginSettingsTab extends PluginSet
       .setName("Rename attachments on drag&drop")
       .setDesc(createFragment(f => {
         f.appendText("If enabled, attachments dragged and dropped into the editor will be renamed according to the ");
-        f.appendChild(createEl("code", { text: "Pasted File Name" }));
+        appendCodeBlock(f, "Pasted File Name");
         f.appendText(" setting.");
       }))
       .addToggle(toggle => toggle
@@ -170,4 +196,11 @@ function generateJpegQualityOptions(): Record<string, string> {
   }
 
   return ans;
+}
+
+function appendCodeBlock(fragment: DocumentFragment, text: string): void {
+  fragment.appendChild(createSpan({ cls: "markdown-rendered code" }, span => {
+    span.style.fontWeight = "bold";
+    span.appendChild(createEl("code", { text }));
+  }));
 }

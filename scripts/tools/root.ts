@@ -22,6 +22,7 @@ export function execFromRoot(command: string, {
     const child = spawn(cmd, args, {
       cwd: rootDir,
       stdio: ["inherit", "pipe", "pipe"],
+      shell: true
     });
 
     let stdout = "";

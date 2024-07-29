@@ -27,14 +27,14 @@ export function execFromRoot(command: string, {
     let stdout = "";
     let stderr = "";
 
-    child.stdout.on("data", (data) => {
+    child.stdout.on("data", (data: string) => {
       if (!quiet) {
         process.stdout.write(data);
       }
       stdout += data;
     });
 
-    child.stderr.on("data", (data) => {
+    child.stderr.on("data", (data: string) => {
       if (!quiet) {
         process.stderr.write(data);
       }

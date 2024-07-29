@@ -41,7 +41,6 @@ export function execFromRootWithStderr(command: string, {
     let stderr = "";
 
     child.stdout.on("data", (data: Buffer) => {
-      console.warn("!!!", typeof data, data?.constructor, data?.toString());
       if (!quiet) {
         process.stdout.write(data);
       }

@@ -11,10 +11,12 @@ export const rootDir = fileURLToPath(rootUrl);
 
 export async function execFromRoot(command: string, {
   quiet = false,
-  ignoreExitCode = false
+  ignoreExitCode = false,
+  stdin = ""
 }: {
   quiet?: boolean,
   ignoreExitCode?: boolean
+  stdin?: string
 } = {}): Promise<string> {
   const { stdout } = await execFromRootWithStderr(command, { quiet, ignoreExitCode });
   return stdout;
@@ -22,10 +24,12 @@ export async function execFromRoot(command: string, {
 
 export function execFromRootWithStderr(command: string, {
   quiet = false,
-  ignoreExitCode = false
+  ignoreExitCode = false,
+  stdin = ""
 }: {
   quiet?: boolean,
   ignoreExitCode?: boolean
+  stdin?: string
 } = {}): Promise<{ stdout: string, stderr: string }> {
   return new Promise((resolve, reject) => {
     console.log(`Executing command: ${command}`);
@@ -33,12 +37,14 @@ export function execFromRootWithStderr(command: string, {
 
     const child = spawn(cmd, args, {
       cwd: rootDir,
-      stdio: ["inherit", "pipe", "pipe"],
+      stdio: "pipe",
       shell: true
     });
 
     let stdout = "";
     let stderr = "";
+
+    child.stdin.write(stdin);
 
     child.stdout.on("data", (data: Buffer) => {
       if (!quiet) {

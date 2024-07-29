@@ -42,5 +42,7 @@ export default async function postversion(): Promise<void> {
 
   releaseNotes += `**Full Changelog**: ${changesUrl}`;
 
-  await execFromRoot(`gh release create "${newVersion}" ${filePathsStr} --title "v${newVersion}" --notes ${releaseNotes}`);
+  await execFromRoot(`gh release create "${newVersion}" ${filePathsStr} --title "v${newVersion}" --notes-file -`, {
+    stdin: releaseNotes
+  });
 }

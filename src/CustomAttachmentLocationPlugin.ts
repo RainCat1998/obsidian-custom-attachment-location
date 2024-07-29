@@ -98,11 +98,7 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
   private async handleRename(newFile: TAbstractFile, oldFilePath: string): Promise<void> {
     console.debug("Handle Rename");
 
-    if (!(newFile instanceof TFile)) {
-      return;
-    }
-
-    if (newFile.extension !== "md") {
+    if (!isNote(newFile)) {
       return;
     }
 
@@ -177,11 +173,7 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
   }
 
   private async handleDelete(file: TAbstractFile): Promise<void> {
-    if (!(file instanceof TFile)) {
-      return;
-    }
-
-    if (file.extension.toLowerCase() !== "md") {
+    if (!isNote(file)) {
       return;
     }
 

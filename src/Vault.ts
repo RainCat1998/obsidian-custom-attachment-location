@@ -1,7 +1,7 @@
-import type {
-  App,
-  TFile
-} from "obsidian";
+import {
+  TFile,
+  type App,
+  type TAbstractFile} from "obsidian";
 
 export async function createFolderSafe(app: App, path: string): Promise<void> {
   if (await app.vault.adapter.exists(path)) {
@@ -17,8 +17,8 @@ export async function createFolderSafe(app: App, path: string): Promise<void> {
   }
 }
 
-export function isNote(file: TFile | null): file is TFile {
-  if (!file) {
+export function isNote(file: TAbstractFile | null): file is TFile {
+  if (!(file instanceof TFile)) {
     return false;
   }
 

@@ -16,7 +16,7 @@
 
 - Configure drag&drop as paste behavior
 - Remove extra dot before jpg
-- Add support from `prompt`
+- Add support for `${prompt}`
 
 ## 2.0.0
 

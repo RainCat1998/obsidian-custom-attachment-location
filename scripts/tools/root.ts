@@ -9,7 +9,18 @@ import process from "node:process";
 export const rootUrl = new URL("../../", import.meta.url).href;
 export const rootDir = fileURLToPath(rootUrl);
 
-export function execFromRoot(command: string, {
+export async function execFromRoot(command: string, {
+  quiet = false,
+  ignoreExitCode = false
+}: {
+  quiet?: boolean,
+  ignoreExitCode?: boolean
+} = {}): Promise<string> {
+  const { stdout } = await execFromRootWithStderr(command, { quiet, ignoreExitCode });
+  return stdout;
+}
+
+export function execFromRootWithStderr(command: string, {
   quiet = false,
   ignoreExitCode = false
 }: {

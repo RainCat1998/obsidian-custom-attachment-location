@@ -1,4 +1,7 @@
-import { readdir } from "node:fs/promises";
+import {
+  readdir,
+  readFile
+} from "node:fs/promises";
 import process from "node:process";
 import runNpmScript from "../tools/npmScriptRunner.ts";
 import {
@@ -12,12 +15,32 @@ export default async function postversion(): Promise<void> {
 
   await runNpmScript("build");
 
-  const newVersion = process.env["npm_package_version"];
+  const newVersion = process.env["npm_package_version"]!;
 
   const buildDir = resolvePathFromRoot("dist/build");
   const fileNames = await readdir(buildDir);
   const filePaths = fileNames.map(fileName => `${buildDir}/${fileName}`);
   const filePathsStr = filePaths.map(filePath => `"${filePath}"`).join(" ");
 
-  await execFromRoot(`gh release create "${newVersion}" ${filePathsStr} --title "v${newVersion}" --notes-file CHANGELOG.md`);
+  const changelogPath = resolvePathFromRoot("CHANGELOG.md");
+  const content = await readFile(changelogPath, "utf8");
+  const newVersionEscaped = newVersion.replaceAll(".", "\\.");
+  const match = content.match(new RegExp(`\n## ${newVersionEscaped}\n\n((.|\n)+?)\n\n##`));
+  let releaseNotes = match ? match[1] + "\n\n" : "";
+
+  const tags = await execFromRoot("git tag --sort=-creatordate", { quiet: true });
+  const previousVersion = tags[1];
+  let changesUrl = "";
+
+  const repoUrl = await execFromRoot("gh repo view --json url -q .url");
+
+  if (previousVersion) {
+    changesUrl = `${repoUrl}/compare/${previousVersion}...${newVersion}`;
+  } else {
+    changesUrl = `${repoUrl}/commits/${newVersion}`;
+  }
+
+  releaseNotes += `**Full Changelog**: ${changesUrl}`;
+
+  await execFromRoot(`gh release create "${newVersion}" ${filePathsStr} --title "v${newVersion}" --notes ${releaseNotes}`);
 }

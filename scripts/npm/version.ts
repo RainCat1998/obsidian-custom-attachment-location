@@ -58,7 +58,7 @@ export default async function version(): Promise<void> {
 
   const lastTag = previousChangelogLines[0]?.replace("## ", "");
   const commitRange = lastTag ? `${lastTag}..HEAD` : "HEAD";
-  const commitMessages = (await execFromRoot(`git log ${commitRange} --format=%s --first-parent`, { quiet: true })).stdout.split(/\r?\n/);
+  const commitMessages = (await execFromRoot(`git log ${commitRange} --format=%s --first-parent`, { quiet: true })).split(/\r?\n/);
 
   let newChangeLog = `# CHANGELOG\n\n## ${targetVersion}\n\n`;
 

@@ -45,6 +45,7 @@ export function execFromRootWithStderr(command: string, {
     let stderr = "";
 
     child.stdin.write(stdin);
+    child.stdin.end();
 
     child.stdout.on("data", (data: Buffer) => {
       if (!quiet) {

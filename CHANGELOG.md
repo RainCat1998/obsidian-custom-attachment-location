@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 3.3.0
+
+- Add `${foldername}` and `${folderPath}`
+
 ## 3.2.0
 
 - Configure `Duplicate name separator`
@@ -98,3 +102,5 @@
 ## 0.0.1
 
 - Initial release
+
+

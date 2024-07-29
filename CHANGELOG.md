@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 3.4.0
+
+- Handle rename/delete for canvas
+
 ## 3.3.0
 
 - Add `${foldername}` and `${folderPath}`

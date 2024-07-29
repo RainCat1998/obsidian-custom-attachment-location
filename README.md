@@ -68,6 +68,10 @@ E.g., when you are dragging file `existingFile.pdf`, it will be renamed to `exis
 
 Default value is ` ` (`space`).
 
+## Changelog
+
+All notable changes to this project will be documented in the [CHANGELOG](./CHANGELOG.md).
+
 ## Installation
 
 - `Custom Attachment Location` is available in [the official Community Plugins repository](https://obsidian.md/plugins?id=obsidian-custom-attachment-location).

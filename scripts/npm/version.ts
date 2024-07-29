@@ -7,8 +7,10 @@ import {
   readFile,
   writeFile
 } from "node:fs/promises";
+import { existsSync } from "node:fs";
 
 import process from "node:process";
+import { createInterface } from "node:readline/promises";
 
 type ObsidianReleasesJson = {
   name: string;
@@ -42,7 +44,39 @@ export default async function version(): Promise<void> {
   versions[targetVersion] = manifest.minAppVersion;
   await writeFile(versionsJsonPath, JSON.stringify(versions, null, indentSize) + "\n");
 
-  execFromRoot("git add manifest.json package.json versions.json");
+  const changelogPath = resolvePathFromRoot("CHANGELOG.md");
+  let previousChangelogLines: string[];
+  if (!existsSync(changelogPath)) {
+    previousChangelogLines = [];
+  } else {
+    const content = await readFile(changelogPath, "utf8");
+    previousChangelogLines = content.split("\n").slice(2);
+  }
+
+  const lastTag = previousChangelogLines[0]?.replace("## ", "");
+  const commitRange = lastTag ? `${lastTag}..HEAD` : "HEAD";
+  const commitMessages = (await execFromRoot(`git log ${commitRange} --format=%s --first-parent`, { quiet: true })).stdout.split("\n");
+
+  let newChangeLog = `# CHANGELOG\n\n## ${targetVersion}\n\n`;
+
+  for (const message of commitMessages) {
+    newChangeLog += `- ${message}\n`;
+  }
+
+  if (previousChangelogLines.length > 0) {
+    newChangeLog += "\n";
+    for (const line of previousChangelogLines) {
+      newChangeLog += `${line}\n`;
+    }
+
+    newChangeLog += "\n";
+  }
+
+  await writeFile(changelogPath, newChangeLog, "utf8");
+
+  await createInterface(process.stdin, process.stdout).question("Please update the CHANGELOG.md file. Press Enter when you are done...");
+
+  await execFromRoot("git add manifest.json package.json versions.json");
 }
 
 async function getLatestObsidianVersion(): Promise<string> {

@@ -1,5 +1,5 @@
 import { execFromRoot } from "../tools/root.ts";
 
-export default function lint(): void {
-  execFromRoot("npx eslint . --fix");
+export default async function lint(): Promise<void> {
+  await execFromRoot("npx eslint . --fix");
 }

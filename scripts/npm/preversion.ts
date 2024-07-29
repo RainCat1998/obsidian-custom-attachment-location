@@ -3,7 +3,7 @@ import runNpmScript from "../tools/npmScriptRunner.ts";
 
 export default async function preversion(): Promise<void> {
   try {
-    execFromRoot("gh --version");
+    await execFromRoot("gh --version");
   } catch {
     throw new Error("GitHub CLI is not installed");
   }

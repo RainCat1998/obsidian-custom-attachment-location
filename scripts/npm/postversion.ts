@@ -7,8 +7,8 @@ import {
 } from "../tools/root.ts";
 
 export default async function postversion(): Promise<void> {
-  execFromRoot("git push");
-  execFromRoot("git push --tags");
+  await execFromRoot("git push");
+  await execFromRoot("git push --tags");
 
   await runNpmScript("build");
 
@@ -19,5 +19,5 @@ export default async function postversion(): Promise<void> {
   const filePaths = fileNames.map(fileName => `${buildDir}/${fileName}`);
   const filePathsStr = filePaths.map(filePath => `"${filePath}"`).join(" ");
 
-  execFromRoot(`gh release create "${newVersion}" ${filePathsStr} --title "v${newVersion}" --generate-notes`);
+  await execFromRoot(`gh release create "${newVersion}" ${filePathsStr} --title "v${newVersion}" --notes-file CHANGELOG.md`);
 }

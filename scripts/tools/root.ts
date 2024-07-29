@@ -17,6 +17,7 @@ export function execFromRoot(command: string, {
   ignoreExitCode?: boolean
 } = {}): Promise<{ stdout: string, stderr: string }> {
   return new Promise((resolve, reject) => {
+    console.log(`Executing command: ${command}`);
     const [cmd = "", ...args] = command.split(" ");
 
     const child = spawn(cmd, args, {

@@ -13,6 +13,7 @@ import { posix } from "@jinder/path";
 const {
   basename,
   dirname,
+  extname,
   join
 } = posix;
 import { convertAsyncToSync } from "./Async.ts";
@@ -26,6 +27,7 @@ import {
   isNote
 } from "./Vault.ts";
 import { registerPasteDropEventHandlers } from "./PasteDropEvent.ts";
+import { createSubstitutionsFromPath } from "./Substitutions.ts";
 
 type GetAvailablePathForAttachmentsFn = (filename: string, extension: string, file: TAbstractFile) => Promise<string>;
 type GetAvailablePathFn = (path: string, extension: string) => string;
@@ -106,10 +108,9 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
 
     const newName = newFile.basename;
 
-    const oldName = basename(oldFilePath, ".md");
+    const oldName = basename(oldFilePath, extname(oldFilePath));
 
-    const oldMdFolderPath: string = dirname(oldFilePath);
-    const oldAttachmentFolderPath: string = await getAttachmentFolderFullPath(this, oldMdFolderPath, oldName);
+    const oldAttachmentFolderPath: string = await getAttachmentFolderFullPath(this, createSubstitutionsFromPath(oldFilePath));
     const newAttachmentFolderPath: string = join(dirname(oldAttachmentFolderPath), newName);
 
     if (!this._settings.autoRenameFolder) {
@@ -184,9 +185,7 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
       return;
     }
 
-    const mdFileName = file.basename;
-    const mdFolderPath: string = dirname(file.path);
-    const fullPath = await getAttachmentFolderFullPath(this, mdFolderPath, mdFileName);
+    const fullPath = await getAttachmentFolderFullPath(this, createSubstitutionsFromPath(file.path));
 
     const attachmentFolder = this.app.vault.getFolderByPath(fullPath);
 
@@ -229,9 +228,7 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
       return await originalFn.call(this.app.vault, filename, extension, file);
     }
 
-    const noteFileName = file.basename;
-    const noteFolderPath: string = dirname(file.path);
-    const attachmentFolderFullPath = await getAttachmentFolderFullPath(this, noteFolderPath, noteFileName);
+    const attachmentFolderFullPath = await getAttachmentFolderFullPath(this, createSubstitutionsFromPath(file.path));
     await createFolderSafe(this.app, attachmentFolderFullPath);
     return this.app.vault.getAvailablePath(join(attachmentFolderFullPath, filename), extension);
   }

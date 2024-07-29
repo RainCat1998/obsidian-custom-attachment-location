@@ -10,6 +10,7 @@ const { join } = posix;
 import type CustomAttachmentLocationPlugin from "./CustomAttachmentLocationPlugin.ts";
 import prompt from "./Prompt.ts";
 import { validateFilename } from "./PathValidator.ts";
+import type { Substitutions } from "./Substitutions.ts";
 
 /**
  * example:
@@ -18,7 +19,7 @@ import { validateFilename } from "./PathValidator.ts";
  * @param targetFileName
  * @returns interpolate vars begin with ${date:**} (moment.js format) and ${filename} to regex
  */
-export function interpolateToDigitRegex(template: string, targetFileName: string): RegExp {
+export function interpolateToDigitRegex(template: string, substitutions: Substitutions): RegExp {
   const dateRegExp = /\$\{date:(.*?)\}/g;
   // match ${date:date_format} pattern
   let regExpString = template.replaceAll(dateRegExp, (_, p1: string) => {
@@ -26,7 +27,9 @@ export function interpolateToDigitRegex(template: string, targetFileName: string
     return `\\d{${p1.length}}`;
   });
 
-  regExpString = regExpString.replaceAll("${filename}", escapeRegExp(targetFileName));
+  for (const [key, value] of Object.entries(substitutions)) {
+    regExpString = regExpString.replaceAll(`\${${key}}`, escapeRegExp(value));
+  }
 
   return new RegExp(`^${regExpString}$`);
 }
@@ -37,25 +40,26 @@ export function interpolateToDigitRegex(template: string, targetFileName: string
  * @param template template path contains meta vars
  * @returns interpolate vars begin with ${date:**} (moment.js format) and ${filename} to string path, using now time
  */
-export async function interpolateDateToString(plugin: CustomAttachmentLocationPlugin, template: string, targetFileName: string, originalCopiedFilename?: string): Promise<string> {
+export async function interpolateDateToString(plugin: CustomAttachmentLocationPlugin, template: string, substitutions: Substitutions): Promise<string> {
   // match ${date:date_format} pattern
   const dateRegExp = /\$\{date:(.*?)\}/g;
 
   let newPath = template.replaceAll(dateRegExp, (_, dateFormat: string) => moment().format(dateFormat));
 
-  newPath = newPath.replaceAll("${filename}", targetFileName);
-  if (originalCopiedFilename) {
-    newPath = newPath.replaceAll("${originalCopiedFilename}", originalCopiedFilename);
+  for (const [key, value] of Object.entries(substitutions)) {
+    newPath = newPath.replaceAll(`\${${key}}`, value);
+  }
 
+  if (substitutions.originalCopiedFilename) {
     if (newPath.includes("${prompt}")) {
       const newFileName = await prompt({
         app: plugin.app,
         title: "Rename attachment file",
-        defaultValue: originalCopiedFilename,
+        defaultValue: substitutions.originalCopiedFilename,
         valueValidator: (value): string => {
           return validateFilename(value);
         }
-      }) ?? originalCopiedFilename;
+      }) ?? substitutions.originalCopiedFilename;
       newPath = newPath.replaceAll("${prompt}", newFileName);
     }
   }
@@ -72,9 +76,9 @@ export async function interpolateDateToString(plugin: CustomAttachmentLocationPl
   return newPath;
 }
 
-export async function getEarliestAttachmentFolder(plugin: CustomAttachmentLocationPlugin, attachmentFolderTemplate: string, targetFileName: string): Promise<string> {
+export async function getEarliestAttachmentFolder(plugin: CustomAttachmentLocationPlugin, attachmentFolderTemplate: string, substitutions: Substitutions): Promise<string> {
   const app = plugin.app;
-  const targetRegex = interpolateToDigitRegex(attachmentFolderTemplate, targetFileName);
+  const targetRegex = interpolateToDigitRegex(attachmentFolderTemplate, substitutions);
   const folders = app.vault.getAllLoadedFiles()
     .filter((f: TAbstractFile) => f instanceof TFolder)
     .filter((f: TAbstractFile) => targetRegex.test(f.path));
@@ -91,28 +95,28 @@ export async function getEarliestAttachmentFolder(plugin: CustomAttachmentLocati
     // create time ascending
     return folderStats.sort((a, b) => a.ctime - b.ctime).map(f => f.path)[0]!;
   } else {
-    return interpolateDateToString(plugin, attachmentFolderTemplate, targetFileName);
+    return interpolateDateToString(plugin, attachmentFolderTemplate, substitutions);
   }
 }
 
-export async function getAttachmentFolderPath(plugin: CustomAttachmentLocationPlugin, noteFileName: string): Promise<string> {
-  return await getEarliestAttachmentFolder(plugin, plugin.settings.attachmentFolderPath, noteFileName);
+export async function getAttachmentFolderPath(plugin: CustomAttachmentLocationPlugin, substitutions: Substitutions): Promise<string> {
+  return await getEarliestAttachmentFolder(plugin, plugin.settings.attachmentFolderPath, substitutions);
 }
 
-export async function getAttachmentFolderFullPath(plugin: CustomAttachmentLocationPlugin, noteFolderPath: string, noteFileName: string): Promise<string> {
+export async function getAttachmentFolderFullPath(plugin: CustomAttachmentLocationPlugin, substitutions: Substitutions): Promise<string> {
   let attachmentFolder = "";
   const useRelativePath = plugin.settings.attachmentFolderPath.startsWith("./");
 
   if (useRelativePath) {
-    attachmentFolder = join(noteFolderPath, await getAttachmentFolderPath(plugin, noteFileName));
+    attachmentFolder = join(substitutions.folderPath, await getAttachmentFolderPath(plugin, substitutions));
   } else {
-    attachmentFolder = await getAttachmentFolderPath(plugin, noteFileName);
+    attachmentFolder = await getAttachmentFolderPath(plugin, substitutions);
   }
   return normalizePath(attachmentFolder);
 }
 
-export async function getPastedFileName(plugin: CustomAttachmentLocationPlugin, noteFileName: string, originalCopiedFilename: string): Promise<string> {
-  return await interpolateDateToString(plugin, plugin.settings.pastedFileName, noteFileName, originalCopiedFilename);
+export async function getPastedFileName(plugin: CustomAttachmentLocationPlugin, substitutions: Substitutions): Promise<string> {
+  return await interpolateDateToString(plugin, plugin.settings.pastedFileName, substitutions);
 }
 
 export function makeFileName(fileName: string, extension: string): string {

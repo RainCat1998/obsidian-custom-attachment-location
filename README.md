@@ -13,6 +13,8 @@ Customize attachment location with variables($filename, $data, etc) like typora.
 
 - Same to "Files & Links -> Default location for new attachments".
 - `${filename}` representing for current note filename.
+- `${foldername}` representing for current note's folder name.
+- `${folderPath}` representing for full path to current note's folder.
 - `${date:format}` representing for the current date/time using [Moment.js formatting][Moment.js formatting].
 - **Put "./" at the beginning of the path if you want to use relative path.**
 - example: `assets/${filename}`, `./assets/${filename}`, `./assets/${filename}/${date:YYYY}`
@@ -20,6 +22,7 @@ Customize attachment location with variables($filename, $data, etc) like typora.
 ### Pasted File Name
 
 - `${filename}` representing for current note filename.
+- `${foldername}` representing for current note's folder name.
 - `${date:format}` representing for the current date/time using [Moment.js formatting][Moment.js formatting].
 - `${originalCopiedFilename}` representing for original copied to clipboard filename.
 - `${prompt}` representing the value asked from the user prompt.

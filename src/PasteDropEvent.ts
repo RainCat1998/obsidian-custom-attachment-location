@@ -16,6 +16,7 @@ import {
 import type CustomAttachmentLocationPlugin from "./CustomAttachmentLocationPlugin.ts";
 import { isNote } from "./Vault.ts";
 import { convertAsyncToSync } from "./Async.ts";
+import { createSubstitutionsFromPath } from "./Substitutions.ts";
 
 type HandledEvent = Event & {
   handled?: boolean
@@ -133,7 +134,7 @@ abstract class EventWrapper {
           fileArrayBuffer = await blobToArrayBuffer(entry.file);
         }
 
-        const filename = this.shouldRenameAttachments() ? await getPastedFileName(this.plugin, noteFile.basename, originalCopiedFileName) : originalCopiedFileName;
+        const filename = this.shouldRenameAttachments() ? await getPastedFileName(this.plugin, createSubstitutionsFromPath(noteFile.path, originalCopiedFileName)) : originalCopiedFileName;
 
         const renamedFile = new File([new Blob([fileArrayBuffer])], makeFileName(filename, extension), { type: "application/octet-stream" });
         newDataTransfer.items.add(renamedFile);

@@ -30,6 +30,10 @@ export default class CustomAttachmentLocationPluginSettingsTab extends PluginSet
         f.appendText(" to use relative path. Available variables: ");
         appendCodeBlock(f, "${filename}");
         f.appendText(", ");
+        appendCodeBlock(f, "${foldername}");
+        f.appendText(", ");
+        appendCodeBlock(f, "${folderPath}");
+        f.appendText(", ");
         appendCodeBlock(f, "${date:format}");
         f.appendText(".");
         f.appendChild(createEl("br"));
@@ -60,6 +64,8 @@ export default class CustomAttachmentLocationPluginSettingsTab extends PluginSet
       .setDesc(createFragment(f => {
         f.appendText("Available variables: ");
         appendCodeBlock(f, "${filename}");
+        f.appendText(", ");
+        appendCodeBlock(f, "${foldername}");
         f.appendText(", ");
         appendCodeBlock(f, "${date:format}");
         f.appendText(", ");

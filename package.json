@@ -6,11 +6,11 @@
   "scripts": {
     "dev": "tsx scripts/npmScriptExecutor.ts dev",
     "build": "tsx scripts/npmScriptExecutor.ts build",
-    "version": "tsx scripts/npmScriptExecutor.ts version",
     "lint": "tsx scripts/npmScriptExecutor.ts lint",
     "postversion": "tsx scripts/npmScriptExecutor.ts postversion",
     "preversion": "tsx scripts/npmScriptExecutor.ts preversion",
-    "spellcheck": "tsx scripts/npmScriptExecutor.ts spellcheck"
+    "spellcheck": "tsx scripts/npmScriptExecutor.ts spellcheck",
+    "version": "tsx scripts/npmScriptExecutor.ts version"
   },
   "keywords": [],
   "author": "RainCat1998",

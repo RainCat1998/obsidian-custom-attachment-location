@@ -18,7 +18,7 @@ export async function execFromRoot(command: string, {
   ignoreExitCode?: boolean
   stdin?: string
 } = {}): Promise<string> {
-  const { stdout } = await execFromRootWithStderr(command, { quiet, ignoreExitCode });
+  const { stdout } = await execFromRootWithStderr(command, { quiet, ignoreExitCode, stdin });
   return stdout;
 }
 

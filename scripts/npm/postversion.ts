@@ -28,7 +28,7 @@ export default async function postversion(): Promise<void> {
   const match = content.match(new RegExp(`\n## ${newVersionEscaped}\n\n((.|\n)+?)\n\n##`));
   let releaseNotes = match ? match[1] + "\n\n" : "";
 
-  const tags = await execFromRoot("git tag --sort=-creatordate", { quiet: true });
+  const tags = (await execFromRoot("git tag --sort=-creatordate", { quiet: true })).split(/\r?\n/);
   const previousVersion = tags[1];
   let changesUrl = "";
 

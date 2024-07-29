@@ -54,11 +54,23 @@ export function execFromRootWithStderr(command: string, {
       stdout += data.toString("utf8");
     });
 
+    child.stdout.on("end", () => {
+      if (stdout.endsWith("\n")) {
+        stdout = stdout.slice(0, -1);
+      }
+    });
+
     child.stderr.on("data", (data: Buffer) => {
       if (!quiet) {
         process.stderr.write(data);
       }
       stderr += data.toString("utf8");
+    });
+
+    child.stderr.on("end", () => {
+      if (stderr.endsWith("\n")) {
+        stderr = stderr.slice(0, -1);
+      }
     });
 
     child.on("close", (code) => {

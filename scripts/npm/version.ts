@@ -51,11 +51,14 @@ export default async function version(): Promise<void> {
   } else {
     const content = await readFile(changelogPath, "utf8");
     previousChangelogLines = content.split("\n").slice(2);
+    if (previousChangelogLines.at(-1) === "") {
+      previousChangelogLines.pop();
+    }
   }
 
   const lastTag = previousChangelogLines[0]?.replace("## ", "");
   const commitRange = lastTag ? `${lastTag}..HEAD` : "HEAD";
-  const commitMessages = (await execFromRoot(`git log ${commitRange} --format=%s --first-parent`, { quiet: true })).stdout.split("\n");
+  const commitMessages = (await execFromRoot(`git log ${commitRange} --format=%s --first-parent`, { quiet: true })).stdout.split(/\r?\n/);
 
   let newChangeLog = `# CHANGELOG\n\n## ${targetVersion}\n\n`;
 
@@ -68,8 +71,6 @@ export default async function version(): Promise<void> {
     for (const line of previousChangelogLines) {
       newChangeLog += `${line}\n`;
     }
-
-    newChangeLog += "\n";
   }
 
   await writeFile(changelogPath, newChangeLog, "utf8");

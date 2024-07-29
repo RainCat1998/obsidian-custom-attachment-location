@@ -40,18 +40,19 @@ export function execFromRootWithStderr(command: string, {
     let stdout = "";
     let stderr = "";
 
-    child.stdout.on("data", (data: string) => {
+    child.stdout.on("data", (data: Buffer) => {
+      console.warn("!!!", typeof data, data?.constructor, data?.toString());
       if (!quiet) {
         process.stdout.write(data);
       }
-      stdout += data;
+      stdout += data.toString("utf8");
     });
 
-    child.stderr.on("data", (data: string) => {
+    child.stderr.on("data", (data: Buffer) => {
       if (!quiet) {
         process.stderr.write(data);
       }
-      stderr += data;
+      stderr += data.toString("utf8");
     });
 
     child.on("close", (code) => {

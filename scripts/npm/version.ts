@@ -76,7 +76,7 @@ export default async function version(): Promise<void> {
 
   await createInterface(process.stdin, process.stdout).question("Please update the CHANGELOG.md file. Press Enter when you are done...");
 
-  await execFromRoot("git add manifest.json package.json versions.json");
+  await execFromRoot("git add manifest.json package.json versions.json CHANGELOG.md");
 }
 
 async function getLatestObsidianVersion(): Promise<string> {

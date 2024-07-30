@@ -102,21 +102,21 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
       return;
     }
 
+    if (!this._settings.autoRenameFolder) {
+      return;
+    }
+
     const newName = newFile.basename;
 
     const oldName = basename(oldFilePath, extname(oldFilePath));
 
     const oldAttachmentFolderPath: string = await getAttachmentFolderFullPath(this, createSubstitutionsFromPath(oldFilePath));
-    const newAttachmentFolderPath: string = join(dirname(oldAttachmentFolderPath), newName);
+    const newAttachmentFolderPath: string = await getAttachmentFolderFullPath(this, createSubstitutionsFromPath(newFile.path));
 
-    if (!this._settings.autoRenameFolder) {
-      return;
-    }
+    if (oldAttachmentFolderPath !== newAttachmentFolderPath) {
+      const folder = this.app.vault.getFolderByPath(oldAttachmentFolderPath);
 
-    if (await this.app.vault.adapter.exists(oldAttachmentFolderPath) && (oldAttachmentFolderPath !== newAttachmentFolderPath)) {
-      const folder = this.app.vault.getAbstractFileByPath(oldAttachmentFolderPath);
-
-      if (folder == null) {
+      if (!folder) {
         return;
       }
 
@@ -128,7 +128,6 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
       await this.safeRemoveFolder(oldAttachmentFolderPath);
     }
 
-    //if autoRenameFiles is off
     if (!this._settings.autoRenameFiles) {
       return;
     }

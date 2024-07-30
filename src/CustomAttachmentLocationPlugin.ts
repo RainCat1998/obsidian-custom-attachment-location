@@ -4,8 +4,7 @@ import {
   Plugin,
   TAbstractFile,
   TFile,
-  TFolder,
-  type ListedFiles,
+  TFolder
 } from "obsidian";
 import CustomAttachmentLocationPluginSettings from "./CustomAttachmentLocationPluginSettings.ts";
 import CustomAttachmentLocationPluginSettingsTab from "./CustomAttachmentLocationPluginSettingsTab.ts";
@@ -132,35 +131,22 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
       return;
     }
 
-    const embeds = this.app.metadataCache.getCache(newFile.path)?.embeds;
-    if (!embeds) {
+    const newAttachmentFolder = this.app.vault.getFolderByPath(newAttachmentFolderPath);
+
+    if (!newAttachmentFolder) {
       return;
     }
 
-    const files: string[] = [];
-
-    for (const embed of embeds) {
-      const link = embed.link;
-      if (link.endsWith(".png") || link.endsWith("jpeg")) {
-        files.push(basename(link));
-      } else {
+    for (const child of newAttachmentFolder.children) {
+      if (!(child instanceof TFile)) {
         continue;
       }
-    }
-
-    const attachmentFiles: ListedFiles = await this.app.vault.adapter.list(newAttachmentFolderPath);
-    for (const file of attachmentFiles.files) {
-      console.debug(file);
-      const filePath = file;
-      let fileName = basename(filePath);
-      if ((files.indexOf(fileName) > -1) && fileName.contains(oldName)) {
-        fileName = fileName.replace(oldName, newName);
-        const newFilePath = normalizePath(join(newAttachmentFolderPath, fileName));
-        const file = this.app.vault.getAbstractFileByPath(filePath);
-        if (file == null) {
-          continue;
-        }
-        await this.app.fileManager.renameFile(file, newFilePath);
+      console.debug(child.path);
+      let filename = child.name;
+      if (filename.contains(oldName)) {
+        filename = filename.replaceAll(oldName, newName);
+        const newFilePath = normalizePath(join(newAttachmentFolderPath, filename));
+        await this.app.fileManager.renameFile(child, newFilePath);
       } else {
         continue;
       }

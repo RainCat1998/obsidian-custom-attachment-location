@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 3.5.0
+
+- Preserve draggable on redrop
+
 ## 3.4.0
 
 - Handle rename/delete for canvas

@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## 3.6.0
+
+- Handle move, not only rename
+- Add keepEmptyAttachmentFolders
+
 ## 3.5.0
 
 - Preserve draggable on redrop

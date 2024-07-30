@@ -4,7 +4,7 @@ import {
   Plugin,
   TAbstractFile,
   TFile,
-  Vault,
+  TFolder,
   type ListedFiles,
 } from "obsidian";
 import CustomAttachmentLocationPluginSettings from "./CustomAttachmentLocationPluginSettings.ts";
@@ -121,15 +121,11 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
       }
 
       const newAttachmentParentFolderPath: string = dirname(newAttachmentFolderPath);
-      await createFolderSafe(this.app, newAttachmentParentFolderPath);
+      await this.createFolder(newAttachmentParentFolderPath);
 
       await this.app.fileManager.renameFile(folder, newAttachmentFolderPath);
 
-      const oldAttachmentParentFolderPath: string = dirname(oldAttachmentFolderPath);
-      const oldAttachmentParentFolderList: ListedFiles = await this.app.vault.adapter.list(oldAttachmentParentFolderPath);
-      if (oldAttachmentParentFolderList.folders.length === 0 && oldAttachmentParentFolderList.files.length === 0) {
-        await this.app.vault.adapter.rmdir(oldAttachmentParentFolderPath, true);
-      }
+      await this.safeRemoveFolder(oldAttachmentFolderPath);
     }
 
     //if autoRenameFiles is off
@@ -178,37 +174,7 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
     }
 
     const fullPath = await getAttachmentFolderFullPath(this, createSubstitutionsFromPath(file.path));
-
-    const attachmentFolder = this.app.vault.getFolderByPath(fullPath);
-
-    if (!attachmentFolder) {
-      return;
-    }
-
-    const childFiles: TFile[] = [];
-
-    Vault.recurseChildren(attachmentFolder, (child: TAbstractFile) => {
-      if (child instanceof TFile) {
-        childFiles.push(child);
-      }
-    });
-
-    let canRemoveFolder = true;
-
-    for (const child of childFiles) {
-      const backlinks = this.app.metadataCache.getBacklinksForFile(child);
-      backlinks.removeKey(file.path);
-      if (backlinks.count() !== 0) {
-        canRemoveFolder = false;
-        new Notice(`Attachment ${child.path} is still used by other notes. It will not be deleted.`);
-      } else {
-        await this.app.vault.delete(child);
-      }
-    }
-
-    if (canRemoveFolder) {
-      await this.app.vault.delete(attachmentFolder, true);
-    }
+    await this.safeRemoveFolder(fullPath, file.path);
   }
 
   private async getAvailablePathForAttachments(filename: string, extension: string, file: TAbstractFile, originalFn: GetAvailablePathForAttachmentsFn): Promise<string> {
@@ -221,7 +187,7 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
     }
 
     const attachmentFolderFullPath = await getAttachmentFolderFullPath(this, createSubstitutionsFromPath(file.path));
-    await createFolderSafe(this.app, attachmentFolderFullPath);
+    await this.createFolder(attachmentFolderFullPath);
     return this.app.vault.getAvailablePath(join(attachmentFolderFullPath, filename), extension);
   }
 
@@ -237,5 +203,64 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
 
       suffixNum++;
     }
+  }
+
+  private async createFolder(path: string): Promise<void> {
+    await createFolderSafe(this.app, path);
+    if (!this._settings.keepEmptyAttachmentFolders) {
+      return;
+    }
+
+    const gitKeepPath = join(path, ".gitkeep");
+    if (!await this.app.vault.adapter.exists(gitKeepPath)) {
+      await this.app.vault.create(gitKeepPath, "");
+    }
+  }
+
+  private async safeRemoveFolder(folderPath: string, removedNotePath?: string): Promise<boolean> {
+    const folder = this.app.vault.getFolderByPath(folderPath);
+
+    if (!folder) {
+      return false;
+    }
+
+    let canRemove = true;
+
+    for (const child of folder.children) {
+      if (child instanceof TFile) {
+        const backlinks = this.app.metadataCache.getBacklinksForFile(child);
+        if (removedNotePath) {
+          backlinks.removeKey(removedNotePath);
+        }
+        if (backlinks.count() !== 0) {
+          new Notice(`Attachment ${child.path} is still used by other notes. It will not be deleted.`);
+          canRemove = false;
+        } else {
+          try {
+            await this.app.vault.delete(child);
+          } catch (e) {
+            if (await this.app.vault.exists(child)) {
+              console.error(`Failed to delete ${child.path}`, e);
+              canRemove = false;
+            }
+          }
+        }
+      } else if (child instanceof TFolder) {
+        canRemove &&= await this.safeRemoveFolder(child.path, removedNotePath);
+      }
+    }
+
+    if (canRemove) {
+      try {
+        await this.app.vault.delete(folder, true);
+      } catch (e) {
+        if (await this.app.vault.exists(folder)) {
+          console.error(`Failed to delete ${folder.path}`, e);
+          canRemove = false;
+        }
+      }
+    }
+
+    return canRemove;
   }
 }

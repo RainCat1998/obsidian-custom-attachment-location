@@ -13,6 +13,7 @@ export default class CustomAttachmentLocationPluginSettings {
   public duplicateNameSeparator: string = " ";
 
   public jpegQuality: number = 0.8;
+  public keepEmptyAttachmentFolders: boolean = false;
   public pastedFileName: string = "file-${date:YYYYMMDDHHmmssSSS}";
 
   /**

@@ -100,7 +100,6 @@ export default class CustomAttachmentLocationPluginSettingsTab extends PluginSet
         .setValue(settings.autoRenameFolder)
         .onChange(async (value: boolean) => {
           settings.autoRenameFolder = value;
-          this.display();
           await this.plugin.saveSettings(settings);
         }));
 
@@ -217,6 +216,16 @@ export default class CustomAttachmentLocationPluginSettingsTab extends PluginSet
             settings.duplicateNameSeparator = value;
             await this.plugin.saveSettings(settings);
           }
+        }));
+
+    new Setting(this.containerEl)
+      .setName("Keep empty attachment folders")
+      .setDesc("If enabled, empty attachment folders will be preserved, useful for source control purposes.")
+      .addToggle(toggle => toggle
+        .setValue(settings.keepEmptyAttachmentFolders)
+        .onChange(async (value: boolean) => {
+          settings.keepEmptyAttachmentFolders = value;
+          await this.plugin.saveSettings(settings);
         }));
   }
 }

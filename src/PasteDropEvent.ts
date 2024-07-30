@@ -69,6 +69,8 @@ abstract class EventWrapper {
       return;
     }
 
+    const draggable = this.plugin.app.dragManager.draggable;
+
     const targetType = getTargetType(this.event.target);
 
     if (!targetType) {
@@ -144,6 +146,7 @@ abstract class EventWrapper {
     handledEvent = this.cloneWithNewDataTransfer(newDataTransfer) as HandledEvent;
     handledEvent.handled = true;
 
+    this.plugin.app.dragManager.draggable = draggable;
     this.event.target.dispatchEvent(handledEvent);
   }
 

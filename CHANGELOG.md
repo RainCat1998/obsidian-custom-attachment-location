@@ -1,9 +1,13 @@
 # CHANGELOG
 
+## 3.7.0
+
+- Add `Rename pasted files with known names` setting
+
 ## 3.6.0
 
 - Handle move, not only rename
-- Add keepEmptyAttachmentFolders
+- Add `Keep empty attachment folders`
 
 ## 3.5.0
 

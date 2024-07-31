@@ -176,6 +176,21 @@ export default class CustomAttachmentLocationPluginSettingsTab extends PluginSet
         }));
 
     new Setting(this.containerEl)
+      .setName("Rename pasted files with known names")
+      .setDesc(createFragment(f => {
+        f.appendText("If enabled, pasted copied files with known names will be renamed.");
+        f.appendChild(createEl("br"));
+        f.appendText("If disabled, only clipboard image objects (e.g., screenshots) will be renamed.");
+      }))
+      .addToggle(toggle => toggle
+        .setValue(settings.renamePastedFilesWithKnownNames)
+        .onChange(async (value) => {
+          console.debug("renamePastedFilesWithKnownNames: " + value);
+          settings.renamePastedFilesWithKnownNames = value;
+          await this.plugin.saveSettings(settings);
+        }));
+
+    new Setting(this.containerEl)
       .setName("Rename attachments on drag&drop")
       .setDesc(createFragment(f => {
         f.appendText("If enabled, attachments dragged and dropped into the editor will be renamed according to the ");

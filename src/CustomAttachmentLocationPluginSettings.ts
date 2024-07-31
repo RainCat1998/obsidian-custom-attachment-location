@@ -21,6 +21,7 @@ export default class CustomAttachmentLocationPluginSettings {
    */
   public pastedImageFileName: string = "";
 
+  public renamePastedFilesWithKnownNames: boolean = false;
   public renameAttachmentsOnDragAndDrop: boolean = false;
   public replaceWhitespace: boolean = false;
   public toLowerCase: boolean = false;

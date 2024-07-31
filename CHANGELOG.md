@@ -7,7 +7,7 @@
 ## 3.6.0
 
 - Handle move, not only rename
-- Add `Keep empty attachment folders`
+- Add `Keep empty attachment folders` setting
 
 ## 3.5.0
 

@@ -136,8 +136,8 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
 
     const oldName = basename(oldFilePath, extname(oldFilePath));
 
-    const oldAttachmentFolderPath: string = await getAttachmentFolderFullPath(this, createSubstitutionsFromPath(oldFilePath));
-    const newAttachmentFolderPath: string = await getAttachmentFolderFullPath(this, createSubstitutionsFromPath(newFile.path));
+    const oldAttachmentFolderPath = await getAttachmentFolderFullPath(this, createSubstitutionsFromPath(oldFilePath));
+    const newAttachmentFolderPath = await getAttachmentFolderFullPath(this, createSubstitutionsFromPath(newFile.path));
 
     if (oldAttachmentFolderPath !== newAttachmentFolderPath) {
       const folder = this.app.vault.getFolderByPath(oldAttachmentFolderPath);

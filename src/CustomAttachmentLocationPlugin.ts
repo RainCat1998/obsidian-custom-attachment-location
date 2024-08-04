@@ -1,4 +1,5 @@
 import {
+  Menu,
   normalizePath,
   Notice,
   Plugin,
@@ -27,6 +28,12 @@ import {
 } from "./Vault.ts";
 import { registerPasteDropEventHandlers } from "./PasteDropEvent.ts";
 import { createSubstitutionsFromPath } from "./Substitutions.ts";
+import {
+  collectAttachmentsCurrentFolder,
+  collectAttachmentsCurrentNote,
+  collectAttachmentsEntireVault,
+  collectAttachmentsInFolder
+} from "./AttachmentCollector.ts";
 
 type GetAvailablePathForAttachmentsFn = (filename: string, extension: string, file: TAbstractFile) => Promise<string>;
 type GetAvailablePathFn = (path: string, extension: string) => string;
@@ -50,6 +57,26 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
     this.registerEvent(this.app.vault.on("delete", convertAsyncToSync(this.handleDelete.bind(this))));
     this.registerEvent(this.app.vault.on("rename", convertAsyncToSync(this.handleRename.bind(this))));
     registerPasteDropEventHandlers(this);
+
+    this.addCommand({
+      id: "collect-attachments-current-note",
+      name: "Collect attachments in current note",
+      checkCallback: (checking) => collectAttachmentsCurrentNote(this.app, checking),
+    });
+
+    this.addCommand({
+      id: "collect-attachments-current-folder",
+      name: "Collect attachments in current folder",
+      checkCallback: (checking) => collectAttachmentsCurrentFolder(this.app, checking),
+    });
+
+    this.addCommand({
+      id: "collect-attachments-entire-vault",
+      name: "Collect attachments in entire vault",
+      callback: () => collectAttachmentsEntireVault(this.app),
+    });
+
+    this.registerEvent(this.app.workspace.on("file-menu", this.handleFileMenu.bind(this)));
   }
 
   public async saveSettings(newSettings: CustomAttachmentLocationPluginSettings): Promise<void> {
@@ -247,5 +274,17 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
     }
 
     return canRemove;
+  }
+
+  private handleFileMenu(menu: Menu, file: TAbstractFile): void {
+    if (!(file instanceof TFolder)) {
+      return;
+    }
+
+    menu.addItem((item) => {
+      item.setTitle("Collect attachments in folder")
+        .setIcon("download")
+        .onClick(() => collectAttachmentsInFolder(this.app, file));
+    });
   }
 }

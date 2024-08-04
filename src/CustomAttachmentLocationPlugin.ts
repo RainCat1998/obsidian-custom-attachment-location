@@ -147,7 +147,7 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
       }
 
       const newAttachmentParentFolderPath: string = dirname(newAttachmentFolderPath);
-      await this.createFolder(newAttachmentParentFolderPath);
+      await createFolderSafe(this.app, newAttachmentParentFolderPath);
 
       await this.app.fileManager.renameFile(folder, newAttachmentFolderPath);
 

@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 3.8.0
+
+- Improve checks for target type
+
 ## 3.7.0
 
 - Add `Rename pasted files with known names` setting

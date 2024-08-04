@@ -39,22 +39,6 @@ async function handlePasteAndDrop(plugin: CustomAttachmentLocationPlugin, event:
   await eventWrapper.handle();
 }
 
-function getTargetType(target: EventTarget | null): string | null {
-  if (!(target instanceof HTMLElement)) {
-    return null;
-  }
-
-  if (target.closest(".markdown-source-view")) {
-    return "Note";
-  }
-
-  if (target.closest(".canvas-wrapper")) {
-    return "Canvas";
-  }
-
-  return null;
-}
-
 abstract class EventWrapper {
   protected constructor(
     protected readonly event: ClipboardEvent | DragEvent,
@@ -71,7 +55,7 @@ abstract class EventWrapper {
 
     const draggable = this.plugin.app.dragManager.draggable;
 
-    const targetType = getTargetType(this.event.target);
+    const targetType = this.getTargetType();
 
     if (!targetType) {
       return;
@@ -154,6 +138,29 @@ abstract class EventWrapper {
   protected abstract cloneWithNewDataTransfer(dataTransfer: DataTransfer): ClipboardEvent | DragEvent;
   protected abstract shouldRenameAttachments(filePath: string): boolean;
   protected abstract shouldConvertImages(): boolean;
+
+  private getTargetType(): string | null {
+    if (!(this.event.target instanceof HTMLElement)) {
+      return null;
+    }
+
+    if (this.plugin.app.workspace.activeEditor?.editor?.containerEl.contains(this.event.target)) {
+      return "Note";
+    }
+
+    if (this.event.target.closest(".canvas-wrapper")) {
+      return "Canvas";
+    }
+
+    const canvasView = this.plugin.app.workspace.getActiveFileView();
+
+    if (this.event.target.matches("body") && canvasView?.getViewType() === "canvas" && canvasView.containerEl.closest(".mod-active")) {
+      return "Canvas";
+    }
+
+    return null;
+  }
+
 }
 
 class PasteEventWrapper extends EventWrapper {

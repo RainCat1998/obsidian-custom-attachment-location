@@ -1,10 +1,10 @@
 import {
   Menu,
-  normalizePath,
   Plugin,
   TAbstractFile,
   TFile,
-  TFolder
+  TFolder,
+  Vault
 } from "obsidian";
 import CustomAttachmentLocationPluginSettings from "./CustomAttachmentLocationPluginSettings.ts";
 import CustomAttachmentLocationPluginSettingsTab from "./CustomAttachmentLocationPluginSettingsTab.ts";
@@ -13,7 +13,8 @@ const {
   basename,
   dirname,
   extname,
-  join
+  join,
+  relative
 } = posix;
 import { convertAsyncToSync } from "./Async.ts";
 import {
@@ -29,6 +30,7 @@ import {
 import { registerPasteDropEventHandlers } from "./PasteDropEvent.ts";
 import { createSubstitutionsFromPath } from "./Substitutions.ts";
 import {
+  collectAttachments,
   collectAttachmentsCurrentFolder,
   collectAttachmentsCurrentNote,
   collectAttachmentsEntireVault,
@@ -61,19 +63,19 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
     this.addCommand({
       id: "collect-attachments-current-note",
       name: "Collect attachments in current note",
-      checkCallback: (checking) => collectAttachmentsCurrentNote(this.app, checking),
+      checkCallback: (checking) => collectAttachmentsCurrentNote(this, checking),
     });
 
     this.addCommand({
       id: "collect-attachments-current-folder",
       name: "Collect attachments in current folder",
-      checkCallback: (checking) => collectAttachmentsCurrentFolder(this.app, checking),
+      checkCallback: (checking) => collectAttachmentsCurrentFolder(this, checking),
     });
 
     this.addCommand({
       id: "collect-attachments-entire-vault",
       name: "Collect attachments in entire vault",
-      callback: () => collectAttachmentsEntireVault(this.app),
+      callback: () => collectAttachmentsEntireVault(this),
     });
 
     this.registerEvent(this.app.workspace.on("file-menu", this.handleFileMenu.bind(this)));
@@ -139,44 +141,52 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
     const oldAttachmentFolderPath = await getAttachmentFolderFullPath(this, createSubstitutionsFromPath(oldFilePath));
     const newAttachmentFolderPath = await getAttachmentFolderFullPath(this, createSubstitutionsFromPath(newFile.path));
 
-    if (oldAttachmentFolderPath !== newAttachmentFolderPath) {
-      const folder = this.app.vault.getFolderByPath(oldAttachmentFolderPath);
+    let oldAttachmentFolder = this.app.vault.getFolderByPath(oldAttachmentFolderPath);
 
-      if (!folder) {
+    if (!oldAttachmentFolder) {
+      return;
+    }
+
+    const isSameFolder = oldAttachmentFolderPath === newAttachmentFolderPath;
+
+    if (!isSameFolder) {
+      await collectAttachments(this, newFile, oldFilePath, (path) => path.startsWith(oldAttachmentFolderPath));
+
+      oldAttachmentFolder = this.app.vault.getFolderByPath(oldAttachmentFolderPath);
+
+      if (!oldAttachmentFolder) {
         return;
       }
+    }
 
-      const newAttachmentParentFolderPath: string = dirname(newAttachmentFolderPath);
-      await createFolderSafe(this.app, newAttachmentParentFolderPath);
+    if (isSameFolder && !this._settings.autoRenameFiles) {
+      return;
+    }
 
-      await this.app.fileManager.renameFile(folder, newAttachmentFolderPath);
+    const children: TAbstractFile[] = [];
 
+    Vault.recurseChildren(oldAttachmentFolder, (child) => {
+      children.push(child);
+    });
+
+    for (const child of children) {
+      const relativePath = relative(oldAttachmentFolderPath, child.path);
+      const newChildPath = join(newAttachmentFolderPath, relativePath);
+      if (child instanceof TFolder) {
+        if (!isSameFolder) {
+          await createFolderSafe(this.app, newChildPath);
+        }
+      } else if (child instanceof TFile) {
+        const newChildName = this._settings.autoRenameFiles ? child.basename.replaceAll(oldName, newName) : child.basename;
+        const newFilePath = join(dirname(newChildPath), newChildName + "." + child.extension);
+        if (child.path !== newFilePath) {
+          await this.app.vault.rename(child, newFilePath);
+        }
+      }
+    }
+
+    if (!isSameFolder) {
       await removeFolderSafe(this.app, oldAttachmentFolderPath);
-    }
-
-    if (!this._settings.autoRenameFiles) {
-      return;
-    }
-
-    const newAttachmentFolder = this.app.vault.getFolderByPath(newAttachmentFolderPath);
-
-    if (!newAttachmentFolder) {
-      return;
-    }
-
-    for (const child of newAttachmentFolder.children) {
-      if (!(child instanceof TFile)) {
-        continue;
-      }
-      console.debug(child.path);
-      let filename = child.name;
-      if (filename.contains(oldName)) {
-        filename = filename.replaceAll(oldName, newName);
-        const newFilePath = normalizePath(join(newAttachmentFolderPath, filename));
-        await this.app.fileManager.renameFile(child, newFilePath);
-      } else {
-        continue;
-      }
     }
   }
 

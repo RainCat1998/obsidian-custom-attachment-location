@@ -15,18 +15,26 @@ import {
   applyFileChanges,
   createFolderSafe,
   isNote,
-  processWithRetry
+  processWithRetry,
+  removeFolderSafe
 } from "./Vault.ts";
 import { invokeAsyncSafely } from "./Async.ts";
 import { posix } from "@jinder/path";
 import { toJson } from "./Object.ts";
-const { dirname } = posix;
-
+import type CustomAttachmentLocationPlugin from "./CustomAttachmentLocationPlugin.ts";
+import { getAttachmentFolderFullPath } from "./AttachmentPath.ts";
+import { createSubstitutionsFromPath } from "./Substitutions.ts";
+const {
+  basename,
+  dirname,
+  extname,
+  join
+} = posix;
 
 type AttachmentMoveResult = {
-  oldPath: string;
-  newPath: string;
-  newLink: string;
+  oldAttachmentPath: string;
+  newAttachmentPath: string;
+  newAttachmentLink: string;
 }
 
 type SplitSubpathResult = {
@@ -34,37 +42,41 @@ type SplitSubpathResult = {
   subpath: string | undefined;
 }
 
-export function collectAttachmentsCurrentNote(app: App, checking: boolean): boolean {
-  const note = app.workspace.getActiveFile();
+export function collectAttachmentsCurrentNote(plugin: CustomAttachmentLocationPlugin, checking: boolean): boolean {
+  const note = plugin.app.workspace.getActiveFile();
   if (!isNote(note)) {
     return false;
   }
 
   if (!checking) {
-    invokeAsyncSafely(collectAttachments(app, note));
+    invokeAsyncSafely(collectAttachments(plugin, note));
   }
 
   return true;
 }
 
-export function collectAttachmentsCurrentFolder(app: App, checking: boolean): boolean {
-  const note = app.workspace.getActiveFile();
+export function collectAttachmentsCurrentFolder(plugin: CustomAttachmentLocationPlugin, checking: boolean): boolean {
+  const note = plugin.app.workspace.getActiveFile();
   if (!isNote(note)) {
     return false;
   }
 
   if (!checking) {
-    invokeAsyncSafely(collectAttachmentsInFolder(app, note.parent!));
+    invokeAsyncSafely(collectAttachmentsInFolder(plugin, note.parent!));
   }
 
   return true;
 }
 
-export function collectAttachmentsEntireVault(app: App): void {
-  invokeAsyncSafely(collectAttachmentsInFolder(app, app.vault.getRoot()));
+export function collectAttachmentsEntireVault(plugin: CustomAttachmentLocationPlugin): void {
+  invokeAsyncSafely(collectAttachmentsInFolder(plugin, plugin.app.vault.getRoot()));
 }
 
-async function collectAttachments(app: App, note: TFile): Promise<void> {
+export async function collectAttachments(plugin: CustomAttachmentLocationPlugin, note: TFile, oldPath?: string, attachmentFilter?: (path: string) => boolean): Promise<void> {
+  const app = plugin.app;
+  oldPath ??= note.path;
+  attachmentFilter ??= (): boolean => true;
+
   console.debug(`Collect attachments in note: ${note.path}`);
 
   const attachmentsMap = new Map<string, string>();
@@ -81,16 +93,21 @@ async function collectAttachments(app: App, note: TFile): Promise<void> {
 
     return (await Promise.all(links
       .map(async (link) => {
-        const attachmentMoveResult = await prepareAttachmentToMove(app, link, note.path);
+        const attachmentMoveResult = await prepareAttachmentToMove(plugin, link, note.path, oldPath);
         if (!attachmentMoveResult) {
           return null;
         }
-        attachmentsMap.set(attachmentMoveResult.oldPath, attachmentMoveResult.newPath);
+
+        if (!attachmentFilter(attachmentMoveResult.oldAttachmentPath)) {
+          return null;
+        }
+
+        attachmentsMap.set(attachmentMoveResult.oldAttachmentPath, attachmentMoveResult.newAttachmentPath);
         return isCanvas ? null : {
           startIndex: link.position.start.offset,
           endIndex: link.position.end.offset,
           oldContent: link.original,
-          newContent: attachmentMoveResult.newLink
+          newContent: attachmentMoveResult.newAttachmentLink
         };
       })))
       .filter((change) => change !== null);
@@ -123,9 +140,19 @@ async function collectAttachments(app: App, note: TFile): Promise<void> {
       continue;
     }
 
+    let oldAttachmentFolder = oldAttachmentFile.parent;
+
     const backlinks = app.metadataCache.getBacklinksForFile(oldAttachmentFile);
     if (backlinks.count() === 0) {
       await app.vault.rename(oldAttachmentFile, newPath);
+      while (oldAttachmentFolder != null) {
+        if (oldAttachmentFolder.children.length > 0) {
+          break;
+        }
+
+        await removeFolderSafe(app, oldAttachmentFolder.path, oldPath);
+        oldAttachmentFolder = oldAttachmentFolder.parent;
+      }
     } else {
       await app.vault.copy(oldAttachmentFile, newPath);
     }
@@ -134,52 +161,54 @@ async function collectAttachments(app: App, note: TFile): Promise<void> {
   notice.hide();
 }
 
-async function prepareAttachmentToMove(app: App, link: ReferenceCache, notePath: string): Promise<AttachmentMoveResult | null> {
+async function prepareAttachmentToMove(plugin: CustomAttachmentLocationPlugin, link: ReferenceCache, newNotePath: string, oldNotePath: string): Promise<AttachmentMoveResult | null> {
+  const app = plugin.app;
   const { linkPath, subpath } = splitSubpath(link.link);
-  let attachmentFile = app.metadataCache.getFirstLinkpathDest(linkPath, notePath);
-  if (!attachmentFile) {
+  let oldAttachmentFile = app.metadataCache.getFirstLinkpathDest(linkPath, oldNotePath);
+  if (!oldAttachmentFile) {
     return null;
   }
 
-  if (isNote(attachmentFile)) {
+  if (isNote(oldAttachmentFile)) {
     return null;
   }
 
-  attachmentFile = attachmentFile as TFile;
+  oldAttachmentFile = oldAttachmentFile as TFile;
 
-  const oldPath = attachmentFile.path;
-  const oldName = attachmentFile.name;
+  const oldAttachmentPath = oldAttachmentFile.path;
+  const oldAttachmentName = oldAttachmentFile.name;
 
-  await app.vault.rename(attachmentFile, oldPath + ".temp");
+  const oldNoteBaseName = basename(oldNotePath, extname(oldNotePath));
+  const newNoteBaseName = basename(newNotePath, extname(newNotePath));
 
-  const newPath = await app.fileManager.getAvailablePathForAttachment(oldName, notePath);
+  const newAttachmentName = plugin.settings.autoRenameFiles ? oldAttachmentName.replaceAll(oldNoteBaseName, newNoteBaseName) : oldAttachmentName;
+  const newAttachmentFolderPath = await getAttachmentFolderFullPath(plugin, createSubstitutionsFromPath(newNotePath));
+  const newAttachmentPath = join(newAttachmentFolderPath, newAttachmentName);
 
-  await app.vault.rename(attachmentFile, oldPath);
-
-  if (oldPath === newPath) {
+  if (oldAttachmentPath === newAttachmentPath) {
     return null;
   }
 
-  await createFolderSafe(app, dirname(newPath));
-  const newFile = await app.vault.create(newPath, "");
+  await createFolderSafe(app, dirname(newAttachmentPath));
+  const newAttachmentFile = await app.vault.create(newAttachmentPath, "");
 
-  let newLink = app.fileManager.generateMarkdownLink(newFile, notePath, subpath, link.displayText);
+  let newAttachmentLink = app.fileManager.generateMarkdownLink(newAttachmentFile, newNotePath, subpath, link.displayText);
 
-  await app.vault.delete(attachmentFile);
+  await app.vault.delete(newAttachmentFile);
 
   if (!link.original.startsWith("!")) {
-    newLink = newLink.slice(1);
-    newLink = newLink.replace("[]", `[${link.displayText}]`);
+    newAttachmentLink = newAttachmentLink.slice(1);
+    newAttachmentLink = newAttachmentLink.replace("[]", `[${link.displayText}]`);
   }
 
   return {
-    oldPath,
-    newPath,
-    newLink
+    oldAttachmentPath,
+    newAttachmentPath,
+    newAttachmentLink
   };
 }
 
-export async function collectAttachmentsInFolder(app: App, folder: TFolder): Promise<void> {
+export async function collectAttachmentsInFolder(plugin: CustomAttachmentLocationPlugin, folder: TFolder): Promise<void> {
   console.debug(`Collect attachments in folder: ${folder.path}`);
   const files: TFile[] = [];
   Vault.recurseChildren(folder, (child) => {
@@ -197,7 +226,7 @@ export async function collectAttachmentsInFolder(app: App, folder: TFolder): Pro
     i++;
     const message = `Collecting attachments # ${i} / ${files.length} - ${file.path}`;
     notice.setMessage(message);
-    await collectAttachments(app, file);
+    await collectAttachments(plugin, file);
   }
 
   notice.hide();

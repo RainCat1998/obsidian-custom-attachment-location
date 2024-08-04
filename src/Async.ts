@@ -13,29 +13,30 @@ export async function retryWithTimeout(
   } = {}
 ): Promise<void> {
   await runWithTimeout(timeoutInMilliseconds, async () => {
-    let failedBefore = false;
+    let attempt = 0;
     while (true) {
+      attempt++;
       if (await asyncFn()) {
-        if (failedBefore) {
-          console.debug("Retry completed successfully");
+        if (attempt > 1) {
+          console.debug(`Retry completed successfully after ${attempt} attempts`);
         }
         return;
       }
 
-      failedBefore = true;
-      console.debug(`Retry completed unsuccessfully. Trying again in ${retryDelayInMilliseconds} milliseconds`);
+      console.debug(`Retry attempt ${attempt} completed unsuccessfully. Trying again in ${retryDelayInMilliseconds} milliseconds`);
+      console.debug(asyncFn);
       await sleep(retryDelayInMilliseconds);
     }
   });
 }
 
 async function runWithTimeout<R>(timeoutInMilliseconds: number, asyncFn: () => Promise<R>): Promise<R> {
-  return await Promise.race([asyncFn(), timeout()]);
+  return await Promise.race([asyncFn(), timeout(timeoutInMilliseconds)]);
+}
 
-  async function timeout(): Promise<never> {
-    await sleep(timeoutInMilliseconds);
-    throw new Error(`Timed out in ${timeoutInMilliseconds} milliseconds`);
-  }
+async function timeout(timeoutInMilliseconds: number): Promise<never> {
+  await sleep(timeoutInMilliseconds);
+  throw new Error(`Timed out in ${timeoutInMilliseconds} milliseconds`);
 }
 
 export function invokeAsyncSafely(promise: Promise<unknown>): void {

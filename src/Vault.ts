@@ -1,5 +1,7 @@
 import {
+  Notice,
   TFile,
+  TFolder,
   type App,
   type TAbstractFile
 } from "obsidian";
@@ -110,4 +112,52 @@ export async function applyFileChanges(app: App, file: TFile, changesFn: () => M
 
     return doChangesMatchContent;
   });
+}
+
+
+export async function removeFolderSafe(app: App, folderPath: string, removedNotePath?: string): Promise<boolean> {
+  const folder = app.vault.getFolderByPath(folderPath);
+
+  if (!folder) {
+    return false;
+  }
+
+  let canRemove = true;
+
+  for (const child of folder.children) {
+    if (child instanceof TFile) {
+      const backlinks = app.metadataCache.getBacklinksForFile(child);
+      if (removedNotePath) {
+        backlinks.removeKey(removedNotePath);
+      }
+      if (backlinks.count() !== 0) {
+        new Notice(`Attachment ${child.path} is still used by other notes. It will not be deleted.`);
+        canRemove = false;
+      } else {
+        try {
+          await app.vault.delete(child);
+        } catch (e) {
+          if (await app.vault.exists(child)) {
+            console.error(`Failed to delete ${child.path}`, e);
+            canRemove = false;
+          }
+        }
+      }
+    } else if (child instanceof TFolder) {
+      canRemove &&= await removeFolderSafe(app, child.path, removedNotePath);
+    }
+  }
+
+  if (canRemove) {
+    try {
+      await app.vault.delete(folder, true);
+    } catch (e) {
+      if (await app.vault.exists(folder)) {
+        console.error(`Failed to delete ${folder.path}`, e);
+        canRemove = false;
+      }
+    }
+  }
+
+  return canRemove;
 }

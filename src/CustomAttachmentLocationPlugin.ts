@@ -1,7 +1,6 @@
 import {
   Menu,
   normalizePath,
-  Notice,
   Plugin,
   TAbstractFile,
   TFile,
@@ -24,7 +23,8 @@ import {
 import { around } from "monkey-around";
 import {
   createFolderSafe,
-  isNote
+  isNote,
+  removeFolderSafe
 } from "./Vault.ts";
 import { registerPasteDropEventHandlers } from "./PasteDropEvent.ts";
 import { createSubstitutionsFromPath } from "./Substitutions.ts";
@@ -151,7 +151,7 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
 
       await this.app.fileManager.renameFile(folder, newAttachmentFolderPath);
 
-      await this.safeRemoveFolder(oldAttachmentFolderPath);
+      await removeFolderSafe(this.app, oldAttachmentFolderPath);
     }
 
     if (!this._settings.autoRenameFiles) {
@@ -186,7 +186,7 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
     }
 
     const fullPath = await getAttachmentFolderFullPath(this, createSubstitutionsFromPath(file.path));
-    await this.safeRemoveFolder(fullPath, file.path);
+    await removeFolderSafe(this.app, fullPath, file.path);
   }
 
   private async getAvailablePathForAttachments(filename: string, extension: string, file: TAbstractFile, originalFn: GetAvailablePathForAttachmentsFn): Promise<string> {
@@ -227,53 +227,6 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
     if (!await this.app.vault.adapter.exists(gitKeepPath)) {
       await this.app.vault.create(gitKeepPath, "");
     }
-  }
-
-  private async safeRemoveFolder(folderPath: string, removedNotePath?: string): Promise<boolean> {
-    const folder = this.app.vault.getFolderByPath(folderPath);
-
-    if (!folder) {
-      return false;
-    }
-
-    let canRemove = true;
-
-    for (const child of folder.children) {
-      if (child instanceof TFile) {
-        const backlinks = this.app.metadataCache.getBacklinksForFile(child);
-        if (removedNotePath) {
-          backlinks.removeKey(removedNotePath);
-        }
-        if (backlinks.count() !== 0) {
-          new Notice(`Attachment ${child.path} is still used by other notes. It will not be deleted.`);
-          canRemove = false;
-        } else {
-          try {
-            await this.app.vault.delete(child);
-          } catch (e) {
-            if (await this.app.vault.exists(child)) {
-              console.error(`Failed to delete ${child.path}`, e);
-              canRemove = false;
-            }
-          }
-        }
-      } else if (child instanceof TFolder) {
-        canRemove &&= await this.safeRemoveFolder(child.path, removedNotePath);
-      }
-    }
-
-    if (canRemove) {
-      try {
-        await this.app.vault.delete(folder, true);
-      } catch (e) {
-        if (await this.app.vault.exists(folder)) {
-          console.error(`Failed to delete ${folder.path}`, e);
-          canRemove = false;
-        }
-      }
-    }
-
-    return canRemove;
   }
 
   private handleFileMenu(menu: Menu, file: TAbstractFile): void {

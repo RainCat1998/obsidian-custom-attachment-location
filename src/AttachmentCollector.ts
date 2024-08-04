@@ -18,7 +18,6 @@ import {
   processWithRetry
 } from "./Vault.ts";
 import { invokeAsyncSafely } from "./Async.ts";
-import { createTFile } from "obsidian-typings/implementations";
 import { posix } from "@jinder/path";
 import { toJson } from "./Object.ts";
 const { dirname } = posix;
@@ -124,9 +123,6 @@ async function collectAttachments(app: App, note: TFile): Promise<void> {
       continue;
     }
 
-    const newPathDir = dirname(newPath);
-    await createFolderSafe(app, newPathDir);
-
     const backlinks = app.metadataCache.getBacklinksForFile(oldAttachmentFile);
     if (backlinks.count() === 0) {
       await app.vault.rename(oldAttachmentFile, newPath);
@@ -158,7 +154,12 @@ async function prepareAttachmentToMove(app: App, link: ReferenceCache, notePath:
     return null;
   }
 
-  let newLink = app.fileManager.generateMarkdownLink(createTFile(app.vault, newPath), notePath, subpath, link.displayText);
+  await createFolderSafe(app, dirname(newPath));
+  const newFile = await app.vault.create(newPath, "");
+
+  let newLink = app.fileManager.generateMarkdownLink(newFile, notePath, subpath, link.displayText);
+
+  await app.vault.delete(attachmentFile);
 
   if (!link.original.startsWith("!")) {
     newLink = newLink.slice(1);

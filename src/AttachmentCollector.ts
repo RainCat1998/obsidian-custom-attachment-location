@@ -147,8 +147,14 @@ async function prepareAttachmentToMove(app: App, link: ReferenceCache, notePath:
 
   attachmentFile = attachmentFile as TFile;
 
-  const newPath = await app.fileManager.getAvailablePathForAttachment(attachmentFile.name, notePath);
   const oldPath = attachmentFile.path;
+  const oldName = attachmentFile.name;
+
+  await app.vault.rename(attachmentFile, oldPath + ".temp");
+
+  const newPath = await app.fileManager.getAvailablePathForAttachment(oldName, notePath);
+
+  await app.vault.rename(attachmentFile, oldPath);
 
   if (oldPath === newPath) {
     return null;

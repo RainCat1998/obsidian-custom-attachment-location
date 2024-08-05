@@ -1,5 +1,3 @@
-import CustomAttachmentLocationPluginLegacySettings from "./CustomAttachmentLocationPluginLegacySettings.ts";
-
 export default class CustomAttachmentLocationPluginSettings {
   public attachmentFolderPath: string = "./assets/${filename}";
   public autoRenameFiles: boolean = false;
@@ -17,7 +15,7 @@ export default class CustomAttachmentLocationPluginSettings {
   public toLowerCase: boolean = false;
 
   public static load(data: unknown): CustomAttachmentLocationPluginSettings {
-    const legacySettings = new CustomAttachmentLocationPluginLegacySettings();
+    const legacySettings = new LegacySettings();
     Object.assign(legacySettings, data);
 
     const dateTimeFormat = legacySettings.dateTimeFormat || "YYYYMMDDHHmmssSSS";
@@ -45,4 +43,9 @@ export default class CustomAttachmentLocationPluginSettings {
 
 function addDateTimeFormat(str: string, dateTimeFormat: string): string {
   return str.replaceAll("${date}", `\${date:${dateTimeFormat}}`);
+}
+
+class LegacySettings extends CustomAttachmentLocationPluginSettings {
+  public dateTimeFormat: string = "";
+  public pastedImageFileName: string = "";
 }

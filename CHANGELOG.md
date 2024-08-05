@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 4.2.0
+
+- Add `Rename only images` setting
+
 ## 4.1.0
 
 - Generate links exactly as Obsidian does

@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 4.2.1
+
+- Fix build
+
 ## 4.2.0
 
 - Add `Rename only images` setting

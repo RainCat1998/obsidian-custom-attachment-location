@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 4.1.0
+
+- Generate links exactly as Obsidian does
+
 ## 4.0.0
 
 - Disable Obsidian's built-in way to update links

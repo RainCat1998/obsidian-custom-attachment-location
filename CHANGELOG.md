@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## 4.0.0
+
+- Disable Obsidian's built-in way to update links
+- Add commands and buttons to collect attachments
+
 ## 3.8.0
 
 - Improve checks for target type

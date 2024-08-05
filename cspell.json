@@ -17,13 +17,16 @@
     "kaiiiz",
     "lezer",
     "Linkpath",
+    "Linktext",
     "mengbo",
     "mnaoumov",
     "outfile",
     "postversion",
     "preversion",
     "redrop",
-    "typora"
+    "typora",
+    "Wikilink",
+    "Wikilinks"
   ],
   "ignoreWords": [],
   "import": [],

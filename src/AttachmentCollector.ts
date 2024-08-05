@@ -232,7 +232,7 @@ export async function collectAttachmentsInFolder(plugin: CustomAttachmentLocatio
   notice.hide();
 }
 
-function splitSubpath(link: string): SplitSubpathResult {
+export function splitSubpath(link: string): SplitSubpathResult {
   const SUBPATH_SEPARATOR = "#";
   const [linkPath = "", subpath] = link.split(SUBPATH_SEPARATOR);
   return {

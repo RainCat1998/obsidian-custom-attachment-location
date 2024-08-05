@@ -3,20 +3,13 @@ import {
   Plugin,
   TAbstractFile,
   TFile,
-  TFolder,
-  Vault
+  TFolder
 } from "obsidian";
 import CustomAttachmentLocationPluginSettings from "./CustomAttachmentLocationPluginSettings.ts";
 import CustomAttachmentLocationPluginSettingsTab from "./CustomAttachmentLocationPluginSettingsTab.ts";
 import { posix } from "@jinder/path";
-const {
-  basename,
-  dirname,
-  extname,
-  join,
-  relative
-} = posix;
-import { convertAsyncToSync } from "./Async.ts";
+const { join } = posix;
+import { invokeAsyncSafely } from "./Async.ts";
 import {
   getAttachmentFolderFullPath,
   makeFileName
@@ -24,18 +17,20 @@ import {
 import { around } from "monkey-around";
 import {
   createFolderSafe,
-  isNote,
-  removeFolderSafe
+  isNote
 } from "./Vault.ts";
 import { registerPasteDropEventHandlers } from "./PasteDropEvent.ts";
 import { createSubstitutionsFromPath } from "./Substitutions.ts";
 import {
-  collectAttachments,
   collectAttachmentsCurrentFolder,
   collectAttachmentsCurrentNote,
   collectAttachmentsEntireVault,
   collectAttachmentsInFolder
 } from "./AttachmentCollector.ts";
+import {
+  handleDelete,
+  handleRename
+} from "./RenameDeleteHandler.ts";
 
 type GetAvailablePathForAttachmentsFn = (filename: string, extension: string, file: TAbstractFile) => Promise<string>;
 type GetAvailablePathFn = (path: string, extension: string) => string;
@@ -56,8 +51,8 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
 
     await this.loadSettings();
 
-    this.registerEvent(this.app.vault.on("delete", convertAsyncToSync(this.handleDelete.bind(this))));
-    this.registerEvent(this.app.vault.on("rename", convertAsyncToSync(this.handleRename.bind(this))));
+    this.registerEvent(this.app.vault.on("delete", (file) => invokeAsyncSafely(handleDelete(this, file))));
+    this.registerEvent(this.app.vault.on("rename", (file, oldPath) => invokeAsyncSafely(handleRename(this, file, oldPath))));
     registerPasteDropEventHandlers(this);
 
     this.addCommand({
@@ -123,82 +118,6 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
     return str.replaceAll("${date}", `\${date:${dateTimeFormat}}`);
   }
 
-  private async handleRename(newFile: TAbstractFile, oldFilePath: string): Promise<void> {
-    console.debug("Handle Rename");
-
-    if (!isNote(newFile)) {
-      return;
-    }
-
-    if (!this._settings.autoRenameFolder) {
-      return;
-    }
-
-    const newName = newFile.basename;
-
-    const oldName = basename(oldFilePath, extname(oldFilePath));
-
-    const oldAttachmentFolderPath = await getAttachmentFolderFullPath(this, createSubstitutionsFromPath(oldFilePath));
-    const newAttachmentFolderPath = await getAttachmentFolderFullPath(this, createSubstitutionsFromPath(newFile.path));
-
-    let oldAttachmentFolder = this.app.vault.getFolderByPath(oldAttachmentFolderPath);
-
-    if (!oldAttachmentFolder) {
-      return;
-    }
-
-    const isSameFolder = oldAttachmentFolderPath === newAttachmentFolderPath;
-
-    if (!isSameFolder) {
-      await collectAttachments(this, newFile, oldFilePath, (path) => path.startsWith(oldAttachmentFolderPath));
-
-      oldAttachmentFolder = this.app.vault.getFolderByPath(oldAttachmentFolderPath);
-
-      if (!oldAttachmentFolder) {
-        return;
-      }
-    }
-
-    if (isSameFolder && !this._settings.autoRenameFiles) {
-      return;
-    }
-
-    const children: TAbstractFile[] = [];
-
-    Vault.recurseChildren(oldAttachmentFolder, (child) => {
-      children.push(child);
-    });
-
-    for (const child of children) {
-      const relativePath = relative(oldAttachmentFolderPath, child.path);
-      const newChildPath = join(newAttachmentFolderPath, relativePath);
-      if (child instanceof TFolder) {
-        if (!isSameFolder) {
-          await createFolderSafe(this.app, newChildPath);
-        }
-      } else if (child instanceof TFile) {
-        const newChildName = this._settings.autoRenameFiles ? child.basename.replaceAll(oldName, newName) : child.basename;
-        const newFilePath = join(dirname(newChildPath), newChildName + "." + child.extension);
-        if (child.path !== newFilePath) {
-          await this.app.vault.rename(child, newFilePath);
-        }
-      }
-    }
-
-    if (!isSameFolder) {
-      await removeFolderSafe(this.app, oldAttachmentFolderPath);
-    }
-  }
-
-  private async handleDelete(file: TAbstractFile): Promise<void> {
-    if (!isNote(file)) {
-      return;
-    }
-
-    const fullPath = await getAttachmentFolderFullPath(this, createSubstitutionsFromPath(file.path));
-    await removeFolderSafe(this.app, fullPath, file.path);
-  }
-
   private async getAvailablePathForAttachments(filename: string, extension: string, file: TAbstractFile, originalFn: GetAvailablePathForAttachmentsFn): Promise<string> {
     if (!(file instanceof TFile)) {
       return await originalFn.call(this.app.vault, filename, extension, file);
@@ -247,7 +166,7 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
     menu.addItem((item) => {
       item.setTitle("Collect attachments in folder")
         .setIcon("download")
-        .onClick(() => collectAttachmentsInFolder(this.app, file));
+        .onClick(() => collectAttachmentsInFolder(this, file));
     });
   }
 }

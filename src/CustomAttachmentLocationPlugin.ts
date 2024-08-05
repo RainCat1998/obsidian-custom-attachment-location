@@ -91,31 +91,7 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
 
   private async loadSettings(): Promise<void> {
     this._settings = CustomAttachmentLocationPluginSettings.load(await this.loadData());
-
-    // eslint-disable-next-line deprecation/deprecation
-    if (!this._settings.dateTimeFormat && !this._settings.pastedImageFileName) {
-      return;
-    }
-
-    // eslint-disable-next-line deprecation/deprecation
-    const dateTimeFormat = this._settings.dateTimeFormat || "YYYYMMDDHHmmssSSS";
-
-    this._settings.attachmentFolderPath = this.addDateTimeFormat(this._settings.attachmentFolderPath, dateTimeFormat);
-
-    // eslint-disable-next-line deprecation/deprecation
-    this._settings.pastedFileName = this.addDateTimeFormat(this._settings.pastedFileName || this._settings.pastedImageFileName || "file-${date}", dateTimeFormat);
-
-    // eslint-disable-next-line deprecation/deprecation
-    this._settings.dateTimeFormat = "";
-
-    // eslint-disable-next-line deprecation/deprecation
-    this._settings.pastedImageFileName = "";
-
     await this.saveSettings(this._settings);
-  }
-
-  private addDateTimeFormat(str: string, dateTimeFormat: string): string {
-    return str.replaceAll("${date}", `\${date:${dateTimeFormat}}`);
   }
 
   private async getAvailablePathForAttachments(filename: string, extension: string, file: TAbstractFile, originalFn: GetAvailablePathForAttachmentsFn): Promise<string> {

@@ -96,7 +96,7 @@ async function updateLink(app: App, link: ReferenceCache, file: TFile | null, so
   }
   const isEmbed = link.original.startsWith("!");
   const isWikilink = link.original.includes("[[");
-  const { linkPath, subpath } = splitSubpath(link.link);
+  const { subpath } = splitSubpath(link.link);
 
   const oldPath = file.path;
   const newPath = renameMap.get(file.path);
@@ -106,7 +106,8 @@ async function updateLink(app: App, link: ReferenceCache, file: TFile | null, so
     await app.vault.rename(file, newPath);
   }
 
-  const newLink = generateMarkdownLink(app, file, source.path, subpath, link.displayText === basename(linkPath, extname(linkPath)) ? undefined : link.displayText, isEmbed, isWikilink);
+  const alias = getAlias(link.displayText, oldPath, newPath);
+  const newLink = generateMarkdownLink(app, file, source.path, subpath, alias, isEmbed, isWikilink);
 
   if (isOldFileRenamed) {
     await app.vault.rename(file, oldPath);
@@ -245,4 +246,24 @@ async function processRename(app: App, oldPath: string, newPath: string): Promis
       oldDir = oldDir.parent;
     }
   }
+}
+
+function getAlias(displayText?: string, oldPath?: string, newPath?: string): string | undefined {
+  if (!displayText) {
+    return undefined;
+  }
+
+  for (const path of [oldPath, newPath]) {
+    if (!path) {
+      continue;
+    }
+    const extension = extname(path);
+    const fileNameWithExtension = basename(path);
+    const fileNameWithoutExtension = basename(path, extension);
+    if (displayText === fileNameWithExtension || displayText === fileNameWithoutExtension) {
+      return undefined;
+    }
+  }
+
+  return displayText;
 }

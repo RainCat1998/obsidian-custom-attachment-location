@@ -176,6 +176,21 @@ export default class CustomAttachmentLocationPluginSettingsTab extends PluginSet
         }));
 
     new Setting(this.containerEl)
+      .setName("Rename only images")
+      .setDesc(createFragment(f => {
+        f.appendText("If enabled, only image files will be renamed.");
+        f.appendChild(createEl("br"));
+        f.appendText("If disabled, all attachment files will be renamed.");
+      }))
+      .addToggle(toggle => toggle
+        .setValue(settings.renameOnlyImages)
+        .onChange(async (value) => {
+          console.debug("renameOnlyImages: " + value);
+          settings.renameOnlyImages = value;
+          await this.plugin.saveSettings(settings);
+        }));
+
+    new Setting(this.containerEl)
       .setName("Rename pasted files with known names")
       .setDesc(createFragment(f => {
         f.appendText("If enabled, pasted copied files with known names will be renamed.");

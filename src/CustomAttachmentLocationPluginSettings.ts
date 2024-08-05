@@ -10,6 +10,7 @@ export default class CustomAttachmentLocationPluginSettings {
   public jpegQuality: number = 0.8;
   public keepEmptyAttachmentFolders: boolean = false;
   public pastedFileName: string = "file-${date:YYYYMMDDHHmmssSSS}";
+  public renameOnlyImages: boolean = true;
   public renamePastedFilesWithKnownNames: boolean = false;
   public renameAttachmentsOnDragAndDrop: boolean = false;
   public replaceWhitespace: boolean = false;

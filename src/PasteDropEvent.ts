@@ -120,7 +120,7 @@ abstract class EventWrapper {
           fileArrayBuffer = await blobToArrayBuffer(entry.file);
         }
 
-        const filename = this.shouldRenameAttachments(entry.file.path) ? await getPastedFileName(this.plugin, createSubstitutionsFromPath(noteFile.path, originalCopiedFileName)) : originalCopiedFileName;
+        const filename = this.shouldRenameAttachments(entry.file) ? await getPastedFileName(this.plugin, createSubstitutionsFromPath(noteFile.path, originalCopiedFileName)) : originalCopiedFileName;
 
         const renamedFile = new File([new Blob([fileArrayBuffer])], makeFileName(filename, extension), { type: "application/octet-stream" });
         newDataTransfer.items.add(renamedFile);
@@ -136,7 +136,7 @@ abstract class EventWrapper {
 
   protected abstract getDataTransfer(): DataTransfer | null;
   protected abstract cloneWithNewDataTransfer(dataTransfer: DataTransfer): ClipboardEvent | DragEvent;
-  protected abstract shouldRenameAttachments(filePath: string): boolean;
+  protected abstract shouldRenameAttachments(file: File): boolean;
   protected abstract shouldConvertImages(): boolean;
 
   private getTargetType(): string | null {
@@ -184,8 +184,11 @@ class PasteEventWrapper extends EventWrapper {
     });
   }
 
-  protected override shouldRenameAttachments(filePath: string): boolean {
-    return filePath === "" || this.plugin.settings.renamePastedFilesWithKnownNames;
+  protected override shouldRenameAttachments(file: File): boolean {
+    if (this.plugin.settings.renameOnlyImages && !isImageFile(file)) {
+      return false;
+    }
+    return file.path === "" || this.plugin.settings.renamePastedFilesWithKnownNames;
   }
 
   protected override shouldConvertImages(): boolean {
@@ -216,7 +219,11 @@ class DropEventWrapper extends EventWrapper {
     });
   }
 
-  protected override shouldRenameAttachments(): boolean {
+  protected override shouldRenameAttachments(file: File): boolean {
+    if (this.plugin.settings.renameOnlyImages && !isImageFile(file)) {
+      return false;
+    }
+
     return this.plugin.settings.renameAttachmentsOnDragAndDrop;
   }
 

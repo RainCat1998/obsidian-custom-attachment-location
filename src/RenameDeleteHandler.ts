@@ -33,35 +33,33 @@ import type { CanvasData } from "obsidian/canvas.js";
 import { toJson } from "./Object.ts";
 import { splitSubpath } from "./AttachmentCollector.ts";
 
-let isRenaming = false;
+const renameMap = new Map<string, string>();
 
 export async function handleRename(plugin: CustomAttachmentLocationPlugin, file: TAbstractFile, oldPath: string): Promise<void> {
+  if (renameMap.size > 0) {
+    return;
+  }
+
+  console.debug("Handle Rename");
+
+  if (!(file instanceof TFile)) {
+    return;
+  }
+
   // eslint-disable-next-line @typescript-eslint/unbound-method
   const updateAllLinks = plugin.app.fileManager.updateAllLinks;
   try {
     plugin.app.fileManager.updateAllLinks = async (): Promise<void> => { };
 
-    if (isRenaming) {
-      return;
-    }
-
-    isRenaming = true;
-    console.debug("Handle Rename");
-
-    if (!(file instanceof TFile)) {
-      return;
-    }
-
     const app = plugin.app;
 
-    const renameMap = new Map<string, string>();
-    await fillRenameMap(plugin, file, oldPath, renameMap);
+    await fillRenameMap(plugin, file, oldPath);
 
-    for (const [oldPath, newPath] of renameMap.entries()) {
-      await processRename(app, oldPath, newPath, renameMap);
+    for (const [oldPath2, newPath2] of renameMap.entries()) {
+      await processRename(app, oldPath2, newPath2);
     }
   } finally {
-    isRenaming = false;
+    renameMap.delete(oldPath);
     plugin.app.fileManager.updateAllLinks = updateAllLinks;
   }
 }
@@ -76,7 +74,7 @@ export async function handleDelete(plugin: CustomAttachmentLocationPlugin, file:
   await removeFolderSafe(plugin.app, fullPath, file.path);
 }
 
-async function updateLinksInFile(app: App, file: TFile, oldPath: string, renameMap: Map<string, string>): Promise<void> {
+async function updateLinksInFile(app: App, file: TFile, oldPath: string): Promise<void> {
   await applyFileChanges(app, file, async () => {
     const cache = await getCacheSafe(app, file);
     if (!cache) {
@@ -87,12 +85,12 @@ async function updateLinksInFile(app: App, file: TFile, oldPath: string, renameM
       startIndex: link.position.start.offset,
       endIndex: link.position.end.offset,
       oldContent: link.original,
-      newContent: await convertLink(app, link, file, oldPath, renameMap)
+      newContent: await convertLink(app, link, file, oldPath)
     })));
   });
 }
 
-async function updateLink(app: App, link: ReferenceCache, file: TFile | null, source: TFile, renameMap?: Map<string, string>): Promise<string> {
+async function updateLink(app: App, link: ReferenceCache, file: TFile | null, source: TFile): Promise<string> {
   if (!file) {
     return link.original;
   }
@@ -100,30 +98,26 @@ async function updateLink(app: App, link: ReferenceCache, file: TFile | null, so
   const isWikilink = link.original.includes("[[");
   const { linkPath, subpath } = splitSubpath(link.link);
 
-  let fakeFileCreated = false;
-
-  const newPath = renameMap?.get(file.path);
-  if (newPath) {
-    file = app.vault.getFileByPath(newPath);
-    if (!file) {
-      await createFolderSafe(app, dirname(newPath));
-      file = await app.vault.create(newPath, "");
-      fakeFileCreated = true;
-    }
+  const oldPath = file.path;
+  const newPath = renameMap.get(file.path);
+  const isOldFileRenamed = newPath && newPath !== oldPath;
+  if (isOldFileRenamed) {
+    await createFolderSafe(app, dirname(newPath));
+    await app.vault.rename(file, newPath);
   }
 
   const newLink = generateMarkdownLink(app, file, source.path, subpath, link.displayText === basename(linkPath, extname(linkPath)) ? undefined : link.displayText, isEmbed, isWikilink);
 
-  if (fakeFileCreated) {
-    await app.vault.delete(file);
+  if (isOldFileRenamed) {
+    await app.vault.rename(file, oldPath);
   }
 
   return newLink;
 }
 
-function convertLink(app: App, link: ReferenceCache, source: TFile, oldPath: string, renameMap: Map<string, string>): Promise<string> {
+function convertLink(app: App, link: ReferenceCache, source: TFile, oldPath: string): Promise<string> {
   oldPath ??= source.path;
-  return updateLink(app, link, extractLinkFile(app, link, oldPath), source, renameMap);
+  return updateLink(app, link, extractLinkFile(app, link, oldPath), source);
 }
 
 function extractLinkFile(app: App, link: ReferenceCache, oldPath: string): TFile | null {
@@ -131,7 +125,7 @@ function extractLinkFile(app: App, link: ReferenceCache, oldPath: string): TFile
   return app.metadataCache.getFirstLinkpathDest(linkPath, oldPath);
 }
 
-async function fillRenameMap(plugin: CustomAttachmentLocationPlugin, file: TFile, oldPath: string, renameMap: Map<string, string>): Promise<void> {
+async function fillRenameMap(plugin: CustomAttachmentLocationPlugin, file: TFile, oldPath: string): Promise<void> {
   renameMap.set(oldPath, file.path);
 
   if (!isNote(file)) {
@@ -167,14 +161,16 @@ async function fillRenameMap(plugin: CustomAttachmentLocationPlugin, file: TFile
     child = child as TFile;
     const relativePath = relative(oldAttachmentFolderPath, child.path);
     const newChildName = plugin.settings.autoRenameFiles ? child.basename.replaceAll(oldNoteName, newNoteName) : child.basename;
-    const newChildPath = join(newAttachmentFolderPath, dirname(relativePath), newChildName + "." + child.extension);
+    const newDir = join(newAttachmentFolderPath, dirname(relativePath));
+    let newChildPath = join(newDir, newChildName + "." + child.extension);
     if (child.path !== newChildPath) {
+      newChildPath = plugin.app.vault.getAvailablePath(join(newDir, newChildName), child.extension);
       renameMap.set(child.path, newChildPath);
     }
   }
 }
 
-async function processRename(app: App, oldPath: string, newPath: string, renameMap: Map<string, string>): Promise<void> {
+async function processRename(app: App, oldPath: string, newPath: string): Promise<void> {
   const oldFile = app.vault.getFileByPath(oldPath);
   const newFile = app.vault.getFileByPath(newPath);
   const file = oldFile ?? newFile;
@@ -197,12 +193,21 @@ async function processRename(app: App, oldPath: string, newPath: string, renameM
       continue;
     }
 
-    await applyFileChanges(app, parentNote, async () => await Promise.all((app.metadataCache.getBacklinksForFile(file).get(parentNotePath) ?? []).map(async (link) => ({
-      startIndex: link.position.start.offset,
-      endIndex: link.position.end.offset,
-      oldContent: link.original,
-      newContent: await updateLink(app, link, file, parentNote)
-    }))));
+    await applyFileChanges(app, parentNote, async () => {
+      const links = app.metadataCache.getBacklinksForFile(file).get(parentNotePath) ?? [];
+      const changes = [];
+
+      for (const link of links) {
+        changes.push({
+          startIndex: link.position.start.offset,
+          endIndex: link.position.end.offset,
+          oldContent: link.original,
+          newContent: await updateLink(app, link, file, parentNote)
+        });
+      }
+
+      return changes;
+    });
   }
 
   if (file.extension.toLowerCase() === "canvas") {
@@ -221,13 +226,14 @@ async function processRename(app: App, oldPath: string, newPath: string, renameM
       return toJson(canvasData);
     });
   } else if (file.extension.toLowerCase() === "md") {
-    await updateLinksInFile(app, file, oldPath, renameMap);
+    await updateLinksInFile(app, file, oldPath);
   }
 
   if (oldFile) {
     await createFolderSafe(app, dirname(newPath));
     let oldDir = oldFile.parent;
     await app.vault.rename(oldFile, newPath);
+    renameMap.delete(oldPath);
     while (oldDir != null) {
       if (oldDir.children.length > 0) {
         break;

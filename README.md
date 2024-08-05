@@ -59,6 +59,18 @@ The smaller the quality, the greater the compression ratio.
 
 If enabled and `Convert pasted images to JPEG` setting is enabled, images drag&dropped into the editor will be converted to JPEG.
 
+### Rename only images
+
+If enabled, only image files will be renamed.
+
+If disabled, all attachment files will be renamed.
+
+### Rename pasted files with known names
+
+If enabled, pasted copied files with known names will be renamed.
+
+If disabled, only clipboard image objects (e.g., screenshots) will be renamed.
+
 ### Rename attachments on drag&drop
 
 If enabled, attachments dragged and dropped into the editor will be renamed according to the `Pasted File Name` setting.
@@ -70,6 +82,10 @@ When you are pasting/dragging a file with the same name as an existing file, thi
 E.g., when you are dragging file `existingFile.pdf`, it will be renamed to `existingFile 1.pdf`, `existingFile 2.pdf`, etc, getting the first name available.
 
 Default value is ` ` (`space`).
+
+### Keep empty attachment folders
+
+If enabled, empty attachment folders will be preserved, useful for source control purposes.
 
 ## Changelog
 

@@ -101,12 +101,14 @@ async function updateLink(app: App, link: ReferenceCache, file: TFile | null, so
   const oldPath = file.path;
   const newPath = renameMap.get(file.path);
   const isOldFileRenamed = newPath && newPath !== oldPath;
+
+  const alias = getAlias(app, link.displayText, file, newPath, source.path);
+
   if (isOldFileRenamed) {
     await createFolderSafe(app, dirname(newPath));
     await app.vault.rename(file, newPath);
   }
 
-  const alias = getAlias(link.displayText, oldPath, newPath);
   const newLink = generateMarkdownLink(app, file, source.path, subpath, alias, isEmbed, isWikilink);
 
   if (isOldFileRenamed) {
@@ -248,19 +250,26 @@ async function processRename(app: App, oldPath: string, newPath: string): Promis
   }
 }
 
-function getAlias(displayText?: string, oldPath?: string, newPath?: string): string | undefined {
+function getAlias(app: App, displayText: string | undefined, oldFile: TFile, newPath: string | undefined, sourcePath: string): string | undefined {
   if (!displayText) {
     return undefined;
   }
 
-  for (const path of [oldPath, newPath]) {
+  for (const path of [oldFile.path, newPath]) {
     if (!path) {
       continue;
     }
     const extension = extname(path);
     const fileNameWithExtension = basename(path);
     const fileNameWithoutExtension = basename(path, extension);
-    if (displayText === fileNameWithExtension || displayText === fileNameWithoutExtension) {
+    if (displayText === path || displayText === fileNameWithExtension || displayText === fileNameWithoutExtension) {
+      return undefined;
+    }
+  }
+
+  for (const omitMdExtension of [true, false]) {
+    const linkText = app.metadataCache.fileToLinktext(oldFile, sourcePath, omitMdExtension);
+    if (displayText === linkText) {
       return undefined;
     }
   }

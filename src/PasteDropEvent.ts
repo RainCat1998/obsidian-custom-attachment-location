@@ -84,6 +84,7 @@ abstract class EventWrapper {
     }
 
     this.event.preventDefault();
+    this.event.stopImmediatePropagation();
 
     const pastedEntries: PastedEntry[] = Array.from(dataTransfer.items).map((item) => {
       const type = item.type;

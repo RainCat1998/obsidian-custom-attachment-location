@@ -9,6 +9,7 @@ import {
 import type { CanvasData } from "obsidian/canvas.d.ts";
 import {
   getAllLinks,
+  getBacklinksForFileSafe,
   getCacheSafe
 } from "./MetadataCache.ts";
 import {
@@ -142,7 +143,7 @@ export async function collectAttachments(plugin: CustomAttachmentLocationPlugin,
 
     const oldAttachmentFolder = oldAttachmentFile.parent;
 
-    const backlinks = app.metadataCache.getBacklinksForFile(oldAttachmentFile);
+    const backlinks = await getBacklinksForFileSafe(app, oldAttachmentFile);
     await createFolderSafe(app, dirname(newPath), plugin.settings.keepEmptyAttachmentFolders);
     if (backlinks.count() === 0) {
       await app.vault.rename(oldAttachmentFile, newPath);

@@ -14,6 +14,7 @@ import {
   type MaybePromise
 } from "./Async.ts";
 import { posix } from "@jinder/path";
+import { getBacklinksForFileSafe } from "./MetadataCache.ts";
 const { join } = posix;
 
 type FileChange = {
@@ -75,7 +76,7 @@ export async function processWithRetry(app: App, file: TFile, processFn: (conten
     });
 
     return success;
-  });
+  }, { timeoutInMilliseconds: 60000 });
 }
 
 export async function applyFileChanges(app: App, file: TFile, changesFn: () => MaybePromise<FileChange[]>): Promise<void> {
@@ -126,7 +127,7 @@ export async function applyFileChanges(app: App, file: TFile, changesFn: () => M
     });
 
     return doChangesMatchContent;
-  });
+  }, { timeoutInMilliseconds: 60000 });
 }
 
 export async function removeFolderSafe(app: App, folderPath: string, removedNotePath?: string): Promise<boolean> {
@@ -140,7 +141,7 @@ export async function removeFolderSafe(app: App, folderPath: string, removedNote
 
   for (const child of folder.children) {
     if (child instanceof TFile) {
-      const backlinks = app.metadataCache.getBacklinksForFile(child);
+      const backlinks = await getBacklinksForFileSafe(app, child);
       if (removedNotePath) {
         backlinks.removeKey(removedNotePath);
       }

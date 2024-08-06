@@ -26,6 +26,7 @@ import {
 } from "./Vault.ts";
 import {
   getAllLinks,
+  getBacklinksForFileSafe,
   getCacheSafe
 } from "./MetadataCache.ts";
 import { showError } from "./Error.ts";
@@ -185,7 +186,7 @@ async function processRename(plugin: CustomAttachmentLocationPlugin, oldPath: st
   if (!file) {
     return;
   }
-  const backlinks = app.metadataCache.getBacklinksForFile(file);
+  const backlinks = await getBacklinksForFileSafe(app, file);
 
   for (const parentNotePath of backlinks.keys()) {
     let parentNote = app.vault.getFileByPath(parentNotePath);
@@ -202,7 +203,7 @@ async function processRename(plugin: CustomAttachmentLocationPlugin, oldPath: st
     }
 
     await applyFileChanges(app, parentNote, async () => {
-      const links = app.metadataCache.getBacklinksForFile(file).get(parentNotePath) ?? [];
+      const links = (await getBacklinksForFileSafe(app, file)).get(parentNotePath) ?? [];
       const changes = [];
 
       for (const link of links) {

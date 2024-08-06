@@ -1,10 +1,13 @@
 import type {
   App,
   CachedMetadata,
+  LinkCache,
+  MarkdownView,
   ReferenceCache,
   TFile
 } from "obsidian";
 import { retryWithTimeout } from "./Async.ts";
+import type { CustomArrayDict } from "obsidian-typings";
 
 export async function getCacheSafe(app: App, fileOrPath: TFile | string): Promise<CachedMetadata | null> {
   let cache: CachedMetadata | null = null;
@@ -67,4 +70,45 @@ export function getAllLinks(cache: CachedMetadata): ReferenceCache[] {
   });
 
   return links;
+}
+
+export async function getBacklinksForFileSafe(app: App, file: TFile): Promise<CustomArrayDict<LinkCache>> {
+  let backlinks: CustomArrayDict<LinkCache> | null = null;
+  await retryWithTimeout(async () => {
+    backlinks = app.metadataCache.getBacklinksForFile(file);
+    for (const notePath of backlinks.keys()) {
+      const note = app.vault.getFileByPath(notePath);
+      if (!note) {
+        return false;
+      }
+
+      await saveNote(app, note);
+
+      const content = await app.vault.read(note);
+      const links = backlinks.get(notePath)!;
+      for (const link of links) {
+        const actualLink = content.slice(link.position.start.offset, link.position.end.offset);
+        if (actualLink !== link.original) {
+          return false;
+        }
+      }
+    }
+
+    return true;
+  }, { timeoutInMilliseconds: 60000 });
+
+  return backlinks!;
+}
+
+async function saveNote(app: App, note: TFile): Promise<void> {
+  if (note.extension.toLowerCase() !== "md") {
+    return;
+  }
+
+  for (const leaf of app.workspace.getLeavesOfType("markdown")) {
+    const view = leaf.view as MarkdownView;
+    if (view.file?.path === note.path) {
+      await view.save();
+    }
+  }
 }

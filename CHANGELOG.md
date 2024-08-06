@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 4.3.2
+
+- Fix double paste
+
 ## 4.3.1
 
 - Create attachment folders on paste/drop

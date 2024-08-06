@@ -10,11 +10,15 @@ import {
   isImageFile
 } from "./Blob.ts";
 import {
+  getAttachmentFolderFullPath,
   getPastedFileName,
   makeFileName
 } from "./AttachmentPath.ts";
 import type CustomAttachmentLocationPlugin from "./CustomAttachmentLocationPlugin.ts";
-import { isNote } from "./Vault.ts";
+import {
+  createFolderSafe,
+  isNote
+} from "./Vault.ts";
 import { convertAsyncToSync } from "./Async.ts";
 import { createSubstitutionsFromPath } from "./Substitutions.ts";
 
@@ -105,6 +109,8 @@ abstract class EventWrapper {
 
     const newDataTransfer = new DataTransfer();
 
+    let hasFiles = false;
+
     for (const entry of pastedEntries) {
       if (entry.textPromise) {
         newDataTransfer.items.add(await entry.textPromise, entry.type);
@@ -124,7 +130,13 @@ abstract class EventWrapper {
 
         const renamedFile = new File([new Blob([fileArrayBuffer])], makeFileName(filename, extension), { type: "application/octet-stream" });
         newDataTransfer.items.add(renamedFile);
+        hasFiles = true;
       }
+    }
+
+    if (hasFiles) {
+      const attachmentsFolderPath = await getAttachmentFolderFullPath(this.plugin, createSubstitutionsFromPath(noteFile.path));
+      await createFolderSafe(this.plugin.app, attachmentsFolderPath, this.plugin.settings.keepEmptyAttachmentFolders);
     }
 
     handledEvent = this.cloneWithNewDataTransfer(newDataTransfer) as HandledEvent;

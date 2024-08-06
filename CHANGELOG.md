@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 4.3.3
+
+- Bugfixes
+
 ## 4.3.2
 
 - Fix double paste

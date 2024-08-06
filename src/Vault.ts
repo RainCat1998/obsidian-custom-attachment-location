@@ -151,7 +151,7 @@ export async function removeFolderSafe(app: App, folderPath: string, removedNote
         try {
           await app.vault.delete(child);
         } catch (e) {
-          if (await app.vault.exists(child)) {
+          if (await app.vault.adapter.exists(child.path)) {
             console.error(`Failed to delete ${child.path}`, e);
             canRemove = false;
           }
@@ -166,7 +166,7 @@ export async function removeFolderSafe(app: App, folderPath: string, removedNote
     try {
       await app.vault.delete(folder, true);
     } catch (e) {
-      if (await app.vault.exists(folder)) {
+      if (await app.vault.adapter.exists(folder.path)) {
         console.error(`Failed to delete ${folder.path}`, e);
         canRemove = false;
       }

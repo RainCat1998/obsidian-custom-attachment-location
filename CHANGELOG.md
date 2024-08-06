@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 4.3.1
+
+- Create attachment folders on paste/drop
+
 ## 4.3.0
 
 - Create attachment folder only when it is needed

@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 4.3.0
+
+- Create attachment folder only when it is needed
+
 ## 4.2.1
 
 - Fix build

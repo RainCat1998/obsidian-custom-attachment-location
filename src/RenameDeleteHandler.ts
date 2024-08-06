@@ -52,12 +52,10 @@ export async function handleRename(plugin: CustomAttachmentLocationPlugin, file:
   try {
     plugin.app.fileManager.updateAllLinks = async (): Promise<void> => { };
 
-    const app = plugin.app;
-
     await fillRenameMap(plugin, file, oldPath);
 
     for (const [oldPath2, newPath2] of renameMap.entries()) {
-      await processRename(app, oldPath2, newPath2);
+      await processRename(plugin, oldPath2, newPath2);
     }
   } finally {
     renameMap.delete(oldPath);
@@ -104,9 +102,10 @@ async function updateLink(app: App, link: ReferenceCache, file: TFile | null, so
   const isOldFileRenamed = newPath && newPath !== oldPath;
 
   const alias = getAlias(app, link.displayText, file, newPath, source.path);
+  let shouldRemoveNewAttachmentFolder = false;
 
   if (isOldFileRenamed) {
-    await createFolderSafe(app, dirname(newPath));
+    shouldRemoveNewAttachmentFolder = await createFolderSafe(app, dirname(newPath));
     await app.vault.rename(file, newPath);
   }
 
@@ -114,6 +113,10 @@ async function updateLink(app: App, link: ReferenceCache, file: TFile | null, so
 
   if (isOldFileRenamed) {
     await app.vault.rename(file, oldPath);
+  }
+
+  if (newPath && shouldRemoveNewAttachmentFolder) {
+    await app.vault.adapter.rmdir(dirname(newPath), false);
   }
 
   return newLink;
@@ -174,7 +177,8 @@ async function fillRenameMap(plugin: CustomAttachmentLocationPlugin, file: TFile
   }
 }
 
-async function processRename(app: App, oldPath: string, newPath: string): Promise<void> {
+async function processRename(plugin: CustomAttachmentLocationPlugin, oldPath: string, newPath: string): Promise<void> {
+  const app = plugin.app;
   const oldFile = app.vault.getFileByPath(oldPath);
   const newFile = app.vault.getFileByPath(newPath);
   const file = oldFile ?? newFile;
@@ -234,7 +238,7 @@ async function processRename(app: App, oldPath: string, newPath: string): Promis
   }
 
   if (oldFile) {
-    await createFolderSafe(app, dirname(newPath));
+    await createFolderSafe(app, dirname(newPath), plugin.settings.keepEmptyAttachmentFolders);
     const oldDir = oldFile.parent;
     await app.vault.rename(oldFile, newPath);
     renameMap.delete(oldPath);

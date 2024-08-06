@@ -143,7 +143,7 @@ export async function collectAttachments(plugin: CustomAttachmentLocationPlugin,
     const oldAttachmentFolder = oldAttachmentFile.parent;
 
     const backlinks = app.metadataCache.getBacklinksForFile(oldAttachmentFile);
-    await createFolderSafe(app, dirname(newPath));
+    await createFolderSafe(app, dirname(newPath), plugin.settings.keepEmptyAttachmentFolders);
     if (backlinks.count() === 0) {
       await app.vault.rename(oldAttachmentFile, newPath);
       await removeEmptyFolderHierarchy(app, oldAttachmentFolder);
@@ -183,12 +183,15 @@ async function prepareAttachmentToMove(plugin: CustomAttachmentLocationPlugin, l
     return null;
   }
 
-  await createFolderSafe(app, dirname(newAttachmentPath));
+  const shouldRemoveNewAttachmentFolder = await createFolderSafe(app, dirname(newAttachmentPath));
   const newAttachmentFile = await app.vault.create(newAttachmentPath, "");
 
   let newAttachmentLink = app.fileManager.generateMarkdownLink(newAttachmentFile, newNotePath, subpath, link.displayText);
 
   await app.vault.delete(newAttachmentFile);
+  if (shouldRemoveNewAttachmentFolder) {
+    await app.vault.adapter.rmdir(dirname(newAttachmentPath), false);
+  }
 
   if (!link.original.startsWith("!")) {
     newAttachmentLink = newAttachmentLink.slice(1);

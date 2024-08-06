@@ -13,6 +13,8 @@ import {
   retryWithTimeout,
   type MaybePromise
 } from "./Async.ts";
+import { posix } from "@jinder/path";
+const { join } = posix;
 
 type FileChange = {
   startIndex: number;
@@ -21,18 +23,31 @@ type FileChange = {
   newContent: string;
 };
 
-export async function createFolderSafe(app: App, path: string): Promise<void> {
+export async function createFolderSafe(app: App, path: string, addGitKeep?: boolean): Promise<boolean> {
+  let result: boolean;
   if (await app.vault.adapter.exists(path)) {
-    return;
-  }
+    result = false;
+  } else {
+    try {
+      await app.vault.adapter.mkdir(path);
+      result = true;
+    } catch (e) {
+      if (!await app.vault.adapter.exists(path)) {
+        throw e;
+      }
 
-  try {
-    await app.vault.adapter.mkdir(path);
-  } catch (e) {
-    if (!await app.vault.adapter.exists(path)) {
-      throw e;
+      result = true;
     }
   }
+
+  if (addGitKeep) {
+    const gitKeepPath = join(path, ".gitkeep");
+    if (!await app.vault.adapter.exists(gitKeepPath)) {
+      await app.vault.create(gitKeepPath, "");
+    }
+  }
+
+  return result;
 }
 
 export function isNote(file: TAbstractFile | null): file is TFile {

@@ -15,10 +15,7 @@ import {
   makeFileName
 } from "./AttachmentPath.ts";
 import { around } from "monkey-around";
-import {
-  createFolderSafe,
-  isNote
-} from "./Vault.ts";
+import { isNote } from "./Vault.ts";
 import { registerPasteDropEventHandlers } from "./PasteDropEvent.ts";
 import { createSubstitutionsFromPath } from "./Substitutions.ts";
 import {
@@ -118,18 +115,6 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
       }
 
       suffixNum++;
-    }
-  }
-
-  private async createFolder(path: string): Promise<void> {
-    await createFolderSafe(this.app, path);
-    if (!this._settings.keepEmptyAttachmentFolders) {
-      return;
-    }
-
-    const gitKeepPath = join(path, ".gitkeep");
-    if (!await this.app.vault.adapter.exists(gitKeepPath)) {
-      await this.app.vault.create(gitKeepPath, "");
     }
   }
 

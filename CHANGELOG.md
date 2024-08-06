@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 4.4.0
+
+- Fix race conditions
+
 ## 4.3.3
 
 - Bugfixes

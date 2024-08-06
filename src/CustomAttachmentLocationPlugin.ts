@@ -104,7 +104,6 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
     }
 
     const attachmentFolderFullPath = await getAttachmentFolderFullPath(this, createSubstitutionsFromPath(file.path));
-    await this.createFolder(attachmentFolderFullPath);
     return this.app.vault.getAvailablePath(join(attachmentFolderFullPath, filename), extension);
   }
 

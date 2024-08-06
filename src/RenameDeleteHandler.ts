@@ -21,7 +21,8 @@ import {
   removeFolderSafe,
   applyFileChanges,
   processWithRetry,
-  createFolderSafe
+  createFolderSafe,
+  removeEmptyFolderHierarchy
 } from "./Vault.ts";
 import {
   getAllLinks,
@@ -70,8 +71,8 @@ export async function handleDelete(plugin: CustomAttachmentLocationPlugin, file:
     return;
   }
 
-  const fullPath = await getAttachmentFolderFullPath(plugin, createSubstitutionsFromPath(file.path));
-  await removeFolderSafe(plugin.app, fullPath, file.path);
+  const attachmentsFolderPath = await getAttachmentFolderFullPath(plugin, createSubstitutionsFromPath(file.path));
+  await removeFolderSafe(plugin.app, attachmentsFolderPath, file.path);
 }
 
 async function updateLinksInFile(app: App, file: TFile, oldPath: string): Promise<void> {
@@ -234,19 +235,10 @@ async function processRename(app: App, oldPath: string, newPath: string): Promis
 
   if (oldFile) {
     await createFolderSafe(app, dirname(newPath));
-    let oldDir = oldFile.parent;
+    const oldDir = oldFile.parent;
     await app.vault.rename(oldFile, newPath);
     renameMap.delete(oldPath);
-    while (oldDir != null) {
-      if (oldDir.children.length > 0) {
-        break;
-      }
-
-      if (!await removeFolderSafe(app, oldDir.path)) {
-        break;
-      }
-      oldDir = oldDir.parent;
-    }
+    await removeEmptyFolderHierarchy(app, oldDir);
   }
 }
 

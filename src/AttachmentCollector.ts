@@ -16,7 +16,7 @@ import {
   createFolderSafe,
   isNote,
   processWithRetry,
-  removeFolderSafe
+  removeEmptyFolderHierarchy
 } from "./Vault.ts";
 import { invokeAsyncSafely } from "./Async.ts";
 import { posix } from "@jinder/path";
@@ -140,19 +140,13 @@ export async function collectAttachments(plugin: CustomAttachmentLocationPlugin,
       continue;
     }
 
-    let oldAttachmentFolder = oldAttachmentFile.parent;
+    const oldAttachmentFolder = oldAttachmentFile.parent;
 
     const backlinks = app.metadataCache.getBacklinksForFile(oldAttachmentFile);
+    await createFolderSafe(app, dirname(newPath));
     if (backlinks.count() === 0) {
       await app.vault.rename(oldAttachmentFile, newPath);
-      while (oldAttachmentFolder != null) {
-        if (oldAttachmentFolder.children.length > 0) {
-          break;
-        }
-
-        await removeFolderSafe(app, oldAttachmentFolder.path, oldPath);
-        oldAttachmentFolder = oldAttachmentFolder.parent;
-      }
+      await removeEmptyFolderHierarchy(app, oldAttachmentFolder);
     } else {
       await app.vault.copy(oldAttachmentFile, newPath);
     }

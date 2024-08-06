@@ -114,7 +114,6 @@ export async function applyFileChanges(app: App, file: TFile, changesFn: () => M
   });
 }
 
-
 export async function removeFolderSafe(app: App, folderPath: string, removedNotePath?: string): Promise<boolean> {
   const folder = app.vault.getFolderByPath(folderPath);
 
@@ -160,4 +159,14 @@ export async function removeFolderSafe(app: App, folderPath: string, removedNote
   }
 
   return canRemove;
+}
+
+export async function removeEmptyFolderHierarchy(app: App, folder: TFolder | null): Promise<void> {
+  while (folder) {
+    if (folder.children.length > 0) {
+      return;
+    }
+    await removeFolderSafe(app, folder.path);
+    folder = folder.parent;
+  }
 }

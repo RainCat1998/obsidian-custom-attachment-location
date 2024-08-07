@@ -3,7 +3,8 @@ import {
   Plugin,
   TAbstractFile,
   TFile,
-  TFolder
+  TFolder,
+  Vault
 } from "obsidian";
 import CustomAttachmentLocationPluginSettings from "./CustomAttachmentLocationPluginSettings.ts";
 import CustomAttachmentLocationPluginSettingsTab from "./CustomAttachmentLocationPluginSettingsTab.ts";
@@ -15,7 +16,7 @@ import {
   makeFileName
 } from "./AttachmentPath.ts";
 import { around } from "monkey-around";
-import { isNote } from "./Vault.ts";
+import { createFolderSafe, isNote } from "./Vault.ts";
 import { registerPasteDropEventHandlers } from "./PasteDropEvent.ts";
 import { createSubstitutionsFromPath } from "./Substitutions.ts";
 import {
@@ -29,8 +30,8 @@ import {
   handleRename
 } from "./RenameDeleteHandler.ts";
 
-type GetAvailablePathForAttachmentsFn = (filename: string, extension: string, file: TAbstractFile) => Promise<string>;
-type GetAvailablePathFn = (path: string, extension: string) => string;
+type GetAvailablePathForAttachmentsFn = Vault["getAvailablePathForAttachments"];
+type GetAvailablePathFn = Vault["getAvailablePath"];
 
 export default class CustomAttachmentLocationPlugin extends Plugin {
   private _settings!: CustomAttachmentLocationPluginSettings;
@@ -101,6 +102,7 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
     }
 
     const attachmentFolderFullPath = await getAttachmentFolderFullPath(this, createSubstitutionsFromPath(file.path));
+    await createFolderSafe(this.app, attachmentFolderFullPath);
     return this.app.vault.getAvailablePath(join(attachmentFolderFullPath, filename), extension);
   }
 

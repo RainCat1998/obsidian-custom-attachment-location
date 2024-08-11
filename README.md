@@ -96,6 +96,9 @@ All notable changes to this project will be documented in the [CHANGELOG](./CHAN
 - `Custom Attachment Location` is available in [the official Community Plugins repository](https://obsidian.md/plugins?id=obsidian-custom-attachment-location).
 - Beta releases can be installed through [BRAT](https://obsidian.md/plugins?id=obsidian42-brat).
 
-© [RainCat1998](https://github.com/RainCat1998/)
+## Contribute
+Thanks to [@mnaoumov](https://github.com/mnaoumov)
+
+© [RainCat1998](https://github.com/RainCat1998/) 
 
 [Moment.js formatting]: https://momentjs.com/docs/#/displaying/format/

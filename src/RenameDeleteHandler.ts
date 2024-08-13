@@ -36,10 +36,10 @@ import {
   updateLinksInFile
 } from "./Link.ts";
 
-const renameMap = new Map<string, string>();
+const renamingPaths = new Set<string>();
 
 export async function handleRename(plugin: CustomAttachmentLocationPlugin, file: TAbstractFile, oldPath: string): Promise<void> {
-  if (renameMap.has(oldPath)) {
+  if (renamingPaths.has(oldPath)) {
     return;
   }
 
@@ -56,13 +56,17 @@ export async function handleRename(plugin: CustomAttachmentLocationPlugin, file:
   try {
     plugin.app.fileManager.updateAllLinks = async (): Promise<void> => { };
 
-    await fillRenameMap(plugin, file, oldPath);
+    const renameMap = new Map<string, string>();
+    await fillRenameMap(plugin, file, oldPath, renameMap);
+    for (const oldPath of renameMap.keys()) {
+      renamingPaths.add(oldPath);
+    }
 
     for (const [oldPath2, newPath2] of renameMap.entries()) {
-      await processRename(plugin, oldPath2, newPath2);
+      await processRename(plugin, oldPath2, newPath2, renameMap);
     }
   } finally {
-    renameMap.delete(oldPath);
+    renamingPaths.delete(oldPath);
     plugin.app.fileManager.updateAllLinks = updateAllLinks;
   }
 }
@@ -73,7 +77,7 @@ export async function handleDelete(plugin: CustomAttachmentLocationPlugin, file:
     return;
   }
 
-  if (renameMap.has(file.path)) {
+  if (renamingPaths.has(file.path)) {
     return;
   }
 
@@ -81,7 +85,7 @@ export async function handleDelete(plugin: CustomAttachmentLocationPlugin, file:
   await removeFolderSafe(plugin.app, attachmentsFolderPath, file.path);
 }
 
-async function fillRenameMap(plugin: CustomAttachmentLocationPlugin, file: TFile, oldPath: string): Promise<void> {
+async function fillRenameMap(plugin: CustomAttachmentLocationPlugin, file: TFile, oldPath: string, renameMap: Map<string, string>): Promise<void> {
   const app = plugin.app;
   renameMap.set(oldPath, file.path);
 
@@ -150,7 +154,7 @@ async function fillRenameMap(plugin: CustomAttachmentLocationPlugin, file: TFile
   }
 }
 
-async function processRename(plugin: CustomAttachmentLocationPlugin, oldPath: string, newPath: string): Promise<void> {
+async function processRename(plugin: CustomAttachmentLocationPlugin, oldPath: string, newPath: string, renameMap: Map<string, string>): Promise<void> {
   const app = plugin.app;
   let oldFile: TFile | null = null;
   let fakeOldFileCreated = false;
@@ -241,7 +245,7 @@ async function processRename(plugin: CustomAttachmentLocationPlugin, oldPath: st
     if (fakeOldFileCreated && oldFile) {
       await app.vault.delete(oldFile);
     }
-    renameMap.delete(oldPath);
+    renamingPaths.delete(oldPath);
   }
 }
 

@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 4.6.0
+
+- Fix race condition
+
 ## 4.5.0
 
 - Ensure `getAvailablePathForAttachments` creates missing folder

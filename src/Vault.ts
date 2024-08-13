@@ -18,7 +18,7 @@ import { posix } from "@jinder/path";
 import { getBacklinksForFileSafe } from "./MetadataCache.ts";
 const { join } = posix;
 
-type FileChange = {
+export type FileChange = {
   startIndex: number;
   endIndex: number;
   oldContent: string;

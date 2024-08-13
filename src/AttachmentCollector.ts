@@ -17,7 +17,9 @@ import {
   createFolderSafe,
   isNote,
   processWithRetry,
-  removeEmptyFolderHierarchy
+  removeEmptyFolderHierarchy,
+  removeFolderSafe,
+  type FileChange
 } from "./Vault.ts";
 import { invokeAsyncSafely } from "./Async.ts";
 import { posix } from "@jinder/path";
@@ -92,27 +94,31 @@ export async function collectAttachments(plugin: CustomAttachmentLocationPlugin,
     }
 
     const links = isCanvas ? await getCanvasLinks(app, note) : getAllLinks(cache);
+    const changes: FileChange[] = [];
 
-    return (await Promise.all(links
-      .map(async (link) => {
-        const attachmentMoveResult = await prepareAttachmentToMove(plugin, link, note.path, oldPath);
-        if (!attachmentMoveResult) {
-          return null;
-        }
+    for (const link of links) {
+      const attachmentMoveResult = await prepareAttachmentToMove(plugin, link, note.path, oldPath);
+      if (!attachmentMoveResult) {
+        continue;
+      }
 
-        if (!attachmentFilter(attachmentMoveResult.oldAttachmentPath)) {
-          return null;
-        }
+      if (!attachmentFilter(attachmentMoveResult.oldAttachmentPath)) {
+        continue;
+      }
 
-        attachmentsMap.set(attachmentMoveResult.oldAttachmentPath, attachmentMoveResult.newAttachmentPath);
-        return isCanvas ? null : {
+      attachmentsMap.set(attachmentMoveResult.oldAttachmentPath, attachmentMoveResult.newAttachmentPath);
+
+      if (!isCanvas) {
+        changes.push({
           startIndex: link.position.start.offset,
           endIndex: link.position.end.offset,
           oldContent: link.original,
           newContent: attachmentMoveResult.newAttachmentLink
-        };
-      })))
-      .filter((change) => change !== null);
+        });
+      }
+    }
+
+    return changes;
   });
 
   if (isCanvas) {
@@ -186,7 +192,6 @@ async function prepareAttachmentToMove(plugin: CustomAttachmentLocationPlugin, l
   }
 
   const shouldRemoveNewAttachmentFolder = await createFolderSafe(app, dirname(newAttachmentPath));
-  const newAttachmentFolder = app.vault.getFolderByPath(dirname(newAttachmentPath))!;
   const newAttachmentFile = await app.vault.create(newAttachmentPath, "");
 
   const newAttachmentLink = generateMarkdownLink({
@@ -206,8 +211,8 @@ async function prepareAttachmentToMove(plugin: CustomAttachmentLocationPlugin, l
   });
 
   await app.vault.delete(newAttachmentFile);
-  if (shouldRemoveNewAttachmentFolder && !newAttachmentFolder.deleted) {
-    await app.vault.delete(newAttachmentFolder);
+  if (shouldRemoveNewAttachmentFolder) {
+    await removeFolderSafe(app, dirname(newAttachmentPath));
   }
 
   return {

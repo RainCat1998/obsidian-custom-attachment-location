@@ -10,7 +10,10 @@ const { join } = posix;
 import type CustomAttachmentLocationPlugin from "./CustomAttachmentLocationPlugin.ts";
 import prompt from "./Prompt.ts";
 import { validateFilename } from "./PathValidator.ts";
-import { createSubstitutionsFromPath, type Substitutions } from "./Substitutions.ts";
+import {
+  createSubstitutionsFromPath,
+  type Substitutions
+} from "./Substitutions.ts";
 
 /**
  * example:
@@ -83,13 +86,20 @@ export async function getEarliestAttachmentFolder(plugin: CustomAttachmentLocati
     .filter((f: TAbstractFile) => f instanceof TFolder)
     .filter((f: TAbstractFile) => targetRegex.test(f.path));
 
-  const folderStats = await Promise.all(folders.map(async (folder: TFolder) => {
+  type FolderStat = {
+    path: string,
+    ctime: number
+  };
+
+  const folderStats: FolderStat[] = [];
+
+  for (const folder of folders) {
     const stat = await app.vault.adapter.stat(join(app.vault.adapter.getBasePath(), folder.path));
-    return {
+    folderStats.push({
       path: folder.path,
       ctime: stat?.ctime ?? 0
-    };
-  }));
+    });
+  }
 
   if (folderStats.length > 0) {
     // create time ascending

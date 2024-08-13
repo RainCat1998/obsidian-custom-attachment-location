@@ -30,7 +30,11 @@ import {
 } from "./MetadataCache.ts";
 import type { CanvasData } from "obsidian/canvas.js";
 import { toJson } from "./Object.ts";
-import { extractLinkFile, updateLink, updateLinksInFile } from "./Link.ts";
+import {
+  extractLinkFile,
+  updateLink,
+  updateLinksInFile
+} from "./Link.ts";
 
 const renameMap = new Map<string, string>();
 

@@ -33,7 +33,7 @@
     "globals": "^15.8.0",
     "monkey-around": "^3.0.0",
     "obsidian": "^1.6.6",
-    "obsidian-typings": "^2.1.1",
+    "obsidian-typings": "^2.2.1-beta.6",
     "path": "^0.12.7",
     "tslib": "2.6.3",
     "tsx": "^4.16.2",

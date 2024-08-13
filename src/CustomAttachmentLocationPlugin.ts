@@ -16,7 +16,10 @@ import {
   makeFileName
 } from "./AttachmentPath.ts";
 import { around } from "monkey-around";
-import { createFolderSafe, isNote } from "./Vault.ts";
+import {
+  createFolderSafe,
+  isNote
+} from "./Vault.ts";
 import { registerPasteDropEventHandlers } from "./PasteDropEvent.ts";
 import { createSubstitutionsFromPath } from "./Substitutions.ts";
 import {

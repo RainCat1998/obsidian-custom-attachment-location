@@ -2,17 +2,18 @@ import { showError } from "./Error.ts";
 
 export type MaybePromise<T> = T | Promise<T>;
 
-export async function retryWithTimeout(
-  asyncFn: () => Promise<boolean>,
-  {
-    timeoutInMilliseconds = 5000,
-    retryDelayInMilliseconds = 100,
-  }: {
-    timeoutInMilliseconds?: number,
-    retryDelayInMilliseconds?: number,
-  } = {}
-): Promise<void> {
-  await runWithTimeout(timeoutInMilliseconds, async () => {
+export type RetryOptions = {
+  timeoutInMilliseconds: number;
+  retryDelayInMilliseconds: number;
+};
+
+export async function retryWithTimeout(asyncFn: () => Promise<boolean>, retryOptions: Partial<RetryOptions> = {}): Promise<void> {
+  const DEFAULT_RETRY_OPTIONS: RetryOptions = {
+    timeoutInMilliseconds: 5000,
+    retryDelayInMilliseconds: 100
+  };
+  const overriddenOptions: RetryOptions = { ...DEFAULT_RETRY_OPTIONS, ...retryOptions };
+  await runWithTimeout(overriddenOptions.timeoutInMilliseconds, async () => {
     let attempt = 0;
     while (true) {
       attempt++;
@@ -23,9 +24,9 @@ export async function retryWithTimeout(
         return;
       }
 
-      console.debug(`Retry attempt ${attempt} completed unsuccessfully. Trying again in ${retryDelayInMilliseconds} milliseconds`);
+      console.debug(`Retry attempt ${attempt} completed unsuccessfully. Trying again in ${overriddenOptions.retryDelayInMilliseconds} milliseconds`);
       console.debug(asyncFn);
-      await sleep(retryDelayInMilliseconds);
+      await sleep(overriddenOptions.retryDelayInMilliseconds);
     }
   });
 }

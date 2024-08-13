@@ -11,7 +11,8 @@ import {
 } from "./Object.ts";
 import {
   retryWithTimeout,
-  type MaybePromise
+  type MaybePromise,
+  type RetryOptions
 } from "./Async.ts";
 import { posix } from "@jinder/path";
 import { getBacklinksForFileSafe } from "./MetadataCache.ts";
@@ -60,10 +61,15 @@ export function isNote(file: TAbstractFile | null): file is TFile {
   return extension === "md" || extension === "canvas";
 }
 
-export async function processWithRetry(app: App, file: TFile, processFn: (content: string) => MaybePromise<string>): Promise<void> {
+export async function processWithRetry(app: App, file: TFile, processFn: (content: string) => MaybePromise<string | null>, retryOptions: Partial<RetryOptions> = {}): Promise<void> {
+  const DEFAULT_RETRY_OPTIONS: Partial<RetryOptions> = { timeoutInMilliseconds: 60000 };
+  const overriddenOptions: Partial<RetryOptions> = { ...DEFAULT_RETRY_OPTIONS, ...retryOptions };
   await retryWithTimeout(async () => {
     const oldContent = await app.vault.adapter.read(file.path);
     const newContent = await processFn(oldContent);
+    if (newContent === null) {
+      return false;
+    }
     let success = true;
     await app.vault.process(file, (content) => {
       if (content !== oldContent) {
@@ -76,58 +82,54 @@ export async function processWithRetry(app: App, file: TFile, processFn: (conten
     });
 
     return success;
-  }, { timeoutInMilliseconds: 60000 });
+  }, overriddenOptions);
 }
 
-export async function applyFileChanges(app: App, file: TFile, changesFn: () => MaybePromise<FileChange[]>): Promise<void> {
-  await retryWithTimeout(async () => {
-    let doChangesMatchContent = true;
+export async function applyFileChanges(app: App, file: TFile, changesFn: () => MaybePromise<FileChange[]>, retryOptions: Partial<RetryOptions> = {}): Promise<void> {
+  const DEFAULT_RETRY_OPTIONS: Partial<RetryOptions> = { timeoutInMilliseconds: 60000 };
+  const overriddenOptions: Partial<RetryOptions> = { ...DEFAULT_RETRY_OPTIONS, ...retryOptions };
+  await processWithRetry(app, file, async (content) => {
+    let changes = await changesFn();
 
-    await processWithRetry(app, file, async (content) => {
-      let changes = await changesFn();
-
-      for (const change of changes) {
-        const actualContent = content.slice(change.startIndex, change.endIndex);
-        if (actualContent !== change.oldContent) {
-          console.warn(`Content mismatch at ${change.startIndex}-${change.endIndex} in ${file.path}:\nExpected: ${change.oldContent}\nActual: ${actualContent}`);
-          doChangesMatchContent = false;
-          return content;
-        }
+    for (const change of changes) {
+      const actualContent = content.slice(change.startIndex, change.endIndex);
+      if (actualContent !== change.oldContent) {
+        console.warn(`Content mismatch at ${change.startIndex}-${change.endIndex} in ${file.path}:\nExpected: ${change.oldContent}\nActual: ${actualContent}`);
+        return null;
       }
+    }
 
-      changes.sort((a, b) => a.startIndex - b.startIndex);
+    changes.sort((a, b) => a.startIndex - b.startIndex);
 
-      // BUG: https://forum.obsidian.md/t/bug-duplicated-links-in-metadatacache-inside-footnotes/85551
-      changes = changes.filter((change, index) => {
-        if (index === 0) {
-          return true;
-        }
-        return !deepEqual(change, changes[index - 1]);
-      });
-
-      for (let i = 1; i < changes.length; i++) {
-        const change = changes[i]!;
-        const previousChange = changes[i - 1]!;
-        if (previousChange.endIndex >= change.startIndex) {
-          throw new Error(`Overlapping changes:\n${toJson(previousChange)}\n${toJson(change)}`);
-        }
+    // BUG: https://forum.obsidian.md/t/bug-duplicated-links-in-metadatacache-inside-footnotes/85551
+    changes = changes.filter((change, index) => {
+      if (index === 0) {
+        return true;
       }
-
-      let newContent = "";
-      let lastIndex = 0;
-
-      for (const change of changes) {
-        newContent += content.slice(lastIndex, change.startIndex);
-        newContent += change.newContent;
-        lastIndex = change.endIndex;
-      }
-
-      newContent += content.slice(lastIndex);
-      return newContent;
+      return !deepEqual(change, changes[index - 1]);
     });
 
-    return doChangesMatchContent;
-  }, { timeoutInMilliseconds: 60000 });
+    for (let i = 1; i < changes.length; i++) {
+      const change = changes[i]!;
+      const previousChange = changes[i - 1]!;
+      if (previousChange.endIndex > change.startIndex) {
+        console.warn(`Overlapping changes:\n${toJson(previousChange)}\n${toJson(change)}`);
+        return null;
+      }
+    }
+
+    let newContent = "";
+    let lastIndex = 0;
+
+    for (const change of changes) {
+      newContent += content.slice(lastIndex, change.startIndex);
+      newContent += change.newContent;
+      lastIndex = change.endIndex;
+    }
+
+    newContent += content.slice(lastIndex);
+    return newContent;
+  }, overriddenOptions);
 }
 
 export async function removeFolderSafe(app: App, folderPath: string, removedNotePath?: string): Promise<boolean> {

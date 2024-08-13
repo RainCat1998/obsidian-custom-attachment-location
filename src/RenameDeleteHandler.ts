@@ -38,7 +38,7 @@ import { splitSubpath } from "./AttachmentCollector.ts";
 const renameMap = new Map<string, string>();
 
 export async function handleRename(plugin: CustomAttachmentLocationPlugin, file: TAbstractFile, oldPath: string): Promise<void> {
-  if (renameMap.size > 0) {
+  if (renameMap.has(oldPath)) {
     return;
   }
 

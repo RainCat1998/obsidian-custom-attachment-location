@@ -115,7 +115,7 @@ export function updateLink({
   return newLink;
 }
 
-function getAlias({
+export function getAlias({
   app,
   displayText,
   file,

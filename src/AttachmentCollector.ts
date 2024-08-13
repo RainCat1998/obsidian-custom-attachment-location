@@ -24,6 +24,8 @@ import { posix } from "@jinder/path";
 import { toJson } from "./Object.ts";
 import type CustomAttachmentLocationPlugin from "./CustomAttachmentLocationPlugin.ts";
 import { getAttachmentFolderFullPathForPath } from "./AttachmentPath.ts";
+import { generateMarkdownLink } from "./GenerateMarkdownLink.ts";
+import { getAlias } from "./Link.ts";
 const {
   basename,
   dirname,
@@ -187,16 +189,25 @@ async function prepareAttachmentToMove(plugin: CustomAttachmentLocationPlugin, l
   const newAttachmentFolder = app.vault.getFolderByPath(dirname(newAttachmentPath))!;
   const newAttachmentFile = await app.vault.create(newAttachmentPath, "");
 
-  let newAttachmentLink = app.fileManager.generateMarkdownLink(newAttachmentFile, newNotePath, subpath, link.displayText);
+  const newAttachmentLink = generateMarkdownLink({
+    app,
+    file: newAttachmentFile,
+    sourcePath: newNotePath,
+    subpath,
+    alias: getAlias({
+      app,
+      displayText: link.displayText,
+      file: newAttachmentFile,
+      otherPaths: [oldAttachmentPath],
+      sourcePath: newNotePath
+    }),
+    isEmbed: link.original.startsWith("!"),
+    isWikilink: link.original.includes("[["),
+  });
 
   await app.vault.delete(newAttachmentFile);
   if (shouldRemoveNewAttachmentFolder && !newAttachmentFolder.deleted) {
     await app.vault.delete(newAttachmentFolder);
-  }
-
-  if (!link.original.startsWith("!")) {
-    newAttachmentLink = newAttachmentLink.slice(1);
-    newAttachmentLink = newAttachmentLink.replace("[]", `[${link.displayText}]`);
   }
 
   return {

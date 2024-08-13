@@ -10,7 +10,7 @@ import {
   isImageFile
 } from "./Blob.ts";
 import {
-  getAttachmentFolderFullPath,
+  getAttachmentFolderFullPathForPath,
   getPastedFileName,
   makeFileName
 } from "./AttachmentPath.ts";
@@ -136,7 +136,7 @@ abstract class EventWrapper {
     }
 
     if (hasFiles) {
-      const attachmentsFolderPath = await getAttachmentFolderFullPath(this.plugin, createSubstitutionsFromPath(noteFile.path));
+      const attachmentsFolderPath = await getAttachmentFolderFullPathForPath(this.plugin, noteFile.path);
       await createFolderSafe(this.plugin.app, attachmentsFolderPath, this.plugin.settings.keepEmptyAttachmentFolders);
     }
 

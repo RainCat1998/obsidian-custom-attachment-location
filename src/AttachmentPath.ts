@@ -10,7 +10,7 @@ const { join } = posix;
 import type CustomAttachmentLocationPlugin from "./CustomAttachmentLocationPlugin.ts";
 import prompt from "./Prompt.ts";
 import { validateFilename } from "./PathValidator.ts";
-import type { Substitutions } from "./Substitutions.ts";
+import { createSubstitutionsFromPath, type Substitutions } from "./Substitutions.ts";
 
 /**
  * example:
@@ -103,7 +103,7 @@ export async function getAttachmentFolderPath(plugin: CustomAttachmentLocationPl
   return await getEarliestAttachmentFolder(plugin, plugin.settings.attachmentFolderPath, substitutions);
 }
 
-export async function getAttachmentFolderFullPath(plugin: CustomAttachmentLocationPlugin, substitutions: Substitutions): Promise<string> {
+async function getAttachmentFolderFullPathForSubstitutions(plugin: CustomAttachmentLocationPlugin, substitutions: Substitutions): Promise<string> {
   let attachmentFolder = "";
   const useRelativePath = plugin.settings.attachmentFolderPath.startsWith("./");
 
@@ -113,6 +113,10 @@ export async function getAttachmentFolderFullPath(plugin: CustomAttachmentLocati
     attachmentFolder = await getAttachmentFolderPath(plugin, substitutions);
   }
   return normalizePath(attachmentFolder);
+}
+
+export async function getAttachmentFolderFullPathForPath(plugin: CustomAttachmentLocationPlugin, path: string): Promise<string> {
+  return await getAttachmentFolderFullPathForSubstitutions(plugin, createSubstitutionsFromPath(path));
 }
 
 export async function getPastedFileName(plugin: CustomAttachmentLocationPlugin, substitutions: Substitutions): Promise<string> {

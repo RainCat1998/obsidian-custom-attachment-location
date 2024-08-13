@@ -12,7 +12,7 @@ import { posix } from "@jinder/path";
 const { join } = posix;
 import { invokeAsyncSafely } from "./Async.ts";
 import {
-  getAttachmentFolderFullPath,
+  getAttachmentFolderFullPathForPath,
   makeFileName
 } from "./AttachmentPath.ts";
 import { around } from "monkey-around";
@@ -21,7 +21,6 @@ import {
   isNote
 } from "./Vault.ts";
 import { registerPasteDropEventHandlers } from "./PasteDropEvent.ts";
-import { createSubstitutionsFromPath } from "./Substitutions.ts";
 import {
   collectAttachmentsCurrentFolder,
   collectAttachmentsCurrentNote,
@@ -104,7 +103,7 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
       return await originalFn.call(this.app.vault, filename, extension, file);
     }
 
-    const attachmentFolderFullPath = await getAttachmentFolderFullPath(this, createSubstitutionsFromPath(file.path));
+    const attachmentFolderFullPath = await getAttachmentFolderFullPathForPath(this, file.path);
     await createFolderSafe(this.app, attachmentFolderFullPath);
     return this.app.vault.getAvailablePath(join(attachmentFolderFullPath, filename), extension);
   }

@@ -23,8 +23,7 @@ import { invokeAsyncSafely } from "./Async.ts";
 import { posix } from "@jinder/path";
 import { toJson } from "./Object.ts";
 import type CustomAttachmentLocationPlugin from "./CustomAttachmentLocationPlugin.ts";
-import { getAttachmentFolderFullPath } from "./AttachmentPath.ts";
-import { createSubstitutionsFromPath } from "./Substitutions.ts";
+import { getAttachmentFolderFullPathForPath } from "./AttachmentPath.ts";
 const {
   basename,
   dirname,
@@ -177,7 +176,7 @@ async function prepareAttachmentToMove(plugin: CustomAttachmentLocationPlugin, l
   const newNoteBaseName = basename(newNotePath, extname(newNotePath));
 
   const newAttachmentName = plugin.settings.autoRenameFiles ? oldAttachmentName.replaceAll(oldNoteBaseName, newNoteBaseName) : oldAttachmentName;
-  const newAttachmentFolderPath = await getAttachmentFolderFullPath(plugin, createSubstitutionsFromPath(newNotePath));
+  const newAttachmentFolderPath = await getAttachmentFolderFullPathForPath(plugin, newNotePath);
   const newAttachmentPath = join(newAttachmentFolderPath, newAttachmentName);
 
   if (oldAttachmentPath === newAttachmentPath) {

@@ -14,8 +14,7 @@ const {
   join,
   dirname
 } = posix;
-import { getAttachmentFolderFullPath } from "./AttachmentPath.ts";
-import { createSubstitutionsFromPath } from "./Substitutions.ts";
+import { getAttachmentFolderFullPathForPath } from "./AttachmentPath.ts";
 import {
   isNote,
   removeFolderSafe,
@@ -70,7 +69,7 @@ export async function handleDelete(plugin: CustomAttachmentLocationPlugin, file:
     return;
   }
 
-  const attachmentsFolderPath = await getAttachmentFolderFullPath(plugin, createSubstitutionsFromPath(file.path));
+  const attachmentsFolderPath = await getAttachmentFolderFullPathForPath(plugin, file.path);
   await removeFolderSafe(plugin.app, attachmentsFolderPath, file.path);
 }
 
@@ -140,8 +139,8 @@ async function fillRenameMap(plugin: CustomAttachmentLocationPlugin, file: TFile
     return;
   }
 
-  const oldAttachmentFolderPath = await getAttachmentFolderFullPath(plugin, createSubstitutionsFromPath(oldPath));
-  const newAttachmentFolderPath = await getAttachmentFolderFullPath(plugin, createSubstitutionsFromPath(file.path));
+  const oldAttachmentFolderPath = await getAttachmentFolderFullPathForPath(plugin, oldPath);
+  const newAttachmentFolderPath = await getAttachmentFolderFullPathForPath(plugin, file.path);
 
   const oldAttachmentFolder = plugin.app.vault.getFolderByPath(oldAttachmentFolderPath);
 

@@ -185,13 +185,14 @@ async function prepareAttachmentToMove(plugin: CustomAttachmentLocationPlugin, l
   }
 
   const shouldRemoveNewAttachmentFolder = await createFolderSafe(app, dirname(newAttachmentPath));
+  const newAttachmentFolder = app.vault.getFolderByPath(dirname(newAttachmentPath))!;
   const newAttachmentFile = await app.vault.create(newAttachmentPath, "");
 
   let newAttachmentLink = app.fileManager.generateMarkdownLink(newAttachmentFile, newNotePath, subpath, link.displayText);
 
   await app.vault.delete(newAttachmentFile);
-  if (shouldRemoveNewAttachmentFolder) {
-    await app.vault.adapter.rmdir(dirname(newAttachmentPath), false);
+  if (shouldRemoveNewAttachmentFolder && !newAttachmentFolder.deleted) {
+    await app.vault.delete(newAttachmentFolder);
   }
 
   if (!link.original.startsWith("!")) {

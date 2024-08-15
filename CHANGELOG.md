@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 4.7.0
+
+- Skip paste handler in metadata editor
+
 ## 4.6.0
 
 - Fix race condition

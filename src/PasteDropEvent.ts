@@ -43,6 +43,12 @@ async function handlePasteAndDrop(plugin: CustomAttachmentLocationPlugin, event:
   await eventWrapper.handle();
 }
 
+enum TargetType {
+  Note = "Note",
+  Canvas = "Canvas",
+  Unsupported = "Unsupported"
+}
+
 abstract class EventWrapper {
   protected constructor(
     protected readonly event: ClipboardEvent | DragEvent,
@@ -61,7 +67,7 @@ abstract class EventWrapper {
 
     const targetType = this.getTargetType();
 
-    if (!targetType) {
+    if (targetType === TargetType.Unsupported) {
       return;
     }
 
@@ -152,30 +158,30 @@ abstract class EventWrapper {
   protected abstract shouldRenameAttachments(file: File): boolean;
   protected abstract shouldConvertImages(): boolean;
 
-  private getTargetType(): string | null {
+  private getTargetType(): TargetType {
     if (!(this.event.target instanceof HTMLElement)) {
-      return null;
+      return TargetType.Unsupported;
     }
 
     if (this.plugin.app.workspace.activeEditor?.metadataEditor?.contentEl.contains(this.event.target)) {
-      return null;
+      return TargetType.Unsupported;
     }
 
     if (this.plugin.app.workspace.activeEditor?.editor?.containerEl.contains(this.event.target)) {
-      return "Note";
+      return TargetType.Note;
     }
 
     if (this.event.target.closest(".canvas-wrapper")) {
-      return "Canvas";
+      return TargetType.Canvas;
     }
 
     const canvasView = this.plugin.app.workspace.getActiveFileView();
 
     if (this.event.target.matches("body") && canvasView?.getViewType() === "canvas" && canvasView.containerEl.closest(".mod-active")) {
-      return "Canvas";
+      return TargetType.Canvas;
     }
 
-    return null;
+    return TargetType.Unsupported;
   }
 
 }

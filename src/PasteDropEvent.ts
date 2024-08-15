@@ -157,6 +157,10 @@ abstract class EventWrapper {
       return null;
     }
 
+    if (this.plugin.app.workspace.activeEditor?.metadataEditor?.contentEl.contains(this.event.target)) {
+      return null;
+    }
+
     if (this.plugin.app.workspace.activeEditor?.editor?.containerEl.contains(this.event.target)) {
       return "Note";
     }

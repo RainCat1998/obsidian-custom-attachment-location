@@ -1,3 +1,5 @@
+import { loadPluginSettings } from "obsidian-dev-utils/obsidian/Plugin/PluginSettings";
+
 export default class CustomAttachmentLocationPluginSettings {
   public attachmentFolderPath: string = "./assets/${filename}";
   public autoRenameFiles: boolean = false;
@@ -14,30 +16,20 @@ export default class CustomAttachmentLocationPluginSettings {
   public replaceWhitespace: boolean = false;
   public toLowerCase: boolean = false;
 
-  public static load(data: unknown): CustomAttachmentLocationPluginSettings {
-    const legacySettings = new LegacySettings();
-    Object.assign(legacySettings, data);
-
-    const dateTimeFormat = legacySettings.dateTimeFormat || "YYYYMMDDHHmmssSSS";
-    legacySettings.attachmentFolderPath = addDateTimeFormat(legacySettings.attachmentFolderPath, dateTimeFormat);
-    legacySettings.pastedFileName = addDateTimeFormat(legacySettings.pastedFileName || legacySettings.pastedImageFileName || "file-${date}", dateTimeFormat);
-    legacySettings.dateTimeFormat = "";
-    legacySettings.pastedImageFileName = "";
-
-    return CustomAttachmentLocationPluginSettings.clone(legacySettings as CustomAttachmentLocationPluginSettings);
-  }
-
-  public static clone(settings?: CustomAttachmentLocationPluginSettings): CustomAttachmentLocationPluginSettings {
-    const target = new CustomAttachmentLocationPluginSettings();
-    if (settings) {
-      for (const key of Object.keys(target) as Array<keyof CustomAttachmentLocationPluginSettings>) {
-        if (key in settings && typeof settings[key] === typeof target[key]) {
-          Object.assign(target, { [key]: settings[key] });
-        }
-      }
+  public static load(data: unknown): { settings: CustomAttachmentLocationPluginSettings, shouldSave: boolean } {
+    const legacySettings = loadPluginSettings(() => new LegacySettings(), data);
+    let shouldSave = false;
+    if (legacySettings.dateTimeFormat || legacySettings.pastedImageFileName) {
+      const dateTimeFormat = legacySettings.dateTimeFormat || "YYYYMMDDHHmmssSSS";
+      legacySettings.attachmentFolderPath = addDateTimeFormat(legacySettings.attachmentFolderPath, dateTimeFormat);
+      legacySettings.pastedFileName = addDateTimeFormat(legacySettings.pastedFileName || legacySettings.pastedImageFileName || "file-${date}", dateTimeFormat);
+      legacySettings.dateTimeFormat = "";
+      legacySettings.pastedImageFileName = "";
+      shouldSave = true;
     }
 
-    return target;
+    const settings = loadPluginSettings(() => new CustomAttachmentLocationPluginSettings(), legacySettings);
+    return { settings, shouldSave };
   }
 }
 

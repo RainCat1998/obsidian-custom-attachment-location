@@ -33,7 +33,7 @@ import {
   extractLinkFile,
   updateLink,
   updateLinksInFile
-} from "./Link.ts";
+} from "obsidian-dev-utils/obsidian/Link";
 
 const renamingPaths = new Set<string>();
 

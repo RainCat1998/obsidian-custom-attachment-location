@@ -25,8 +25,10 @@ import { invokeAsyncSafely } from "obsidian-dev-utils/Async";
 import { toJson } from "./Object.ts";
 import type CustomAttachmentLocationPlugin from "./CustomAttachmentLocationPlugin.ts";
 import { getAttachmentFolderFullPathForPath } from "./AttachmentPath.ts";
-import { generateMarkdownLink } from "./GenerateMarkdownLink.ts";
-import { getAlias } from "./Link.ts";
+import {
+  generateMarkdownLink,
+  getAlias
+} from "obsidian-dev-utils/obsidian/Link";
 import {
   basename,
   dirname,

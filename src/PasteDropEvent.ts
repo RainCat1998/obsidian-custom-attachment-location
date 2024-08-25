@@ -7,7 +7,7 @@ import {
   blobToArrayBuffer,
   blobToJpegArrayBuffer,
   isImageFile
-} from "./Blob.ts";
+} from "obsidian-dev-utils/Blob";
 import {
   getAttachmentFolderFullPathForPath,
   getPastedFileName,

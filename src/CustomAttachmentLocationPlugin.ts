@@ -1,6 +1,6 @@
 import {
   Menu,
-  Plugin,
+  PluginSettingTab,
   TAbstractFile,
   TFile,
   TFolder,
@@ -9,7 +9,7 @@ import {
 import CustomAttachmentLocationPluginSettings from "./CustomAttachmentLocationPluginSettings.ts";
 import CustomAttachmentLocationPluginSettingsTab from "./CustomAttachmentLocationPluginSettingsTab.ts";
 import { join } from "obsidian-dev-utils/Path";
-import { invokeAsyncSafely } from "obsidian-dev-utils/Async";
+import { invokeAsyncSafely, type MaybePromise } from "obsidian-dev-utils/Async";
 import {
   getAttachmentFolderFullPathForPath,
   makeFileName
@@ -30,26 +30,21 @@ import {
   handleDelete,
   handleRename
 } from "./RenameDeleteHandler.ts";
+import { PluginBase } from "obsidian-dev-utils/obsidian/Plugin/PluginBase";
 
 type GetAvailablePathForAttachmentsFn = Vault["getAvailablePathForAttachments"];
 type GetAvailablePathFn = Vault["getAvailablePath"];
 
-export default class CustomAttachmentLocationPlugin extends Plugin {
-  private _settings!: CustomAttachmentLocationPluginSettings;
-
-  public get settings(): CustomAttachmentLocationPluginSettings {
-    return CustomAttachmentLocationPluginSettings.clone(this._settings);
+export default class CustomAttachmentLocationPlugin extends PluginBase<CustomAttachmentLocationPluginSettings> {
+  protected override createDefaultPluginSettings(this: void): CustomAttachmentLocationPluginSettings {
+    return new CustomAttachmentLocationPluginSettings();
   }
 
-  public override async onload(): Promise<void> {
-    await this.loadSettings();
-    this.addSettingTab(new CustomAttachmentLocationPluginSettingsTab(this));
-    this.app.workspace.onLayoutReady(this.onLayoutReady.bind(this));
+  protected override createPluginSettingsTab(): PluginSettingTab | null {
+    return new CustomAttachmentLocationPluginSettingsTab(this);
+  }
 
-    console.debug("loading plugin");
-
-    await this.loadSettings();
-
+  protected override onloadComplete(): MaybePromise<void> {
     this.registerEvent(this.app.vault.on("delete", (file) => invokeAsyncSafely(handleDelete(this, file))));
     this.registerEvent(this.app.vault.on("rename", (file, oldPath) => invokeAsyncSafely(handleRename(this, file, oldPath))));
     registerPasteDropEventHandlers(this);
@@ -75,12 +70,7 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
     this.registerEvent(this.app.workspace.on("file-menu", this.handleFileMenu.bind(this)));
   }
 
-  public async saveSettings(newSettings: CustomAttachmentLocationPluginSettings): Promise<void> {
-    this._settings = CustomAttachmentLocationPluginSettings.clone(newSettings);
-    await this.saveData(this._settings);
-  }
-
-  private onLayoutReady(): void {
+  protected override onLayoutReady(): void {
     this.register(around(this.app.vault, {
       getAvailablePathForAttachments: (originalFn: GetAvailablePathForAttachmentsFn): GetAvailablePathForAttachmentsFn => async (filename, extension, file): Promise<string> =>
         this.getAvailablePathForAttachments(filename, extension, file, originalFn),
@@ -88,9 +78,12 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
     }));
   }
 
-  private async loadSettings(): Promise<void> {
-    this._settings = CustomAttachmentLocationPluginSettings.load(await this.loadData());
-    await this.saveSettings(this._settings);
+  protected override async parseSettings(data: unknown): Promise<CustomAttachmentLocationPluginSettings> {
+    const { settings, shouldSave } = CustomAttachmentLocationPluginSettings.load(data);
+    if (shouldSave) {
+      await this.saveSettings(settings);
+    }
+    return settings;
   }
 
   private async getAvailablePathForAttachments(filename: string, extension: string, file: TAbstractFile | null, originalFn: GetAvailablePathForAttachmentsFn): Promise<string> {
@@ -111,7 +104,7 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
     let suffixNum = 0;
 
     while (true) {
-      const path = makeFileName(suffixNum == 0 ? filename : `${filename}${this._settings.duplicateNameSeparator}${suffixNum}`, extension);
+      const path = makeFileName(suffixNum == 0 ? filename : `${filename}${this.settings.duplicateNameSeparator}${suffixNum}`, extension);
 
       if (!this.app.vault.getAbstractFileByPathInsensitive(path)) {
         return path;

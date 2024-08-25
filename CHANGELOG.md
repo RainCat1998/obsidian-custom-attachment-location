@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 4.8.0
+
+- Don't create duplicates when dragging vault files
+
 ## 4.7.0
 
 - Skip paste handler in metadata editor

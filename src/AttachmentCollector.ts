@@ -21,7 +21,7 @@ import {
   removeFolderSafe,
   type FileChange
 } from "./Vault.ts";
-import { invokeAsyncSafely } from "./Async.ts";
+import { invokeAsyncSafely } from "obsidian-dev-utils/Async";
 import { toJson } from "./Object.ts";
 import type CustomAttachmentLocationPlugin from "./CustomAttachmentLocationPlugin.ts";
 import { getAttachmentFolderFullPathForPath } from "./AttachmentPath.ts";

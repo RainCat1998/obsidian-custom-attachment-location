@@ -18,7 +18,7 @@ import {
   createFolderSafe,
   isNote
 } from "./Vault.ts";
-import { convertAsyncToSync } from "./Async.ts";
+import { convertAsyncToSync } from "obsidian-dev-utils/Async";
 import { createSubstitutionsFromPath } from "./Substitutions.ts";
 
 type HandledEvent = Event & {

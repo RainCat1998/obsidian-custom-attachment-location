@@ -13,7 +13,7 @@ import {
   retryWithTimeout,
   type MaybePromise,
   type RetryOptions
-} from "./Async.ts";
+} from "obsidian-dev-utils/Async";
 import { getBacklinksForFileSafe } from "./MetadataCache.ts";
 import { join } from "obsidian-dev-utils/Path";
 

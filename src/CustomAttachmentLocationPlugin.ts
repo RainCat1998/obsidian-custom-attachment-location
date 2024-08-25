@@ -9,7 +9,7 @@ import {
 import CustomAttachmentLocationPluginSettings from "./CustomAttachmentLocationPluginSettings.ts";
 import CustomAttachmentLocationPluginSettingsTab from "./CustomAttachmentLocationPluginSettingsTab.ts";
 import { join } from "obsidian-dev-utils/Path";
-import { invokeAsyncSafely } from "./Async.ts";
+import { invokeAsyncSafely } from "obsidian-dev-utils/Async";
 import {
   getAttachmentFolderFullPathForPath,
   makeFileName

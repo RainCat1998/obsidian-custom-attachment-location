@@ -9,7 +9,7 @@ import type {
 import {
   retryWithTimeout,
   type RetryOptions
-} from "./Async.ts";
+} from "obsidian-dev-utils/Async";
 import type { CustomArrayDict } from "obsidian-typings";
 
 export async function getCacheSafe(app: App, fileOrPath: TFile | string, retryOptions: Partial<RetryOptions> = {}): Promise<CachedMetadata | null> {

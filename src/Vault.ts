@@ -14,7 +14,7 @@ import {
   type MaybePromise,
   type RetryOptions
 } from "obsidian-dev-utils/Async";
-import { getBacklinksForFileSafe } from "./MetadataCache.ts";
+import { getBacklinksForFileSafe } from "obsidian-dev-utils/obsidian/MetadataCache";
 import { join } from "obsidian-dev-utils/Path";
 
 export type FileChange = {

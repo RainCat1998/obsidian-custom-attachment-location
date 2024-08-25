@@ -11,7 +11,7 @@ import {
   getAllLinks,
   getBacklinksForFileSafe,
   getCacheSafe
-} from "./MetadataCache.ts";
+} from "obsidian-dev-utils/obsidian/MetadataCache";
 import {
   applyFileChanges,
   createFolderSafe,

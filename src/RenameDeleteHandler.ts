@@ -26,7 +26,7 @@ import {
   getAllLinks,
   getBacklinksForFileSafe,
   getCacheSafe
-} from "./MetadataCache.ts";
+} from "obsidian-dev-utils/obsidian/MetadataCache";
 import type { CanvasData } from "obsidian/canvas.js";
 import { toJson } from "./Object.ts";
 import {

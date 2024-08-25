@@ -102,7 +102,7 @@ export async function getEarliestAttachmentFolder(plugin: CustomAttachmentLocati
 
   if (folderStats.length > 0) {
     // create time ascending
-    return folderStats.sort((a, b) => a.ctime - b.ctime).map(f => f.path)[0]!;
+    return folderStats.sort((a, b) => a.ctime - b.ctime).map((f) => f.path)[0]!;
   } else {
     return interpolateDateToString(plugin, attachmentFolderTemplate, substitutions);
   }

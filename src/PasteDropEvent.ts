@@ -101,7 +101,7 @@ abstract class EventWrapper {
           type
         };
       } else if (item.kind === "string") {
-        const textPromise = new Promise<string>(resolve => item.getAsString(text => resolve(text)));
+        const textPromise = new Promise<string>((resolve) => item.getAsString((text) => resolve(text)));
         return {
           textPromise,
           type

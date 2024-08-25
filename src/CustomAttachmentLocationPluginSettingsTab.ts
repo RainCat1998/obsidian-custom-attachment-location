@@ -17,7 +17,7 @@ export default class CustomAttachmentLocationPluginSettingsTab extends PluginSet
 
     new Setting(this.containerEl)
       .setName("Location for New Attachments")
-      .setDesc(createFragment(f => {
+      .setDesc(createFragment((f) => {
         f.appendText("Start with ");
         appendCodeBlock(f, ".");
         f.appendText(" to use relative path. Available variables: ");
@@ -50,7 +50,7 @@ export default class CustomAttachmentLocationPluginSettingsTab extends PluginSet
 
     new Setting(this.containerEl)
       .setName("Pasted File Name")
-      .setDesc(createFragment(f => {
+      .setDesc(createFragment((f) => {
         f.appendText("Available variables: ");
         appendCodeBlock(f, "${filename}");
         f.appendText(", ");
@@ -73,7 +73,7 @@ export default class CustomAttachmentLocationPluginSettingsTab extends PluginSet
 
     new Setting(this.containerEl)
       .setName("Automatically rename attachment folder")
-      .setDesc(createFragment(f => {
+      .setDesc(createFragment((f) => {
         f.appendText("When renaming md files, automatically rename attachment folder if folder name contains ");
         appendCodeBlock(f, "${filename}");
         f.appendText(".");
@@ -82,7 +82,7 @@ export default class CustomAttachmentLocationPluginSettingsTab extends PluginSet
 
     new Setting(this.containerEl)
       .setName("Automatically rename attachment files")
-      .setDesc(createFragment(f => {
+      .setDesc(createFragment((f) => {
         f.appendText("When renaming md files, automatically rename attachment files if file name contains ");
         appendCodeBlock(f, "${filename}");
         f.appendText(".");
@@ -107,7 +107,7 @@ export default class CustomAttachmentLocationPluginSettingsTab extends PluginSet
     new Setting(this.containerEl)
       .setName("JPEG Quality")
       .setDesc("The smaller the quality, the greater the compression ratio.")
-      .addDropdown(dropDown => bindUiComponent(this.plugin, dropDown, "jpegQuality", {
+      .addDropdown((dropDown) => bindUiComponent(this.plugin, dropDown, "jpegQuality", {
         settingToUIValueConverter: (value) => value.toString(),
         uiToSettingValueConverter: (value) => Number(value)
       })
@@ -115,43 +115,43 @@ export default class CustomAttachmentLocationPluginSettingsTab extends PluginSet
 
     new Setting(this.containerEl)
       .setName("Convert images on drag&drop")
-      .setDesc(createFragment(f => {
+      .setDesc(createFragment((f) => {
         f.appendText("If enabled and ");
         appendCodeBlock(f, "Convert pasted images to JPEG");
         f.appendText(" setting is enabled, images drag&dropped into the editor will be converted to JPEG.");
       }))
-      .addToggle(toggle => bindUiComponent(this.plugin, toggle, "convertImagesOnDragAndDrop"));
+      .addToggle((toggle) => bindUiComponent(this.plugin, toggle, "convertImagesOnDragAndDrop"));
 
     new Setting(this.containerEl)
       .setName("Rename only images")
-      .setDesc(createFragment(f => {
+      .setDesc(createFragment((f) => {
         f.appendText("If enabled, only image files will be renamed.");
         f.appendChild(createEl("br"));
         f.appendText("If disabled, all attachment files will be renamed.");
       }))
-      .addToggle(toggle => bindUiComponent(this.plugin, toggle, "renameOnlyImages"));
+      .addToggle((toggle) => bindUiComponent(this.plugin, toggle, "renameOnlyImages"));
 
     new Setting(this.containerEl)
       .setName("Rename pasted files with known names")
-      .setDesc(createFragment(f => {
+      .setDesc(createFragment((f) => {
         f.appendText("If enabled, pasted copied files with known names will be renamed.");
         f.appendChild(createEl("br"));
         f.appendText("If disabled, only clipboard image objects (e.g., screenshots) will be renamed.");
       }))
-      .addToggle(toggle => bindUiComponent(this.plugin, toggle, "renamePastedFilesWithKnownNames"));
+      .addToggle((toggle) => bindUiComponent(this.plugin, toggle, "renamePastedFilesWithKnownNames"));
 
     new Setting(this.containerEl)
       .setName("Rename attachments on drag&drop")
-      .setDesc(createFragment(f => {
+      .setDesc(createFragment((f) => {
         f.appendText("If enabled, attachments dragged and dropped into the editor will be renamed according to the ");
         appendCodeBlock(f, "Pasted File Name");
         f.appendText(" setting.");
       }))
-      .addToggle(toggle => bindUiComponent(this.plugin, toggle, "renameAttachmentsOnDragAndDrop"));
+      .addToggle((toggle) => bindUiComponent(this.plugin, toggle, "renameAttachmentsOnDragAndDrop"));
 
     new Setting(this.containerEl)
       .setName("Duplicate name separator")
-      .setDesc(createFragment(f => {
+      .setDesc(createFragment((f) => {
         f.appendText("When you are pasting/dragging a file with the same name as an existing file, this separator will be added to the file name.");
         f.appendChild(createEl("br"));
         f.appendText("E.g., when you are dragging file ");
@@ -168,12 +168,12 @@ export default class CustomAttachmentLocationPluginSettingsTab extends PluginSet
         }
       })
         .setPlaceholder(" ")
-    );
+      );
 
     new Setting(this.containerEl)
       .setName("Keep empty attachment folders")
       .setDesc("If enabled, empty attachment folders will be preserved, useful for source control purposes.")
-      .addToggle(toggle => bindUiComponent(this.plugin, toggle, "keepEmptyAttachmentFolders"));
+      .addToggle((toggle) => bindUiComponent(this.plugin, toggle, "keepEmptyAttachmentFolders"));
   }
 }
 

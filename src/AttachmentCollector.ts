@@ -258,8 +258,8 @@ export function splitSubpath(link: string): SplitSubpathResult {
 
 async function getCanvasLinks(app: App, file: TFile): Promise<ReferenceCache[]> {
   const canvasData = await app.vault.readJson(file.path) as CanvasData;
-  const files = canvasData.nodes.filter(node => node.type === "file").map(node => node.file);
-  return files.map(file => ({
+  const files = canvasData.nodes.filter((node) => node.type === "file").map((node) => node.file);
+  return files.map((file) => ({
     link: file,
     original: file,
     position: {

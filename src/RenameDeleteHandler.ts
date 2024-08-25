@@ -12,7 +12,7 @@ import {
   relative,
   join,
   dirname
-} from "obsidian-dev-utils/Path"
+} from "obsidian-dev-utils/Path";
 import { getAttachmentFolderFullPathForPath } from "./AttachmentPath.ts";
 import {
   removeFolderSafe,

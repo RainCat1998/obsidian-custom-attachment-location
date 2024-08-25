@@ -11,5 +11,5 @@ export async function createFolderSafeEx(plugin: CustomAttachmentLocationPlugin,
     }
   }
 
-  return result
+  return result;
 }

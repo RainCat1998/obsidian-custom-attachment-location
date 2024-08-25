@@ -14,9 +14,8 @@ import {
   type MaybePromise,
   type RetryOptions
 } from "./Async.ts";
-import { posix } from "@jinder/path";
 import { getBacklinksForFileSafe } from "./MetadataCache.ts";
-const { join } = posix;
+import { join } from "obsidian-dev-utils/Path";
 
 export type FileChange = {
   startIndex: number;

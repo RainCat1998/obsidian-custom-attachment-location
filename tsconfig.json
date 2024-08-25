@@ -17,11 +17,6 @@
     "moduleResolution": "NodeNext",
     "noEmit": true,
     "noImplicitAny": true,
-    "paths": {
-      "@jinder/path": [
-        "./node_modules/path/path.js"
-      ]
-    },
     "skipLibCheck": false,
     "strictNullChecks": true,
     "target": "ESNext",

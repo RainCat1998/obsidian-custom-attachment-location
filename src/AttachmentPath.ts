@@ -5,8 +5,7 @@ import {
   type TAbstractFile,
   TFolder
 } from "obsidian";
-import { posix } from "@jinder/path";
-const { join } = posix;
+import { join } from "obsidian-dev-utils/Path";
 import type CustomAttachmentLocationPlugin from "./CustomAttachmentLocationPlugin.ts";
 import prompt from "./Prompt.ts";
 import { validateFilename } from "./PathValidator.ts";

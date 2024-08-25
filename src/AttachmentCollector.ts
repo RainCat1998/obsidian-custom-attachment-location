@@ -22,18 +22,17 @@ import {
   type FileChange
 } from "./Vault.ts";
 import { invokeAsyncSafely } from "./Async.ts";
-import { posix } from "@jinder/path";
 import { toJson } from "./Object.ts";
 import type CustomAttachmentLocationPlugin from "./CustomAttachmentLocationPlugin.ts";
 import { getAttachmentFolderFullPathForPath } from "./AttachmentPath.ts";
 import { generateMarkdownLink } from "./GenerateMarkdownLink.ts";
 import { getAlias } from "./Link.ts";
-const {
+import {
   basename,
   dirname,
   extname,
   join
-} = posix;
+} from "obsidian-dev-utils/Path";
 
 type AttachmentMoveResult = {
   oldAttachmentPath: string;

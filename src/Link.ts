@@ -9,7 +9,7 @@ import {
   getCacheSafe
 } from "./MetadataCache.ts";
 import { applyFileChanges } from "./Vault.ts";
-import { posix } from "@jinder/path";
+import { posix } from "obsidian-dev-utils/Path";
 import { generateMarkdownLink } from "./GenerateMarkdownLink.ts";
 import { createTFileInstance } from "obsidian-typings/implementations";
 const {

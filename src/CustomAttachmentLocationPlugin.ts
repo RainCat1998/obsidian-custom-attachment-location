@@ -8,8 +8,7 @@ import {
 } from "obsidian";
 import CustomAttachmentLocationPluginSettings from "./CustomAttachmentLocationPluginSettings.ts";
 import CustomAttachmentLocationPluginSettingsTab from "./CustomAttachmentLocationPluginSettingsTab.ts";
-import { posix } from "@jinder/path";
-const { join } = posix;
+import { join } from "obsidian-dev-utils/Path";
 import { invokeAsyncSafely } from "./Async.ts";
 import {
   getAttachmentFolderFullPathForPath,

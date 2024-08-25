@@ -6,14 +6,13 @@ import {
   type TAbstractFile
 } from "obsidian";
 import type CustomAttachmentLocationPlugin from "./CustomAttachmentLocationPlugin.ts";
-import { posix } from "@jinder/path";
-const {
+import {
   basename,
   extname,
   relative,
   join,
   dirname
-} = posix;
+} from "obsidian-dev-utils/Path"
 import { getAttachmentFolderFullPathForPath } from "./AttachmentPath.ts";
 import {
   isNote,

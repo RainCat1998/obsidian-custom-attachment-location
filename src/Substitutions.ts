@@ -1,6 +1,8 @@
-import { posix } from "@jinder/path";
-const { extname, basename, dirname } = posix;
-
+import {
+  extname,
+  basename,
+  dirname
+} from "obsidian-dev-utils/Path";
 
 export type Substitutions = {
   filename: string;

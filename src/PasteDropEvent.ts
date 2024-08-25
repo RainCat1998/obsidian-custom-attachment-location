@@ -1,8 +1,7 @@
-import { posix } from "@jinder/path";
-const {
+import {
   basename,
   extname
-} = posix;
+} from "obsidian-dev-utils/Path";
 
 import {
   blobToArrayBuffer,

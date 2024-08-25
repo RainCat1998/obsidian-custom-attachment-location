@@ -93,7 +93,7 @@ export default class CustomAttachmentLocationPlugin extends Plugin {
     await this.saveSettings(this._settings);
   }
 
-  private async getAvailablePathForAttachments(filename: string, extension: string, file: TAbstractFile, originalFn: GetAvailablePathForAttachmentsFn): Promise<string> {
+  private async getAvailablePathForAttachments(filename: string, extension: string, file: TAbstractFile | null, originalFn: GetAvailablePathForAttachmentsFn): Promise<string> {
     if (!(file instanceof TFile)) {
       return await originalFn.call(this.app.vault, filename, extension, file);
     }

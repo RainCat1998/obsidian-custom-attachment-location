@@ -7,7 +7,7 @@ import {
 } from "obsidian";
 import { join } from "obsidian-dev-utils/Path";
 import type CustomAttachmentLocationPlugin from "./CustomAttachmentLocationPlugin.ts";
-import prompt from "./Prompt.ts";
+import { prompt } from "obsidian-dev-utils/obsidian/Modal/Prompt";
 import { validateFilename } from "./PathValidator.ts";
 import {
   createSubstitutionsFromPath,

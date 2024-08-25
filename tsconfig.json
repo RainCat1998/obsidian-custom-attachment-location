@@ -27,6 +27,7 @@
     "verbatimModuleSyntax": true
   },
   "include": [
-    "**/*.ts"
+    "./src/**/*.ts",
+    "./scripts/**/*.ts"
   ]
 }

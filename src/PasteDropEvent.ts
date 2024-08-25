@@ -133,9 +133,18 @@ abstract class EventWrapper {
           fileArrayBuffer = await blobToArrayBuffer(entry.file);
         }
 
-        const filename = this.shouldRenameAttachments(entry.file) ? await getPastedFileName(this.plugin, createSubstitutionsFromPath(noteFile.path, originalCopiedFileName)) : originalCopiedFileName;
+        const shouldRename = this.shouldRenameAttachments(entry.file);
 
-        const renamedFile = new File([new Blob([fileArrayBuffer])], makeFileName(filename, extension), { type: "application/octet-stream" });
+        const filename = shouldRename ? await getPastedFileName(this.plugin, createSubstitutionsFromPath(noteFile.path, originalCopiedFileName)) : originalCopiedFileName;
+
+        const filePropertyBag: FilePropertyBag = { type: "application/octet-stream" };
+        if (!shouldRename) {
+          filePropertyBag.lastModified = entry.file.lastModified;
+        }
+        const renamedFile = new File([new Blob([fileArrayBuffer])], makeFileName(filename, extension), filePropertyBag);
+        if (!shouldRename) {
+          Object.defineProperty(renamedFile, "path", { value: entry.file.path });
+        }
         newDataTransfer.items.add(renamedFile);
         hasFiles = true;
       }

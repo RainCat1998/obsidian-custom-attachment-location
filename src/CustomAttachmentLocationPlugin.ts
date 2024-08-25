@@ -15,10 +15,8 @@ import {
   makeFileName
 } from "./AttachmentPath.ts";
 import { around } from "monkey-around";
-import {
-  createFolderSafe,
-  isNote
-} from "./Vault.ts";
+import { createFolderSafe } from "obsidian-dev-utils/obsidian/Vault";
+import { isNote } from "obsidian-dev-utils/obsidian/TAbstractFile";
 import { registerPasteDropEventHandlers } from "./PasteDropEvent.ts";
 import {
   collectAttachmentsCurrentFolder,

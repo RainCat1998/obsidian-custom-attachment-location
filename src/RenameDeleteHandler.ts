@@ -15,13 +15,13 @@ import {
 } from "obsidian-dev-utils/Path"
 import { getAttachmentFolderFullPathForPath } from "./AttachmentPath.ts";
 import {
-  isNote,
   removeFolderSafe,
   applyFileChanges,
   processWithRetry,
   createFolderSafe,
   removeEmptyFolderHierarchy
-} from "./Vault.ts";
+} from "obsidian-dev-utils/obsidian/Vault";
+import { isNote } from "obsidian-dev-utils/obsidian/TAbstractFile";
 import {
   getAllLinks,
   getBacklinksForFileSafe,

@@ -14,13 +14,13 @@ import {
 } from "obsidian-dev-utils/obsidian/MetadataCache";
 import {
   applyFileChanges,
-  createFolderSafe,
-  isNote,
   processWithRetry,
   removeEmptyFolderHierarchy,
   removeFolderSafe,
   type FileChange
-} from "./Vault.ts";
+} from "obsidian-dev-utils/obsidian/Vault";
+import { createFolderSafeEx } from "./Vault.ts";
+import { isNote } from "obsidian-dev-utils/obsidian/TAbstractFile";
 import { invokeAsyncSafely } from "obsidian-dev-utils/Async";
 import { toJson } from "obsidian-dev-utils/JSON";
 import type CustomAttachmentLocationPlugin from "./CustomAttachmentLocationPlugin.ts";
@@ -152,7 +152,7 @@ export async function collectAttachments(plugin: CustomAttachmentLocationPlugin,
     const oldAttachmentFolder = oldAttachmentFile.parent;
 
     const backlinks = await getBacklinksForFileSafe(app, oldAttachmentFile);
-    await createFolderSafe(app, dirname(newPath), plugin.settingsCopy.keepEmptyAttachmentFolders);
+    await createFolderSafeEx(plugin, dirname(newPath));
     if (backlinks.count() === 0) {
       await app.vault.rename(oldAttachmentFile, newPath);
       await removeEmptyFolderHierarchy(app, oldAttachmentFolder);
@@ -192,7 +192,7 @@ async function prepareAttachmentToMove(plugin: CustomAttachmentLocationPlugin, l
     return null;
   }
 
-  const shouldRemoveNewAttachmentFolder = await createFolderSafe(app, dirname(newAttachmentPath));
+  const shouldRemoveNewAttachmentFolder = await createFolderSafeEx(plugin, dirname(newAttachmentPath));
   const newAttachmentFile = await app.vault.create(newAttachmentPath, "");
 
   const newAttachmentLink = generateMarkdownLink({

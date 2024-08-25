@@ -19,7 +19,7 @@
     "@types/node": "^20.14.9",
     "monkey-around": "^3.0.0",
     "obsidian": "^1.6.6",
-    "obsidian-dev-utils": "^2.21.0",
+    "obsidian-dev-utils": "^2.21.2",
     "obsidian-typings": "^2.2.1-beta.10",
     "tsx": "^4.16.2",
     "typescript": "^5.5.4"

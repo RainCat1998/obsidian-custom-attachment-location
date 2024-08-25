@@ -14,12 +14,10 @@ import {
   makeFileName
 } from "./AttachmentPath.ts";
 import type CustomAttachmentLocationPlugin from "./CustomAttachmentLocationPlugin.ts";
-import {
-  createFolderSafe,
-  isNote
-} from "./Vault.ts";
+import { isNote } from "obsidian-dev-utils/obsidian/TAbstractFile";
 import { convertAsyncToSync } from "obsidian-dev-utils/Async";
 import { createSubstitutionsFromPath } from "./Substitutions.ts";
+import { createFolderSafeEx } from "./Vault.ts";
 
 type HandledEvent = Event & {
   handled?: boolean
@@ -151,7 +149,7 @@ abstract class EventWrapper {
 
     if (hasFiles) {
       const attachmentsFolderPath = await getAttachmentFolderFullPathForPath(this.plugin, noteFile.path);
-      await createFolderSafe(this.plugin.app, attachmentsFolderPath, this.plugin.settingsCopy.keepEmptyAttachmentFolders);
+      await createFolderSafeEx(this.plugin, attachmentsFolderPath);
     }
 
     handledEvent = this.cloneWithNewDataTransfer(newDataTransfer) as HandledEvent;

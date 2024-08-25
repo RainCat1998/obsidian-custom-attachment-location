@@ -5,10 +5,8 @@ import {
   type App,
   type TAbstractFile
 } from "obsidian";
-import {
-  deepEqual,
-  toJson
-} from "./Object.ts";
+import { toJson } from "obsidian-dev-utils/JSON";
+import { deepEqual } from "obsidian-dev-utils/Object";
 import {
   retryWithTimeout,
   type MaybePromise,

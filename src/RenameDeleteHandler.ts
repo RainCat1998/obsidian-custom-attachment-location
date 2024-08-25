@@ -143,7 +143,7 @@ async function fillRenameMap(plugin: CustomAttachmentLocationPlugin, file: TFile
     }
     child = child as TFile;
     const relativePath = relative(oldAttachmentFolderPath, child.path);
-    const newChildName = plugin.settings.autoRenameFiles ? child.basename.replaceAll(oldNoteName, newNoteName) : child.basename;
+    const newChildName = plugin.settingsCopy.autoRenameFiles ? child.basename.replaceAll(oldNoteName, newNoteName) : child.basename;
     const newDir = join(newAttachmentFolderPath, dirname(relativePath));
     let newChildPath = join(newDir, newChildName + "." + child.extension);
     if (child.path !== newChildPath) {
@@ -200,9 +200,9 @@ async function processRename(plugin: CustomAttachmentLocationPlugin, oldPath: st
             newContent: updateLink({
               app,
               link,
-              file,
-              oldPath,
-              source: parentNote,
+              pathOrFile: file,
+              oldPathOrFile: oldPath,
+              sourcePathOrFile: parentNote,
               renameMap
             }),
           });
@@ -228,7 +228,12 @@ async function processRename(plugin: CustomAttachmentLocationPlugin, oldPath: st
         return toJson(canvasData);
       });
     } else if (file.extension.toLowerCase() === "md") {
-      await updateLinksInFile(app, file, oldPath, renameMap);
+      await updateLinksInFile({
+        app,
+        pathOrFile: file,
+        oldPathOrFile: oldPath,
+        renameMap
+      });
     }
 
     if (!fakeOldFileCreated) {

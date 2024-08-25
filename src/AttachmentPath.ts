@@ -66,11 +66,11 @@ export async function interpolateDateToString(plugin: CustomAttachmentLocationPl
     }
   }
 
-  if (plugin.settings.toLowerCase) {
+  if (plugin.settingsCopy.toLowerCase) {
     newPath = newPath.toLowerCase();
   }
 
-  if (plugin.settings.replaceWhitespace) {
+  if (plugin.settingsCopy.replaceWhitespace) {
     newPath = newPath.replace(/\s/g, "-");
     newPath = newPath.replace(/-{2,}/g, "-");
   }
@@ -109,12 +109,12 @@ export async function getEarliestAttachmentFolder(plugin: CustomAttachmentLocati
 }
 
 export async function getAttachmentFolderPath(plugin: CustomAttachmentLocationPlugin, substitutions: Substitutions): Promise<string> {
-  return await getEarliestAttachmentFolder(plugin, plugin.settings.attachmentFolderPath, substitutions);
+  return await getEarliestAttachmentFolder(plugin, plugin.settingsCopy.attachmentFolderPath, substitutions);
 }
 
 async function getAttachmentFolderFullPathForSubstitutions(plugin: CustomAttachmentLocationPlugin, substitutions: Substitutions): Promise<string> {
   let attachmentFolder = "";
-  const useRelativePath = plugin.settings.attachmentFolderPath.startsWith("./");
+  const useRelativePath = plugin.settingsCopy.attachmentFolderPath.startsWith("./");
 
   if (useRelativePath) {
     attachmentFolder = join(substitutions.folderPath, await getAttachmentFolderPath(plugin, substitutions));
@@ -129,7 +129,7 @@ export async function getAttachmentFolderFullPathForPath(plugin: CustomAttachmen
 }
 
 export async function getPastedFileName(plugin: CustomAttachmentLocationPlugin, substitutions: Substitutions): Promise<string> {
-  return await interpolateDateToString(plugin, plugin.settings.pastedFileName, substitutions);
+  return await interpolateDateToString(plugin, plugin.settingsCopy.pastedFileName, substitutions);
 }
 
 export function makeFileName(fileName: string, extension: string): string {

@@ -126,7 +126,7 @@ abstract class EventWrapper {
 
         let fileArrayBuffer: ArrayBuffer;
         if (this.shouldConvertImages() && isImageFile(entry.file)) {
-          fileArrayBuffer = await blobToJpegArrayBuffer(entry.file, this.plugin.settings.jpegQuality);
+          fileArrayBuffer = await blobToJpegArrayBuffer(entry.file, this.plugin.settingsCopy.jpegQuality);
           extension = "jpg";
         } else {
           fileArrayBuffer = await blobToArrayBuffer(entry.file);
@@ -151,7 +151,7 @@ abstract class EventWrapper {
 
     if (hasFiles) {
       const attachmentsFolderPath = await getAttachmentFolderFullPathForPath(this.plugin, noteFile.path);
-      await createFolderSafe(this.plugin.app, attachmentsFolderPath, this.plugin.settings.keepEmptyAttachmentFolders);
+      await createFolderSafe(this.plugin.app, attachmentsFolderPath, this.plugin.settingsCopy.keepEmptyAttachmentFolders);
     }
 
     handledEvent = this.cloneWithNewDataTransfer(newDataTransfer) as HandledEvent;
@@ -216,14 +216,14 @@ class PasteEventWrapper extends EventWrapper {
   }
 
   protected override shouldRenameAttachments(file: File): boolean {
-    if (this.plugin.settings.renameOnlyImages && !isImageFile(file)) {
+    if (this.plugin.settingsCopy.renameOnlyImages && !isImageFile(file)) {
       return false;
     }
-    return file.path === "" || this.plugin.settings.renamePastedFilesWithKnownNames;
+    return file.path === "" || this.plugin.settingsCopy.renamePastedFilesWithKnownNames;
   }
 
   protected override shouldConvertImages(): boolean {
-    return this.plugin.settings.convertImagesToJpeg;
+    return this.plugin.settingsCopy.convertImagesToJpeg;
   }
 }
 
@@ -251,14 +251,14 @@ class DropEventWrapper extends EventWrapper {
   }
 
   protected override shouldRenameAttachments(file: File): boolean {
-    if (this.plugin.settings.renameOnlyImages && !isImageFile(file)) {
+    if (this.plugin.settingsCopy.renameOnlyImages && !isImageFile(file)) {
       return false;
     }
 
-    return this.plugin.settings.renameAttachmentsOnDragAndDrop;
+    return this.plugin.settingsCopy.renameAttachmentsOnDragAndDrop;
   }
 
   protected override shouldConvertImages(): boolean {
-    return this.plugin.settings.convertImagesToJpeg && this.plugin.settings.convertImagesOnDragAndDrop;
+    return this.plugin.settingsCopy.convertImagesToJpeg && this.plugin.settingsCopy.convertImagesOnDragAndDrop;
   }
 }

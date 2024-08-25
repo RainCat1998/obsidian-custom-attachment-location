@@ -152,7 +152,7 @@ export async function collectAttachments(plugin: CustomAttachmentLocationPlugin,
     const oldAttachmentFolder = oldAttachmentFile.parent;
 
     const backlinks = await getBacklinksForFileSafe(app, oldAttachmentFile);
-    await createFolderSafe(app, dirname(newPath), plugin.settings.keepEmptyAttachmentFolders);
+    await createFolderSafe(app, dirname(newPath), plugin.settingsCopy.keepEmptyAttachmentFolders);
     if (backlinks.count() === 0) {
       await app.vault.rename(oldAttachmentFile, newPath);
       await removeEmptyFolderHierarchy(app, oldAttachmentFolder);
@@ -184,7 +184,7 @@ async function prepareAttachmentToMove(plugin: CustomAttachmentLocationPlugin, l
   const oldNoteBaseName = basename(oldNotePath, extname(oldNotePath));
   const newNoteBaseName = basename(newNotePath, extname(newNotePath));
 
-  const newAttachmentName = plugin.settings.autoRenameFiles ? oldAttachmentName.replaceAll(oldNoteBaseName, newNoteBaseName) : oldAttachmentName;
+  const newAttachmentName = plugin.settingsCopy.autoRenameFiles ? oldAttachmentName.replaceAll(oldNoteBaseName, newNoteBaseName) : oldAttachmentName;
   const newAttachmentFolderPath = await getAttachmentFolderFullPathForPath(plugin, newNotePath);
   const newAttachmentPath = join(newAttachmentFolderPath, newAttachmentName);
 
@@ -197,8 +197,8 @@ async function prepareAttachmentToMove(plugin: CustomAttachmentLocationPlugin, l
 
   const newAttachmentLink = generateMarkdownLink({
     app,
-    file: newAttachmentFile,
-    sourcePath: newNotePath,
+    pathOrFile: newAttachmentFile,
+    sourcePathOrFile: newNotePath,
     subpath,
     alias: getAlias({
       app,

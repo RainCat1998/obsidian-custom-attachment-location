@@ -1,5 +1,5 @@
 import moment from "moment";
-import { escapeRegExp } from "./RegExp.ts";
+import { escapeRegExp } from "obsidian-dev-utils/RegExp";
 import {
   normalizePath,
   type TAbstractFile,

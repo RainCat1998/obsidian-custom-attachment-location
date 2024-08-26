@@ -34,6 +34,7 @@ import {
   updateLink,
   updateLinksInFile
 } from "obsidian-dev-utils/obsidian/Link";
+import { createTFileInstance } from "obsidian-typings/implementations";
 
 const renamingPaths = new Set<string>();
 
@@ -156,7 +157,6 @@ async function fillRenameMap(plugin: CustomAttachmentLocationPlugin, file: TFile
 async function processRename(plugin: CustomAttachmentLocationPlugin, oldPath: string, newPath: string, renameMap: Map<string, string>): Promise<void> {
   const app = plugin.app;
   let oldFile: TFile | null = null;
-  let fakeOldFileCreated = false;
 
   try {
     oldFile = app.vault.getFileByPath(oldPath);
@@ -166,11 +166,7 @@ async function processRename(plugin: CustomAttachmentLocationPlugin, oldPath: st
       return;
     }
 
-    if (!oldFile) {
-      fakeOldFileCreated = true;
-      oldFile = await app.vault.create(oldPath, "");
-    }
-
+    oldFile ??= createTFileInstance(app.vault, oldPath);
     const backlinks = await getBacklinks(plugin.app, oldFile, newFile);
 
     for (const parentNotePath of backlinks.keys()) {
@@ -236,7 +232,7 @@ async function processRename(plugin: CustomAttachmentLocationPlugin, oldPath: st
       });
     }
 
-    if (!fakeOldFileCreated) {
+    if (!oldFile.deleted) {
       await createFolderSafe(app, dirname(newPath));
       const oldFolder = oldFile.parent;
       if (newFile) {
@@ -246,9 +242,6 @@ async function processRename(plugin: CustomAttachmentLocationPlugin, oldPath: st
       await removeEmptyFolderHierarchy(app, oldFolder);
     }
   } finally {
-    if (fakeOldFileCreated && oldFile) {
-      await app.vault.delete(oldFile);
-    }
     renamingPaths.delete(oldPath);
   }
 }

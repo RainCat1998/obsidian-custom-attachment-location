@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 4.9.1
+
+- Fix related attachments notice
+
 ## 4.9.0
 
 - Don't create fake file.

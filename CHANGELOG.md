@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 4.9.2
+
+- Fix options merging
+
 ## 4.9.1
 
 - Fix related attachments notice

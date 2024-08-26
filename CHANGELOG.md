@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 4.9.0
+
+- Don't create fake file.
+
 ## 4.8.0
 
 - Don't create duplicates when dragging vault files

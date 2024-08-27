@@ -235,10 +235,22 @@ async function processRename(plugin: CustomAttachmentLocationPlugin, oldPath: st
     if (!oldFile.deleted) {
       await createFolderSafe(app, dirname(newPath));
       const oldFolder = oldFile.parent;
-      if (newFile) {
-        await app.vault.delete(newFile);
+      try {
+        if (newFile) {
+          try {
+            await app.vault.delete(newFile);
+          } catch (e) {
+            if (app.vault.getAbstractFileByPath(newPath)) {
+              throw e;
+            }
+          }
+        }
+        await app.vault.rename(oldFile, newPath);
+      } catch (e) {
+        if (!app.vault.getAbstractFileByPath(newPath) || app.vault.getAbstractFileByPath(oldPath)) {
+          throw e;
+        }
       }
-      await app.vault.rename(oldFile, newPath);
       await removeEmptyFolderHierarchy(app, oldFolder);
     }
   } finally {

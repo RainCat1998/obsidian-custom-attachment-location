@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## 4.9.3
+
+- Fix backlink check
+- Check for race conditions
+
 ## 4.9.2
 
 - Fix options merging

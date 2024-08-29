@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## 4.9.4
+
+- Handle removed parent folder case
+- Rename attachments before changing links
+
 ## 4.9.3
 
 - Fix backlink check

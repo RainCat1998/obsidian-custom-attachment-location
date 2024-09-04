@@ -53,6 +53,8 @@ export async function handleRename(plugin: CustomAttachmentLocationPlugin, file:
     return;
   }
 
+  renamingPaths.add(oldPath);
+
   const app = plugin.app;
 
   // eslint-disable-next-line @typescript-eslint/unbound-method
@@ -69,6 +71,8 @@ export async function handleRename(plugin: CustomAttachmentLocationPlugin, file:
     for (const [oldPath2, newPath2] of renameMap.entries()) {
       await processRename(plugin, oldPath2, newPath2, renameMap);
     }
+
+    await processRename(plugin, oldPath, file.path, renameMap);
   } finally {
     renamingPaths.delete(oldPath);
     plugin.app.fileManager.updateAllLinks = updateAllLinks;
@@ -91,9 +95,9 @@ export async function handleDelete(plugin: CustomAttachmentLocationPlugin, file:
 
 async function fillRenameMap(plugin: CustomAttachmentLocationPlugin, file: TFile, oldPath: string, renameMap: Map<string, string>): Promise<void> {
   const app = plugin.app;
-  renameMap.set(oldPath, file.path);
 
   if (!isNote(file)) {
+    renameMap.set(oldPath, file.path);
     return;
   }
 

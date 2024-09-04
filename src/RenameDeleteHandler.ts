@@ -142,11 +142,10 @@ async function fillRenameMap(plugin: CustomAttachmentLocationPlugin, file: TFile
   const newNoteName = file.basename;
   const oldNoteName = basename(oldPath, extname(oldPath));
 
-  for (let child of children) {
+  for (const child of children) {
     if (isNote(child)) {
       continue;
     }
-    child = child as TFile;
     const relativePath = relative(oldAttachmentFolderPath, child.path);
     const newChildName = plugin.settingsCopy.autoRenameFiles ? child.basename.replaceAll(oldNoteName, newNoteName) : child.basename;
     const newDir = join(newAttachmentFolderPath, dirname(relativePath));

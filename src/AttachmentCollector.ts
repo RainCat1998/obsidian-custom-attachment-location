@@ -167,7 +167,7 @@ export async function collectAttachments(plugin: CustomAttachmentLocationPlugin,
 async function prepareAttachmentToMove(plugin: CustomAttachmentLocationPlugin, link: ReferenceCache, newNotePath: string, oldNotePath: string): Promise<AttachmentMoveResult | null> {
   const app = plugin.app;
   const { linkPath, subpath } = splitSubpath(link.link);
-  let oldAttachmentFile = app.metadataCache.getFirstLinkpathDest(linkPath, oldNotePath);
+  const oldAttachmentFile = app.metadataCache.getFirstLinkpathDest(linkPath, oldNotePath);
   if (!oldAttachmentFile) {
     return null;
   }
@@ -175,8 +175,6 @@ async function prepareAttachmentToMove(plugin: CustomAttachmentLocationPlugin, l
   if (isNote(oldAttachmentFile)) {
     return null;
   }
-
-  oldAttachmentFile = oldAttachmentFile as TFile;
 
   const oldAttachmentPath = oldAttachmentFile.path;
   const oldAttachmentName = oldAttachmentFile.name;

@@ -31,9 +31,11 @@ export default class CustomAttachmentLocationPluginSettingsTab extends PluginSet
         appendCodeBlock(f, '${date:format}');
         f.appendText('.');
         f.appendChild(createEl('br'));
-        f.appendText('Don\'t use dot-folders like ');
+        f.appendText('Dot-folders like ');
         appendCodeBlock(f, '.attachments');
-        f.appendText(', because Obsidian doesn\'t track them');
+        f.appendText(' are not recommended, because Obsidian doesn\'t track them. You might need to use ');
+        f.createEl('a', { href: 'https://github.com/polyipseity/obsidian-show-hidden-files/', text: 'Show Hidden Files' });
+        f.appendText(' Plugin to manage them.');
       }))
       .addText((text) => bindUiComponent(this.plugin, text, 'attachmentFolderPath', {
         uiValueValidator(uiValue): string | null {

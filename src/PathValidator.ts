@@ -16,10 +16,6 @@ export function validateFilename(filename: string): string {
     return `File name "${filename}" contains only dots`;
   }
 
-  if (filename.startsWith('.')) {
-    return `Dot-files like "${filename}" are not allowed`;
-  }
-
   return '';
 }
 

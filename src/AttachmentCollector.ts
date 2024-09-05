@@ -22,7 +22,7 @@ import {
 import { createFolderSafeEx } from "./Vault.ts";
 import { isNote } from "obsidian-dev-utils/obsidian/TAbstractFile";
 import { invokeAsyncSafely } from "obsidian-dev-utils/Async";
-import { toJson } from "obsidian-dev-utils/JSON";
+import { toJson } from "obsidian-dev-utils/Object";
 import type CustomAttachmentLocationPlugin from "./CustomAttachmentLocationPlugin.ts";
 import { getAttachmentFolderFullPathForPath } from "./AttachmentPath.ts";
 import {

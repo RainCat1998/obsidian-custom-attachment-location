@@ -1,5 +1,13 @@
 # CHANGELOG
 
+## 4.10.0
+
+- Fix settings saving
+- Allow dot-folders
+- Fix mobile loading
+- Fix backlinks race condition
+- Process attachments before note
+
 ## 4.9.4
 
 - Handle removed parent folder case

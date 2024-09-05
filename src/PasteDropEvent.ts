@@ -1,38 +1,38 @@
-import {
-  basename,
-  extname
-} from "obsidian-dev-utils/Path";
-
+import { convertAsyncToSync } from 'obsidian-dev-utils/Async';
 import {
   blobToArrayBuffer,
   blobToJpegArrayBuffer,
   isImageFile
-} from "obsidian-dev-utils/Blob";
+} from 'obsidian-dev-utils/Blob';
+import { isNote } from 'obsidian-dev-utils/obsidian/TAbstractFile';
+import {
+  basename,
+  extname
+} from 'obsidian-dev-utils/Path';
+
 import {
   getAttachmentFolderFullPathForPath,
   getPastedFileName,
   makeFileName
-} from "./AttachmentPath.ts";
-import type CustomAttachmentLocationPlugin from "./CustomAttachmentLocationPlugin.ts";
-import { isNote } from "obsidian-dev-utils/obsidian/TAbstractFile";
-import { convertAsyncToSync } from "obsidian-dev-utils/Async";
-import { createSubstitutionsFromPath } from "./Substitutions.ts";
-import { createFolderSafeEx } from "./Vault.ts";
+} from './AttachmentPath.ts';
+import type CustomAttachmentLocationPlugin from './CustomAttachmentLocationPlugin.ts';
+import { createSubstitutionsFromPath } from './Substitutions.ts';
+import { createFolderSafeEx } from './Vault.ts';
 
 type HandledEvent = Event & {
-  handled?: boolean
+  handled?: boolean;
 };
 
-type PastedEntry = {
+interface PastedEntry {
   file?: File;
   textPromise?: Promise<string>;
   type: string;
-};
+}
 
 export function registerPasteDropEventHandlers(plugin: CustomAttachmentLocationPlugin): void {
   const listener = convertAsyncToSync(async (event: ClipboardEvent | DragEvent) => handlePasteAndDrop(plugin, event));
-  plugin.registerDomEvent(document, "paste", listener, { capture: true });
-  plugin.registerDomEvent(document, "drop", listener, { capture: true });
+  plugin.registerDomEvent(document, 'paste', listener, { capture: true });
+  plugin.registerDomEvent(document, 'drop', listener, { capture: true });
 }
 
 async function handlePasteAndDrop(plugin: CustomAttachmentLocationPlugin, event: ClipboardEvent | DragEvent): Promise<void> {
@@ -41,9 +41,9 @@ async function handlePasteAndDrop(plugin: CustomAttachmentLocationPlugin, event:
 }
 
 enum TargetType {
-  Note = "Note",
-  Canvas = "Canvas",
-  Unsupported = "Unsupported"
+  Note = 'Note',
+  Canvas = 'Canvas',
+  Unsupported = 'Unsupported'
 }
 
 abstract class EventWrapper {
@@ -91,17 +91,21 @@ abstract class EventWrapper {
 
     const pastedEntries: PastedEntry[] = Array.from(dataTransfer.items).map((item) => {
       const type = item.type;
-      if (item.kind === "file") {
+      if (item.kind === 'file') {
         const file = item.getAsFile();
         if (!file) {
-          throw new Error("Could not get file from item");
+          throw new Error('Could not get file from item');
         }
         return {
           file,
           type
         };
-      } else if (item.kind === "string") {
-        const textPromise = new Promise<string>((resolve) => item.getAsString((text) => resolve(text)));
+      } else if (item.kind === 'string') {
+        const textPromise = new Promise<string>((resolve) => {
+          item.getAsString((text) => {
+            resolve(text);
+          });
+        });
         return {
           textPromise,
           type
@@ -120,12 +124,12 @@ abstract class EventWrapper {
         newDataTransfer.items.add(await entry.textPromise, entry.type);
       } else if (entry.file) {
         let extension = extname(entry.file.name).slice(1);
-        const originalCopiedFileName = basename(entry.file.name, "." + extension);
+        const originalCopiedFileName = basename(entry.file.name, '.' + extension);
 
         let fileArrayBuffer: ArrayBuffer;
         if (this.shouldConvertImages() && isImageFile(entry.file)) {
           fileArrayBuffer = await blobToJpegArrayBuffer(entry.file, this.plugin.settingsCopy.jpegQuality);
-          extension = "jpg";
+          extension = 'jpg';
         } else {
           fileArrayBuffer = await blobToArrayBuffer(entry.file);
         }
@@ -134,13 +138,13 @@ abstract class EventWrapper {
 
         const filename = shouldRename ? await getPastedFileName(this.plugin, createSubstitutionsFromPath(noteFile.path, originalCopiedFileName)) : originalCopiedFileName;
 
-        const filePropertyBag: FilePropertyBag = { type: "application/octet-stream" };
+        const filePropertyBag: FilePropertyBag = { type: 'application/octet-stream' };
         if (!shouldRename) {
           filePropertyBag.lastModified = entry.file.lastModified;
         }
         const renamedFile = new File([new Blob([fileArrayBuffer])], makeFileName(filename, extension), filePropertyBag);
         if (!shouldRename) {
-          Object.defineProperty(renamedFile, "path", { value: entry.file.path });
+          Object.defineProperty(renamedFile, 'path', { value: entry.file.path });
         }
         newDataTransfer.items.add(renamedFile);
         hasFiles = true;
@@ -177,19 +181,18 @@ abstract class EventWrapper {
       return TargetType.Note;
     }
 
-    if (this.event.target.closest(".canvas-wrapper")) {
+    if (this.event.target.closest('.canvas-wrapper')) {
       return TargetType.Canvas;
     }
 
     const canvasView = this.plugin.app.workspace.getActiveFileView();
 
-    if (this.event.target.matches("body") && canvasView?.getViewType() === "canvas" && canvasView.containerEl.closest(".mod-active")) {
+    if (this.event.target.matches('body') && canvasView?.getViewType() === 'canvas' && canvasView.containerEl.closest('.mod-active')) {
       return TargetType.Canvas;
     }
 
     return TargetType.Unsupported;
   }
-
 }
 
 class PasteEventWrapper extends EventWrapper {
@@ -197,7 +200,7 @@ class PasteEventWrapper extends EventWrapper {
     protected override readonly event: ClipboardEvent,
     plugin: CustomAttachmentLocationPlugin
   ) {
-    super(event, "Paste", plugin);
+    super(event, 'Paste', plugin);
   }
 
   protected override getDataTransfer(): DataTransfer | null {
@@ -205,7 +208,7 @@ class PasteEventWrapper extends EventWrapper {
   }
 
   protected override cloneWithNewDataTransfer(dataTransfer: DataTransfer): ClipboardEvent {
-    return new ClipboardEvent("paste", {
+    return new ClipboardEvent('paste', {
       clipboardData: dataTransfer,
       bubbles: this.event.bubbles,
       cancelable: this.event.cancelable,
@@ -217,7 +220,7 @@ class PasteEventWrapper extends EventWrapper {
     if (this.plugin.settingsCopy.renameOnlyImages && !isImageFile(file)) {
       return false;
     }
-    return file.path === "" || this.plugin.settingsCopy.renamePastedFilesWithKnownNames;
+    return file.path === '' || this.plugin.settingsCopy.renamePastedFilesWithKnownNames;
   }
 
   protected override shouldConvertImages(): boolean {
@@ -230,7 +233,7 @@ class DropEventWrapper extends EventWrapper {
     protected override readonly event: DragEvent,
     plugin: CustomAttachmentLocationPlugin
   ) {
-    super(event, "Drop", plugin);
+    super(event, 'Drop', plugin);
   }
 
   protected override getDataTransfer(): DataTransfer | null {
@@ -238,7 +241,7 @@ class DropEventWrapper extends EventWrapper {
   }
 
   protected override cloneWithNewDataTransfer(dataTransfer: DataTransfer): DragEvent {
-    return new DragEvent("drop", {
+    return new DragEvent('drop', {
       dataTransfer,
       bubbles: this.event.bubbles,
       cancelable: this.event.cancelable,

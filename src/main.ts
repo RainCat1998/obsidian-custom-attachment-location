@@ -1,1 +1,1 @@
-export { default } from "./CustomAttachmentLocationPlugin.ts";
+export { default } from './CustomAttachmentLocationPlugin.ts';

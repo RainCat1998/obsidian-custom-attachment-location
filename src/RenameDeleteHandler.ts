@@ -1,44 +1,47 @@
+import type {
+  ReferenceCache,
+  TAbstractFile
+} from 'obsidian';
 import {
   App,
   TFile,
-  Vault,
-  type ReferenceCache,
-  type TAbstractFile
-} from "obsidian";
-import type CustomAttachmentLocationPlugin from "./CustomAttachmentLocationPlugin.ts";
-import {
-  basename,
-  extname,
-  relative,
-  join,
-  dirname
-} from "obsidian-dev-utils/Path";
-import { getAttachmentFolderFullPathForPath } from "./AttachmentPath.ts";
-import {
-  removeFolderSafe,
-  applyFileChanges,
-  processWithRetry,
-  createFolderSafe,
-  removeEmptyFolderHierarchy
-} from "obsidian-dev-utils/obsidian/Vault";
-import {
-  isCanvasFile,
-  isMarkdownFile,
-  isNote
-} from "obsidian-dev-utils/obsidian/TAbstractFile";
-import {
-  getAllLinks,
-  getBacklinksForFileSafe,
-  getCacheSafe
-} from "obsidian-dev-utils/obsidian/MetadataCache";
-import type { CanvasData } from "obsidian/canvas.js";
-import { toJson } from "obsidian-dev-utils/Object";
+  Vault
+} from 'obsidian';
+import type { CanvasData } from 'obsidian/canvas.js';
+import { toJson } from 'obsidian-dev-utils/Object';
 import {
   extractLinkFile,
   updateLink,
   updateLinksInFile
-} from "obsidian-dev-utils/obsidian/Link";
-import { createTFileInstance } from "obsidian-typings/implementations";
+} from 'obsidian-dev-utils/obsidian/Link';
+import {
+  getAllLinks,
+  getBacklinksForFileSafe,
+  getCacheSafe
+} from 'obsidian-dev-utils/obsidian/MetadataCache';
+import {
+  isCanvasFile,
+  isMarkdownFile,
+  isNote
+} from 'obsidian-dev-utils/obsidian/TAbstractFile';
+import {
+  applyFileChanges,
+  createFolderSafe,
+  processWithRetry,
+  removeEmptyFolderHierarchy,
+  removeFolderSafe
+} from 'obsidian-dev-utils/obsidian/Vault';
+import {
+  basename,
+  dirname,
+  extname,
+  join,
+  relative
+} from 'obsidian-dev-utils/Path';
+import { createTFileInstance } from 'obsidian-typings/implementations';
+
+import { getAttachmentFolderFullPathForPath } from './AttachmentPath.ts';
+import type CustomAttachmentLocationPlugin from './CustomAttachmentLocationPlugin.ts';
 
 const renamingPaths = new Set<string>();
 
@@ -47,7 +50,7 @@ export async function handleRename(plugin: CustomAttachmentLocationPlugin, file:
     return;
   }
 
-  console.debug("Handle Rename");
+  console.debug('Handle Rename');
 
   if (!(file instanceof TFile)) {
     return;
@@ -60,7 +63,9 @@ export async function handleRename(plugin: CustomAttachmentLocationPlugin, file:
   // eslint-disable-next-line @typescript-eslint/unbound-method
   const updateAllLinks = app.fileManager.updateAllLinks;
   try {
-    plugin.app.fileManager.updateAllLinks = async (): Promise<void> => { };
+    plugin.app.fileManager.updateAllLinks = async (): Promise<void> => {
+      // do nothing
+    };
 
     const renameMap = new Map<string, string>();
     await fillRenameMap(plugin, file, oldPath, renameMap);
@@ -80,7 +85,7 @@ export async function handleRename(plugin: CustomAttachmentLocationPlugin, file:
 }
 
 export async function handleDelete(plugin: CustomAttachmentLocationPlugin, file: TAbstractFile): Promise<void> {
-  console.debug("Handle Delete");
+  console.debug('Handle Delete');
   if (!isNote(file)) {
     return;
   }
@@ -103,7 +108,7 @@ async function fillRenameMap(plugin: CustomAttachmentLocationPlugin, file: TFile
 
   const oldAttachmentFolderPath = await getAttachmentFolderFullPathForPath(plugin, oldPath);
   const newAttachmentFolderPath = await getAttachmentFolderFullPathForPath(plugin, file.path);
-  const dummyOldAttachmentFolderPath = await getAttachmentFolderFullPathForPath(plugin, join(dirname(oldPath), "DUMMY_FILE.md"));
+  const dummyOldAttachmentFolderPath = await getAttachmentFolderFullPathForPath(plugin, join(dirname(oldPath), 'DUMMY_FILE.md'));
 
   const oldAttachmentFolder = plugin.app.vault.getFolderByPath(oldAttachmentFolderPath);
 
@@ -153,7 +158,7 @@ async function fillRenameMap(plugin: CustomAttachmentLocationPlugin, file: TFile
     const relativePath = relative(oldAttachmentFolderPath, child.path);
     const newChildName = plugin.settingsCopy.autoRenameFiles ? child.basename.replaceAll(oldNoteName, newNoteName) : child.basename;
     const newDir = join(newAttachmentFolderPath, dirname(relativePath));
-    let newChildPath = join(newDir, newChildName + "." + child.extension);
+    let newChildPath = join(newDir, newChildName + '.' + child.extension);
     if (child.path !== newChildPath) {
       newChildPath = plugin.app.vault.getAvailablePath(join(newDir, newChildName), child.extension);
       renameMap.set(child.path, newChildPath);
@@ -215,8 +220,12 @@ async function processRename(plugin: CustomAttachmentLocationPlugin, oldPath: st
       }
 
       await applyFileChanges(app, parentNote, async () => {
-        const links =
-          (await getBacklinks(plugin.app, oldFile!, newFile)).get(parentNotePath) ?? [];
+        if (!oldFile) {
+          return [];
+        }
+
+        const links
+          = (await getBacklinks(plugin.app, oldFile, newFile)).get(parentNotePath) ?? [];
         const changes = [];
 
         for (const link of links) {
@@ -231,7 +240,7 @@ async function processRename(plugin: CustomAttachmentLocationPlugin, oldPath: st
               oldPathOrFile: oldPath,
               sourcePathOrFile: parentNote,
               renameMap
-            }),
+            })
           });
         }
 
@@ -243,7 +252,7 @@ async function processRename(plugin: CustomAttachmentLocationPlugin, oldPath: st
       await processWithRetry(app, newFile, (content) => {
         const canvasData = JSON.parse(content) as CanvasData;
         for (const node of canvasData.nodes) {
-          if (node.type !== "file") {
+          if (node.type !== 'file') {
             continue;
           }
           const newPath = renameMap.get(node.file);
@@ -271,7 +280,7 @@ async function getBacklinks(app: App, oldFile: TFile, newFile: TFile | null): Pr
   const backlinks = new Map<string, ReferenceCache[]>();
   const oldLinks = await getBacklinksForFileSafe(app, oldFile);
   for (const path of oldLinks.keys()) {
-    backlinks.set(path, oldLinks.get(path)!);
+    backlinks.set(path, oldLinks.get(path) ?? []);
   }
 
   if (!newFile) {
@@ -282,7 +291,7 @@ async function getBacklinks(app: App, oldFile: TFile, newFile: TFile | null): Pr
 
   for (const path of newLinks.keys()) {
     const links = backlinks.get(path) ?? [];
-    links.push(...newLinks.get(path)!);
+    links.push(...newLinks.get(path) ?? []);
     backlinks.set(path, links);
   }
 

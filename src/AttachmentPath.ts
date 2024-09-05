@@ -1,18 +1,18 @@
-import moment from "moment";
-import { escapeRegExp } from "obsidian-dev-utils/RegExp";
+import moment from 'moment';
+import type { TAbstractFile } from 'obsidian';
 import {
   normalizePath,
-  type TAbstractFile,
   TFolder
-} from "obsidian";
-import { join } from "obsidian-dev-utils/Path";
-import type CustomAttachmentLocationPlugin from "./CustomAttachmentLocationPlugin.ts";
-import { prompt } from "obsidian-dev-utils/obsidian/Modal/Prompt";
-import { validateFilename } from "./PathValidator.ts";
-import {
-  createSubstitutionsFromPath,
-  type Substitutions
-} from "./Substitutions.ts";
+} from 'obsidian';
+import { throwExpression } from 'obsidian-dev-utils/Error';
+import { prompt } from 'obsidian-dev-utils/obsidian/Modal/Prompt';
+import { join } from 'obsidian-dev-utils/Path';
+import { escapeRegExp } from 'obsidian-dev-utils/RegExp';
+
+import type CustomAttachmentLocationPlugin from './CustomAttachmentLocationPlugin.ts';
+import { validateFilename } from './PathValidator.ts';
+import type { Substitutions } from './Substitutions.ts';
+import { createSubstitutionsFromPath } from './Substitutions.ts';
 
 /**
  * example:
@@ -26,10 +26,10 @@ export function interpolateToDigitRegex(template: string, substitutions: Substit
   // match ${date:date_format} pattern
   let regExpString = template.replaceAll(dateRegExp, (_, p1: string) => {
     // replace ${date} with \d{x} regex
-    return `\\d{${p1.length}}`;
+    return `\\d{${p1.length.toString()}}`;
   });
 
-  for (const [key, value] of Object.entries(substitutions)) {
+  for (const [key, value] of Object.entries(substitutions) as [string, string][]) {
     regExpString = regExpString.replaceAll(`\${${key}}`, escapeRegExp(value));
   }
 
@@ -48,21 +48,21 @@ export async function interpolateDateToString(plugin: CustomAttachmentLocationPl
 
   let newPath = template.replaceAll(dateRegExp, (_, dateFormat: string) => moment().format(dateFormat));
 
-  for (const [key, value] of Object.entries(substitutions)) {
+  for (const [key, value] of Object.entries(substitutions) as [string, string][]) {
     newPath = newPath.replaceAll(`\${${key}}`, value);
   }
 
   if (substitutions.originalCopiedFilename) {
-    if (newPath.includes("${prompt}")) {
+    if (newPath.includes('${prompt}')) {
       const newFileName = await prompt({
         app: plugin.app,
-        title: "Rename attachment file",
+        title: 'Rename attachment file',
         defaultValue: substitutions.originalCopiedFilename,
         valueValidator: (value): string => {
           return validateFilename(value);
         }
       }) ?? substitutions.originalCopiedFilename;
-      newPath = newPath.replaceAll("${prompt}", newFileName);
+      newPath = newPath.replaceAll('${prompt}', newFileName);
     }
   }
 
@@ -71,8 +71,8 @@ export async function interpolateDateToString(plugin: CustomAttachmentLocationPl
   }
 
   if (plugin.settingsCopy.replaceWhitespace) {
-    newPath = newPath.replace(/\s/g, "-");
-    newPath = newPath.replace(/-{2,}/g, "-");
+    newPath = newPath.replace(/\s/g, '-');
+    newPath = newPath.replace(/-{2,}/g, '-');
   }
 
   return newPath;
@@ -85,10 +85,10 @@ export async function getEarliestAttachmentFolder(plugin: CustomAttachmentLocati
     .filter((f: TAbstractFile) => f instanceof TFolder)
     .filter((f: TAbstractFile) => targetRegex.test(f.path));
 
-  type FolderStat = {
-    path: string,
-    ctime: number
-  };
+  interface FolderStat {
+    path: string;
+    ctime: number;
+  }
 
   const folderStats: FolderStat[] = [];
 
@@ -102,7 +102,7 @@ export async function getEarliestAttachmentFolder(plugin: CustomAttachmentLocati
 
   if (folderStats.length > 0) {
     // create time ascending
-    return folderStats.sort((a, b) => a.ctime - b.ctime).map((f) => f.path)[0]!;
+    return folderStats.sort((a, b) => a.ctime - b.ctime).map((f) => f.path)[0] ?? throwExpression(new Error('No folder stat'));
   } else {
     return interpolateDateToString(plugin, attachmentFolderTemplate, substitutions);
   }
@@ -113,8 +113,8 @@ export async function getAttachmentFolderPath(plugin: CustomAttachmentLocationPl
 }
 
 async function getAttachmentFolderFullPathForSubstitutions(plugin: CustomAttachmentLocationPlugin, substitutions: Substitutions): Promise<string> {
-  let attachmentFolder = "";
-  const useRelativePath = plugin.settingsCopy.attachmentFolderPath.startsWith("./");
+  let attachmentFolder = '';
+  const useRelativePath = plugin.settingsCopy.attachmentFolderPath.startsWith('./');
 
   if (useRelativePath) {
     attachmentFolder = join(substitutions.folderPath, await getAttachmentFolderPath(plugin, substitutions));

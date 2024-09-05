@@ -1,3 +1,4 @@
+import { around } from 'monkey-around';
 import {
   Menu,
   PluginSettingTab,
@@ -5,39 +6,37 @@ import {
   TFile,
   TFolder,
   Vault
-} from "obsidian";
-import CustomAttachmentLocationPluginSettings from "./CustomAttachmentLocationPluginSettings.ts";
-import CustomAttachmentLocationPluginSettingsTab from "./CustomAttachmentLocationPluginSettingsTab.ts";
-import { join } from "obsidian-dev-utils/Path";
-import {
-  invokeAsyncSafely,
-  type MaybePromise
-} from "obsidian-dev-utils/Async";
-import {
-  getAttachmentFolderFullPathForPath,
-  makeFileName
-} from "./AttachmentPath.ts";
-import { around } from "monkey-around";
-import { createFolderSafe } from "obsidian-dev-utils/obsidian/Vault";
-import { isNote } from "obsidian-dev-utils/obsidian/TAbstractFile";
-import { registerPasteDropEventHandlers } from "./PasteDropEvent.ts";
+} from 'obsidian';
+import type { MaybePromise } from 'obsidian-dev-utils/Async';
+import { invokeAsyncSafely } from 'obsidian-dev-utils/Async';
+import { PluginBase } from 'obsidian-dev-utils/obsidian/Plugin/PluginBase';
+import { isNote } from 'obsidian-dev-utils/obsidian/TAbstractFile';
+import { createFolderSafe } from 'obsidian-dev-utils/obsidian/Vault';
+import { join } from 'obsidian-dev-utils/Path';
+
 import {
   collectAttachmentsCurrentFolder,
   collectAttachmentsCurrentNote,
   collectAttachmentsEntireVault,
   collectAttachmentsInFolder
-} from "./AttachmentCollector.ts";
+} from './AttachmentCollector.ts';
+import {
+  getAttachmentFolderFullPathForPath,
+  makeFileName
+} from './AttachmentPath.ts';
+import CustomAttachmentLocationPluginSettings from './CustomAttachmentLocationPluginSettings.ts';
+import CustomAttachmentLocationPluginSettingsTab from './CustomAttachmentLocationPluginSettingsTab.ts';
+import { registerPasteDropEventHandlers } from './PasteDropEvent.ts';
 import {
   handleDelete,
   handleRename
-} from "./RenameDeleteHandler.ts";
-import { PluginBase } from "obsidian-dev-utils/obsidian/Plugin/PluginBase";
+} from './RenameDeleteHandler.ts';
 
-type GetAvailablePathForAttachmentsFn = Vault["getAvailablePathForAttachments"];
-type GetAvailablePathFn = Vault["getAvailablePath"];
+type GetAvailablePathForAttachmentsFn = Vault['getAvailablePathForAttachments'];
+type GetAvailablePathFn = Vault['getAvailablePath'];
 
 export default class CustomAttachmentLocationPlugin extends PluginBase<CustomAttachmentLocationPluginSettings> {
-  protected override createDefaultPluginSettings(this: void): CustomAttachmentLocationPluginSettings {
+  protected override createDefaultPluginSettings(): CustomAttachmentLocationPluginSettings {
     return new CustomAttachmentLocationPluginSettings();
   }
 
@@ -46,29 +45,33 @@ export default class CustomAttachmentLocationPlugin extends PluginBase<CustomAtt
   }
 
   protected override onloadComplete(): MaybePromise<void> {
-    this.registerEvent(this.app.vault.on("delete", (file) => invokeAsyncSafely(handleDelete(this, file))));
-    this.registerEvent(this.app.vault.on("rename", (file, oldPath) => invokeAsyncSafely(handleRename(this, file, oldPath))));
+    this.registerEvent(this.app.vault.on('delete', (file) => {
+      invokeAsyncSafely(handleDelete(this, file));
+    }));
+    this.registerEvent(this.app.vault.on('rename', (file, oldPath) => {
+      invokeAsyncSafely(handleRename(this, file, oldPath));
+    }));
     registerPasteDropEventHandlers(this);
 
     this.addCommand({
-      id: "collect-attachments-current-note",
-      name: "Collect attachments in current note",
-      checkCallback: (checking) => collectAttachmentsCurrentNote(this, checking),
+      id: 'collect-attachments-current-note',
+      name: 'Collect attachments in current note',
+      checkCallback: (checking) => collectAttachmentsCurrentNote(this, checking)
     });
 
     this.addCommand({
-      id: "collect-attachments-current-folder",
-      name: "Collect attachments in current folder",
-      checkCallback: (checking) => collectAttachmentsCurrentFolder(this, checking),
+      id: 'collect-attachments-current-folder',
+      name: 'Collect attachments in current folder',
+      checkCallback: (checking) => collectAttachmentsCurrentFolder(this, checking)
     });
 
     this.addCommand({
-      id: "collect-attachments-entire-vault",
-      name: "Collect attachments in entire vault",
-      callback: () => collectAttachmentsEntireVault(this),
+      id: 'collect-attachments-entire-vault',
+      name: 'Collect attachments in entire vault',
+      callback: () => { collectAttachmentsEntireVault(this); }
     });
 
-    this.registerEvent(this.app.workspace.on("file-menu", this.handleFileMenu.bind(this)));
+    this.registerEvent(this.app.workspace.on('file-menu', this.handleFileMenu.bind(this)));
   }
 
   protected override onLayoutReady(): void {
@@ -104,8 +107,8 @@ export default class CustomAttachmentLocationPlugin extends PluginBase<CustomAtt
   private getAvailablePath(filename: string, extension: string): string {
     let suffixNum = 0;
 
-    while (true) {
-      const path = makeFileName(suffixNum == 0 ? filename : `${filename}${this.settings.duplicateNameSeparator}${suffixNum}`, extension);
+    for (; ;) {
+      const path = makeFileName(suffixNum == 0 ? filename : `${filename}${this.settings.duplicateNameSeparator}${suffixNum.toString()}`, extension);
 
       if (!this.app.vault.getAbstractFileByPathInsensitive(path)) {
         return path;
@@ -121,8 +124,8 @@ export default class CustomAttachmentLocationPlugin extends PluginBase<CustomAtt
     }
 
     menu.addItem((item) => {
-      item.setTitle("Collect attachments in folder")
-        .setIcon("download")
+      item.setTitle('Collect attachments in folder')
+        .setIcon('download')
         .onClick(() => collectAttachmentsInFolder(this, file));
     });
   }

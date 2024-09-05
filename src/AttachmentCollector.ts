@@ -1,48 +1,52 @@
+import type {
+  ReferenceCache,
+  TFile,
+  TFolder
+} from 'obsidian';
 import {
   App,
   Notice,
-  Vault,
-  type ReferenceCache,
-  type TFile,
-  type TFolder
-} from "obsidian";
-import type { CanvasData } from "obsidian/canvas.d.ts";
+  Vault
+} from 'obsidian';
+import type { CanvasData } from 'obsidian/canvas.d.ts';
+import { invokeAsyncSafely } from 'obsidian-dev-utils/Async';
+import { throwExpression } from 'obsidian-dev-utils/Error';
+import { toJson } from 'obsidian-dev-utils/Object';
+import {
+  generateMarkdownLink,
+  getAlias
+} from 'obsidian-dev-utils/obsidian/Link';
 import {
   getAllLinks,
   getBacklinksForFileSafe,
   getCacheSafe
-} from "obsidian-dev-utils/obsidian/MetadataCache";
+} from 'obsidian-dev-utils/obsidian/MetadataCache';
+import { isNote } from 'obsidian-dev-utils/obsidian/TAbstractFile';
+import type { FileChange } from 'obsidian-dev-utils/obsidian/Vault';
 import {
   applyFileChanges,
   processWithRetry,
   removeEmptyFolderHierarchy,
-  removeFolderSafe,
-  type FileChange
-} from "obsidian-dev-utils/obsidian/Vault";
-import { createFolderSafeEx } from "./Vault.ts";
-import { isNote } from "obsidian-dev-utils/obsidian/TAbstractFile";
-import { invokeAsyncSafely } from "obsidian-dev-utils/Async";
-import { toJson } from "obsidian-dev-utils/Object";
-import type CustomAttachmentLocationPlugin from "./CustomAttachmentLocationPlugin.ts";
-import { getAttachmentFolderFullPathForPath } from "./AttachmentPath.ts";
-import {
-  generateMarkdownLink,
-  getAlias
-} from "obsidian-dev-utils/obsidian/Link";
+  removeFolderSafe
+} from 'obsidian-dev-utils/obsidian/Vault';
 import {
   basename,
   dirname,
   extname,
   join
-} from "obsidian-dev-utils/Path";
+} from 'obsidian-dev-utils/Path';
 
-type AttachmentMoveResult = {
+import { getAttachmentFolderFullPathForPath } from './AttachmentPath.ts';
+import type CustomAttachmentLocationPlugin from './CustomAttachmentLocationPlugin.ts';
+import { createFolderSafeEx } from './Vault.ts';
+
+interface AttachmentMoveResult {
   oldAttachmentPath: string;
   newAttachmentPath: string;
   newAttachmentLink: string;
 }
 
-type SplitSubpathResult = {
+interface SplitSubpathResult {
   linkPath: string;
   subpath: string | undefined;
 }
@@ -67,7 +71,7 @@ export function collectAttachmentsCurrentFolder(plugin: CustomAttachmentLocation
   }
 
   if (!checking) {
-    invokeAsyncSafely(collectAttachmentsInFolder(plugin, note.parent!));
+    invokeAsyncSafely(collectAttachmentsInFolder(plugin, note?.parent ?? throwExpression(new Error('Parent folder not found'))));
   }
 
   return true;
@@ -85,7 +89,7 @@ export async function collectAttachments(plugin: CustomAttachmentLocationPlugin,
   console.debug(`Collect attachments in note: ${note.path}`);
 
   const attachmentsMap = new Map<string, string>();
-  const isCanvas = note.extension.toLowerCase() === "canvas";
+  const isCanvas = note.extension.toLowerCase() === 'canvas';
 
   await applyFileChanges(app, note, async () => {
     const cache = await getCacheSafe(app, note);
@@ -126,7 +130,7 @@ export async function collectAttachments(plugin: CustomAttachmentLocationPlugin,
     await processWithRetry(app, note, (content) => {
       const canvasData = JSON.parse(content) as CanvasData;
       for (const node of canvasData.nodes) {
-        if (node.type !== "file") {
+        if (node.type !== 'file') {
           continue;
         }
         const newPath = attachmentsMap.get(node.file);
@@ -139,7 +143,7 @@ export async function collectAttachments(plugin: CustomAttachmentLocationPlugin,
     });
   }
 
-  const notice = new Notice(`Collecting ${attachmentsMap.size} attachments for ${note.path}`);
+  const notice = new Notice(`Collecting ${attachmentsMap.size.toString()} attachments for ${note.path}`);
 
   await getCacheSafe(app, note);
 
@@ -191,7 +195,7 @@ async function prepareAttachmentToMove(plugin: CustomAttachmentLocationPlugin, l
   }
 
   const shouldRemoveNewAttachmentFolder = await createFolderSafeEx(plugin, dirname(newAttachmentPath));
-  const newAttachmentFile = await app.vault.create(newAttachmentPath, "");
+  const newAttachmentFile = await app.vault.create(newAttachmentPath, '');
 
   const newAttachmentLink = generateMarkdownLink({
     app,
@@ -205,8 +209,8 @@ async function prepareAttachmentToMove(plugin: CustomAttachmentLocationPlugin, l
       otherPaths: [oldAttachmentPath],
       sourcePath: newNotePath
     }),
-    isEmbed: link.original.startsWith("!"),
-    isWikilink: link.original.includes("[["),
+    isEmbed: link.original.startsWith('!'),
+    isWikilink: link.original.includes('[[')
   });
 
   await app.vault.delete(newAttachmentFile);
@@ -232,12 +236,12 @@ export async function collectAttachmentsInFolder(plugin: CustomAttachmentLocatio
 
   files.sort((a, b) => a.path.localeCompare(b.path));
 
-  const notice = new Notice("", 0);
+  const notice = new Notice('', 0);
   let i = 0;
 
   for (const file of files) {
     i++;
-    const message = `Collecting attachments # ${i} / ${files.length} - ${file.path}`;
+    const message = `Collecting attachments # ${i.toString()} / ${files.length.toString()} - ${file.path}`;
     notice.setMessage(message);
     await collectAttachments(plugin, file);
   }
@@ -246,8 +250,8 @@ export async function collectAttachmentsInFolder(plugin: CustomAttachmentLocatio
 }
 
 export function splitSubpath(link: string): SplitSubpathResult {
-  const SUBPATH_SEPARATOR = "#";
-  const [linkPath = "", subpath] = link.split(SUBPATH_SEPARATOR);
+  const SUBPATH_SEPARATOR = '#';
+  const [linkPath = '', subpath] = link.split(SUBPATH_SEPARATOR);
   return {
     linkPath,
     subpath: subpath ? SUBPATH_SEPARATOR + subpath : undefined
@@ -256,7 +260,7 @@ export function splitSubpath(link: string): SplitSubpathResult {
 
 async function getCanvasLinks(app: App, file: TFile): Promise<ReferenceCache[]> {
   const canvasData = await app.vault.readJson(file.path) as CanvasData;
-  const files = canvasData.nodes.filter((node) => node.type === "file").map((node) => node.file);
+  const files = canvasData.nodes.filter((node) => node.type === 'file').map((node) => node.file);
   return files.map((file) => ({
     link: file,
     original: file,

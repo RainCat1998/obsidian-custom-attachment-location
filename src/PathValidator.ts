@@ -5,7 +5,7 @@ export function validateFilename(filename: string): string {
   filename = removeDateFormatting(filename);
 
   if (!filename) {
-    return "File name is empty";
+    return 'File name is empty';
   }
 
   if (INVALID_FILENAME_PATH_CHARS_REG_EXP.test(filename)) {
@@ -16,26 +16,26 @@ export function validateFilename(filename: string): string {
     return `File name "${filename}" contains only dots`;
   }
 
-  if (filename[0] === ".") {
+  if (filename.startsWith('.')) {
     return `Dot-files like "${filename}" are not allowed`;
   }
 
-  return "";
+  return '';
 }
 
 export function validatePath(path: string): string {
   path = removeDateFormatting(path);
 
-  if (path.startsWith("/")) {
-    return "Path can't start with /";
+  if (path.startsWith('/')) {
+    return 'Path can\'t start with /';
   }
-  if (path.endsWith("/")) {
-    return "Path can't end with /";
+  if (path.endsWith('/')) {
+    return 'Path can\'t end with /';
   }
 
-  const parts = path.split("/");
+  const parts = path.split('/');
   for (const part of parts) {
-    if (part === ".") {
+    if (part === '.') {
       continue;
     }
 
@@ -46,9 +46,9 @@ export function validatePath(path: string): string {
     }
   }
 
-  return "";
+  return '';
 }
 
 function removeDateFormatting(str: string): string {
-  return str.replaceAll(/\$\{date:.+?\}/g, "${date}");
+  return str.replaceAll(/\$\{date:.+?\}/g, '${date}');
 }

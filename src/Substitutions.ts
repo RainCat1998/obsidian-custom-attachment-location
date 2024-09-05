@@ -1,15 +1,15 @@
 import {
-  extname,
   basename,
-  dirname
-} from "obsidian-dev-utils/Path";
+  dirname,
+  extname
+} from 'obsidian-dev-utils/Path';
 
-export type Substitutions = {
+export interface Substitutions {
   filename: string;
   foldername: string;
   folderPath: string;
   originalCopiedFilename: string;
-};
+}
 
 export function createSubstitutionsFromPath(path: string, originalCopiedFilename?: string): Substitutions {
   const folderPath = dirname(path);
@@ -17,6 +17,6 @@ export function createSubstitutionsFromPath(path: string, originalCopiedFilename
     filename: basename(path, extname(path)),
     foldername: basename(folderPath),
     folderPath,
-    originalCopiedFilename: originalCopiedFilename ?? ""
+    originalCopiedFilename: originalCopiedFilename ?? ''
   };
 }

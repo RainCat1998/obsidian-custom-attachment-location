@@ -53,7 +53,7 @@ interface SplitSubpathResult {
 
 export function collectAttachmentsCurrentNote(plugin: CustomAttachmentLocationPlugin, checking: boolean): boolean {
   const note = plugin.app.workspace.getActiveFile();
-  if (!isNote(note)) {
+  if (!note || !isNote(note)) {
     return false;
   }
 
@@ -230,7 +230,7 @@ export async function collectAttachmentsInFolder(plugin: CustomAttachmentLocatio
   const files: TFile[] = [];
   Vault.recurseChildren(folder, (child) => {
     if (isNote(child)) {
-      files.push(child);
+      files.push(child as TFile);
     }
   });
 

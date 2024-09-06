@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## 4.11.0
+
+- Show warning
+- Fix build
+
 ## 4.10.0
 
 - Fix settings saving

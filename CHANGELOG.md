@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 4.12.1
+
+- Add extension
+
 ## 4.12.0
 
 - Add `Rename attachments on collecting` setting

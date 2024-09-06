@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 4.12.0
+
+- Add `Rename attachments on collecting` setting
+
 ## 4.11.0
 
 - Show warning

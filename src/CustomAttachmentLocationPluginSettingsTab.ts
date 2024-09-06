@@ -110,11 +110,13 @@ export default class CustomAttachmentLocationPluginSettingsTab extends PluginSet
     new Setting(this.containerEl)
       .setName('JPEG Quality')
       .setDesc('The smaller the quality, the greater the compression ratio.')
-      .addDropdown((dropDown) => bindUiComponent(this.plugin, dropDown, 'jpegQuality', {
-        settingToUIValueConverter: (value) => value.toString(),
-        uiToSettingValueConverter: (value) => Number(value)
-      })
-        .addOptions(generateJpegQualityOptions()));
+      .addDropdown((dropDown) => {
+        dropDown.addOptions(generateJpegQualityOptions());
+        bindUiComponent(this.plugin, dropDown, 'jpegQuality', {
+          settingToUIValueConverter: (value) => value.toString(),
+          uiToSettingValueConverter: (value) => Number(value)
+        });
+      });
 
     new Setting(this.containerEl)
       .setName('Convert images on drag&drop')

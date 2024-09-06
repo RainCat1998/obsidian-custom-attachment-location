@@ -21,7 +21,8 @@ import {
 import {
   getAllLinks,
   getBacklinksForFileSafe,
-  getCacheSafe
+  getCacheSafe,
+  tempRegisterFileAndRun
 } from 'obsidian-dev-utils/obsidian/MetadataCache';
 import { confirm } from 'obsidian-dev-utils/obsidian/Modal/Confirm';
 import { isNote } from 'obsidian-dev-utils/obsidian/TAbstractFile';
@@ -29,8 +30,7 @@ import type { FileChange } from 'obsidian-dev-utils/obsidian/Vault';
 import {
   applyFileChanges,
   processWithRetry,
-  removeEmptyFolderHierarchy,
-  removeFolderSafe
+  removeEmptyFolderHierarchy
 } from 'obsidian-dev-utils/obsidian/Vault';
 import {
   basename,
@@ -38,6 +38,7 @@ import {
   extname,
   join
 } from 'obsidian-dev-utils/Path';
+import { createTFileInstance } from 'obsidian-typings/implementations';
 
 import {
   getAttachmentFolderFullPathForPath,
@@ -210,29 +211,26 @@ async function prepareAttachmentToMove(plugin: CustomAttachmentLocationPlugin, l
     return null;
   }
 
-  const shouldRemoveNewAttachmentFolder = await createFolderSafeEx(plugin, dirname(newAttachmentPath));
-  const newAttachmentFile = await app.vault.create(newAttachmentPath, '');
+  const newAttachmentFile = createTFileInstance(app.vault, newAttachmentPath);
+  let newAttachmentLink = '';
 
-  const newAttachmentLink = generateMarkdownLink({
-    app,
-    pathOrFile: newAttachmentFile,
-    sourcePathOrFile: newNotePath,
-    subpath,
-    alias: getAlias({
+  tempRegisterFileAndRun(app, newAttachmentFile, () => {
+    newAttachmentLink = generateMarkdownLink({
       app,
-      displayText: link.displayText,
-      file: newAttachmentFile,
-      otherPaths: [oldAttachmentPath],
-      sourcePath: newNotePath
-    }),
-    isEmbed: link.original.startsWith('!'),
-    isWikilink: link.original.includes('[[')
+      pathOrFile: newAttachmentFile,
+      sourcePathOrFile: newNotePath,
+      subpath,
+      alias: getAlias({
+        app,
+        displayText: link.displayText,
+        file: newAttachmentFile,
+        otherPaths: [oldAttachmentPath],
+        sourcePath: newNotePath
+      }),
+      isEmbed: link.original.startsWith('!'),
+      isWikilink: link.original.includes('[[')
+    });
   });
-
-  await app.vault.delete(newAttachmentFile);
-  if (shouldRemoveNewAttachmentFolder) {
-    await removeFolderSafe(app, dirname(newAttachmentPath));
-  }
 
   return {
     oldAttachmentPath,

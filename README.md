@@ -75,6 +75,10 @@ If disabled, only clipboard image objects (e.g., screenshots) will be renamed.
 
 If enabled, attachments dragged and dropped into the editor will be renamed according to the `Pasted File Name` setting.
 
+### Rename attachments on collecting
+
+If enabled, attachments processed via `Collect attachments` commands will be renamed according to the `Pasted File Name` setting.
+
 ### Duplicate name separator
 
 When you are pasting/dragging a file with the same name as an existing file, this separator will be added to the file name.
@@ -96,9 +100,10 @@ All notable changes to this project will be documented in the [CHANGELOG](./CHAN
 - `Custom Attachment Location` is available in [the official Community Plugins repository](https://obsidian.md/plugins?id=obsidian-custom-attachment-location).
 - Beta releases can be installed through [BRAT](https://obsidian.md/plugins?id=obsidian42-brat).
 
-## Contribute
-Thanks to [@mnaoumov](https://github.com/mnaoumov)
+## License
 
-© [RainCat1998](https://github.com/RainCat1998/) 
+© [RainCat1998](https://github.com/RainCat1998/)
+
+Maintainer: [mnaoumov](https://github.com/mnaoumov/)
 
 [Moment.js formatting]: https://momentjs.com/docs/#/displaying/format/

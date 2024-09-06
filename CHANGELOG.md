@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 4.12.2
+
+- Fix jpegQuality dropdown binding
+
 ## 4.12.1
 
 - Add extension

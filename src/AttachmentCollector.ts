@@ -6,10 +6,12 @@ import type {
 import {
   App,
   Notice,
+  setIcon,
   Vault
 } from 'obsidian';
 import type { CanvasData } from 'obsidian/canvas.d.ts';
 import { invokeAsyncSafely } from 'obsidian-dev-utils/Async';
+import { appendCodeBlock } from 'obsidian-dev-utils/DocumentFragment';
 import { throwExpression } from 'obsidian-dev-utils/Error';
 import { toJson } from 'obsidian-dev-utils/Object';
 import {
@@ -21,6 +23,7 @@ import {
   getBacklinksForFileSafe,
   getCacheSafe
 } from 'obsidian-dev-utils/obsidian/MetadataCache';
+import { confirm } from 'obsidian-dev-utils/obsidian/Modal/Confirm';
 import { isNote } from 'obsidian-dev-utils/obsidian/TAbstractFile';
 import type { FileChange } from 'obsidian-dev-utils/obsidian/Vault';
 import {
@@ -226,6 +229,22 @@ async function prepareAttachmentToMove(plugin: CustomAttachmentLocationPlugin, l
 }
 
 export async function collectAttachmentsInFolder(plugin: CustomAttachmentLocationPlugin, folder: TFolder): Promise<void> {
+  if (!await confirm({
+    app: plugin.app,
+    title: createFragment((f) => {
+      setIcon(f.createSpan(), 'lucide-alert-triangle');
+      f.appendText(' Collect attachments in folder');
+    }),
+    message: createFragment((f) => {
+      f.appendText('Do you want to collect attachments for all notes in folder: ');
+      appendCodeBlock(f, folder.path);
+      f.appendText(' and all its subfolders?');
+      f.createEl('br');
+      f.appendText('This operation cannot be undone.');
+    })
+  })) {
+    return;
+  }
   console.debug(`Collect attachments in folder: ${folder.path}`);
   const files: TFile[] = [];
   Vault.recurseChildren(folder, (child) => {

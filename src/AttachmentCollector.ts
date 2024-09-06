@@ -39,8 +39,12 @@ import {
   join
 } from 'obsidian-dev-utils/Path';
 
-import { getAttachmentFolderFullPathForPath } from './AttachmentPath.ts';
+import {
+  getAttachmentFolderFullPathForPath,
+  getPastedFileName
+} from './AttachmentPath.ts';
 import type CustomAttachmentLocationPlugin from './CustomAttachmentLocationPlugin.ts';
+import { createSubstitutionsFromPath } from './Substitutions.ts';
 import { createFolderSafeEx } from './Vault.ts';
 
 interface AttachmentMoveResult {
@@ -189,7 +193,16 @@ async function prepareAttachmentToMove(plugin: CustomAttachmentLocationPlugin, l
   const oldNoteBaseName = basename(oldNotePath, extname(oldNotePath));
   const newNoteBaseName = basename(newNotePath, extname(newNotePath));
 
-  const newAttachmentName = plugin.settingsCopy.autoRenameFiles ? oldAttachmentName.replaceAll(oldNoteBaseName, newNoteBaseName) : oldAttachmentName;
+  let newAttachmentName: string;
+
+  if (plugin.settingsCopy.renameCollectedFiles) {
+    newAttachmentName = await getPastedFileName(plugin, createSubstitutionsFromPath(newNotePath, oldAttachmentFile.basename));
+  } else if (plugin.settingsCopy.autoRenameFiles) {
+    newAttachmentName = oldAttachmentName.replaceAll(oldNoteBaseName, newNoteBaseName);
+  } else {
+    newAttachmentName = oldAttachmentName;
+  }
+
   const newAttachmentFolderPath = await getAttachmentFolderFullPathForPath(plugin, newNotePath);
   const newAttachmentPath = join(newAttachmentFolderPath, newAttachmentName);
 

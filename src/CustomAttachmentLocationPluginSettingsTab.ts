@@ -153,6 +153,17 @@ export default class CustomAttachmentLocationPluginSettingsTab extends PluginSet
       .addToggle((toggle) => bindUiComponent(this.plugin, toggle, 'renameAttachmentsOnDragAndDrop'));
 
     new Setting(this.containerEl)
+      .setName('Rename attachments on collecting')
+      .setDesc(createFragment((f) => {
+        f.appendText('If enabled, attachments processed via ');
+        appendCodeBlock(f, 'Collect attachments');
+        f.appendText(' commands will be renamed according to the ');
+        appendCodeBlock(f, 'Pasted File Name');
+        f.appendText(' setting.');
+      }))
+      .addToggle((toggle) => bindUiComponent(this.plugin, toggle, 'renameCollectedFiles'));
+
+    new Setting(this.containerEl)
       .setName('Duplicate name separator')
       .setDesc(createFragment((f) => {
         f.appendText('When you are pasting/dragging a file with the same name as an existing file, this separator will be added to the file name.');

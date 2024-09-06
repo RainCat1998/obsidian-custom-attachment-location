@@ -42,7 +42,8 @@ import { createTFileInstance } from 'obsidian-typings/implementations';
 
 import {
   getAttachmentFolderFullPathForPath,
-  getPastedFileName
+  getPastedFileName,
+  makeFileName
 } from './AttachmentPath.ts';
 import type CustomAttachmentLocationPlugin from './CustomAttachmentLocationPlugin.ts';
 import { createSubstitutionsFromPath } from './Substitutions.ts';
@@ -197,7 +198,7 @@ async function prepareAttachmentToMove(plugin: CustomAttachmentLocationPlugin, l
   let newAttachmentName: string;
 
   if (plugin.settingsCopy.renameCollectedFiles) {
-    newAttachmentName = await getPastedFileName(plugin, createSubstitutionsFromPath(newNotePath, oldAttachmentFile.basename));
+    newAttachmentName = makeFileName(await getPastedFileName(plugin, createSubstitutionsFromPath(newNotePath, oldAttachmentFile.basename)), oldAttachmentFile.extension);
   } else if (plugin.settingsCopy.autoRenameFiles) {
     newAttachmentName = oldAttachmentName.replaceAll(oldNoteBaseName, newNoteBaseName);
   } else {

@@ -46,11 +46,11 @@ import type CustomAttachmentLocationPlugin from './CustomAttachmentLocationPlugi
 const renamingPaths = new Set<string>();
 
 export async function handleRename(plugin: CustomAttachmentLocationPlugin, file: TAbstractFile, oldPath: string): Promise<void> {
+  console.debug(`Handle Rename ${oldPath} -> ${file.path}`);
+
   if (renamingPaths.has(oldPath)) {
     return;
   }
-
-  console.debug('Handle Rename');
 
   if (!(file instanceof TFile)) {
     return;
@@ -85,7 +85,7 @@ export async function handleRename(plugin: CustomAttachmentLocationPlugin, file:
 }
 
 export async function handleDelete(plugin: CustomAttachmentLocationPlugin, file: TAbstractFile): Promise<void> {
-  console.debug('Handle Delete');
+  console.debug(`Handle Delete ${file.path}`);
   if (!isNote(file)) {
     return;
   }

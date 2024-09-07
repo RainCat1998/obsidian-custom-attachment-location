@@ -47,6 +47,7 @@ const renamingPaths = new Set<string>();
 
 export async function handleRename(plugin: CustomAttachmentLocationPlugin, file: TAbstractFile, oldPath: string): Promise<void> {
   console.debug(`Handle Rename ${oldPath} -> ${file.path}`);
+  const app = plugin.app;
 
   if (renamingPaths.has(oldPath)) {
     return;
@@ -58,12 +59,10 @@ export async function handleRename(plugin: CustomAttachmentLocationPlugin, file:
 
   renamingPaths.add(oldPath);
 
-  const app = plugin.app;
-
   // eslint-disable-next-line @typescript-eslint/unbound-method
   const updateAllLinks = app.fileManager.updateAllLinks;
   try {
-    plugin.app.fileManager.updateAllLinks = async (): Promise<void> => {
+    app.fileManager.updateAllLinks = async (): Promise<void> => {
       // do nothing
     };
 
@@ -80,12 +79,13 @@ export async function handleRename(plugin: CustomAttachmentLocationPlugin, file:
     await processRename(plugin, oldPath, file.path, renameMap);
   } finally {
     renamingPaths.delete(oldPath);
-    plugin.app.fileManager.updateAllLinks = updateAllLinks;
+    app.fileManager.updateAllLinks = updateAllLinks;
   }
 }
 
 export async function handleDelete(plugin: CustomAttachmentLocationPlugin, file: TAbstractFile): Promise<void> {
   console.debug(`Handle Delete ${file.path}`);
+  const app = plugin.app;
   if (!isNote(file)) {
     return;
   }
@@ -95,7 +95,7 @@ export async function handleDelete(plugin: CustomAttachmentLocationPlugin, file:
   }
 
   const attachmentsFolderPath = await getAttachmentFolderFullPathForPath(plugin, file.path);
-  await removeFolderSafe(plugin.app, attachmentsFolderPath, file.path);
+  await removeFolderSafe(app, attachmentsFolderPath, file.path);
 }
 
 async function fillRenameMap(plugin: CustomAttachmentLocationPlugin, file: TFile, oldPath: string, renameMap: Map<string, string>): Promise<void> {
@@ -110,7 +110,7 @@ async function fillRenameMap(plugin: CustomAttachmentLocationPlugin, file: TFile
   const newAttachmentFolderPath = await getAttachmentFolderFullPathForPath(plugin, file.path);
   const dummyOldAttachmentFolderPath = await getAttachmentFolderFullPathForPath(plugin, join(dirname(oldPath), 'DUMMY_FILE.md'));
 
-  const oldAttachmentFolder = plugin.app.vault.getFolderByPath(oldAttachmentFolderPath);
+  const oldAttachmentFolder = app.vault.getFolderByPath(oldAttachmentFolderPath);
 
   if (!oldAttachmentFolder) {
     return;
@@ -160,7 +160,7 @@ async function fillRenameMap(plugin: CustomAttachmentLocationPlugin, file: TFile
     const newDir = join(newAttachmentFolderPath, dirname(relativePath));
     let newChildPath = join(newDir, newChildName + '.' + child.extension);
     if (child.path !== newChildPath) {
-      newChildPath = plugin.app.vault.getAvailablePath(join(newDir, newChildName), child.extension);
+      newChildPath = app.vault.getAvailablePath(join(newDir, newChildName), child.extension);
       renameMap.set(child.path, newChildPath);
     }
   }
@@ -203,7 +203,7 @@ async function processRename(plugin: CustomAttachmentLocationPlugin, oldPath: st
       throw new Error(`Could not rename ${oldPath} to ${newPath}`);
     }
 
-    const backlinks = await getBacklinks(plugin.app, oldFile, newFile);
+    const backlinks = await getBacklinks(app, oldFile, newFile);
 
     for (const parentNotePath of backlinks.keys()) {
       let parentNote = app.vault.getFileByPath(parentNotePath);
@@ -225,7 +225,7 @@ async function processRename(plugin: CustomAttachmentLocationPlugin, oldPath: st
         }
 
         const links
-          = (await getBacklinks(plugin.app, oldFile, newFile)).get(parentNotePath) ?? [];
+          = (await getBacklinks(app, oldFile, newFile)).get(parentNotePath) ?? [];
         const changes = [];
 
         for (const link of links) {

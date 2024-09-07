@@ -44,6 +44,13 @@ import { getAttachmentFolderFullPathForPath } from './AttachmentPath.ts';
 import type CustomAttachmentLocationPlugin from './CustomAttachmentLocationPlugin.ts';
 
 const renamingPaths = new Set<string>();
+const specialRenames: SpecialRename[] = [];
+
+interface SpecialRename {
+  oldPath: string;
+  newPath: string;
+  tempPath: string;
+}
 
 export async function handleRename(plugin: CustomAttachmentLocationPlugin, file: TAbstractFile, oldPath: string): Promise<void> {
   console.debug(`Handle Rename ${oldPath} -> ${file.path}`);
@@ -57,7 +64,22 @@ export async function handleRename(plugin: CustomAttachmentLocationPlugin, file:
     return;
   }
 
-  renamingPaths.add(oldPath);
+  const specialRename = specialRenames.find((x) => x.oldPath === file.path);
+  if (specialRename) {
+    await app.vault.rename(file, specialRename.tempPath);
+    return;
+  }
+
+  if (app.vault.adapter.insensitive && oldPath.toLowerCase() === file.path.toLowerCase() && dirname(oldPath) === dirname(file.path)) {
+    specialRenames.push({
+      oldPath,
+      newPath: file.path,
+      tempPath: join(file.parent?.path ?? '', '__temp__' + file.name)
+    });
+
+    await app.vault.rename(file, oldPath);
+    return;
+  }
 
   // eslint-disable-next-line @typescript-eslint/unbound-method
   const updateAllLinks = app.fileManager.updateAllLinks;
@@ -80,6 +102,12 @@ export async function handleRename(plugin: CustomAttachmentLocationPlugin, file:
   } finally {
     renamingPaths.delete(oldPath);
     app.fileManager.updateAllLinks = updateAllLinks;
+
+    const specialRename = specialRenames.find((x) => x.tempPath === file.path);
+    if (specialRename) {
+      await app.vault.rename(file, specialRename.newPath);
+      specialRenames.remove(specialRename);
+    }
   }
 }
 

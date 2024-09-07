@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 4.13.0
+
+- Handle special renames
+
 ## 4.12.2
 
 - Fix jpegQuality dropdown binding

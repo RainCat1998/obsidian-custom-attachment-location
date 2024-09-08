@@ -9,6 +9,11 @@ import {
 } from 'obsidian';
 import type { MaybePromise } from 'obsidian-dev-utils/Async';
 import { invokeAsyncSafely } from 'obsidian-dev-utils/Async';
+import type {
+  ExtendedWrapper,
+  GetAvailablePathForAttachmentsExtendedFn
+} from 'obsidian-dev-utils/obsidian/AttachmentPath';
+import { getAvailablePathForAttachments } from 'obsidian-dev-utils/obsidian/AttachmentPath';
 import { PluginBase } from 'obsidian-dev-utils/obsidian/Plugin/PluginBase';
 import { isNote } from 'obsidian-dev-utils/obsidian/TAbstractFile';
 import { createFolderSafe } from 'obsidian-dev-utils/obsidian/Vault';
@@ -32,7 +37,6 @@ import {
   handleRename
 } from './RenameDeleteHandler.ts';
 
-type GetAvailablePathForAttachmentsFn = Vault['getAvailablePathForAttachments'];
 type GetAvailablePathFn = Vault['getAvailablePath'];
 
 export default class CustomAttachmentLocationPlugin extends PluginBase<CustomAttachmentLocationPluginSettings> {
@@ -76,8 +80,10 @@ export default class CustomAttachmentLocationPlugin extends PluginBase<CustomAtt
 
   protected override onLayoutReady(): void {
     this.register(around(this.app.vault, {
-      getAvailablePathForAttachments: (originalFn: GetAvailablePathForAttachmentsFn): GetAvailablePathForAttachmentsFn => async (filename, extension, file): Promise<string> =>
-        this.getAvailablePathForAttachments(filename, extension, file, originalFn),
+      getAvailablePathForAttachments: (): GetAvailablePathForAttachmentsExtendedFn & ExtendedWrapper => Object.assign(async (filename: string, extension: string, file: TAbstractFile | null, skipFolderCreation?: boolean): Promise<string> =>
+        this.getAvailablePathForAttachments(filename, extension, file, skipFolderCreation), {
+        isExtended: true as const
+      }),
       getAvailablePath: (): GetAvailablePathFn => (filename, extension): string => this.getAvailablePath(filename, extension)
     }));
   }
@@ -90,17 +96,20 @@ export default class CustomAttachmentLocationPlugin extends PluginBase<CustomAtt
     return settings;
   }
 
-  private async getAvailablePathForAttachments(filename: string, extension: string, file: TAbstractFile | null, originalFn: GetAvailablePathForAttachmentsFn): Promise<string> {
+  private async getAvailablePathForAttachments(filename: string, extension: string, file: TAbstractFile | null, skipFolderCreation: boolean | undefined): Promise<string> {
     if (!(file instanceof TFile)) {
-      return await originalFn.call(this.app.vault, filename, extension, file);
+      return getAvailablePathForAttachments(this.app, filename, extension, file, skipFolderCreation ?? false);
     }
 
     if (!isNote(file)) {
-      return await originalFn.call(this.app.vault, filename, extension, file);
+      return getAvailablePathForAttachments(this.app, filename, extension, file, skipFolderCreation ?? false);
     }
 
     const attachmentFolderFullPath = await getAttachmentFolderFullPathForPath(this, file.path);
-    await createFolderSafe(this.app, attachmentFolderFullPath);
+
+    if (!skipFolderCreation) {
+      await createFolderSafe(this.app, attachmentFolderFullPath);
+    }
     return this.app.vault.getAvailablePath(join(attachmentFolderFullPath, filename), extension);
   }
 

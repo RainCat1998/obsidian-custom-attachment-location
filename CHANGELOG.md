@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 4.14.0
+
+- Proper integration with Better Markdown Links
+
 ## 4.13.0
 
 - Handle special renames

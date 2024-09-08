@@ -20,7 +20,7 @@
     "moment": "^2.30.1",
     "monkey-around": "^3.0.0",
     "obsidian": "^1.6.6",
-    "obsidian-dev-utils": "^3.8.0",
+    "obsidian-dev-utils": "^3.10.0",
     "obsidian-typings": "^2.2.1-beta.10",
     "tsx": "^4.16.2",
     "typescript": "^5.5.4"

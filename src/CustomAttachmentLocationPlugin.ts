@@ -8,13 +8,13 @@ import {
   Vault
 } from 'obsidian';
 import type { MaybePromise } from 'obsidian-dev-utils/Async';
-import { invokeAsyncSafely } from 'obsidian-dev-utils/Async';
 import type {
   ExtendedWrapper,
   GetAvailablePathForAttachmentsExtendedFn
 } from 'obsidian-dev-utils/obsidian/AttachmentPath';
 import { getAvailablePathForAttachments } from 'obsidian-dev-utils/obsidian/AttachmentPath';
 import { PluginBase } from 'obsidian-dev-utils/obsidian/Plugin/PluginBase';
+import { registerRenameDeleteHandlers } from 'obsidian-dev-utils/obsidian/RenameDeleteHandler';
 import { isNote } from 'obsidian-dev-utils/obsidian/TAbstractFile';
 import { createFolderSafe } from 'obsidian-dev-utils/obsidian/Vault';
 import { join } from 'obsidian-dev-utils/Path';
@@ -32,10 +32,6 @@ import {
 import CustomAttachmentLocationPluginSettings from './CustomAttachmentLocationPluginSettings.ts';
 import CustomAttachmentLocationPluginSettingsTab from './CustomAttachmentLocationPluginSettingsTab.ts';
 import { registerPasteDropEventHandlers } from './PasteDropEvent.ts';
-import {
-  handleDelete,
-  handleRename
-} from './RenameDeleteHandler.ts';
 
 type GetAvailablePathFn = Vault['getAvailablePath'];
 
@@ -49,12 +45,10 @@ export default class CustomAttachmentLocationPlugin extends PluginBase<CustomAtt
   }
 
   protected override onloadComplete(): MaybePromise<void> {
-    this.registerEvent(this.app.vault.on('delete', (file) => {
-      invokeAsyncSafely(handleDelete(this, file));
+    registerRenameDeleteHandlers(this, () => ({
+      shouldDeleteEmptyFolders: !this.settings.keepEmptyAttachmentFolders
     }));
-    this.registerEvent(this.app.vault.on('rename', (file, oldPath) => {
-      invokeAsyncSafely(handleRename(this, file, oldPath));
-    }));
+
     registerPasteDropEventHandlers(this);
 
     this.addCommand({

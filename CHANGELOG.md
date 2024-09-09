@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## 4.15.0
+
+- Reuse `RenameDeleteHandler`
+- Add optional `skipFolderCreation` to `getAvailablePathForAttachments`
+
 ## 4.14.0
 
 - Proper integration with Better Markdown Links

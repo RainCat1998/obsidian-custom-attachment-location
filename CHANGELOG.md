@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 4.18.0
+
+- Add `Delete orphan attachments` setting
+
 ## 4.17.0
 
 - Remove to trash

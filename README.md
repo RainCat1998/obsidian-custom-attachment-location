@@ -91,6 +91,10 @@ Default value is ` ` (`space`).
 
 If enabled, empty attachment folders will be preserved, useful for source control purposes.
 
+### Delete orphan attachments
+
+If enabled, when the note is deleted, its orphan attachments are deleted as well.
+
 ## Changelog
 
 All notable changes to this project will be documented in the [CHANGELOG](./CHANGELOG.md).

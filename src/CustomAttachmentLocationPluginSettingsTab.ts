@@ -190,6 +190,11 @@ export default class CustomAttachmentLocationPluginSettingsTab extends PluginSet
       .setName('Keep empty attachment folders')
       .setDesc('If enabled, empty attachment folders will be preserved, useful for source control purposes.')
       .addToggle((toggle) => bindUiComponent(this.plugin, toggle, 'keepEmptyAttachmentFolders'));
+
+    new Setting(this.containerEl)
+      .setName('Delete orphan attachments')
+      .setDesc('If enabled, when the note is deleted, its orphan attachments are deleted as well.')
+      .addToggle((toggle) => bindUiComponent(this.plugin, toggle, 'deleteOrphanAttachments'));
   }
 }
 

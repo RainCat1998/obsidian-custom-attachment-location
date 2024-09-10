@@ -29,8 +29,8 @@ import { isNote } from 'obsidian-dev-utils/obsidian/TAbstractFile';
 import type { FileChange } from 'obsidian-dev-utils/obsidian/Vault';
 import {
   applyFileChanges,
-  processWithRetry,
-  removeEmptyFolderHierarchy
+  deleteEmptyFolderHierarchy,
+  processWithRetry
 } from 'obsidian-dev-utils/obsidian/Vault';
 import {
   basename,
@@ -168,7 +168,7 @@ export async function collectAttachments(plugin: CustomAttachmentLocationPlugin,
     await createFolderSafeEx(plugin, dirname(newPath));
     if (backlinks.count() === 0) {
       await app.vault.rename(oldAttachmentFile, newPath);
-      await removeEmptyFolderHierarchy(app, oldAttachmentFolder);
+      await deleteEmptyFolderHierarchy(app, oldAttachmentFolder);
     } else {
       await app.vault.copy(oldAttachmentFile, newPath);
     }

@@ -6,6 +6,7 @@ export default class CustomAttachmentLocationPluginSettings {
   public autoRenameFolder = true;
   public convertImagesToJpeg = false;
   public convertImagesOnDragAndDrop = false;
+  public deleteOrphanAttachments = false;
   public duplicateNameSeparator = ' ';
   public jpegQuality = 0.8;
   public keepEmptyAttachmentFolders = false;

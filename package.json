@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "obsidian-dev-utils dev",
     "build": "obsidian-dev-utils build",
+    "build:validate": "obsidian-dev-utils build:validate",
     "lint": "obsidian-dev-utils lint",
     "lint:fix": "obsidian-dev-utils lint:fix",
     "spellcheck": "obsidian-dev-utils spellcheck",
@@ -20,7 +21,7 @@
     "moment": "^2.30.1",
     "monkey-around": "^3.0.0",
     "obsidian": "^1.6.6",
-    "obsidian-dev-utils": "^3.13.0",
+    "obsidian-dev-utils": "^3.14.1",
     "obsidian-typings": "^2.2.1-beta.10",
     "tsx": "^4.16.2",
     "typescript": "^5.5.4"

@@ -46,7 +46,8 @@ export default class CustomAttachmentLocationPlugin extends PluginBase<CustomAtt
 
   protected override onloadComplete(): MaybePromise<void> {
     registerRenameDeleteHandlers(this, () => ({
-      shouldDeleteEmptyFolders: !this.settings.keepEmptyAttachmentFolders
+      shouldDeleteEmptyFolders: !this.settings.keepEmptyAttachmentFolders,
+      shouldDeleteOrphanAttachments: this.settings.deleteOrphanAttachments
     }));
 
     registerPasteDropEventHandlers(this);

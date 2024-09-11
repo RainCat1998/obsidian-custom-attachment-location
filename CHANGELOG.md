@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 4.19.0
+
+- Don't remove folders with hidden files
+
 ## 4.18.0
 
 - Add `Delete orphan attachments` setting

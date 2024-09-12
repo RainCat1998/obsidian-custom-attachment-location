@@ -112,6 +112,6 @@ All notable changes to this project will be documented in the [CHANGELOG](./CHAN
 
 © [RainCat1998](https://github.com/RainCat1998/)
 
-Maintainer: [mnaoumov](https://github.com/mnaoumov/)
+Maintainer: [Michael Naumov](https://github.com/mnaoumov/)
 
 [Moment.js formatting]: https://momentjs.com/docs/#/displaying/format/

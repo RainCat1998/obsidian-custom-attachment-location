@@ -14,6 +14,7 @@ import type {
 } from 'obsidian-dev-utils/obsidian/AttachmentPath';
 import { getAvailablePathForAttachments } from 'obsidian-dev-utils/obsidian/AttachmentPath';
 import { PluginBase } from 'obsidian-dev-utils/obsidian/Plugin/PluginBase';
+import type { RenameDeleteHandlerSettings } from 'obsidian-dev-utils/obsidian/RenameDeleteHandler';
 import { registerRenameDeleteHandlers } from 'obsidian-dev-utils/obsidian/RenameDeleteHandler';
 import { isNote } from 'obsidian-dev-utils/obsidian/TAbstractFile';
 import { createFolderSafe } from 'obsidian-dev-utils/obsidian/Vault';
@@ -45,13 +46,17 @@ export default class CustomAttachmentLocationPlugin extends PluginBase<CustomAtt
   }
 
   protected override onloadComplete(): MaybePromise<void> {
-    registerRenameDeleteHandlers(this, () => ({
-      shouldDeleteEmptyFolders: !this.settings.keepEmptyAttachmentFolders,
-      shouldDeleteOrphanAttachments: this.settings.deleteOrphanAttachments,
-      shouldRenameAttachmentFiles: this.settings.autoRenameFiles,
-      shouldRenameAttachmentFolder: this.settings.autoRenameFolder,
-      shouldUpdateLinks: true
-    }));
+    registerRenameDeleteHandlers(this, () => {
+      const settings: Partial<RenameDeleteHandlerSettings> = {
+        shouldDeleteEmptyFolders: !this.settings.keepEmptyAttachmentFolders,
+        shouldDeleteOrphanAttachments: this.settings.deleteOrphanAttachments,
+        shouldRenameAttachmentFiles: this.settings.autoRenameFiles,
+        shouldRenameAttachmentFolder: this.settings.autoRenameFolder,
+        shouldUpdateFilenameAliases: true,
+        shouldUpdateLinks: true
+      };
+      return settings;
+    });
 
     registerPasteDropEventHandlers(this);
 

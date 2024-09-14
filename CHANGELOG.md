@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 4.20.0
+
+- Init all settings
+
 ## 4.19.0
 
 - Don't remove folders with hidden files

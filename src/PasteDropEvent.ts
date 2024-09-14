@@ -7,13 +7,13 @@ import {
 import { isNote } from 'obsidian-dev-utils/obsidian/TAbstractFile';
 import {
   basename,
-  extname
+  extname,
+  makeFileName
 } from 'obsidian-dev-utils/Path';
 
 import {
   getAttachmentFolderFullPathForPath,
-  getPastedFileName,
-  makeFileName
+  getPastedFileName
 } from './AttachmentPath.ts';
 import type CustomAttachmentLocationPlugin from './CustomAttachmentLocationPlugin.ts';
 import { createSubstitutionsFromPath } from './Substitutions.ts';

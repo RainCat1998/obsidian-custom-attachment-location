@@ -16,7 +16,7 @@ import { throwExpression } from 'obsidian-dev-utils/Error';
 import { toJson } from 'obsidian-dev-utils/Object';
 import {
   generateMarkdownLink,
-  getAlias
+  shouldResetAlias
 } from 'obsidian-dev-utils/obsidian/Link';
 import {
   getAllLinks,
@@ -36,14 +36,14 @@ import {
   basename,
   dirname,
   extname,
-  join
+  join,
+  makeFileName
 } from 'obsidian-dev-utils/Path';
 import { createTFileInstance } from 'obsidian-typings/implementations';
 
 import {
   getAttachmentFolderFullPathForPath,
-  getPastedFileName,
-  makeFileName
+  getPastedFileName
 } from './AttachmentPath.ts';
 import type CustomAttachmentLocationPlugin from './CustomAttachmentLocationPlugin.ts';
 import { createSubstitutionsFromPath } from './Substitutions.ts';
@@ -221,13 +221,15 @@ async function prepareAttachmentToMove(plugin: CustomAttachmentLocationPlugin, l
       pathOrFile: newAttachmentFile,
       sourcePathOrFile: newNotePath,
       subpath,
-      alias: getAlias({
+      alias: shouldResetAlias({
         app,
         displayText: link.displayText,
-        file: newAttachmentFile,
-        otherPaths: [oldAttachmentPath],
-        sourcePath: newNotePath
-      }),
+        pathOrFile: newAttachmentFile,
+        otherPathOrFiles: [oldAttachmentPath],
+        sourcePathOrFile: newNotePath
+      })
+        ? undefined
+        : link.displayText,
       isEmbed: link.original.startsWith('!'),
       isWikilink: link.original.includes('[[')
     });

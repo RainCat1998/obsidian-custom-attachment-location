@@ -131,7 +131,3 @@ export async function getAttachmentFolderFullPathForPath(plugin: CustomAttachmen
 export async function getPastedFileName(plugin: CustomAttachmentLocationPlugin, substitutions: Substitutions): Promise<string> {
   return await interpolateDateToString(plugin, plugin.settingsCopy.pastedFileName, substitutions);
 }
-
-export function makeFileName(fileName: string, extension: string): string {
-  return extension ? `${fileName}.${extension}` : fileName;
-}

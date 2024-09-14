@@ -17,7 +17,10 @@ import { PluginBase } from 'obsidian-dev-utils/obsidian/Plugin/PluginBase';
 import { registerRenameDeleteHandlers } from 'obsidian-dev-utils/obsidian/RenameDeleteHandler';
 import { isNote } from 'obsidian-dev-utils/obsidian/TAbstractFile';
 import { createFolderSafe } from 'obsidian-dev-utils/obsidian/Vault';
-import { join } from 'obsidian-dev-utils/Path';
+import {
+  join,
+  makeFileName
+} from 'obsidian-dev-utils/Path';
 
 import {
   collectAttachmentsCurrentFolder,
@@ -25,10 +28,7 @@ import {
   collectAttachmentsEntireVault,
   collectAttachmentsInFolder
 } from './AttachmentCollector.ts';
-import {
-  getAttachmentFolderFullPathForPath,
-  makeFileName
-} from './AttachmentPath.ts';
+import { getAttachmentFolderFullPathForPath } from './AttachmentPath.ts';
 import CustomAttachmentLocationPluginSettings from './CustomAttachmentLocationPluginSettings.ts';
 import CustomAttachmentLocationPluginSettingsTab from './CustomAttachmentLocationPluginSettingsTab.ts';
 import { registerPasteDropEventHandlers } from './PasteDropEvent.ts';

@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 4.21.0
+
+- Fix race condition
+
 ## 4.20.0
 
 - Init all settings

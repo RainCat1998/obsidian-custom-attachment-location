@@ -93,7 +93,7 @@ export async function getEarliestAttachmentFolder(plugin: CustomAttachmentLocati
   const folderStats: FolderStat[] = [];
 
   for (const folder of folders) {
-    const stat = await app.vault.adapter.stat(join(app.vault.adapter.getBasePath(), folder.path));
+    const stat = await app.vault.adapter.stat(folder.path);
     folderStats.push({
       path: folder.path,
       ctime: stat?.ctime ?? 0

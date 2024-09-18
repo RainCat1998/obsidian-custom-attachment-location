@@ -13,7 +13,7 @@ import type {
   GetAvailablePathForAttachmentsExtendedFn
 } from 'obsidian-dev-utils/obsidian/AttachmentPath';
 import { getAvailablePathForAttachments } from 'obsidian-dev-utils/obsidian/AttachmentPath';
-import { isNote } from 'obsidian-dev-utils/obsidian/FileSystem';
+import { getAbstractFileOrNull, isNote } from 'obsidian-dev-utils/obsidian/FileSystem';
 import { PluginBase } from 'obsidian-dev-utils/obsidian/Plugin/PluginBase';
 import type { RenameDeleteHandlerSettings } from 'obsidian-dev-utils/obsidian/RenameDeleteHandler';
 import { registerRenameDeleteHandlers } from 'obsidian-dev-utils/obsidian/RenameDeleteHandler';
@@ -83,11 +83,13 @@ export default class CustomAttachmentLocationPlugin extends PluginBase<CustomAtt
 
   protected override onLayoutReady(): void {
     this.register(around(this.app.vault, {
-      getAvailablePathForAttachments: (): GetAvailablePathForAttachmentsExtendedFn & ExtendedWrapper => Object.assign(async (filename: string, extension: string, file: TAbstractFile | null, skipFolderCreation?: boolean): Promise<string> =>
-        this.getAvailablePathForAttachments(filename, extension, file, skipFolderCreation), {
-        isExtended: true as const
-      }),
-      getAvailablePath: (): GetAvailablePathFn => (filename, extension): string => this.getAvailablePath(filename, extension)
+      getAvailablePathForAttachments: (): GetAvailablePathForAttachmentsExtendedFn & ExtendedWrapper => {
+        const extendedWrapper: ExtendedWrapper = {
+          isExtended: true as const
+        };
+        return Object.assign(this.getAvailablePathForAttachments.bind(this), extendedWrapper);
+      },
+      getAvailablePath: (): GetAvailablePathFn => this.getAvailablePath.bind(this)
     }));
   }
 
@@ -99,7 +101,7 @@ export default class CustomAttachmentLocationPlugin extends PluginBase<CustomAtt
     return settings;
   }
 
-  private async getAvailablePathForAttachments(filename: string, extension: string, file: TAbstractFile | null, skipFolderCreation: boolean | undefined): Promise<string> {
+  private async getAvailablePathForAttachments(filename: string, extension: string, file: TFile | null, skipFolderCreation: boolean | undefined): Promise<string> {
     if (!(file instanceof TFile)) {
       return getAvailablePathForAttachments(this.app, filename, extension, file, skipFolderCreation ?? false);
     }
@@ -122,7 +124,7 @@ export default class CustomAttachmentLocationPlugin extends PluginBase<CustomAtt
     for (; ;) {
       const path = makeFileName(suffixNum == 0 ? filename : `${filename}${this.settings.duplicateNameSeparator}${suffixNum.toString()}`, extension);
 
-      if (!this.app.vault.getAbstractFileByPathInsensitive(path)) {
+      if (!getAbstractFileOrNull(this.app, path, true)) {
         return path;
       }
 

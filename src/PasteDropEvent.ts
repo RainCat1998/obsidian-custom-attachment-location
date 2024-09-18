@@ -12,13 +12,11 @@ import {
 } from 'obsidian-dev-utils/Path';
 
 import {
-  getAttachmentFolderFullPathForPath,
   getPastedFileName,
   replaceWhitespace
 } from './AttachmentPath.ts';
 import type CustomAttachmentLocationPlugin from './CustomAttachmentLocationPlugin.ts';
 import { createSubstitutionsFromPath } from './Substitutions.ts';
-import { createFolderSafeEx } from './Vault.ts';
 
 type HandledEvent = Event & {
   handled?: boolean;
@@ -118,8 +116,6 @@ abstract class EventWrapper {
 
     const newDataTransfer = new DataTransfer();
 
-    let hasFiles = false;
-
     for (const entry of pastedEntries) {
       if (entry.textPromise) {
         newDataTransfer.items.add(await entry.textPromise, entry.type);
@@ -149,13 +145,7 @@ abstract class EventWrapper {
           Object.defineProperty(renamedFile, 'path', { value: entry.file.path });
         }
         newDataTransfer.items.add(renamedFile);
-        hasFiles = true;
       }
-    }
-
-    if (hasFiles) {
-      const attachmentsFolderPath = await getAttachmentFolderFullPathForPath(this.plugin, noteFile.path);
-      await createFolderSafeEx(this.plugin, attachmentsFolderPath);
     }
 
     handledEvent = this.cloneWithNewDataTransfer(newDataTransfer) as HandledEvent;

@@ -4,7 +4,7 @@ import {
   blobToJpegArrayBuffer,
   isImageFile
 } from 'obsidian-dev-utils/Blob';
-import { isNote } from 'obsidian-dev-utils/obsidian/TAbstractFile';
+import { isNote } from 'obsidian-dev-utils/obsidian/FileSystem';
 import {
   basename,
   extname,

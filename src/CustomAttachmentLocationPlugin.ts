@@ -13,10 +13,10 @@ import type {
   GetAvailablePathForAttachmentsExtendedFn
 } from 'obsidian-dev-utils/obsidian/AttachmentPath';
 import { getAvailablePathForAttachments } from 'obsidian-dev-utils/obsidian/AttachmentPath';
+import { isNote } from 'obsidian-dev-utils/obsidian/FileSystem';
 import { PluginBase } from 'obsidian-dev-utils/obsidian/Plugin/PluginBase';
 import type { RenameDeleteHandlerSettings } from 'obsidian-dev-utils/obsidian/RenameDeleteHandler';
 import { registerRenameDeleteHandlers } from 'obsidian-dev-utils/obsidian/RenameDeleteHandler';
-import { isNote } from 'obsidian-dev-utils/obsidian/TAbstractFile';
 import { createFolderSafe } from 'obsidian-dev-utils/obsidian/Vault';
 import {
   join,

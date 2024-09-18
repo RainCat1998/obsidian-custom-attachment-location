@@ -15,22 +15,26 @@ import { throwExpression } from 'obsidian-dev-utils/Error';
 import { toJson } from 'obsidian-dev-utils/Object';
 import { chainAsyncFn } from 'obsidian-dev-utils/obsidian/ChainedPromise';
 import {
-  generateMarkdownLink,
-  shouldResetAlias
+  isCanvasFile,
+  isNote
+} from 'obsidian-dev-utils/obsidian/FileSystem';
+import {
+  splitSubpath,
+  updateLink
 } from 'obsidian-dev-utils/obsidian/Link';
 import {
   getAllLinks,
   getBacklinksForFileSafe,
-  getCacheSafe,
-  tempRegisterFileAndRun
+  getCacheSafe
 } from 'obsidian-dev-utils/obsidian/MetadataCache';
 import { confirm } from 'obsidian-dev-utils/obsidian/Modal/Confirm';
-import { isNote } from 'obsidian-dev-utils/obsidian/TAbstractFile';
 import type { FileChange } from 'obsidian-dev-utils/obsidian/Vault';
 import {
   applyFileChanges,
+  copySafe,
   deleteEmptyFolderHierarchy,
-  processWithRetry
+  processWithRetry,
+  renameSafe
 } from 'obsidian-dev-utils/obsidian/Vault';
 import {
   basename,
@@ -39,7 +43,6 @@ import {
   join,
   makeFileName
 } from 'obsidian-dev-utils/Path';
-import { createTFileInstance } from 'obsidian-typings/implementations';
 
 import {
   getAttachmentFolderFullPathForPath,
@@ -47,17 +50,10 @@ import {
 } from './AttachmentPath.ts';
 import type CustomAttachmentLocationPlugin from './CustomAttachmentLocationPlugin.ts';
 import { createSubstitutionsFromPath } from './Substitutions.ts';
-import { createFolderSafeEx } from './Vault.ts';
 
 interface AttachmentMoveResult {
   oldAttachmentPath: string;
   newAttachmentPath: string;
-  newAttachmentLink: string;
-}
-
-interface SplitSubpathResult {
-  linkPath: string;
-  subpath: string | undefined;
 }
 
 export function collectAttachmentsCurrentNote(plugin: CustomAttachmentLocationPlugin, checking: boolean): boolean {
@@ -95,10 +91,10 @@ export async function collectAttachments(plugin: CustomAttachmentLocationPlugin,
   oldPath ??= note.path;
   attachmentFilter ??= (): boolean => true;
 
-  console.debug(`Collect attachments in note: ${note.path}`);
+  const notice = new Notice(`Collecting attachments for ${note.path}`);
 
   const attachmentsMap = new Map<string, string>();
-  const isCanvas = note.extension.toLowerCase() === 'canvas';
+  const isCanvas = isCanvasFile(note);
 
   await applyFileChanges(app, note, async () => {
     const cache = await getCacheSafe(app, note);
@@ -120,6 +116,14 @@ export async function collectAttachments(plugin: CustomAttachmentLocationPlugin,
         continue;
       }
 
+      const backlinks = await getBacklinksForFileSafe(app, attachmentMoveResult.oldAttachmentPath);
+      if (backlinks.count() > 1) {
+        attachmentMoveResult.newAttachmentPath = await copySafe(app, attachmentMoveResult.oldAttachmentPath, attachmentMoveResult.newAttachmentPath);
+      } else {
+        attachmentMoveResult.newAttachmentPath = await renameSafe(app, attachmentMoveResult.oldAttachmentPath, attachmentMoveResult.newAttachmentPath);
+        await deleteEmptyFolderHierarchy(app, dirname(attachmentMoveResult.oldAttachmentPath));
+      }
+
       attachmentsMap.set(attachmentMoveResult.oldAttachmentPath, attachmentMoveResult.newAttachmentPath);
 
       if (!isCanvas) {
@@ -127,7 +131,13 @@ export async function collectAttachments(plugin: CustomAttachmentLocationPlugin,
           startIndex: link.position.start.offset,
           endIndex: link.position.end.offset,
           oldContent: link.original,
-          newContent: attachmentMoveResult.newAttachmentLink
+          newContent: updateLink({
+            app: app,
+            link,
+            pathOrFile: attachmentMoveResult.newAttachmentPath,
+            oldPathOrFile: attachmentMoveResult.oldAttachmentPath,
+            sourcePathOrFile: note
+          })
         });
       }
     }
@@ -152,34 +162,12 @@ export async function collectAttachments(plugin: CustomAttachmentLocationPlugin,
     });
   }
 
-  const notice = new Notice(`Collecting ${attachmentsMap.size.toString()} attachments for ${note.path}`);
-
-  await getCacheSafe(app, note);
-
-  for (const [oldPath, newPath] of attachmentsMap.entries()) {
-    const oldAttachmentFile = app.vault.getFileByPath(oldPath);
-    if (!oldAttachmentFile) {
-      continue;
-    }
-
-    const oldAttachmentFolder = oldAttachmentFile.parent;
-
-    const backlinks = await getBacklinksForFileSafe(app, oldAttachmentFile);
-    await createFolderSafeEx(plugin, dirname(newPath));
-    if (backlinks.count() === 0) {
-      await app.vault.rename(oldAttachmentFile, newPath);
-      await deleteEmptyFolderHierarchy(app, oldAttachmentFolder);
-    } else {
-      await app.vault.copy(oldAttachmentFile, newPath);
-    }
-  }
-
   notice.hide();
 }
 
 async function prepareAttachmentToMove(plugin: CustomAttachmentLocationPlugin, link: ReferenceCache, newNotePath: string, oldNotePath: string): Promise<AttachmentMoveResult | null> {
   const app = plugin.app;
-  const { linkPath, subpath } = splitSubpath(link.link);
+  const { linkPath } = splitSubpath(link.link);
   const oldAttachmentFile = app.metadataCache.getFirstLinkpathDest(linkPath, oldNotePath);
   if (!oldAttachmentFile) {
     return null;
@@ -212,33 +200,9 @@ async function prepareAttachmentToMove(plugin: CustomAttachmentLocationPlugin, l
     return null;
   }
 
-  const newAttachmentFile = createTFileInstance(app.vault, newAttachmentPath);
-  let newAttachmentLink = '';
-
-  tempRegisterFileAndRun(app, newAttachmentFile, () => {
-    newAttachmentLink = generateMarkdownLink({
-      app,
-      pathOrFile: newAttachmentFile,
-      sourcePathOrFile: newNotePath,
-      subpath,
-      alias: shouldResetAlias({
-        app,
-        displayText: link.displayText,
-        pathOrFile: newAttachmentFile,
-        otherPathOrFiles: [oldAttachmentPath],
-        sourcePathOrFile: newNotePath
-      })
-        ? undefined
-        : link.displayText,
-      isEmbed: link.original.startsWith('!'),
-      isWikilink: link.original.includes('[[')
-    });
-  });
-
   return {
     oldAttachmentPath,
-    newAttachmentPath,
-    newAttachmentLink
+    newAttachmentPath
   };
 }
 
@@ -280,15 +244,6 @@ export async function collectAttachmentsInFolder(plugin: CustomAttachmentLocatio
   }
 
   notice.hide();
-}
-
-export function splitSubpath(link: string): SplitSubpathResult {
-  const SUBPATH_SEPARATOR = '#';
-  const [linkPath = '', subpath] = link.split(SUBPATH_SEPARATOR);
-  return {
-    linkPath,
-    subpath: subpath ? SUBPATH_SEPARATOR + subpath : undefined
-  };
 }
 
 async function getCanvasLinks(app: App, file: TFile): Promise<ReferenceCache[]> {

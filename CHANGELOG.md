@@ -1,5 +1,12 @@
 # CHANGELOG
 
+## 4.22.0
+
+- Replace whitespace on drop
+- Fix relative path resolution
+- Handle duplicates
+- Fix stat for mobile
+
 ## 4.21.0
 
 - Fix race condition

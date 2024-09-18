@@ -66,11 +66,7 @@ export async function interpolateDateToString(plugin: CustomAttachmentLocationPl
     newPath = newPath.toLowerCase();
   }
 
-  if (plugin.settingsCopy.replaceWhitespace) {
-    newPath = newPath.replace(/\s/g, '-');
-    newPath = newPath.replace(/-{2,}/g, '-');
-  }
-
+  newPath = replaceWhitespace(plugin, newPath);
   newPath = newPath.replace(/\.\//, substitutions.folderPath + '/');
   return newPath;
 }
@@ -115,4 +111,13 @@ export async function getAttachmentFolderFullPathForPath(plugin: CustomAttachmen
 
 export async function getPastedFileName(plugin: CustomAttachmentLocationPlugin, substitutions: Substitutions): Promise<string> {
   return await interpolateDateToString(plugin, plugin.settingsCopy.pastedFileName, substitutions);
+}
+
+export function replaceWhitespace(plugin: CustomAttachmentLocationPlugin, str: string): string {
+  if (plugin.settingsCopy.replaceWhitespace) {
+    str = str.replace(/\s/g, '-');
+    str = str.replace(/-{2,}/g, '-');
+  }
+
+  return str;
 }

@@ -13,7 +13,8 @@ import {
 
 import {
   getAttachmentFolderFullPathForPath,
-  getPastedFileName
+  getPastedFileName,
+  replaceWhitespace
 } from './AttachmentPath.ts';
 import type CustomAttachmentLocationPlugin from './CustomAttachmentLocationPlugin.ts';
 import { createSubstitutionsFromPath } from './Substitutions.ts';
@@ -136,7 +137,8 @@ abstract class EventWrapper {
 
         const shouldRename = this.shouldRenameAttachments(entry.file);
 
-        const filename = shouldRename ? await getPastedFileName(this.plugin, createSubstitutionsFromPath(noteFile.path, originalCopiedFileName)) : originalCopiedFileName;
+        let filename = shouldRename ? await getPastedFileName(this.plugin, createSubstitutionsFromPath(noteFile.path, originalCopiedFileName)) : originalCopiedFileName;
+        filename = replaceWhitespace(this.plugin, filename);
 
         const filePropertyBag: FilePropertyBag = { type: 'application/octet-stream' };
         if (!shouldRename) {

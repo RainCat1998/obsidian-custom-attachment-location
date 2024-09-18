@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 4.22.1
+
+- Refactor
+
 ## 4.22.0
 
 - Replace whitespace on drop

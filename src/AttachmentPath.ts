@@ -1,12 +1,8 @@
 import moment from 'moment';
 import type { TAbstractFile } from 'obsidian';
-import {
-  normalizePath,
-  TFolder
-} from 'obsidian';
+import { TFolder } from 'obsidian';
 import { throwExpression } from 'obsidian-dev-utils/Error';
 import { prompt } from 'obsidian-dev-utils/obsidian/Modal/Prompt';
-import { join } from 'obsidian-dev-utils/Path';
 import { escapeRegExp } from 'obsidian-dev-utils/RegExp';
 
 import type CustomAttachmentLocationPlugin from './CustomAttachmentLocationPlugin.ts';

@@ -13,7 +13,10 @@ import type {
   GetAvailablePathForAttachmentsExtendedFn
 } from 'obsidian-dev-utils/obsidian/AttachmentPath';
 import { getAvailablePathForAttachments } from 'obsidian-dev-utils/obsidian/AttachmentPath';
-import { getAbstractFileOrNull, isNote } from 'obsidian-dev-utils/obsidian/FileSystem';
+import {
+  getAbstractFileOrNull,
+  isNote
+} from 'obsidian-dev-utils/obsidian/FileSystem';
 import { PluginBase } from 'obsidian-dev-utils/obsidian/Plugin/PluginBase';
 import type { RenameDeleteHandlerSettings } from 'obsidian-dev-utils/obsidian/RenameDeleteHandler';
 import { registerRenameDeleteHandlers } from 'obsidian-dev-utils/obsidian/RenameDeleteHandler';
@@ -22,6 +25,7 @@ import {
   join,
   makeFileName
 } from 'obsidian-dev-utils/Path';
+import { parentFolderPath } from 'obsidian-typings/implementations';
 
 import {
   collectAttachmentsCurrentFolder,
@@ -102,20 +106,25 @@ export default class CustomAttachmentLocationPlugin extends PluginBase<CustomAtt
   }
 
   private async getAvailablePathForAttachments(filename: string, extension: string, file: TFile | null, skipFolderCreation: boolean | undefined): Promise<string> {
-    if (!(file instanceof TFile)) {
-      return getAvailablePathForAttachments(this.app, filename, extension, file, skipFolderCreation ?? false);
+    let attachmentPath: string;
+    if (!file || !isNote(file)) {
+      attachmentPath = await getAvailablePathForAttachments(this.app, filename, extension, file, true);
+    } else {
+      const attachmentFolderFullPath = await getAttachmentFolderFullPathForPath(this, file.path);
+      attachmentPath = this.app.vault.getAvailablePath(join(attachmentFolderFullPath, filename), extension);
     }
-
-    if (!isNote(file)) {
-      return getAvailablePathForAttachments(this.app, filename, extension, file, skipFolderCreation ?? false);
-    }
-
-    const attachmentFolderFullPath = await getAttachmentFolderFullPathForPath(this, file.path);
 
     if (!skipFolderCreation) {
-      await createFolderSafe(this.app, attachmentFolderFullPath);
+      const folderPath = parentFolderPath(attachmentPath);
+      if (!await this.app.vault.exists(folderPath)) {
+        await createFolderSafe(this.app, folderPath);
+        if (this.settings.keepEmptyAttachmentFolders) {
+          await this.app.vault.create(join(folderPath, '.gitkeep'), '');
+        }
+      }
     }
-    return this.app.vault.getAvailablePath(join(attachmentFolderFullPath, filename), extension);
+
+    return attachmentPath;
   }
 
   private getAvailablePath(filename: string, extension: string): string {

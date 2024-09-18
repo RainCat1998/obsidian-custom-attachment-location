@@ -19,7 +19,7 @@ import {
   isNote
 } from 'obsidian-dev-utils/obsidian/FileSystem';
 import {
-  splitSubpath,
+  extractLinkFile,
   updateLink
 } from 'obsidian-dev-utils/obsidian/Link';
 import {
@@ -167,8 +167,8 @@ export async function collectAttachments(plugin: CustomAttachmentLocationPlugin,
 
 async function prepareAttachmentToMove(plugin: CustomAttachmentLocationPlugin, link: ReferenceCache, newNotePath: string, oldNotePath: string): Promise<AttachmentMoveResult | null> {
   const app = plugin.app;
-  const { linkPath } = splitSubpath(link.link);
-  const oldAttachmentFile = app.metadataCache.getFirstLinkpathDest(linkPath, oldNotePath);
+
+  const oldAttachmentFile = extractLinkFile(app, link, oldNotePath);
   if (!oldAttachmentFile) {
     return null;
   }

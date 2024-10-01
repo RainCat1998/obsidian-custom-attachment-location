@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## 4.23.0
+
+- Update lib
+- Refactor
+
 ## 4.22.1
 
 - Refactor

@@ -13,7 +13,7 @@ import type { CanvasData } from 'obsidian/canvas.d.ts';
 import { appendCodeBlock } from 'obsidian-dev-utils/DocumentFragment';
 import { throwExpression } from 'obsidian-dev-utils/Error';
 import { toJson } from 'obsidian-dev-utils/Object';
-import { chainAsyncFn } from 'obsidian-dev-utils/obsidian/ChainedPromise';
+import { chain } from 'obsidian-dev-utils/obsidian/ChainedPromise';
 import {
   isCanvasFile,
   isNote
@@ -63,7 +63,7 @@ export function collectAttachmentsCurrentNote(plugin: CustomAttachmentLocationPl
   }
 
   if (!checking) {
-    chainAsyncFn(plugin.app, () => collectAttachments(plugin, note));
+    chain(plugin.app, () => collectAttachments(plugin, note));
   }
 
   return true;
@@ -76,14 +76,14 @@ export function collectAttachmentsCurrentFolder(plugin: CustomAttachmentLocation
   }
 
   if (!checking) {
-    chainAsyncFn(plugin.app, () => collectAttachmentsInFolder(plugin, note?.parent ?? throwExpression(new Error('Parent folder not found'))));
+    chain(plugin.app, () => collectAttachmentsInFolder(plugin, note?.parent ?? throwExpression(new Error('Parent folder not found'))));
   }
 
   return true;
 }
 
 export function collectAttachmentsEntireVault(plugin: CustomAttachmentLocationPlugin): void {
-  chainAsyncFn(plugin.app, () => collectAttachmentsInFolder(plugin, plugin.app.vault.getRoot()));
+  chain(plugin.app, () => collectAttachmentsInFolder(plugin, plugin.app.vault.getRoot()));
 }
 
 export async function collectAttachments(plugin: CustomAttachmentLocationPlugin, note: TFile, oldPath?: string, attachmentFilter?: (path: string) => boolean): Promise<void> {

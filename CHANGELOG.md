@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 4.23.2
+
+- Update lib
+
 ## 4.23.1
 
 - Update lib

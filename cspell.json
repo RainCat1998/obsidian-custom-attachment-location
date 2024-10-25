@@ -1,8 +1,9 @@
 {
   "version": "0.2",
   "ignorePaths": [
-    "node_modules/**",
-    "dist/**"
+    "dist",
+    "node_modules",
+    "tsconfig.tsbuildinfo"
   ],
   "dictionaryDefinitions": [],
   "dictionaries": [],
@@ -27,6 +28,7 @@
     "postversion",
     "preversion",
     "redrop",
+    "tsbuildinfo",
     "typora",
     "Wikilink",
     "Wikilinks"

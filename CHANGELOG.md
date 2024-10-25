@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 4.24.0
+
+- Support multi-window
+
 ## 4.23.2
 
 - Update lib

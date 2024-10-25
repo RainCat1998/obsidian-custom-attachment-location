@@ -33,7 +33,7 @@ import {
   applyFileChanges,
   copySafe,
   deleteEmptyFolderHierarchy,
-  processWithRetry,
+  process,
   renameSafe
 } from 'obsidian-dev-utils/obsidian/Vault';
 import {
@@ -146,7 +146,7 @@ export async function collectAttachments(plugin: CustomAttachmentLocationPlugin,
   });
 
   if (isCanvas) {
-    await processWithRetry(app, note, (content) => {
+    await process(app, note, (content) => {
       const canvasData = JSON.parse(content) as CanvasData;
       for (const node of canvasData.nodes) {
         if (node.type !== 'file') {

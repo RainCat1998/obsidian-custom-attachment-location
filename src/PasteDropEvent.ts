@@ -30,12 +30,17 @@ interface PastedEntry {
 
 export function registerPasteDropEventHandlers(plugin: CustomAttachmentLocationPlugin): void {
   const listener = convertAsyncToSync(async (event: ClipboardEvent | DragEvent) => handlePasteAndDrop(plugin, event));
-  plugin.registerDomEvent(document, 'paste', listener, { capture: true });
-  plugin.registerDomEvent(document, 'drop', listener, { capture: true });
+  registerHandlersForWindow(window);
+  plugin.app.workspace.on('window-open', (_, window) => { registerHandlersForWindow(window); });
+
+  function registerHandlersForWindow(window: Window): void {
+    plugin.registerDomEvent(window.document, 'paste', listener, { capture: true });
+    plugin.registerDomEvent(window.document, 'drop', listener, { capture: true });
+  }
 }
 
 async function handlePasteAndDrop(plugin: CustomAttachmentLocationPlugin, event: ClipboardEvent | DragEvent): Promise<void> {
-  const eventWrapper = event instanceof ClipboardEvent ? new PasteEventWrapper(event, plugin) : new DropEventWrapper(event, plugin);
+  const eventWrapper = event.constructor.name === 'ClipboardEvent' ? new PasteEventWrapper(event as ClipboardEvent, plugin) : new DropEventWrapper(event as DragEvent, plugin);
   await eventWrapper.handle();
 }
 

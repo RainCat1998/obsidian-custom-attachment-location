@@ -1,4 +1,5 @@
 import type {
+  Reference,
   ReferenceCache,
   TFile,
   TFolder
@@ -14,6 +15,12 @@ import { appendCodeBlock } from 'obsidian-dev-utils/DocumentFragment';
 import { throwExpression } from 'obsidian-dev-utils/Error';
 import { toJson } from 'obsidian-dev-utils/Object';
 import { chain } from 'obsidian-dev-utils/obsidian/ChainedPromise';
+import type {
+  ContentChange,
+  FileChange,
+  FrontmatterChange
+} from 'obsidian-dev-utils/obsidian/FileChange';
+import { applyFileChanges } from 'obsidian-dev-utils/obsidian/FileChange';
 import {
   isCanvasFile,
   isNote
@@ -28,9 +35,7 @@ import {
   getCacheSafe
 } from 'obsidian-dev-utils/obsidian/MetadataCache';
 import { confirm } from 'obsidian-dev-utils/obsidian/Modal/Confirm';
-import type { FileChange } from 'obsidian-dev-utils/obsidian/Vault';
 import {
-  applyFileChanges,
   copySafe,
   deleteEmptyFolderHierarchy,
   process,
@@ -43,6 +48,10 @@ import {
   join,
   makeFileName
 } from 'obsidian-dev-utils/Path';
+import {
+  isFrontmatterLinkCache,
+  isReferenceCache
+} from 'obsidian-typings/implementations';
 
 import {
   getAttachmentFolderFullPathForPath,
@@ -127,18 +136,27 @@ export async function collectAttachments(plugin: CustomAttachmentLocationPlugin,
       attachmentsMap.set(attachmentMoveResult.oldAttachmentPath, attachmentMoveResult.newAttachmentPath);
 
       if (!isCanvas) {
-        changes.push({
-          startIndex: link.position.start.offset,
-          endIndex: link.position.end.offset,
-          oldContent: link.original,
-          newContent: updateLink({
-            app: app,
-            link,
-            pathOrFile: attachmentMoveResult.newAttachmentPath,
-            oldPathOrFile: attachmentMoveResult.oldAttachmentPath,
-            sourcePathOrFile: note
-          })
+        const newContent = updateLink({
+          app: app,
+          link,
+          pathOrFile: attachmentMoveResult.newAttachmentPath,
+          oldPathOrFile: attachmentMoveResult.oldAttachmentPath,
+          sourcePathOrFile: note
         });
+        if (isReferenceCache(link)) {
+          changes.push({
+            startIndex: link.position.start.offset,
+            endIndex: link.position.end.offset,
+            oldContent: link.original,
+            newContent
+          } as ContentChange);
+        } else if (isFrontmatterLinkCache(link)) {
+          changes.push({
+            oldContent: link.original,
+            newContent,
+            frontMatterKey: link.key
+          } as FrontmatterChange);
+        }
       }
     }
 
@@ -165,7 +183,7 @@ export async function collectAttachments(plugin: CustomAttachmentLocationPlugin,
   notice.hide();
 }
 
-async function prepareAttachmentToMove(plugin: CustomAttachmentLocationPlugin, link: ReferenceCache, newNotePath: string, oldNotePath: string): Promise<AttachmentMoveResult | null> {
+async function prepareAttachmentToMove(plugin: CustomAttachmentLocationPlugin, link: Reference, newNotePath: string, oldNotePath: string): Promise<AttachmentMoveResult | null> {
   const app = plugin.app;
 
   const oldAttachmentFile = extractLinkFile(app, link, oldNotePath);

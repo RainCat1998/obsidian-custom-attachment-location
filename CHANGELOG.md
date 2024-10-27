@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 4.25.0
+
+- Add support for frontmatter links
+
 ## 4.24.0
 
 - Support multi-window

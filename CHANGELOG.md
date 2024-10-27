@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 4.26.0
+
+- Don't fail on broken canvas
+
 ## 4.25.0
 
 - Add support for frontmatter links

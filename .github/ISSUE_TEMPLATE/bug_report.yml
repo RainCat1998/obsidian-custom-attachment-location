@@ -5,7 +5,6 @@ assignees: mnaoumov
 body:
   - type: checkboxes
     id: test3
-    label: test2
     attributes:
       options:
         - label: "I attached the video showing the issue."

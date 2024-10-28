@@ -3,9 +3,9 @@ title: "[BUG] Short description"
 labels: bug
 assignees: mnaoumov
 body:
-- type: markdown
-  attributes:
-    value: A clear and concise description of the bug.
+  - type: markdown
+    attributes:
+      value: A clear and concise description of the bug.
   - type: checkboxes
     attributes:
       options:

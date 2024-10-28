@@ -181,6 +181,9 @@ abstract class EventWrapper {
     }
 
     if (this.event.target.closest('.canvas-wrapper')) {
+      if (this.event.target.isContentEditable) {
+        return TargetType.Unsupported;
+      }
       return TargetType.Canvas;
     }
 

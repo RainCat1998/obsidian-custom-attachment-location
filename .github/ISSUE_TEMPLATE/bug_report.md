@@ -1,3 +1,4 @@
+---
 name: Bug report
 about: Bug report
 title: "[BUG] Short description"

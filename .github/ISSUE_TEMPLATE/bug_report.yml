@@ -4,10 +4,11 @@ labels: bug
 assignees: mnaoumov
 body:
   - type: markdown
+    id: welcome
     attributes:
       value: A clear and concise description of the bug.
   - type: checkboxes
-    label: Confirmations
+    id: confirmations
     attributes:
       options:
         - label: "I attached the video showing the issue."

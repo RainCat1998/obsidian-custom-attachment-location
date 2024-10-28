@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 4.27.0
+
+- Allow paste in link editing textbox
+
 ## 4.26.0
 
 - Don't fail on broken canvas

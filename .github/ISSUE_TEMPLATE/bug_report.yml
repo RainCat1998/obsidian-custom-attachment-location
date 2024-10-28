@@ -4,8 +4,3 @@ labels: bug
 assignees: mnaoumov
 body:
   - type: checkboxes
-    id: test3
-    attributes:
-      options:
-        - label: "I attached the video showing the issue."
-          required: true

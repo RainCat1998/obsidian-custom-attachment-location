@@ -4,3 +4,5 @@ labels: bug
 assignees: mnaoumov
 body:
   - type: checkboxes
+    label: label1
+    options: {}

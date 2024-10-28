@@ -23,20 +23,20 @@ body:
         2. Click on '...'
         3. Notice that '...'
         ...
-      validations:
-        required: true
+    validations:
+      required: true
   - type: textarea
     attributes:
       label: Expected Behavior
       description: What did you expect to happen?
-      validations:
-        required: true
+    validations:
+      required: true
   - type: textarea
     attributes:
       label: Actual Behavior
       description: What actually happened? Include error messages if available.
-      validations:
-        required: true
+    validations:
+      required: true
   - type: textarea
     attributes:
       label: Environment Information
@@ -45,8 +45,8 @@ body:
         - **Plugin Version**: [e.g., 1.0.0]
         - **Obsidian Version**: [e.g., v1.3.2]
         - **Operating System**: [e.g., Windows 10]
-      validations:
-        required: true
+    validations:
+      required: true
   - type: textarea
     attributes:
       label: Attachments
@@ -54,8 +54,8 @@ body:
       value: |
         - Please attach a video showing the issue
         - Please attach a sample vault where the issue can be reproduced
-      validations:
-        required: true
+    validations:
+      required: true
   - type: checkboxes
     attributes:
       label: Confirmations

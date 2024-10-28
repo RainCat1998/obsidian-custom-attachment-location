@@ -4,7 +4,6 @@ labels: bug
 assignees: mnaoumov
 body:
   - type: markdown
-    label: test1
     attributes:
       value: A clear and concise description of the bug.
   - type: checkboxes

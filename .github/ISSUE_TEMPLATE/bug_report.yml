@@ -1,4 +1,5 @@
 name: Bug report
+description: Bug report
 title: "[BUG] Short description"
 labels: bug
 assignees: mnaoumov

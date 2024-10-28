@@ -13,5 +13,3 @@ body:
         - label: "I attached a sample vault where the issue can be reproduced."
           required: true
 ---
-
-A clear and concise description of the bug.

@@ -6,15 +6,22 @@ assignees: mnaoumov
 body:
   - type: markdown
     attributes:
-      value: "## A clear and concise description of the bug"
-  - type: markdown
-    attributes:
-      value: "## Steps to reproduce"
+      value: |
+        ## A clear and concise description of the bug
+
+        TODO
+
+        ## Steps to reproduce
+
+        1. TODO
+        2. TODO
+        3. TODO
   - type: checkboxes
     attributes:
-      label: What kinds of cats do you like?
-      description: You may select more than one.
+      label: Confirmations
+      description: You have to provide all the required information in order for the plugin developer to be able to work on your bug
       options:
-        - label: Orange cat (required. Everyone likes orange cats.)
+        - label: I attached the video showing the issue
           required: true
-        - label: "**Black cat**"
+        - label: I attached a sample vault where the issue can be reproduced
+          required: true

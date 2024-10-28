@@ -14,3 +14,48 @@ body:
       description: A clear and concise description of the feature request. Include any relevant details.
     validations:
       required: true
+  - type: textarea
+    attributes:
+      label: Details
+      description: Provide a step-by-step description.
+      value: |
+        1. Go to '...'
+        2. Click on '...'
+        3. Notice that '...'
+        ...
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Desired Behavior
+      description: What do you want to happen?
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Current Behavior
+      description: What actually happens?
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Attachments
+      description: Required for feature investigation
+      value: |
+        - Please attach a video showing the current behavior
+        - Please attach a sample vault where the desired Feature Request could be applied
+    validations:
+      required: true
+  - type: checkboxes
+    attributes:
+      label: Confirmations
+      description: Ensure the following conditions are met
+      options:
+        - label: I attached a video showing the current behavior
+          required: true
+        - label: I attached a sample vault where the desired Feature Request could be applied
+          required: true
+        - label: I have tested the issue with the latest version
+          required: true
+        - label: I have checked for existing Feature Requests
+          required: true

@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 4.27.1
+
+- Refactor
+
 ## 4.27.0
 
 - Allow paste in link editing textbox

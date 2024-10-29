@@ -15,11 +15,7 @@ import { appendCodeBlock } from 'obsidian-dev-utils/DocumentFragment';
 import { throwExpression } from 'obsidian-dev-utils/Error';
 import { toJson } from 'obsidian-dev-utils/Object';
 import { chain } from 'obsidian-dev-utils/obsidian/ChainedPromise';
-import type {
-  ContentChange,
-  FileChange,
-  FrontmatterChange
-} from 'obsidian-dev-utils/obsidian/FileChange';
+import type { FileChange } from 'obsidian-dev-utils/obsidian/FileChange';
 import { applyFileChanges } from 'obsidian-dev-utils/obsidian/FileChange';
 import {
   isCanvasFile,
@@ -35,6 +31,7 @@ import {
   getCacheSafe
 } from 'obsidian-dev-utils/obsidian/MetadataCache';
 import { confirm } from 'obsidian-dev-utils/obsidian/Modal/Confirm';
+import { referenceToFileChange } from 'obsidian-dev-utils/obsidian/Reference';
 import {
   copySafe,
   deleteEmptyFolderHierarchy,
@@ -48,10 +45,6 @@ import {
   join,
   makeFileName
 } from 'obsidian-dev-utils/Path';
-import {
-  isFrontmatterLinkCache,
-  isReferenceCache
-} from 'obsidian-typings/implementations';
 
 import {
   getAttachmentFolderFullPathForPath,
@@ -143,20 +136,8 @@ export async function collectAttachments(plugin: CustomAttachmentLocationPlugin,
           oldPathOrFile: attachmentMoveResult.oldAttachmentPath,
           sourcePathOrFile: note
         });
-        if (isReferenceCache(link)) {
-          changes.push({
-            startIndex: link.position.start.offset,
-            endIndex: link.position.end.offset,
-            oldContent: link.original,
-            newContent
-          } as ContentChange);
-        } else if (isFrontmatterLinkCache(link)) {
-          changes.push({
-            oldContent: link.original,
-            newContent,
-            frontMatterKey: link.key
-          } as FrontmatterChange);
-        }
+
+        changes.push(referenceToFileChange(link, newContent));
       }
     }
 

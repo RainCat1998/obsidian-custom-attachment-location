@@ -4,9 +4,10 @@ import {
 } from 'obsidian';
 import { appendCodeBlock } from 'obsidian-dev-utils/DocumentFragment';
 import { PluginSettingsTabBase } from 'obsidian-dev-utils/obsidian/Plugin/PluginSettingsTabBase';
-import { bindUiComponent } from 'obsidian-dev-utils/obsidian/Plugin/UIComponent';
+import { extend } from 'obsidian-dev-utils/obsidian/Plugin/ValueComponent';
 
 import type CustomAttachmentLocationPlugin from './CustomAttachmentLocationPlugin.ts';
+
 import {
   validateFilename,
   validatePath
@@ -37,15 +38,15 @@ export default class CustomAttachmentLocationPluginSettingsTab extends PluginSet
         f.createEl('a', { href: 'https://github.com/polyipseity/obsidian-show-hidden-files/', text: 'Show Hidden Files' });
         f.appendText(' Plugin to manage them.');
       }))
-      .addText((text) => bindUiComponent(this.plugin, text, 'attachmentFolderPath', {
-        uiValueValidator(uiValue): string | null {
-          return validatePath(uiValue);
-        },
-        settingToUIValueConverter(pluginValue: string): string {
-          return pluginValue;
-        },
-        uiToSettingValueConverter(uiValue: string): string {
+      .addText((text) => extend(text).bind(this.plugin, 'attachmentFolderPath', {
+        componentToPluginSettingsValueConverter(uiValue: string): string {
           return normalizePath(uiValue);
+        },
+        pluginSettingsToComponentValueConverter(pluginSettingsValue: string): string {
+          return pluginSettingsValue;
+        },
+        valueValidator(uiValue): null | string {
+          return validatePath(uiValue);
         }
       })
         .setPlaceholder('./assets/${filename}')
@@ -66,8 +67,8 @@ export default class CustomAttachmentLocationPluginSettingsTab extends PluginSet
         appendCodeBlock(f, '${prompt}');
         f.appendText('.');
       }))
-      .addText((text) => bindUiComponent(this.plugin, text, 'pastedFileName', {
-        uiValueValidator(uiValue): string | null {
+      .addText((text) => extend(text).bind(this.plugin, 'pastedFileName', {
+        valueValidator(uiValue): null | string {
           return validatePath(uiValue);
         }
       })
@@ -81,7 +82,7 @@ export default class CustomAttachmentLocationPluginSettingsTab extends PluginSet
         appendCodeBlock(f, '${filename}');
         f.appendText('.');
       }))
-      .addToggle((toggle) => bindUiComponent(this.plugin, toggle, 'autoRenameFolder'));
+      .addToggle((toggle) => extend(toggle).bind(this.plugin, 'autoRenameFolder'));
 
     new Setting(this.containerEl)
       .setName('Automatically rename attachment files')
@@ -90,31 +91,31 @@ export default class CustomAttachmentLocationPluginSettingsTab extends PluginSet
         appendCodeBlock(f, '${filename}');
         f.appendText('.');
       }))
-      .addToggle((toggle) => bindUiComponent(this.plugin, toggle, 'autoRenameFiles'));
+      .addToggle((toggle) => extend(toggle).bind(this.plugin, 'autoRenameFiles'));
 
     new Setting(this.containerEl)
       .setName('Replace whitespace with hyphen')
       .setDesc('Automatically replace whitespace in attachment folder and file name with hyphens.')
-      .addToggle((toggle) => bindUiComponent(this.plugin, toggle, 'replaceWhitespace'));
+      .addToggle((toggle) => extend(toggle).bind(this.plugin, 'replaceWhitespace'));
 
     new Setting(this.containerEl)
       .setName('All lowercase names')
       .setDesc('Automatically set all characters in folder name and pasted image name to be lowercase.')
-      .addToggle((toggle) => bindUiComponent(this.plugin, toggle, 'toLowerCase'));
+      .addToggle((toggle) => extend(toggle).bind(this.plugin, 'toLowerCase'));
 
     new Setting(this.containerEl)
       .setName('Convert pasted images to JPEG')
       .setDesc('Paste images from clipboard converting them to JPEG.')
-      .addToggle((toggle) => bindUiComponent(this.plugin, toggle, 'convertImagesToJpeg'));
+      .addToggle((toggle) => extend(toggle).bind(this.plugin, 'convertImagesToJpeg'));
 
     new Setting(this.containerEl)
       .setName('JPEG Quality')
       .setDesc('The smaller the quality, the greater the compression ratio.')
       .addDropdown((dropDown) => {
         dropDown.addOptions(generateJpegQualityOptions());
-        bindUiComponent(this.plugin, dropDown, 'jpegQuality', {
-          settingToUIValueConverter: (value) => value.toString(),
-          uiToSettingValueConverter: (value) => Number(value)
+        extend(dropDown).bind(this.plugin, 'jpegQuality', {
+          componentToPluginSettingsValueConverter: (value) => Number(value),
+          pluginSettingsToComponentValueConverter: (value) => value.toString()
         });
       });
 
@@ -125,7 +126,7 @@ export default class CustomAttachmentLocationPluginSettingsTab extends PluginSet
         appendCodeBlock(f, 'Convert pasted images to JPEG');
         f.appendText(' setting is enabled, images drag&dropped into the editor will be converted to JPEG.');
       }))
-      .addToggle((toggle) => bindUiComponent(this.plugin, toggle, 'convertImagesOnDragAndDrop'));
+      .addToggle((toggle) => extend(toggle).bind(this.plugin, 'convertImagesOnDragAndDrop'));
 
     new Setting(this.containerEl)
       .setName('Rename only images')
@@ -134,7 +135,7 @@ export default class CustomAttachmentLocationPluginSettingsTab extends PluginSet
         f.appendChild(createEl('br'));
         f.appendText('If disabled, all attachment files will be renamed.');
       }))
-      .addToggle((toggle) => bindUiComponent(this.plugin, toggle, 'renameOnlyImages'));
+      .addToggle((toggle) => extend(toggle).bind(this.plugin, 'renameOnlyImages'));
 
     new Setting(this.containerEl)
       .setName('Rename pasted files with known names')
@@ -143,7 +144,7 @@ export default class CustomAttachmentLocationPluginSettingsTab extends PluginSet
         f.appendChild(createEl('br'));
         f.appendText('If disabled, only clipboard image objects (e.g., screenshots) will be renamed.');
       }))
-      .addToggle((toggle) => bindUiComponent(this.plugin, toggle, 'renamePastedFilesWithKnownNames'));
+      .addToggle((toggle) => extend(toggle).bind(this.plugin, 'renamePastedFilesWithKnownNames'));
 
     new Setting(this.containerEl)
       .setName('Rename attachments on drag&drop')
@@ -152,7 +153,7 @@ export default class CustomAttachmentLocationPluginSettingsTab extends PluginSet
         appendCodeBlock(f, 'Pasted File Name');
         f.appendText(' setting.');
       }))
-      .addToggle((toggle) => bindUiComponent(this.plugin, toggle, 'renameAttachmentsOnDragAndDrop'));
+      .addToggle((toggle) => extend(toggle).bind(this.plugin, 'renameAttachmentsOnDragAndDrop'));
 
     new Setting(this.containerEl)
       .setName('Rename attachments on collecting')
@@ -163,7 +164,7 @@ export default class CustomAttachmentLocationPluginSettingsTab extends PluginSet
         appendCodeBlock(f, 'Pasted File Name');
         f.appendText(' setting.');
       }))
-      .addToggle((toggle) => bindUiComponent(this.plugin, toggle, 'renameCollectedFiles'));
+      .addToggle((toggle) => extend(toggle).bind(this.plugin, 'renameCollectedFiles'));
 
     new Setting(this.containerEl)
       .setName('Duplicate name separator')
@@ -178,8 +179,8 @@ export default class CustomAttachmentLocationPluginSettingsTab extends PluginSet
         appendCodeBlock(f, 'existingFile 2.pdf');
         f.appendText(', etc, getting the first name available.');
       }))
-      .addText((text) => bindUiComponent(this.plugin, text, 'duplicateNameSeparator', {
-        uiValueValidator(uiValue): string | null {
+      .addText((text) => extend(text).bind(this.plugin, 'duplicateNameSeparator', {
+        valueValidator(uiValue): null | string {
           return uiValue === '' ? null : validateFilename(uiValue);
         }
       })
@@ -189,12 +190,12 @@ export default class CustomAttachmentLocationPluginSettingsTab extends PluginSet
     new Setting(this.containerEl)
       .setName('Keep empty attachment folders')
       .setDesc('If enabled, empty attachment folders will be preserved, useful for source control purposes.')
-      .addToggle((toggle) => bindUiComponent(this.plugin, toggle, 'keepEmptyAttachmentFolders'));
+      .addToggle((toggle) => extend(toggle).bind(this.plugin, 'keepEmptyAttachmentFolders'));
 
     new Setting(this.containerEl)
       .setName('Delete orphan attachments')
       .setDesc('If enabled, when the note is deleted, its orphan attachments are deleted as well.')
-      .addToggle((toggle) => bindUiComponent(this.plugin, toggle, 'deleteOrphanAttachments'));
+      .addToggle((toggle) => extend(toggle).bind(this.plugin, 'deleteOrphanAttachments'));
   }
 }
 

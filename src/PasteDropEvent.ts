@@ -11,16 +11,17 @@ import {
   makeFileName
 } from 'obsidian-dev-utils/Path';
 
+import type CustomAttachmentLocationPlugin from './CustomAttachmentLocationPlugin.ts';
+
 import {
   getPastedFileName,
   replaceWhitespace
 } from './AttachmentPath.ts';
-import type CustomAttachmentLocationPlugin from './CustomAttachmentLocationPlugin.ts';
 import { createSubstitutionsFromPath } from './Substitutions.ts';
 
-type HandledEvent = Event & {
+type HandledEvent = {
   handled?: boolean;
-};
+} & Event;
 
 interface PastedEntry {
   file?: File;
@@ -47,8 +48,8 @@ async function handlePasteAndDrop(plugin: CustomAttachmentLocationPlugin, event:
 }
 
 enum TargetType {
-  Note = 'Note',
   Canvas = 'Canvas',
+  Note = 'Note',
   Unsupported = 'Unsupported'
 }
 
@@ -58,6 +59,40 @@ abstract class EventWrapper {
     private readonly eventType: string,
     protected readonly plugin: CustomAttachmentLocationPlugin
   ) { }
+
+  protected abstract cloneWithNewDataTransfer(dataTransfer: DataTransfer): ClipboardEvent | DragEvent;
+
+  protected abstract getDataTransfer(): DataTransfer | null;
+  protected abstract shouldConvertImages(): boolean;
+  protected abstract shouldRenameAttachments(file: File): boolean;
+  private getTargetType(): TargetType {
+    if (!(this.event.target instanceof HTMLElement)) {
+      return TargetType.Unsupported;
+    }
+
+    if (this.plugin.app.workspace.activeEditor?.metadataEditor?.contentEl.contains(this.event.target)) {
+      return TargetType.Unsupported;
+    }
+
+    if (this.plugin.app.workspace.activeEditor?.editor?.containerEl.contains(this.event.target)) {
+      return TargetType.Note;
+    }
+
+    if (this.event.target.closest('.canvas-wrapper')) {
+      if (this.event.target.isContentEditable) {
+        return TargetType.Unsupported;
+      }
+      return TargetType.Canvas;
+    }
+
+    const canvasView = this.plugin.app.workspace.getActiveFileView();
+
+    if (this.event.target.matches('body') && canvasView?.getViewType() === 'canvas' && canvasView.containerEl.closest('.mod-active')) {
+      return TargetType.Canvas;
+    }
+
+    return TargetType.Unsupported;
+  }
 
   public async handle(): Promise<void> {
     let handledEvent = this.event as HandledEvent;
@@ -161,40 +196,6 @@ abstract class EventWrapper {
     this.plugin.app.dragManager.draggable = draggable;
     this.event.target.dispatchEvent(handledEvent);
   }
-
-  protected abstract getDataTransfer(): DataTransfer | null;
-  protected abstract cloneWithNewDataTransfer(dataTransfer: DataTransfer): ClipboardEvent | DragEvent;
-  protected abstract shouldRenameAttachments(file: File): boolean;
-  protected abstract shouldConvertImages(): boolean;
-
-  private getTargetType(): TargetType {
-    if (!(this.event.target instanceof HTMLElement)) {
-      return TargetType.Unsupported;
-    }
-
-    if (this.plugin.app.workspace.activeEditor?.metadataEditor?.contentEl.contains(this.event.target)) {
-      return TargetType.Unsupported;
-    }
-
-    if (this.plugin.app.workspace.activeEditor?.editor?.containerEl.contains(this.event.target)) {
-      return TargetType.Note;
-    }
-
-    if (this.event.target.closest('.canvas-wrapper')) {
-      if (this.event.target.isContentEditable) {
-        return TargetType.Unsupported;
-      }
-      return TargetType.Canvas;
-    }
-
-    const canvasView = this.plugin.app.workspace.getActiveFileView();
-
-    if (this.event.target.matches('body') && canvasView?.getViewType() === 'canvas' && canvasView.containerEl.closest('.mod-active')) {
-      return TargetType.Canvas;
-    }
-
-    return TargetType.Unsupported;
-  }
 }
 
 class PasteEventWrapper extends EventWrapper {
@@ -205,17 +206,21 @@ class PasteEventWrapper extends EventWrapper {
     super(event, 'Paste', plugin);
   }
 
+  protected override cloneWithNewDataTransfer(dataTransfer: DataTransfer): ClipboardEvent {
+    return new ClipboardEvent('paste', {
+      bubbles: this.event.bubbles,
+      cancelable: this.event.cancelable,
+      clipboardData: dataTransfer,
+      composed: this.event.composed
+    });
+  }
+
   protected override getDataTransfer(): DataTransfer | null {
     return this.event.clipboardData;
   }
 
-  protected override cloneWithNewDataTransfer(dataTransfer: DataTransfer): ClipboardEvent {
-    return new ClipboardEvent('paste', {
-      clipboardData: dataTransfer,
-      bubbles: this.event.bubbles,
-      cancelable: this.event.cancelable,
-      composed: this.event.composed
-    });
+  protected override shouldConvertImages(): boolean {
+    return this.plugin.settingsCopy.convertImagesToJpeg;
   }
 
   protected override shouldRenameAttachments(file: File): boolean {
@@ -223,10 +228,6 @@ class PasteEventWrapper extends EventWrapper {
       return false;
     }
     return file.path === '' || this.plugin.settingsCopy.renamePastedFilesWithKnownNames;
-  }
-
-  protected override shouldConvertImages(): boolean {
-    return this.plugin.settingsCopy.convertImagesToJpeg;
   }
 }
 
@@ -238,19 +239,23 @@ class DropEventWrapper extends EventWrapper {
     super(event, 'Drop', plugin);
   }
 
+  protected override cloneWithNewDataTransfer(dataTransfer: DataTransfer): DragEvent {
+    return new DragEvent('drop', {
+      bubbles: this.event.bubbles,
+      cancelable: this.event.cancelable,
+      clientX: this.event.clientX,
+      clientY: this.event.clientY,
+      composed: this.event.composed,
+      dataTransfer
+    });
+  }
+
   protected override getDataTransfer(): DataTransfer | null {
     return this.event.dataTransfer;
   }
 
-  protected override cloneWithNewDataTransfer(dataTransfer: DataTransfer): DragEvent {
-    return new DragEvent('drop', {
-      dataTransfer,
-      bubbles: this.event.bubbles,
-      cancelable: this.event.cancelable,
-      composed: this.event.composed,
-      clientX: this.event.clientX,
-      clientY: this.event.clientY
-    });
+  protected override shouldConvertImages(): boolean {
+    return this.plugin.settingsCopy.convertImagesToJpeg && this.plugin.settingsCopy.convertImagesOnDragAndDrop;
   }
 
   protected override shouldRenameAttachments(file: File): boolean {
@@ -259,9 +264,5 @@ class DropEventWrapper extends EventWrapper {
     }
 
     return this.plugin.settingsCopy.renameAttachmentsOnDragAndDrop;
-  }
-
-  protected override shouldConvertImages(): boolean {
-    return this.plugin.settingsCopy.convertImagesToJpeg && this.plugin.settingsCopy.convertImagesOnDragAndDrop;
   }
 }

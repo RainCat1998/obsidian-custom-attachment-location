@@ -1,13 +1,15 @@
-import moment from 'moment';
 import type { TAbstractFile } from 'obsidian';
+
+import moment from 'moment';
 import { TFolder } from 'obsidian';
 import { throwExpression } from 'obsidian-dev-utils/Error';
 import { prompt } from 'obsidian-dev-utils/obsidian/Modal/Prompt';
 import { escapeRegExp } from 'obsidian-dev-utils/RegExp';
 
 import type CustomAttachmentLocationPlugin from './CustomAttachmentLocationPlugin.ts';
-import { validateFilename } from './PathValidator.ts';
 import type { Substitutions } from './Substitutions.ts';
+
+import { validateFilename } from './PathValidator.ts';
 import { createSubstitutionsFromPath } from './Substitutions.ts';
 
 /**
@@ -52,8 +54,8 @@ export async function interpolateDateToString(plugin: CustomAttachmentLocationPl
     if (newPath.includes('${prompt}')) {
       const newFileName = await prompt({
         app: plugin.app,
-        title: 'Rename attachment file',
         defaultValue: substitutions.originalCopiedFilename,
+        title: 'Rename attachment file',
         valueValidator: (value): string => {
           return validateFilename(value);
         }
@@ -79,8 +81,8 @@ export async function getEarliestAttachmentFolder(plugin: CustomAttachmentLocati
     .filter((f: TAbstractFile) => targetRegex.test(f.path));
 
   interface FolderStat {
-    path: string;
     ctime: number;
+    path: string;
   }
 
   const folderStats: FolderStat[] = [];
@@ -88,8 +90,8 @@ export async function getEarliestAttachmentFolder(plugin: CustomAttachmentLocati
   for (const folder of folders) {
     const stat = await app.vault.adapter.stat(folder.path);
     folderStats.push({
-      path: folder.path,
-      ctime: stat?.ctime ?? 0
+      ctime: stat?.ctime ?? 0,
+      path: folder.path
     });
   }
 

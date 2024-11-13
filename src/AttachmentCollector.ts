@@ -4,18 +4,19 @@ import type {
   TFile,
   TFolder
 } from 'obsidian';
+import type { FileChange } from 'obsidian-dev-utils/obsidian/FileChange';
+import type { CanvasData } from 'obsidian/canvas.d.ts';
+
 import {
   App,
   Notice,
   setIcon,
   Vault
 } from 'obsidian';
-import type { CanvasData } from 'obsidian/canvas.d.ts';
 import { appendCodeBlock } from 'obsidian-dev-utils/DocumentFragment';
 import { throwExpression } from 'obsidian-dev-utils/Error';
 import { toJson } from 'obsidian-dev-utils/Object';
 import { chain } from 'obsidian-dev-utils/obsidian/ChainedPromise';
-import type { FileChange } from 'obsidian-dev-utils/obsidian/FileChange';
 import { applyFileChanges } from 'obsidian-dev-utils/obsidian/FileChange';
 import {
   isCanvasFile,
@@ -46,16 +47,17 @@ import {
   makeFileName
 } from 'obsidian-dev-utils/Path';
 
+import type CustomAttachmentLocationPlugin from './CustomAttachmentLocationPlugin.ts';
+
 import {
   getAttachmentFolderFullPathForPath,
   getPastedFileName
 } from './AttachmentPath.ts';
-import type CustomAttachmentLocationPlugin from './CustomAttachmentLocationPlugin.ts';
 import { createSubstitutionsFromPath } from './Substitutions.ts';
 
 interface AttachmentMoveResult {
-  oldAttachmentPath: string;
   newAttachmentPath: string;
+  oldAttachmentPath: string;
 }
 
 export function collectAttachmentsCurrentNote(plugin: CustomAttachmentLocationPlugin, checking: boolean): boolean {
@@ -132,8 +134,8 @@ export async function collectAttachments(plugin: CustomAttachmentLocationPlugin,
         const newContent = updateLink({
           app: app,
           link,
-          pathOrFile: attachmentMoveResult.newAttachmentPath,
           oldPathOrFile: attachmentMoveResult.oldAttachmentPath,
+          pathOrFile: attachmentMoveResult.newAttachmentPath,
           sourcePathOrFile: note
         });
 
@@ -200,24 +202,24 @@ async function prepareAttachmentToMove(plugin: CustomAttachmentLocationPlugin, l
   }
 
   return {
-    oldAttachmentPath,
-    newAttachmentPath
+    newAttachmentPath,
+    oldAttachmentPath
   };
 }
 
 export async function collectAttachmentsInFolder(plugin: CustomAttachmentLocationPlugin, folder: TFolder): Promise<void> {
   if (!await confirm({
     app: plugin.app,
-    title: createFragment((f) => {
-      setIcon(f.createSpan(), 'lucide-alert-triangle');
-      f.appendText(' Collect attachments in folder');
-    }),
     message: createFragment((f) => {
       f.appendText('Do you want to collect attachments for all notes in folder: ');
       appendCodeBlock(f, folder.path);
       f.appendText(' and all its subfolders?');
       f.createEl('br');
       f.appendText('This operation cannot be undone.');
+    }),
+    title: createFragment((f) => {
+      setIcon(f.createSpan(), 'lucide-alert-triangle');
+      f.appendText(' Collect attachments in folder');
     })
   })) {
     return;
@@ -252,8 +254,8 @@ async function getCanvasLinks(app: App, file: TFile): Promise<ReferenceCache[]> 
     link: file,
     original: file,
     position: {
-      start: { col: 0, line: 0, loc: 0, offset: 0 },
-      end: { col: 0, line: 0, loc: 0, offset: 0 }
+      end: { col: 0, line: 0, loc: 0, offset: 0 },
+      start: { col: 0, line: 0, loc: 0, offset: 0 }
     }
   }));
 }

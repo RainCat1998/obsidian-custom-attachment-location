@@ -1,3 +1,10 @@
+import type { MaybePromise } from 'obsidian-dev-utils/Async';
+import type {
+  ExtendedWrapper,
+  GetAvailablePathForAttachmentsExtendedFn
+} from 'obsidian-dev-utils/obsidian/AttachmentPath';
+import type { RenameDeleteHandlerSettings } from 'obsidian-dev-utils/obsidian/RenameDeleteHandler';
+
 import { around } from 'monkey-around';
 import {
   Menu,
@@ -7,18 +14,12 @@ import {
   TFolder,
   Vault
 } from 'obsidian';
-import type { MaybePromise } from 'obsidian-dev-utils/Async';
-import type {
-  ExtendedWrapper,
-  GetAvailablePathForAttachmentsExtendedFn
-} from 'obsidian-dev-utils/obsidian/AttachmentPath';
 import { getAvailablePathForAttachments } from 'obsidian-dev-utils/obsidian/AttachmentPath';
 import {
   getAbstractFileOrNull,
   isNote
 } from 'obsidian-dev-utils/obsidian/FileSystem';
 import { PluginBase } from 'obsidian-dev-utils/obsidian/Plugin/PluginBase';
-import type { RenameDeleteHandlerSettings } from 'obsidian-dev-utils/obsidian/RenameDeleteHandler';
 import { registerRenameDeleteHandlers } from 'obsidian-dev-utils/obsidian/RenameDeleteHandler';
 import { createFolderSafe } from 'obsidian-dev-utils/obsidian/Vault';
 import {
@@ -45,8 +46,20 @@ export default class CustomAttachmentLocationPlugin extends PluginBase<CustomAtt
     return new CustomAttachmentLocationPluginSettings();
   }
 
-  protected override createPluginSettingsTab(): PluginSettingTab | null {
+  protected override createPluginSettingsTab(): null | PluginSettingTab {
     return new CustomAttachmentLocationPluginSettingsTab(this);
+  }
+
+  protected override onLayoutReady(): void {
+    this.register(around(this.app.vault, {
+      getAvailablePath: (): GetAvailablePathFn => this.getAvailablePath.bind(this),
+      getAvailablePathForAttachments: (): ExtendedWrapper & GetAvailablePathForAttachmentsExtendedFn => {
+        const extendedWrapper: ExtendedWrapper = {
+          isExtended: true as const
+        };
+        return Object.assign(this.getAvailablePathForAttachments.bind(this), extendedWrapper);
+      }
+    }));
   }
 
   protected override onloadComplete(): MaybePromise<void> {
@@ -65,36 +78,24 @@ export default class CustomAttachmentLocationPlugin extends PluginBase<CustomAtt
     registerPasteDropEventHandlers(this);
 
     this.addCommand({
+      checkCallback: (checking) => collectAttachmentsCurrentNote(this, checking),
       id: 'collect-attachments-current-note',
-      name: 'Collect attachments in current note',
-      checkCallback: (checking) => collectAttachmentsCurrentNote(this, checking)
+      name: 'Collect attachments in current note'
     });
 
     this.addCommand({
+      checkCallback: (checking) => collectAttachmentsCurrentFolder(this, checking),
       id: 'collect-attachments-current-folder',
-      name: 'Collect attachments in current folder',
-      checkCallback: (checking) => collectAttachmentsCurrentFolder(this, checking)
+      name: 'Collect attachments in current folder'
     });
 
     this.addCommand({
+      callback: () => { collectAttachmentsEntireVault(this); },
       id: 'collect-attachments-entire-vault',
-      name: 'Collect attachments in entire vault',
-      callback: () => { collectAttachmentsEntireVault(this); }
+      name: 'Collect attachments in entire vault'
     });
 
     this.registerEvent(this.app.workspace.on('file-menu', this.handleFileMenu.bind(this)));
-  }
-
-  protected override onLayoutReady(): void {
-    this.register(around(this.app.vault, {
-      getAvailablePathForAttachments: (): GetAvailablePathForAttachmentsExtendedFn & ExtendedWrapper => {
-        const extendedWrapper: ExtendedWrapper = {
-          isExtended: true as const
-        };
-        return Object.assign(this.getAvailablePathForAttachments.bind(this), extendedWrapper);
-      },
-      getAvailablePath: (): GetAvailablePathFn => this.getAvailablePath.bind(this)
-    }));
   }
 
   protected override async parseSettings(data: unknown): Promise<CustomAttachmentLocationPluginSettings> {
@@ -105,7 +106,21 @@ export default class CustomAttachmentLocationPlugin extends PluginBase<CustomAtt
     return settings;
   }
 
-  private async getAvailablePathForAttachments(filename: string, extension: string, file: TFile | null, skipFolderCreation: boolean | undefined): Promise<string> {
+  private getAvailablePath(filename: string, extension: string): string {
+    let suffixNum = 0;
+
+    for (; ;) {
+      const path = makeFileName(suffixNum == 0 ? filename : `${filename}${this.settings.duplicateNameSeparator}${suffixNum.toString()}`, extension);
+
+      if (!getAbstractFileOrNull(this.app, path, true)) {
+        return path;
+      }
+
+      suffixNum++;
+    }
+  }
+
+  private async getAvailablePathForAttachments(filename: string, extension: string, file: null | TFile, skipFolderCreation: boolean | undefined): Promise<string> {
     let attachmentPath: string;
     if (!file || !isNote(file)) {
       attachmentPath = await getAvailablePathForAttachments(this.app, filename, extension, file, true);
@@ -125,20 +140,6 @@ export default class CustomAttachmentLocationPlugin extends PluginBase<CustomAtt
     }
 
     return attachmentPath;
-  }
-
-  private getAvailablePath(filename: string, extension: string): string {
-    let suffixNum = 0;
-
-    for (; ;) {
-      const path = makeFileName(suffixNum == 0 ? filename : `${filename}${this.settings.duplicateNameSeparator}${suffixNum.toString()}`, extension);
-
-      if (!getAbstractFileOrNull(this.app, path, true)) {
-        return path;
-      }
-
-      suffixNum++;
-    }
   }
 
   private handleFileMenu(menu: Menu, file: TAbstractFile): void {

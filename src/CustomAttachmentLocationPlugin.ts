@@ -63,9 +63,12 @@ export default class CustomAttachmentLocationPlugin extends PluginBase<CustomAtt
       }
     }));
 
-    this.register(around(webUtils, {
-      getPathForFile: (next: GetPathForFileFn): GetPathForFileFn => (file: File): string => this.getPathForFile(file, next)
-    }));
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    if (webUtils) {
+      this.register(around(webUtils, {
+        getPathForFile: (next: GetPathForFileFn): GetPathForFileFn => (file: File): string => this.getPathForFile(file, next)
+      }));
+    }
   }
 
   protected override onloadComplete(): MaybePromise<void> {

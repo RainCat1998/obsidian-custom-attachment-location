@@ -185,7 +185,8 @@ abstract class EventWrapper {
         }
         const renamedFile = new File([new Blob([fileArrayBuffer])], makeFileName(filename, extension), filePropertyBag);
         if (!shouldRename) {
-          Object.defineProperty(renamedFile, 'path', { value: entry.file.path || webUtils.getPathForFile(entry.file) });
+          // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+          Object.defineProperty(renamedFile, 'path', { value: entry.file.path || (webUtils?.getPathForFile(entry.file) ?? '') });
         }
         newDataTransfer.items.add(renamedFile);
       }

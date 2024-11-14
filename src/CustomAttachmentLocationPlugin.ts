@@ -5,6 +5,7 @@ import type {
 } from 'obsidian-dev-utils/obsidian/AttachmentPath';
 import type { RenameDeleteHandlerSettings } from 'obsidian-dev-utils/obsidian/RenameDeleteHandler';
 
+import { webUtils } from 'electron';
 import { around } from 'monkey-around';
 import {
   Menu,
@@ -40,6 +41,7 @@ import CustomAttachmentLocationPluginSettingsTab from './CustomAttachmentLocatio
 import { registerPasteDropEventHandlers } from './PasteDropEvent.ts';
 
 type GetAvailablePathFn = Vault['getAvailablePath'];
+type GetPathForFileFn = typeof webUtils['getPathForFile'];
 
 export default class CustomAttachmentLocationPlugin extends PluginBase<CustomAttachmentLocationPluginSettings> {
   protected override createDefaultPluginSettings(): CustomAttachmentLocationPluginSettings {
@@ -59,6 +61,10 @@ export default class CustomAttachmentLocationPlugin extends PluginBase<CustomAtt
         };
         return Object.assign(this.getAvailablePathForAttachments.bind(this), extendedWrapper);
       }
+    }));
+
+    this.register(around(webUtils, {
+      getPathForFile: (next: GetPathForFileFn): GetPathForFileFn => (file: File): string => this.getPathForFile(file, next)
     }));
   }
 
@@ -140,6 +146,10 @@ export default class CustomAttachmentLocationPlugin extends PluginBase<CustomAtt
     }
 
     return attachmentPath;
+  }
+
+  private getPathForFile(file: File, next: GetPathForFileFn): string {
+    return file.path || next(file);
   }
 
   private handleFileMenu(menu: Menu, file: TAbstractFile): void {

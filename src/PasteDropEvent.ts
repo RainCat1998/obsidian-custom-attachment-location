@@ -1,3 +1,4 @@
+import { webUtils } from 'electron';
 import { convertAsyncToSync } from 'obsidian-dev-utils/Async';
 import {
   blobToArrayBuffer,
@@ -184,7 +185,7 @@ abstract class EventWrapper {
         }
         const renamedFile = new File([new Blob([fileArrayBuffer])], makeFileName(filename, extension), filePropertyBag);
         if (!shouldRename) {
-          Object.defineProperty(renamedFile, 'path', { value: entry.file.path });
+          Object.defineProperty(renamedFile, 'path', { value: entry.file.path || webUtils.getPathForFile(entry.file) });
         }
         newDataTransfer.items.add(renamedFile);
       }

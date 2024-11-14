@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 4.28.0
+
+- Fix passing path in new Electron
+
 ## 4.27.6
 
 - Update libs

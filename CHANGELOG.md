@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 4.28.1
+
+- Check for missing webUtils (Electron < 29)
+
 ## 4.28.0
 
 - Fix passing path in new Electron

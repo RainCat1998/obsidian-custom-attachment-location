@@ -1,6 +1,6 @@
 import { loadPluginSettings } from 'obsidian-dev-utils/obsidian/Plugin/PluginSettings';
 
-export default class CustomAttachmentLocationPluginSettings {
+export class CustomAttachmentLocationPluginSettings {
   public attachmentFolderPath = './assets/${filename}';
   public autoRenameFiles = false;
   public autoRenameFolder = true;

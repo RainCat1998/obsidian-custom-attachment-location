@@ -47,7 +47,7 @@ import {
   makeFileName
 } from 'obsidian-dev-utils/Path';
 
-import type CustomAttachmentLocationPlugin from './CustomAttachmentLocationPlugin.ts';
+import type { CustomAttachmentLocationPlugin } from './CustomAttachmentLocationPlugin.ts';
 
 import {
   getAttachmentFolderFullPathForPath,

@@ -6,7 +6,7 @@ import { throwExpression } from 'obsidian-dev-utils/Error';
 import { prompt } from 'obsidian-dev-utils/obsidian/Modal/Prompt';
 import { escapeRegExp } from 'obsidian-dev-utils/RegExp';
 
-import type CustomAttachmentLocationPlugin from './CustomAttachmentLocationPlugin.ts';
+import type { CustomAttachmentLocationPlugin } from './CustomAttachmentLocationPlugin.ts';
 import type { Substitutions } from './Substitutions.ts';
 
 import { validateFilename } from './PathValidator.ts';

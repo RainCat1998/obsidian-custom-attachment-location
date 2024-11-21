@@ -36,14 +36,14 @@ import {
   collectAttachmentsInFolder
 } from './AttachmentCollector.ts';
 import { getAttachmentFolderFullPathForPath } from './AttachmentPath.ts';
-import CustomAttachmentLocationPluginSettings from './CustomAttachmentLocationPluginSettings.ts';
-import CustomAttachmentLocationPluginSettingsTab from './CustomAttachmentLocationPluginSettingsTab.ts';
+import { CustomAttachmentLocationPluginSettings } from './CustomAttachmentLocationPluginSettings.ts';
+import { CustomAttachmentLocationPluginSettingsTab } from './CustomAttachmentLocationPluginSettingsTab.ts';
 import { registerPasteDropEventHandlers } from './PasteDropEvent.ts';
 
 type GetAvailablePathFn = Vault['getAvailablePath'];
 type GetPathForFileFn = typeof webUtils['getPathForFile'];
 
-export default class CustomAttachmentLocationPlugin extends PluginBase<CustomAttachmentLocationPluginSettings> {
+export class CustomAttachmentLocationPlugin extends PluginBase<CustomAttachmentLocationPluginSettings> {
   protected override createDefaultPluginSettings(): CustomAttachmentLocationPluginSettings {
     return new CustomAttachmentLocationPluginSettings();
   }

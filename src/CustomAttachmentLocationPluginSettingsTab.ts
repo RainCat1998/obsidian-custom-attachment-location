@@ -6,14 +6,14 @@ import { appendCodeBlock } from 'obsidian-dev-utils/DocumentFragment';
 import { PluginSettingsTabBase } from 'obsidian-dev-utils/obsidian/Plugin/PluginSettingsTabBase';
 import { extend } from 'obsidian-dev-utils/obsidian/Plugin/ValueComponent';
 
-import type CustomAttachmentLocationPlugin from './CustomAttachmentLocationPlugin.ts';
+import type { CustomAttachmentLocationPlugin } from './CustomAttachmentLocationPlugin.ts';
 
 import {
   validateFilename,
   validatePath
 } from './PathValidator.ts';
 
-export default class CustomAttachmentLocationPluginSettingsTab extends PluginSettingsTabBase<CustomAttachmentLocationPlugin> {
+export class CustomAttachmentLocationPluginSettingsTab extends PluginSettingsTabBase<CustomAttachmentLocationPlugin> {
   public override display(): void {
     this.containerEl.empty();
 

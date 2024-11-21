@@ -16,7 +16,6 @@ import {
 import { appendCodeBlock } from 'obsidian-dev-utils/DocumentFragment';
 import { throwExpression } from 'obsidian-dev-utils/Error';
 import { toJson } from 'obsidian-dev-utils/Object';
-import { chain } from 'obsidian-dev-utils/obsidian/ChainedPromise';
 import { applyFileChanges } from 'obsidian-dev-utils/obsidian/FileChange';
 import {
   isCanvasFile,
@@ -32,6 +31,7 @@ import {
   getCacheSafe
 } from 'obsidian-dev-utils/obsidian/MetadataCache';
 import { confirm } from 'obsidian-dev-utils/obsidian/Modal/Confirm';
+import { addToQueue } from 'obsidian-dev-utils/obsidian/Queue';
 import { referenceToFileChange } from 'obsidian-dev-utils/obsidian/Reference';
 import {
   copySafe,
@@ -58,36 +58,6 @@ import { createSubstitutionsFromPath } from './Substitutions.ts';
 interface AttachmentMoveResult {
   newAttachmentPath: string;
   oldAttachmentPath: string;
-}
-
-export function collectAttachmentsCurrentNote(plugin: CustomAttachmentLocationPlugin, checking: boolean): boolean {
-  const note = plugin.app.workspace.getActiveFile();
-  if (!note || !isNote(note)) {
-    return false;
-  }
-
-  if (!checking) {
-    chain(plugin.app, () => collectAttachments(plugin, note));
-  }
-
-  return true;
-}
-
-export function collectAttachmentsCurrentFolder(plugin: CustomAttachmentLocationPlugin, checking: boolean): boolean {
-  const note = plugin.app.workspace.getActiveFile();
-  if (!isNote(note)) {
-    return false;
-  }
-
-  if (!checking) {
-    chain(plugin.app, () => collectAttachmentsInFolder(plugin, note?.parent ?? throwExpression(new Error('Parent folder not found'))));
-  }
-
-  return true;
-}
-
-export function collectAttachmentsEntireVault(plugin: CustomAttachmentLocationPlugin): void {
-  chain(plugin.app, () => collectAttachmentsInFolder(plugin, plugin.app.vault.getRoot()));
 }
 
 export async function collectAttachments(plugin: CustomAttachmentLocationPlugin, note: TFile, oldPath?: string, attachmentFilter?: (path: string) => boolean): Promise<void> {
@@ -166,45 +136,34 @@ export async function collectAttachments(plugin: CustomAttachmentLocationPlugin,
   notice.hide();
 }
 
-async function prepareAttachmentToMove(plugin: CustomAttachmentLocationPlugin, link: Reference, newNotePath: string, oldNotePath: string): Promise<AttachmentMoveResult | null> {
-  const app = plugin.app;
-
-  const oldAttachmentFile = extractLinkFile(app, link, oldNotePath);
-  if (!oldAttachmentFile) {
-    return null;
+export function collectAttachmentsCurrentFolder(plugin: CustomAttachmentLocationPlugin, checking: boolean): boolean {
+  const note = plugin.app.workspace.getActiveFile();
+  if (!isNote(note)) {
+    return false;
   }
 
-  if (isNote(oldAttachmentFile)) {
-    return null;
+  if (!checking) {
+    addToQueue(plugin.app, () => collectAttachmentsInFolder(plugin, note?.parent ?? throwExpression(new Error('Parent folder not found'))));
   }
 
-  const oldAttachmentPath = oldAttachmentFile.path;
-  const oldAttachmentName = oldAttachmentFile.name;
+  return true;
+}
 
-  const oldNoteBaseName = basename(oldNotePath, extname(oldNotePath));
-  const newNoteBaseName = basename(newNotePath, extname(newNotePath));
-
-  let newAttachmentName: string;
-
-  if (plugin.settingsCopy.renameCollectedFiles) {
-    newAttachmentName = makeFileName(await getPastedFileName(plugin, createSubstitutionsFromPath(newNotePath, oldAttachmentFile.basename)), oldAttachmentFile.extension);
-  } else if (plugin.settingsCopy.autoRenameFiles) {
-    newAttachmentName = oldAttachmentName.replaceAll(oldNoteBaseName, newNoteBaseName);
-  } else {
-    newAttachmentName = oldAttachmentName;
+export function collectAttachmentsCurrentNote(plugin: CustomAttachmentLocationPlugin, checking: boolean): boolean {
+  const note = plugin.app.workspace.getActiveFile();
+  if (!note || !isNote(note)) {
+    return false;
   }
 
-  const newAttachmentFolderPath = await getAttachmentFolderFullPathForPath(plugin, newNotePath);
-  const newAttachmentPath = join(newAttachmentFolderPath, newAttachmentName);
-
-  if (oldAttachmentPath === newAttachmentPath) {
-    return null;
+  if (!checking) {
+    addToQueue(plugin.app, () => collectAttachments(plugin, note));
   }
 
-  return {
-    newAttachmentPath,
-    oldAttachmentPath
-  };
+  return true;
+}
+
+export function collectAttachmentsEntireVault(plugin: CustomAttachmentLocationPlugin): void {
+  addToQueue(plugin.app, () => collectAttachmentsInFolder(plugin, plugin.app.vault.getRoot()));
 }
 
 export async function collectAttachmentsInFolder(plugin: CustomAttachmentLocationPlugin, folder: TFolder): Promise<void> {
@@ -258,4 +217,45 @@ async function getCanvasLinks(app: App, file: TFile): Promise<ReferenceCache[]> 
       start: { col: 0, line: 0, loc: 0, offset: 0 }
     }
   }));
+}
+
+async function prepareAttachmentToMove(plugin: CustomAttachmentLocationPlugin, link: Reference, newNotePath: string, oldNotePath: string): Promise<AttachmentMoveResult | null> {
+  const app = plugin.app;
+
+  const oldAttachmentFile = extractLinkFile(app, link, oldNotePath);
+  if (!oldAttachmentFile) {
+    return null;
+  }
+
+  if (isNote(oldAttachmentFile)) {
+    return null;
+  }
+
+  const oldAttachmentPath = oldAttachmentFile.path;
+  const oldAttachmentName = oldAttachmentFile.name;
+
+  const oldNoteBaseName = basename(oldNotePath, extname(oldNotePath));
+  const newNoteBaseName = basename(newNotePath, extname(newNotePath));
+
+  let newAttachmentName: string;
+
+  if (plugin.settingsCopy.renameCollectedFiles) {
+    newAttachmentName = makeFileName(await getPastedFileName(plugin, createSubstitutionsFromPath(newNotePath, oldAttachmentFile.basename)), oldAttachmentFile.extension);
+  } else if (plugin.settingsCopy.autoRenameFiles) {
+    newAttachmentName = oldAttachmentName.replaceAll(oldNoteBaseName, newNoteBaseName);
+  } else {
+    newAttachmentName = oldAttachmentName;
+  }
+
+  const newAttachmentFolderPath = await getAttachmentFolderFullPathForPath(plugin, newNotePath);
+  const newAttachmentPath = join(newAttachmentFolderPath, newAttachmentName);
+
+  if (oldAttachmentPath === newAttachmentPath) {
+    return null;
+  }
+
+  return {
+    newAttachmentPath,
+    oldAttachmentPath
+  };
 }

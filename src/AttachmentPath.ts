@@ -12,26 +12,46 @@ import type { Substitutions } from './Substitutions.ts';
 import { validateFilename } from './PathValidator.ts';
 import { createSubstitutionsFromPath } from './Substitutions.ts';
 
-/**
- * example:
- *   /dir/${date:YYYY}/${date:MM}/${filename} -> /^\/dir\/\d{4}\/\d{2}\/targetFileName$/
- * @param template raw path contains meta vars
- * @param targetFileName
- * @returns interpolate vars begin with ${date:**} (moment.js format) and ${filename} to regex
- */
-export function interpolateToDigitRegex(template: string, substitutions: Substitutions): RegExp {
-  const dateRegExp = /\$\{date:(.*?)\}/g;
-  // match ${date:date_format} pattern
-  let regExpString = template.replaceAll(dateRegExp, (_, p1: string) => {
-    // replace ${date} with \d{x} regex
-    return `\\d{${p1.length.toString()}}`;
-  });
+export async function getAttachmentFolderFullPathForPath(plugin: CustomAttachmentLocationPlugin, path: string): Promise<string> {
+  return await getAttachmentFolderPath(plugin, createSubstitutionsFromPath(path));
+}
 
-  for (const [key, value] of Object.entries(substitutions) as [string, string][]) {
-    regExpString = regExpString.replaceAll(`\${${key}}`, escapeRegExp(value));
+export async function getAttachmentFolderPath(plugin: CustomAttachmentLocationPlugin, substitutions: Substitutions): Promise<string> {
+  return await getEarliestAttachmentFolder(plugin, plugin.settingsCopy.attachmentFolderPath, substitutions);
+}
+
+export async function getEarliestAttachmentFolder(plugin: CustomAttachmentLocationPlugin, attachmentFolderTemplate: string, substitutions: Substitutions): Promise<string> {
+  const app = plugin.app;
+  const targetRegex = interpolateToDigitRegex(attachmentFolderTemplate, substitutions);
+  const folders = app.vault.getAllLoadedFiles()
+    .filter((f: TAbstractFile) => f instanceof TFolder)
+    .filter((f: TAbstractFile) => targetRegex.test(f.path));
+
+  interface FolderStat {
+    ctime: number;
+    path: string;
   }
 
-  return new RegExp(`^${regExpString}$`);
+  const folderStats: FolderStat[] = [];
+
+  for (const folder of folders) {
+    const stat = await app.vault.adapter.stat(folder.path);
+    folderStats.push({
+      ctime: stat?.ctime ?? 0,
+      path: folder.path
+    });
+  }
+
+  if (folderStats.length > 0) {
+    // create time ascending
+    return folderStats.sort((a, b) => a.ctime - b.ctime).map((f) => f.path)[0] ?? throwExpression(new Error('No folder stat'));
+  } else {
+    return interpolateDateToString(plugin, attachmentFolderTemplate, substitutions);
+  }
+}
+
+export async function getPastedFileName(plugin: CustomAttachmentLocationPlugin, substitutions: Substitutions): Promise<string> {
+  return await interpolateDateToString(plugin, plugin.settingsCopy.pastedFileName, substitutions);
 }
 
 /**
@@ -73,46 +93,26 @@ export async function interpolateDateToString(plugin: CustomAttachmentLocationPl
   return newPath;
 }
 
-export async function getEarliestAttachmentFolder(plugin: CustomAttachmentLocationPlugin, attachmentFolderTemplate: string, substitutions: Substitutions): Promise<string> {
-  const app = plugin.app;
-  const targetRegex = interpolateToDigitRegex(attachmentFolderTemplate, substitutions);
-  const folders = app.vault.getAllLoadedFiles()
-    .filter((f: TAbstractFile) => f instanceof TFolder)
-    .filter((f: TAbstractFile) => targetRegex.test(f.path));
+/**
+ * example:
+ *   /dir/${date:YYYY}/${date:MM}/${filename} -> /^\/dir\/\d{4}\/\d{2}\/targetFileName$/
+ * @param template raw path contains meta vars
+ * @param targetFileName
+ * @returns interpolate vars begin with ${date:**} (moment.js format) and ${filename} to regex
+ */
+export function interpolateToDigitRegex(template: string, substitutions: Substitutions): RegExp {
+  const dateRegExp = /\$\{date:(.*?)\}/g;
+  // match ${date:date_format} pattern
+  let regExpString = template.replaceAll(dateRegExp, (_, p1: string) => {
+    // replace ${date} with \d{x} regex
+    return `\\d{${p1.length.toString()}}`;
+  });
 
-  interface FolderStat {
-    ctime: number;
-    path: string;
+  for (const [key, value] of Object.entries(substitutions) as [string, string][]) {
+    regExpString = regExpString.replaceAll(`\${${key}}`, escapeRegExp(value));
   }
 
-  const folderStats: FolderStat[] = [];
-
-  for (const folder of folders) {
-    const stat = await app.vault.adapter.stat(folder.path);
-    folderStats.push({
-      ctime: stat?.ctime ?? 0,
-      path: folder.path
-    });
-  }
-
-  if (folderStats.length > 0) {
-    // create time ascending
-    return folderStats.sort((a, b) => a.ctime - b.ctime).map((f) => f.path)[0] ?? throwExpression(new Error('No folder stat'));
-  } else {
-    return interpolateDateToString(plugin, attachmentFolderTemplate, substitutions);
-  }
-}
-
-export async function getAttachmentFolderPath(plugin: CustomAttachmentLocationPlugin, substitutions: Substitutions): Promise<string> {
-  return await getEarliestAttachmentFolder(plugin, plugin.settingsCopy.attachmentFolderPath, substitutions);
-}
-
-export async function getAttachmentFolderFullPathForPath(plugin: CustomAttachmentLocationPlugin, path: string): Promise<string> {
-  return await getAttachmentFolderPath(plugin, createSubstitutionsFromPath(path));
-}
-
-export async function getPastedFileName(plugin: CustomAttachmentLocationPlugin, substitutions: Substitutions): Promise<string> {
-  return await interpolateDateToString(plugin, plugin.settingsCopy.pastedFileName, substitutions);
+  return new RegExp(`^${regExpString}$`);
 }
 
 export function replaceWhitespace(plugin: CustomAttachmentLocationPlugin, str: string): string {

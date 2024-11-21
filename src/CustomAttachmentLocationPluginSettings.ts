@@ -35,11 +35,11 @@ export default class CustomAttachmentLocationPluginSettings {
   }
 }
 
-function addDateTimeFormat(str: string, dateTimeFormat: string): string {
-  return str.replaceAll('${date}', `\${date:${dateTimeFormat}}`);
-}
-
 class LegacySettings extends CustomAttachmentLocationPluginSettings {
   public dateTimeFormat = '';
   public pastedImageFileName = '';
+}
+
+function addDateTimeFormat(str: string, dateTimeFormat: string): string {
+  return str.replaceAll('${date}', `\${date:${dateTimeFormat}}`);
 }

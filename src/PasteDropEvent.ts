@@ -20,6 +20,12 @@ import {
 } from './AttachmentPath.ts';
 import { createSubstitutionsFromPath } from './Substitutions.ts';
 
+enum TargetType {
+  Canvas = 'Canvas',
+  Note = 'Note',
+  Unsupported = 'Unsupported'
+}
+
 type HandledEvent = {
   handled?: boolean;
 } & Event;
@@ -30,70 +36,12 @@ interface PastedEntry {
   type: string;
 }
 
-export function registerPasteDropEventHandlers(plugin: CustomAttachmentLocationPlugin): void {
-  const listener = convertAsyncToSync(async (event: ClipboardEvent | DragEvent) => handlePasteAndDrop(plugin, event));
-  registerHandlersForWindow(window);
-  plugin.app.workspace.on('window-open', (_, window) => {
-    registerHandlersForWindow(window);
-  });
-
-  function registerHandlersForWindow(window: Window): void {
-    plugin.registerDomEvent(window.document, 'paste', listener, { capture: true });
-    plugin.registerDomEvent(window.document, 'drop', listener, { capture: true });
-  }
-}
-
-async function handlePasteAndDrop(plugin: CustomAttachmentLocationPlugin, event: ClipboardEvent | DragEvent): Promise<void> {
-  const eventWrapper = event.constructor.name === 'ClipboardEvent' ? new PasteEventWrapper(event as ClipboardEvent, plugin) : new DropEventWrapper(event as DragEvent, plugin);
-  await eventWrapper.handle();
-}
-
-enum TargetType {
-  Canvas = 'Canvas',
-  Note = 'Note',
-  Unsupported = 'Unsupported'
-}
-
 abstract class EventWrapper {
   protected constructor(
     protected readonly event: ClipboardEvent | DragEvent,
     private readonly eventType: string,
     protected readonly plugin: CustomAttachmentLocationPlugin
   ) { }
-
-  protected abstract cloneWithNewDataTransfer(dataTransfer: DataTransfer): ClipboardEvent | DragEvent;
-
-  protected abstract getDataTransfer(): DataTransfer | null;
-  protected abstract shouldConvertImages(): boolean;
-  protected abstract shouldRenameAttachments(file: File): boolean;
-  private getTargetType(): TargetType {
-    if (!(this.event.target instanceof HTMLElement)) {
-      return TargetType.Unsupported;
-    }
-
-    if (this.plugin.app.workspace.activeEditor?.metadataEditor?.contentEl.contains(this.event.target)) {
-      return TargetType.Unsupported;
-    }
-
-    if (this.plugin.app.workspace.activeEditor?.editor?.containerEl.contains(this.event.target)) {
-      return TargetType.Note;
-    }
-
-    if (this.event.target.closest('.canvas-wrapper')) {
-      if (this.event.target.isContentEditable) {
-        return TargetType.Unsupported;
-      }
-      return TargetType.Canvas;
-    }
-
-    const canvasView = this.plugin.app.workspace.getActiveFileView();
-
-    if (this.event.target.matches('body') && canvasView?.getViewType() === 'canvas' && canvasView.containerEl.closest('.mod-active')) {
-      return TargetType.Canvas;
-    }
-
-    return TargetType.Unsupported;
-  }
 
   public async handle(): Promise<void> {
     let handledEvent = this.event as HandledEvent;
@@ -198,38 +146,39 @@ abstract class EventWrapper {
     this.plugin.app.dragManager.draggable = draggable;
     this.event.target.dispatchEvent(handledEvent);
   }
-}
 
-class PasteEventWrapper extends EventWrapper {
-  public constructor(
-    protected override readonly event: ClipboardEvent,
-    plugin: CustomAttachmentLocationPlugin
-  ) {
-    super(event, 'Paste', plugin);
-  }
+  protected abstract cloneWithNewDataTransfer(dataTransfer: DataTransfer): ClipboardEvent | DragEvent;
+  protected abstract getDataTransfer(): DataTransfer | null;
+  protected abstract shouldConvertImages(): boolean;
+  protected abstract shouldRenameAttachments(file: File): boolean;
 
-  protected override cloneWithNewDataTransfer(dataTransfer: DataTransfer): ClipboardEvent {
-    return new ClipboardEvent('paste', {
-      bubbles: this.event.bubbles,
-      cancelable: this.event.cancelable,
-      clipboardData: dataTransfer,
-      composed: this.event.composed
-    });
-  }
-
-  protected override getDataTransfer(): DataTransfer | null {
-    return this.event.clipboardData;
-  }
-
-  protected override shouldConvertImages(): boolean {
-    return this.plugin.settingsCopy.convertImagesToJpeg;
-  }
-
-  protected override shouldRenameAttachments(file: File): boolean {
-    if (this.plugin.settingsCopy.renameOnlyImages && !isImageFile(file)) {
-      return false;
+  private getTargetType(): TargetType {
+    if (!(this.event.target instanceof HTMLElement)) {
+      return TargetType.Unsupported;
     }
-    return file.path === '' || this.plugin.settingsCopy.renamePastedFilesWithKnownNames;
+
+    if (this.plugin.app.workspace.activeEditor?.metadataEditor?.contentEl.contains(this.event.target)) {
+      return TargetType.Unsupported;
+    }
+
+    if (this.plugin.app.workspace.activeEditor?.editor?.containerEl.contains(this.event.target)) {
+      return TargetType.Note;
+    }
+
+    if (this.event.target.closest('.canvas-wrapper')) {
+      if (this.event.target.isContentEditable) {
+        return TargetType.Unsupported;
+      }
+      return TargetType.Canvas;
+    }
+
+    const canvasView = this.plugin.app.workspace.getActiveFileView();
+
+    if (this.event.target.matches('body') && canvasView?.getViewType() === 'canvas' && canvasView.containerEl.closest('.mod-active')) {
+      return TargetType.Canvas;
+    }
+
+    return TargetType.Unsupported;
   }
 }
 
@@ -267,4 +216,55 @@ class DropEventWrapper extends EventWrapper {
 
     return this.plugin.settingsCopy.renameAttachmentsOnDragAndDrop;
   }
+}
+
+class PasteEventWrapper extends EventWrapper {
+  public constructor(
+    protected override readonly event: ClipboardEvent,
+    plugin: CustomAttachmentLocationPlugin
+  ) {
+    super(event, 'Paste', plugin);
+  }
+
+  protected override cloneWithNewDataTransfer(dataTransfer: DataTransfer): ClipboardEvent {
+    return new ClipboardEvent('paste', {
+      bubbles: this.event.bubbles,
+      cancelable: this.event.cancelable,
+      clipboardData: dataTransfer,
+      composed: this.event.composed
+    });
+  }
+
+  protected override getDataTransfer(): DataTransfer | null {
+    return this.event.clipboardData;
+  }
+
+  protected override shouldConvertImages(): boolean {
+    return this.plugin.settingsCopy.convertImagesToJpeg;
+  }
+
+  protected override shouldRenameAttachments(file: File): boolean {
+    if (this.plugin.settingsCopy.renameOnlyImages && !isImageFile(file)) {
+      return false;
+    }
+    return file.path === '' || this.plugin.settingsCopy.renamePastedFilesWithKnownNames;
+  }
+}
+
+export function registerPasteDropEventHandlers(plugin: CustomAttachmentLocationPlugin): void {
+  const listener = convertAsyncToSync(async (event: ClipboardEvent | DragEvent) => handlePasteAndDrop(plugin, event));
+  registerHandlersForWindow(window);
+  plugin.app.workspace.on('window-open', (_, window) => {
+    registerHandlersForWindow(window);
+  });
+
+  function registerHandlersForWindow(window: Window): void {
+    plugin.registerDomEvent(window.document, 'paste', listener, { capture: true });
+    plugin.registerDomEvent(window.document, 'drop', listener, { capture: true });
+  }
+}
+
+async function handlePasteAndDrop(plugin: CustomAttachmentLocationPlugin, event: ClipboardEvent | DragEvent): Promise<void> {
+  const eventWrapper = event.constructor.name === 'ClipboardEvent' ? new PasteEventWrapper(event as ClipboardEvent, plugin) : new DropEventWrapper(event as DragEvent, plugin);
+  await eventWrapper.handle();
 }

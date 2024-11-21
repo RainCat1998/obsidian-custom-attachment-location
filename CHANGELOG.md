@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 4.28.2
+
+- Update libs
+
 ## 4.28.1
 
 - Check for missing webUtils (Electron < 29)

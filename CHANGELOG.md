@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 4.28.4
+
+- Update libs - fixes mobile build
+
 ## 4.28.3
 
 - Update libs

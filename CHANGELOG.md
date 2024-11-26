@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 4.29.1
+
+- Update libs
+
 ## 4.29.0
 
 - Use image-override to be compatible with `Paste Mode` plugin

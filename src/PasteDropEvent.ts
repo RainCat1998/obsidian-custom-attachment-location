@@ -127,7 +127,7 @@ abstract class EventWrapper {
         let filename = shouldRename ? await getPastedFileName(this.plugin, createSubstitutionsFromPath(noteFile.path, originalCopiedFileName)) : originalCopiedFileName;
         filename = replaceWhitespace(this.plugin, filename);
 
-        const filePropertyBag: FilePropertyBag = { type: 'application/octet-stream' };
+        const filePropertyBag: FilePropertyBag = { type: entry.type.replace('image/', 'image-override/') };
         if (!shouldRename) {
           filePropertyBag.lastModified = entry.file.lastModified;
         }

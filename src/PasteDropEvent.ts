@@ -133,8 +133,7 @@ abstract class EventWrapper {
         }
         const renamedFile = new File([new Blob([fileArrayBuffer])], makeFileName(filename, extension), filePropertyBag);
         if (!shouldRename) {
-          // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-          Object.defineProperty(renamedFile, 'path', { value: entry.file.path || (webUtils?.getPathForFile(entry.file) ?? '') });
+          Object.defineProperty(renamedFile, 'path', { value: getFilePath(entry.file) });
         }
         newDataTransfer.items.add(renamedFile);
       }
@@ -247,7 +246,7 @@ class PasteEventWrapper extends EventWrapper {
     if (this.plugin.settingsCopy.renameOnlyImages && !isImageFile(file)) {
       return false;
     }
-    return file.path === '' || this.plugin.settingsCopy.renamePastedFilesWithKnownNames;
+    return getFilePath(file) === '' || this.plugin.settingsCopy.renamePastedFilesWithKnownNames;
   }
 }
 
@@ -267,4 +266,9 @@ export function registerPasteDropEventHandlers(plugin: CustomAttachmentLocationP
 async function handlePasteAndDrop(plugin: CustomAttachmentLocationPlugin, event: ClipboardEvent | DragEvent): Promise<void> {
   const eventWrapper = event.constructor.name === 'ClipboardEvent' ? new PasteEventWrapper(event as ClipboardEvent, plugin) : new DropEventWrapper(event as DragEvent, plugin);
   await eventWrapper.handle();
+}
+
+function getFilePath(file: File): string {
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+  return file.path || (webUtils?.getPathForFile(file) ?? '');
 }

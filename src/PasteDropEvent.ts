@@ -263,12 +263,12 @@ export function registerPasteDropEventHandlers(plugin: CustomAttachmentLocationP
   }
 }
 
-async function handlePasteAndDrop(plugin: CustomAttachmentLocationPlugin, event: ClipboardEvent | DragEvent): Promise<void> {
-  const eventWrapper = event.constructor.name === 'ClipboardEvent' ? new PasteEventWrapper(event as ClipboardEvent, plugin) : new DropEventWrapper(event as DragEvent, plugin);
-  await eventWrapper.handle();
-}
-
 function getFilePath(file: File): string {
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
   return file.path || (webUtils?.getPathForFile(file) ?? '');
+}
+
+async function handlePasteAndDrop(plugin: CustomAttachmentLocationPlugin, event: ClipboardEvent | DragEvent): Promise<void> {
+  const eventWrapper = event.constructor.name === 'ClipboardEvent' ? new PasteEventWrapper(event as ClipboardEvent, plugin) : new DropEventWrapper(event as DragEvent, plugin);
+  await eventWrapper.handle();
 }

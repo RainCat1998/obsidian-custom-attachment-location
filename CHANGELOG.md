@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## 4.30.0
+
+- Remove date selector
+- Refactor templating
+- Update libs
+
 ## 4.29.1
 
 - Update libs

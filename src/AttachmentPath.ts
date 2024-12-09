@@ -1,29 +1,40 @@
-import { replaceAllAsync, trimStart } from 'obsidian-dev-utils/String';
 import moment from 'moment';
+import { normalizePath } from 'obsidian';
 import { prompt } from 'obsidian-dev-utils/obsidian/Modal/Prompt';
-import { escapeRegExp } from 'obsidian-dev-utils/RegExp';
+import { join } from 'obsidian-dev-utils/Path';
+import {
+  replaceAllAsync,
+  trimStart
+} from 'obsidian-dev-utils/String';
 
 import type { CustomAttachmentLocationPlugin } from './CustomAttachmentLocationPlugin.ts';
 import type { Substitutions } from './Substitutions.ts';
 
 import { validateFilename } from './PathValidator.ts';
 import { createSubstitutionsFromPath } from './Substitutions.ts';
-import { join } from 'obsidian-dev-utils/Path';
-import { normalizePath } from 'obsidian';
 
 export async function getAttachmentFolderFullPathForPath(plugin: CustomAttachmentLocationPlugin, path: string): Promise<string> {
   return await getAttachmentFolderPath(plugin, createSubstitutionsFromPath(path));
-}
-
-export async function getAttachmentFolderPath(plugin: CustomAttachmentLocationPlugin, substitutions: Substitutions): Promise<string> {
-  return await resolvePathTemplate(plugin, plugin.settingsCopy.attachmentFolderPath, substitutions);
 }
 
 export async function getPastedFileName(plugin: CustomAttachmentLocationPlugin, substitutions: Substitutions): Promise<string> {
   return await resolvePathTemplate(plugin, plugin.settingsCopy.pastedFileName, substitutions);
 }
 
-export async function resolvePathTemplate(plugin: CustomAttachmentLocationPlugin, template: string, substitutions: Substitutions): Promise<string> {
+export function replaceWhitespace(plugin: CustomAttachmentLocationPlugin, str: string): string {
+  if (plugin.settingsCopy.replaceWhitespace) {
+    str = str.replace(/\s/g, '-');
+    str = str.replace(/-{2,}/g, '-');
+  }
+
+  return str;
+}
+
+async function getAttachmentFolderPath(plugin: CustomAttachmentLocationPlugin, substitutions: Substitutions): Promise<string> {
+  return await resolvePathTemplate(plugin, plugin.settingsCopy.attachmentFolderPath, substitutions);
+}
+
+async function resolvePathTemplate(plugin: CustomAttachmentLocationPlugin, template: string, substitutions: Substitutions): Promise<string> {
   let resolvedPath = await replaceAllAsync(template, /\${(.+?)}/g, async (_: string, key: string) => {
     if (key.startsWith('date:')) {
       const format = trimStart(key, 'date:');
@@ -59,35 +70,4 @@ export async function resolvePathTemplate(plugin: CustomAttachmentLocationPlugin
 
   resolvedPath = normalizePath(resolvedPath);
   return resolvedPath;
-}
-
-/**
- * example:
- *   /dir/${date:YYYY}/${date:MM}/${filename} -> /^\/dir\/\d{4}\/\d{2}\/targetFileName$/
- * @param template raw path contains meta vars
- * @param targetFileName
- * @returns interpolate vars begin with ${date:**} (moment.js format) and ${filename} to regex
- */
-export function interpolateToDigitRegex(template: string, substitutions: Substitutions): RegExp {
-  const dateRegExp = /\$\{date:(.*?)\}/g;
-  // match ${date:date_format} pattern
-  let regExpString = template.replaceAll(dateRegExp, (_, p1: string) => {
-    // replace ${date} with \d{x} regex
-    return `\\d{${p1.length.toString()}}`;
-  });
-
-  for (const [key, value] of Object.entries(substitutions) as [string, string][]) {
-    regExpString = regExpString.replaceAll(`\${${key}}`, escapeRegExp(value));
-  }
-
-  return new RegExp(`^${regExpString}$`);
-}
-
-export function replaceWhitespace(plugin: CustomAttachmentLocationPlugin, str: string): string {
-  if (plugin.settingsCopy.replaceWhitespace) {
-    str = str.replace(/\s/g, '-');
-    str = str.replace(/-{2,}/g, '-');
-  }
-
-  return str;
 }

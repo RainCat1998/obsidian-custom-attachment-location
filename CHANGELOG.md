@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 4.30.2
+
+- Update libs
+
 ## 4.30.1
 
 - Refactor loop

@@ -25,6 +25,7 @@ import {
   extractLinkFile,
   updateLink
 } from 'obsidian-dev-utils/obsidian/Link';
+import { loop } from 'obsidian-dev-utils/obsidian/Loop';
 import {
   getAllLinks,
   getBacklinksForFileSafe,
@@ -193,17 +194,15 @@ export async function collectAttachmentsInFolder(plugin: CustomAttachmentLocatio
 
   files.sort((a, b) => a.path.localeCompare(b.path));
 
-  const notice = new Notice('', 0);
-  let i = 0;
-
-  for (const file of files) {
-    i++;
-    const message = `Collecting attachments # ${i.toString()} / ${files.length.toString()} - ${file.path}`;
-    notice.setMessage(message);
-    await collectAttachments(plugin, file);
-  }
-
-  notice.hide();
+  await loop({
+    abortSignal: plugin.abortSignal,
+    buildNoticeMessage: (file, iterationStr) => `Collecting attachments ${iterationStr} - ${file.path}`,
+    continueOnError: true,
+    items: files,
+    processItem: async (file) => {
+      await collectAttachments(plugin, file);
+    }
+  });
 }
 
 async function getCanvasLinks(app: App, file: TFile): Promise<ReferenceCache[]> {

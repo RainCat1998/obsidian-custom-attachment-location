@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 4.30.1
+
+- Refactor loop
+
 ## 4.30.0
 
 - Remove date selector

@@ -105,9 +105,9 @@ export async function collectAttachments(plugin: CustomAttachmentLocationPlugin,
         const newContent = updateLink({
           app: app,
           link,
-          oldTargetPathOrFile: attachmentMoveResult.oldAttachmentPath,
+          newSourcePathOrFile: note,
           newTargetPathOrFile: attachmentMoveResult.newAttachmentPath,
-          newSourcePathOrFile: note
+          oldTargetPathOrFile: attachmentMoveResult.oldAttachmentPath
         });
 
         changes.push(referenceToFileChange(link, newContent));
@@ -197,11 +197,11 @@ export async function collectAttachmentsInFolder(plugin: CustomAttachmentLocatio
   await loop({
     abortSignal: plugin.abortSignal,
     buildNoticeMessage: (file, iterationStr) => `Collecting attachments ${iterationStr} - ${file.path}`,
-    shouldContinueOnError: true,
     items: files,
     processItem: async (file) => {
       await collectAttachments(plugin, file);
-    }
+    },
+    shouldContinueOnError: true
   });
 }
 

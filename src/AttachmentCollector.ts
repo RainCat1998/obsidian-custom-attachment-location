@@ -36,10 +36,10 @@ import { addToQueue } from 'obsidian-dev-utils/obsidian/Queue';
 import { referenceToFileChange } from 'obsidian-dev-utils/obsidian/Reference';
 import {
   copySafe,
-  deleteEmptyFolderHierarchy,
   process,
   renameSafe
 } from 'obsidian-dev-utils/obsidian/Vault';
+import { deleteEmptyFolderHierarchy } from 'obsidian-dev-utils/obsidian/VaultEx';
 import {
   basename,
   dirname,
@@ -69,7 +69,7 @@ export async function collectAttachments(plugin: CustomAttachmentLocationPlugin,
   const notice = new Notice(`Collecting attachments for ${note.path}`);
 
   const attachmentsMap = new Map<string, string>();
-  const isCanvas = isCanvasFile(note);
+  const isCanvas = isCanvasFile(app, note);
 
   await applyFileChanges(app, note, async () => {
     const cache = await getCacheSafe(app, note);
@@ -139,7 +139,7 @@ export async function collectAttachments(plugin: CustomAttachmentLocationPlugin,
 
 export function collectAttachmentsCurrentFolder(plugin: CustomAttachmentLocationPlugin, checking: boolean): boolean {
   const note = plugin.app.workspace.getActiveFile();
-  if (!isNote(note)) {
+  if (!isNote(plugin.app, note)) {
     return false;
   }
 
@@ -152,7 +152,7 @@ export function collectAttachmentsCurrentFolder(plugin: CustomAttachmentLocation
 
 export function collectAttachmentsCurrentNote(plugin: CustomAttachmentLocationPlugin, checking: boolean): boolean {
   const note = plugin.app.workspace.getActiveFile();
-  if (!note || !isNote(note)) {
+  if (!note || !isNote(plugin.app, note)) {
     return false;
   }
 
@@ -187,7 +187,7 @@ export async function collectAttachmentsInFolder(plugin: CustomAttachmentLocatio
   console.debug(`Collect attachments in folder: ${folder.path}`);
   const files: TFile[] = [];
   Vault.recurseChildren(folder, (child) => {
-    if (isNote(child)) {
+    if (isNote(plugin.app, child)) {
       files.push(child as TFile);
     }
   });
@@ -226,7 +226,7 @@ async function prepareAttachmentToMove(plugin: CustomAttachmentLocationPlugin, l
     return null;
   }
 
-  if (isNote(oldAttachmentFile)) {
+  if (isNote(plugin.app, oldAttachmentFile)) {
     return null;
   }
 

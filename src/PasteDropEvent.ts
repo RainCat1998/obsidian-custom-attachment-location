@@ -62,7 +62,7 @@ abstract class EventWrapper {
 
     const noteFile = this.plugin.app.workspace.getActiveFile();
 
-    if (!noteFile || !isNote(noteFile)) {
+    if (!noteFile || !isNote(this.plugin.app, noteFile)) {
       return;
     }
 

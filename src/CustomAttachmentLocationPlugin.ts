@@ -44,8 +44,8 @@ type GetAvailablePathFn = Vault['getAvailablePath'];
 type GetPathForFileFn = typeof webUtils['getPathForFile'];
 
 export class CustomAttachmentLocationPlugin extends PluginBase<CustomAttachmentLocationPluginSettings> {
-  protected override createDefaultPluginSettings(): CustomAttachmentLocationPluginSettings {
-    return new CustomAttachmentLocationPluginSettings();
+  protected override createPluginSettings(data: unknown): CustomAttachmentLocationPluginSettings {
+    return new CustomAttachmentLocationPluginSettings(data);
   }
 
   protected override createPluginSettingsTab(): null | PluginSettingTab {
@@ -107,14 +107,6 @@ export class CustomAttachmentLocationPlugin extends PluginBase<CustomAttachmentL
     this.registerEvent(this.app.workspace.on('file-menu', this.handleFileMenu.bind(this)));
   }
 
-  protected override async parseSettings(data: unknown): Promise<CustomAttachmentLocationPluginSettings> {
-    const { settings, shouldSave } = CustomAttachmentLocationPluginSettings.load(data);
-    if (shouldSave) {
-      await this.saveSettings(settings);
-    }
-    return settings;
-  }
-
   private getAvailablePath(filename: string, extension: string): string {
     let suffixNum = 0;
 
@@ -131,7 +123,7 @@ export class CustomAttachmentLocationPlugin extends PluginBase<CustomAttachmentL
 
   private async getAvailablePathForAttachments(filename: string, extension: string, file: null | TFile, skipFolderCreation: boolean | undefined): Promise<string> {
     let attachmentPath: string;
-    if (!file || !isNote(file)) {
+    if (!file || !isNote(this.app, file)) {
       attachmentPath = await getAvailablePathForAttachments(this.app, filename, extension, file, true);
     } else {
       const attachmentFolderFullPath = await getAttachmentFolderFullPathForPath(this, file.path);

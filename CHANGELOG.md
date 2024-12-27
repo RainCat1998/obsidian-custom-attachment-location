@@ -1,23 +1,23 @@
 # CHANGELOG
 
+## 4.30.6
+
+- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/11.0.0
+
 ## 4.30.5
 
-- Update libs
 - https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/9.0.2
 
 ## 4.30.4
 
-- Update libs
 - https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/9.0.0
 
 ## 4.30.3
 
-- Update libs
 - https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/6.0.0
 
 ## 4.30.2
 
-- Update libs
 - https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/5.3.1
 
 ## 4.30.1
@@ -29,12 +29,10 @@
 
 - Remove date selector
 - Refactor templating
-- Update libs
 - https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/4.19.0
 
 ## 4.29.1
 
-- Update libs
 - https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/4.14.0
 
 ## 4.29.0
@@ -45,7 +43,6 @@
 
 ## 4.28.5
 
-- Update libs
 
 ## 4.28.4
 
@@ -54,13 +51,11 @@
 
 ## 4.28.3
 
-- Update libs
 - Avoid default exports
 - https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/4.13.0
 
 ## 4.28.2
 
-- Update libs
 - https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/4.11.0
 
 ## 4.28.1
@@ -74,26 +69,22 @@
 
 ## 4.27.6
 
-- Update libs
+- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/4.8.2
 
 ## 4.27.5
 
-- Update lib
 - https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/3.44.0
 
 ## 4.27.4
 
-- Update lib
 - https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/3.43.2
 
 ## 4.27.3
 
-- Update lib
 - https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/3.43.1
 
 ## 4.27.2
 
-- Update libs
 - https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/3.42.1
 
 ## 4.27.1
@@ -122,17 +113,14 @@
 
 ## 4.23.2
 
-- Update lib
 - https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/3.35.0
 
 ## 4.23.1
 
-- Update lib
 - https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/3.34.0
 
 ## 4.23.0
 
-- Update lib
 - Refactor
 - https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/3.33.0
 

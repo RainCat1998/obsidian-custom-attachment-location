@@ -3,37 +3,45 @@
 ## 4.30.5
 
 - Update libs
+- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/9.0.2
 
 ## 4.30.4
 
 - Update libs
+- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/9.0.0
 
 ## 4.30.3
 
 - Update libs
+- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/6.0.0
 
 ## 4.30.2
 
 - Update libs
+- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/5.3.1
 
 ## 4.30.1
 
 - Refactor loop
+- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/5.3.0
 
 ## 4.30.0
 
 - Remove date selector
 - Refactor templating
 - Update libs
+- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/4.19.0
 
 ## 4.29.1
 
 - Update libs
+- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/4.14.0
 
 ## 4.29.0
 
 - Use image-override to be compatible with `Paste Mode` plugin
 - Fix check for pasted image
+- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/4.13.3
 
 ## 4.28.5
 
@@ -42,19 +50,23 @@
 ## 4.28.4
 
 - Update libs - fixes mobile build
+- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/4.13.1
 
 ## 4.28.3
 
 - Update libs
 - Avoid default exports
+- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/4.13.0
 
 ## 4.28.2
 
 - Update libs
+- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/4.11.0
 
 ## 4.28.1
 
 - Check for missing webUtils (Electron < 29)
+- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/4.8.2
 
 ## 4.28.0
 
@@ -67,26 +79,32 @@
 ## 4.27.5
 
 - Update lib
+- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/3.44.0
 
 ## 4.27.4
 
 - Update lib
+- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/3.43.2
 
 ## 4.27.3
 
 - Update lib
+- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/3.43.1
 
 ## 4.27.2
 
 - Update libs
+- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/3.42.1
 
 ## 4.27.1
 
 - Refactor
+- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/3.42.0
 
 ## 4.27.0
 
 - Allow paste in link editing textbox
+- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/3.41.0
 
 ## 4.26.0
 
@@ -95,27 +113,33 @@
 ## 4.25.0
 
 - Add support for frontmatter links
+- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/3.40.0
 
 ## 4.24.0
 
 - Support multi-window
+- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/3.39.0
 
 ## 4.23.2
 
 - Update lib
+- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/3.35.0
 
 ## 4.23.1
 
 - Update lib
+- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/3.34.0
 
 ## 4.23.0
 
 - Update lib
 - Refactor
+- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/3.33.0
 
 ## 4.22.1
 
 - Refactor
+- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/3.28.2
 
 ## 4.22.0
 
@@ -123,43 +147,53 @@
 - Fix relative path resolution
 - Handle duplicates
 - Fix stat for mobile
+- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/3.28.1
 
 ## 4.21.0
 
 - Fix race condition
+- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/3.26.1
 
 ## 4.20.0
 
 - Init all settings
+- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/3.20.0
 
 ## 4.19.0
 
 - Don't remove folders with hidden files
+- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/3.16.0
 
 ## 4.18.0
 
 - Add `Delete orphan attachments` setting
+- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/3.14.1
 
 ## 4.17.0
 
 - Remove to trash
+- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/3.13.0
 
 ## 4.16.0
 
 - Preserve angle brackets and leading dot
+- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/3.12.0
 
 ## 4.15.0
 
 - Reuse `RenameDeleteHandler`
 - Add optional `skipFolderCreation` to `getAvailablePathForAttachments`
+- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/3.10.0
 
 ## 4.14.0
 
 - Proper integration with Better Markdown Links
+- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/3.7.0
 
 ## 4.13.0
 
 - Handle special renames
+- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/3.4.1
 
 ## 4.12.2
 
@@ -185,28 +219,34 @@
 - Fix mobile loading
 - Fix backlinks race condition
 - Process attachments before note
+- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/3.2.0
 
 ## 4.9.4
 
 - Handle removed parent folder case
 - Rename attachments before changing links
+- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/2.26.2
 
 ## 4.9.3
 
 - Fix backlink check
 - Check for race conditions
+- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/2.25.2
 
 ## 4.9.2
 
 - Fix options merging
+- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/2.23.3
 
 ## 4.9.1
 
 - Fix related attachments notice
+- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/2.23.2
 
 ## 4.9.0
 
 - Don't create fake file.
+- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/2.23.1
 
 ## 4.8.0
 

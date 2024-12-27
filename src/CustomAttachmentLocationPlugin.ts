@@ -75,11 +75,11 @@ export class CustomAttachmentLocationPlugin extends PluginBase<CustomAttachmentL
     registerRenameDeleteHandlers(this, () => {
       const settings: Partial<RenameDeleteHandlerSettings> = {
         shouldDeleteEmptyFolders: !this.settings.keepEmptyAttachmentFolders,
-        shouldDeleteOrphanAttachments: this.settings.deleteOrphanAttachments,
+        shouldHandleDeletions: this.settings.deleteOrphanAttachments,
+        shouldHandleRenames: true,
         shouldRenameAttachmentFiles: this.settings.autoRenameFiles,
         shouldRenameAttachmentFolder: this.settings.autoRenameFolder,
-        shouldUpdateFilenameAliases: true,
-        shouldUpdateLinks: true
+        shouldUpdateFilenameAliases: true
       };
       return settings;
     });

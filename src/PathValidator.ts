@@ -1,8 +1,10 @@
+import { SUBSTITUTION_VARIABLE_REG_EXP } from "./Substitutions.ts";
+
 export const INVALID_FILENAME_PATH_CHARS_REG_EXP = /[\\/:*?"<>|]/;
 const ONLY_DOTS_REG_EXP = /^\.+$/;
 
 export function validateFilename(filename: string): string {
-  filename = removeDateFormatting(filename);
+  filename = removeVariableFormatting(filename);
 
   if (!filename) {
     return 'File name is empty';
@@ -20,7 +22,7 @@ export function validateFilename(filename: string): string {
 }
 
 export function validatePath(path: string): string {
-  path = removeDateFormatting(path);
+  path = removeVariableFormatting(path);
 
   if (path.startsWith('/')) {
     return 'Path can\'t start with /';
@@ -45,6 +47,6 @@ export function validatePath(path: string): string {
   return '';
 }
 
-function removeDateFormatting(str: string): string {
-  return str.replaceAll(/\$\{date:.+?\}/g, '${date}');
+function removeVariableFormatting(str: string): string {
+  return str.replace(SUBSTITUTION_VARIABLE_REG_EXP, (_, key) => `\${${key}}`);
 }

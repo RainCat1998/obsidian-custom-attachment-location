@@ -1,4 +1,5 @@
 import { webUtils } from 'electron';
+import { Platform } from 'obsidian';
 import { convertAsyncToSync } from 'obsidian-dev-utils/Async';
 import {
   blobToArrayBuffer,
@@ -55,6 +56,10 @@ abstract class EventWrapper {
     const targetType = this.getTargetType();
 
     if (targetType === TargetType.Unsupported) {
+      return;
+    }
+
+    if (this.shouldInsertRawLink()) {
       return;
     }
 
@@ -149,6 +154,11 @@ abstract class EventWrapper {
   protected abstract cloneWithNewDataTransfer(dataTransfer: DataTransfer): ClipboardEvent | DragEvent;
   protected abstract getDataTransfer(): DataTransfer | null;
   protected abstract shouldConvertImages(): boolean;
+
+  protected shouldInsertRawLink(): boolean {
+    return false;
+  }
+
   protected abstract shouldRenameAttachments(file: File): boolean;
 
   private getTargetType(): TargetType {
@@ -206,6 +216,10 @@ class DropEventWrapper extends EventWrapper {
 
   protected override shouldConvertImages(): boolean {
     return this.plugin.settingsCopy.convertImagesToJpeg && this.plugin.settingsCopy.convertImagesOnDragAndDrop;
+  }
+
+  protected override shouldInsertRawLink(): boolean {
+    return Platform.isMacOS ? this.event.altKey : this.event.ctrlKey;
   }
 
   protected override shouldRenameAttachments(file: File): boolean {

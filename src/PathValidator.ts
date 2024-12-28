@@ -34,10 +34,6 @@ export function validatePath(path: string): string {
 
   const parts = path.split('/');
   for (const part of parts) {
-    if (part === '.') {
-      continue;
-    }
-
     const partValidationError = validateFilename(part);
 
     if (partValidationError) {

@@ -1,7 +1,7 @@
 import { SUBSTITUTION_VARIABLE_REG_EXP } from "./Substitutions.ts";
 
 export const INVALID_FILENAME_PATH_CHARS_REG_EXP = /[\\/:*?"<>|]/;
-const ONLY_DOTS_REG_EXP = /^\.+$/;
+const MORE_THAN_TWO_DOTS_REG_EXP = /^\.{3,}$/;
 
 export function validateFilename(filename: string): string {
   filename = removeVariableFormatting(filename);
@@ -14,8 +14,8 @@ export function validateFilename(filename: string): string {
     return `File name "${filename}" contains invalid symbols`;
   }
 
-  if (ONLY_DOTS_REG_EXP.test(filename)) {
-    return `File name "${filename}" contains only dots`;
+  if (MORE_THAN_TWO_DOTS_REG_EXP.test(filename)) {
+    return `File name "${filename}" contains more than two dots`;
   }
 
   return '';

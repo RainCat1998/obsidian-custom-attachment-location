@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## 4.31.0
+
+- Enable custom whitespace replacement
+- Handle raw link
+- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/11.2.0
+
 ## 4.30.6
 
 - https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/11.0.0

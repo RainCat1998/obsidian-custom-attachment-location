@@ -28,6 +28,10 @@ export function validatePath(path: string): string {
   path = trimStart(path, '/');
   path = trimEnd(path, '/');
 
+  if (path === '') {
+    return '';
+  }
+
   const parts = path.split('/');
   for (const part of parts) {
     if (part === '.') {

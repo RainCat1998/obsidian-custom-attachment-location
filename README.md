@@ -96,8 +96,10 @@ The tokens are case-insensitive.
 
 - `${date:format}`: Current date/time using [Moment.js formatting][Moment.js formatting] (the format is case-sensitive).
 - `${fileName}`: Current note filename.
+- `${filePath}`: Full path to current note.
 - `${folderName}`: Current note's folder name.
 - `${folderPath}`: Full path to current note's folder.
+- `${originalCopiedFileExtension}`: Extension of the original copied to clipboard file.
 - `${originalCopiedFileName}`: Original copied to clipboard filename.
 - `${prompt}`: The value asked from the user prompt.
 

@@ -23,25 +23,34 @@ export const SUBSTITUTION_TOKEN_REG_EXP = /\${(.+?)(?::(.+?))?}/g;
 
 export class Substitutions {
   private static readonly formatters = new Map<string, Formatter>();
+
   static {
     this.registerFormatter('date', (substitutions, _app, format) => substitutions.formatDate(format));
     this.registerFormatter('fileName', (substitutions) => substitutions.fileName);
+    this.registerFormatter('filePath', (substitutions) => substitutions.filePath);
     this.registerFormatter('folderName', (substitutions) => substitutions.folderName);
     this.registerFormatter('folderPath', (substitutions) => substitutions.folderPath);
+    this.registerFormatter('originalCopiedFileExtension', (substitutions) => substitutions.originalCopiedFileExtension);
     this.registerFormatter('originalCopiedFileName', (substitutions) => substitutions.originalCopiedFileName);
     this.registerFormatter('prompt', (substitutions, app) => substitutions.prompt(app));
   }
 
+  private readonly originalCopiedFileExtension: string;
   public readonly folderPath: string;
   private readonly fileName: string;
+  private readonly filePath: string;
   private readonly folderName: string;
   private readonly originalCopiedFileName: string;
 
   public constructor(filePath: string, originalCopiedFileName?: string) {
-    this.originalCopiedFileName = originalCopiedFileName ?? '';
+    this.filePath = filePath;
     this.fileName = basename(filePath, extname(filePath));
     this.folderName = basename(dirname(filePath));
     this.folderPath = dirname(filePath);
+
+    const originalCopiedFileExtension = extname(originalCopiedFileName ?? '');
+    this.originalCopiedFileName = basename(originalCopiedFileName ?? '', originalCopiedFileExtension);
+    this.originalCopiedFileExtension = originalCopiedFileExtension.slice(1);
   }
 
   public static isRegisteredToken(token: string): boolean {

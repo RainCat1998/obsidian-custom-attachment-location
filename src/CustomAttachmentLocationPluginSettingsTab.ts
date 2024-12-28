@@ -12,7 +12,7 @@ import {
   INVALID_FILENAME_PATH_CHARS_REG_EXP,
   validateFilename,
   validatePath
-} from './PathValidator.ts';
+} from './Substitutions.ts';
 
 export class CustomAttachmentLocationPluginSettingsTab extends PluginSettingsTabBase<CustomAttachmentLocationPlugin> {
   public override display(): void {

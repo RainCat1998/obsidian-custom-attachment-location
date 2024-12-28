@@ -114,7 +114,6 @@ export function validatePath(path: string): string {
     return `Unknown token: ${unknownToken}`;
   }
 
-
   path = trimStart(path, '/');
   path = trimEnd(path, '/');
 

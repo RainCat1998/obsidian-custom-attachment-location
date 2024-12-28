@@ -72,7 +72,7 @@ export class Substitutions {
       app,
       defaultValue: this.originalCopiedFileName,
       title: 'Provide a value for ${prompt} template',
-      valueValidator: validateFilename
+      valueValidator: (value) => validateFilename(value, false)
     });
     if (promptResult === null) {
       throw new Error('Prompt cancelled');
@@ -81,8 +81,19 @@ export class Substitutions {
   }
 }
 
-export function validateFilename(filename: string): string {
-  filename = removeTokenFormatting(filename);
+export function validateFilename(filename: string, areTokensAllowed: boolean = true): string {
+  if (areTokensAllowed) {
+    filename = removeTokenFormatting(filename);
+    const unknownToken = validateTokens(filename);
+    if (unknownToken) {
+      return `Unknown token: ${unknownToken}`;
+    }
+  } else {
+    const match = filename.match(SUBSTITUTION_TOKEN_REG_EXP);
+    if (match) {
+      return `Tokens are not allowed in file name`;
+    }
+  }
 
   if (filename === '.' || filename === '..') {
     return '';

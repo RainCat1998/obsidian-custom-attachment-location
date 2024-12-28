@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 4.31.1
+
+- Respect renameOnlyImages when collecting
+
 ## 4.31.0
 
 - Enable custom whitespace replacement

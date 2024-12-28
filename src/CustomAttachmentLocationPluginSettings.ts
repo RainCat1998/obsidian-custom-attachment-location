@@ -1,3 +1,4 @@
+import { deleteProperties } from 'obsidian-dev-utils/Object';
 import { PluginSettingsBase } from 'obsidian-dev-utils/obsidian/Plugin/PluginSettingsBase';
 
 export class CustomAttachmentLocationPluginSettings extends PluginSettingsBase {
@@ -16,8 +17,8 @@ export class CustomAttachmentLocationPluginSettings extends PluginSettingsBase {
   public renameCollectedFiles = false;
   public renameOnlyImages = true;
   public renamePastedFilesWithKnownNames = false;
-  public replaceWhitespace = false;
   public toLowerCase = false;
+  public whitespaceReplacement = '';
   #shouldSave = false;
   public constructor(data: unknown) {
     super();
@@ -30,15 +31,13 @@ export class CustomAttachmentLocationPluginSettings extends PluginSettingsBase {
 
   protected override initFromRecord(record: Record<string, unknown>): void {
     const legacySettings = record as Partial<LegacySettings>;
-    if (legacySettings.dateTimeFormat || legacySettings.pastedImageFileName) {
-      const dateTimeFormat = legacySettings.dateTimeFormat ?? 'YYYYMMDDHHmmssSSS';
-      legacySettings.attachmentFolderPath = addDateTimeFormat(legacySettings.attachmentFolderPath ?? '', dateTimeFormat);
-      legacySettings.pastedFileName = addDateTimeFormat(legacySettings.pastedFileName ?? legacySettings.pastedImageFileName ?? 'file-${date}', dateTimeFormat);
-      delete legacySettings.dateTimeFormat;
-      delete legacySettings.pastedImageFileName;
-      this.#shouldSave = true;
+    const dateTimeFormat = legacySettings.dateTimeFormat ?? 'YYYYMMDDHHmmssSSS';
+    legacySettings.attachmentFolderPath = addDateTimeFormat(legacySettings.attachmentFolderPath ?? '', dateTimeFormat);
+    legacySettings.pastedFileName = addDateTimeFormat(legacySettings.pastedFileName ?? legacySettings.pastedImageFileName ?? 'file-${date}', dateTimeFormat);
+    if (legacySettings.replaceWhitespace !== undefined) {
+      legacySettings.whitespaceReplacement = legacySettings.replaceWhitespace ? '-' : '';
     }
-
+    this.#shouldSave = deleteProperties(legacySettings, ['dateTimeFormat', 'pastedImageFileName', 'replaceWhitespace']);
     super.initFromRecord(legacySettings);
   }
 }
@@ -46,6 +45,7 @@ export class CustomAttachmentLocationPluginSettings extends PluginSettingsBase {
 class LegacySettings extends CustomAttachmentLocationPluginSettings {
   public dateTimeFormat = '';
   public pastedImageFileName = '';
+  public replaceWhitespace = false;
 }
 
 function addDateTimeFormat(str: string, dateTimeFormat: string): string {

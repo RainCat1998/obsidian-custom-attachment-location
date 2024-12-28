@@ -2,6 +2,7 @@ import moment from 'moment';
 import { normalizePath } from 'obsidian';
 import { prompt } from 'obsidian-dev-utils/obsidian/Modal/Prompt';
 import { join } from 'obsidian-dev-utils/Path';
+import { escapeRegExp } from 'obsidian-dev-utils/RegExp';
 import {
   replaceAllAsync,
   trimStart
@@ -22,9 +23,10 @@ export async function getPastedFileName(plugin: CustomAttachmentLocationPlugin, 
 }
 
 export function replaceWhitespace(plugin: CustomAttachmentLocationPlugin, str: string): string {
-  if (plugin.settingsCopy.replaceWhitespace) {
-    str = str.replace(/\s/g, '-');
-    str = str.replace(/-{2,}/g, '-');
+  if (plugin.settingsCopy.whitespaceReplacement) {
+    str = str.replace(/\s/g, plugin.settingsCopy.whitespaceReplacement);
+    const escaped = escapeRegExp(plugin.settingsCopy.whitespaceReplacement);
+    str = str.replace(new RegExp(`${escaped}{2,}`, 'g'), plugin.settingsCopy.whitespaceReplacement);
   }
 
   return str;

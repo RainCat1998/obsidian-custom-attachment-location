@@ -1,4 +1,4 @@
-const INVALID_FILENAME_PATH_CHARS_REG_EXP = /[\\/:*?"<>|]/;
+export const INVALID_FILENAME_PATH_CHARS_REG_EXP = /[\\/:*?"<>|]/;
 const ONLY_DOTS_REG_EXP = /^\.+$/;
 
 export function validateFilename(filename: string): string {

@@ -9,6 +9,7 @@ import { extend } from 'obsidian-dev-utils/obsidian/Plugin/ValueComponent';
 import type { CustomAttachmentLocationPlugin } from './CustomAttachmentLocationPlugin.ts';
 
 import {
+  INVALID_FILENAME_PATH_CHARS_REG_EXP,
   validateFilename,
   validatePath
 } from './PathValidator.ts';
@@ -94,9 +95,31 @@ export class CustomAttachmentLocationPluginSettingsTab extends PluginSettingsTab
       .addToggle((toggle) => extend(toggle).bind(this.plugin, 'autoRenameFiles'));
 
     new Setting(this.containerEl)
-      .setName('Replace whitespace with hyphen')
-      .setDesc('Automatically replace whitespace in attachment folder and file name with hyphens.')
-      .addToggle((toggle) => extend(toggle).bind(this.plugin, 'replaceWhitespace'));
+      .setName('Replace whitespaces')
+      .setDesc(createFragment((f) => {
+        f.appendText('Automatically replace whitespace in attachment folder and file name with the specified character.');
+        f.appendChild(createEl('br'));
+        f.appendText('Leave blank to disable replacement.');
+      }))
+      .addText((text) => extend(text)
+        .bind(this.plugin, 'whitespaceReplacement', {
+          valueValidator(uiValue): null | string {
+            if (uiValue === '') {
+              return null;
+            }
+
+            if (uiValue.length > 1) {
+              return 'Whitespace replacement must be a single character or blank.';
+            }
+
+            if (INVALID_FILENAME_PATH_CHARS_REG_EXP.exec(uiValue)) {
+              return 'Whitespace replacement must not contain invalid filename path characters.';
+            }
+
+            return null;
+          }
+        })
+        .setPlaceholder('-'));
 
     new Setting(this.containerEl)
       .setName('All lowercase names')

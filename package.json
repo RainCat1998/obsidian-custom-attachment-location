@@ -22,7 +22,7 @@
     "moment": "^2.30.1",
     "monkey-around": "^3.0.0",
     "obsidian": "^1.7.2",
-    "obsidian-dev-utils": "^11.0.0",
+    "obsidian-dev-utils": "^11.1.0",
     "obsidian-typings": "^2.7.0",
     "tsx": "^4.19.2",
     "typescript": "^5.7.2"

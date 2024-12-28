@@ -3,6 +3,7 @@ import { SUBSTITUTION_VARIABLE_REG_EXP } from "./Substitutions.ts";
 
 export const INVALID_FILENAME_PATH_CHARS_REG_EXP = /[\\/:*?"<>|]/;
 const MORE_THAN_TWO_DOTS_REG_EXP = /^\.{3,}$/;
+const TRAILING_DOTS_AND_SPACES_REG_EXP = /[. ]+$/;
 
 export function validateFilename(filename: string): string {
   filename = removeVariableFormatting(filename);
@@ -17,6 +18,10 @@ export function validateFilename(filename: string): string {
 
   if (MORE_THAN_TWO_DOTS_REG_EXP.test(filename)) {
     return `File name "${filename}" contains more than two dots`;
+  }
+
+  if (TRAILING_DOTS_AND_SPACES_REG_EXP.test(filename)) {
+    return `File name "${filename}" contains trailing dots or spaces`;
   }
 
   return '';

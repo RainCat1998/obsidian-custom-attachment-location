@@ -84,6 +84,10 @@ export class Substitutions {
 export function validateFilename(filename: string): string {
   filename = removeTokenFormatting(filename);
 
+  if (filename === '.' || filename === '..') {
+    return '';
+  }
+
   if (!filename) {
     return 'File name is empty';
   }

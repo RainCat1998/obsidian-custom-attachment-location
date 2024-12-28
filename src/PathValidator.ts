@@ -1,3 +1,4 @@
+import { trimEnd, trimStart } from "obsidian-dev-utils/String";
 import { SUBSTITUTION_VARIABLE_REG_EXP } from "./Substitutions.ts";
 
 export const INVALID_FILENAME_PATH_CHARS_REG_EXP = /[\\/:*?"<>|]/;
@@ -24,12 +25,8 @@ export function validateFilename(filename: string): string {
 export function validatePath(path: string): string {
   path = removeVariableFormatting(path);
 
-  if (path.startsWith('/')) {
-    return 'Path can\'t start with /';
-  }
-  if (path.endsWith('/')) {
-    return 'Path can\'t end with /';
-  }
+  path = trimStart(path, '/');
+  path = trimEnd(path, '/');
 
   const parts = path.split('/');
   for (const part of parts) {

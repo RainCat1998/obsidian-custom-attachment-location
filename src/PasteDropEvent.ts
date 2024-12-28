@@ -37,9 +37,9 @@ interface PastedEntry {
   type: string;
 }
 
-abstract class EventWrapper {
+abstract class EventWrapper<TEvent extends ClipboardEvent | DragEvent> {
   protected constructor(
-    protected readonly event: ClipboardEvent | DragEvent,
+    protected readonly event: TEvent,
     private readonly eventType: string,
     protected readonly plugin: CustomAttachmentLocationPlugin
   ) { }
@@ -151,7 +151,7 @@ abstract class EventWrapper {
     this.event.target.dispatchEvent(handledEvent);
   }
 
-  protected abstract cloneWithNewDataTransfer(dataTransfer: DataTransfer): ClipboardEvent | DragEvent;
+  protected abstract cloneWithNewDataTransfer(dataTransfer: DataTransfer): TEvent;
   protected abstract getDataTransfer(): DataTransfer | null;
   protected abstract shouldConvertImages(): boolean;
 
@@ -191,9 +191,9 @@ abstract class EventWrapper {
   }
 }
 
-class DropEventWrapper extends EventWrapper {
+class DropEventWrapper extends EventWrapper<DragEvent> {
   public constructor(
-    protected override readonly event: DragEvent,
+    event: DragEvent,
     plugin: CustomAttachmentLocationPlugin
   ) {
     super(event, 'Drop', plugin);
@@ -231,9 +231,9 @@ class DropEventWrapper extends EventWrapper {
   }
 }
 
-class PasteEventWrapper extends EventWrapper {
+class PasteEventWrapper extends EventWrapper<ClipboardEvent> {
   public constructor(
-    protected override readonly event: ClipboardEvent,
+    event: ClipboardEvent,
     plugin: CustomAttachmentLocationPlugin
   ) {
     super(event, 'Paste', plugin);

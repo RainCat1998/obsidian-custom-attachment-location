@@ -19,7 +19,7 @@ import {
   getPastedFileName,
   replaceWhitespace
 } from './AttachmentPath.ts';
-import { createSubstitutionsFromPath } from './Substitutions.ts';
+import { Substitutions } from './Substitutions.ts';
 
 enum TargetType {
   Canvas = 'Canvas',
@@ -129,7 +129,7 @@ abstract class EventWrapper<TEvent extends ClipboardEvent | DragEvent> {
 
         const shouldRename = this.shouldRenameAttachments(entry.file);
 
-        let filename = shouldRename ? await getPastedFileName(this.plugin, createSubstitutionsFromPath(noteFile.path, originalCopiedFileName)) : originalCopiedFileName;
+        let filename = shouldRename ? await getPastedFileName(this.plugin, new Substitutions(noteFile.path, originalCopiedFileName)) : originalCopiedFileName;
         filename = replaceWhitespace(this.plugin, filename);
 
         const filePropertyBag: FilePropertyBag = { type: entry.type.replace('image/', 'image-override/') };

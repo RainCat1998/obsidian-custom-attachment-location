@@ -1,21 +1,13 @@
-import moment from 'moment';
 import { normalizePath } from 'obsidian';
-import { prompt } from 'obsidian-dev-utils/obsidian/Modal/Prompt';
 import { join } from 'obsidian-dev-utils/Path';
 import { escapeRegExp } from 'obsidian-dev-utils/RegExp';
-import {
-  replaceAllAsync,
-  trimStart
-} from 'obsidian-dev-utils/String';
 
 import type { CustomAttachmentLocationPlugin } from './CustomAttachmentLocationPlugin.ts';
-import type { Substitutions } from './Substitutions.ts';
 
-import { validateFilename } from './PathValidator.ts';
-import { createSubstitutionsFromPath } from './Substitutions.ts';
+import { Substitutions } from './Substitutions.ts';
 
 export async function getAttachmentFolderFullPathForPath(plugin: CustomAttachmentLocationPlugin, path: string): Promise<string> {
-  return await getAttachmentFolderPath(plugin, createSubstitutionsFromPath(path));
+  return await getAttachmentFolderPath(plugin, new Substitutions(path));
 }
 
 export async function getPastedFileName(plugin: CustomAttachmentLocationPlugin, substitutions: Substitutions): Promise<string> {
@@ -37,29 +29,7 @@ async function getAttachmentFolderPath(plugin: CustomAttachmentLocationPlugin, s
 }
 
 async function resolvePathTemplate(plugin: CustomAttachmentLocationPlugin, template: string, substitutions: Substitutions): Promise<string> {
-  let resolvedPath = await replaceAllAsync(template, /\${(.+?)}/g, async (_: string, key: string) => {
-    if (key.startsWith('date:')) {
-      const format = trimStart(key, 'date:');
-      return moment().format(format);
-    }
-    if (key in substitutions) {
-      return substitutions[key as keyof Substitutions];
-    }
-    if (key === 'prompt') {
-      const promptResult = await prompt({
-        app: plugin.app,
-        defaultValue: substitutions.originalCopiedFilename,
-        title: 'Provide a value for ${prompt} template',
-        valueValidator: validateFilename
-      });
-      if (promptResult === null) {
-        throw new Error('Prompt cancelled');
-      }
-      return promptResult;
-    }
-
-    throw new Error(`Unknown key: ${key}`);
-  });
+  let resolvedPath = await substitutions.fillTemplate(plugin.app, template);
 
   if (plugin.settingsCopy.toLowerCase) {
     resolvedPath = resolvedPath.toLowerCase();

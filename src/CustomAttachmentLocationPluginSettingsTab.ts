@@ -26,7 +26,7 @@ export class CustomAttachmentLocationPluginSettingsTab extends PluginSettingsTab
         f.appendText(' to use relative path.');
         f.createEl('br');
         f.appendText('See available ');
-        f.createEl('a', { href: 'https://github.com/RainCat1998/obsidian-custom-attachment-location?tab=readme-ov-file#variables', text: 'variables' });
+        f.createEl('a', { href: 'https://github.com/RainCat1998/obsidian-custom-attachment-location?tab=readme-ov-file#tokens', text: 'tokens' });
         f.appendChild(createEl('br'));
         f.appendText('Dot-folders like ');
         appendCodeBlock(f, '.attachments');
@@ -52,7 +52,7 @@ export class CustomAttachmentLocationPluginSettingsTab extends PluginSettingsTab
       .setName('Pasted File Name')
       .setDesc(createFragment((f) => {
         f.appendText('See available ');
-        f.createEl('a', { href: 'https://github.com/RainCat1998/obsidian-custom-attachment-location?tab=readme-ov-file#variables', text: 'variables' });
+        f.createEl('a', { href: 'https://github.com/RainCat1998/obsidian-custom-attachment-location?tab=readme-ov-file#tokens', text: 'tokens' });
       }))
       .addText((text) => extend(text).bind(this.plugin, 'pastedFileName', {
         valueValidator(uiValue): null | string {

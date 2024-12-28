@@ -14,7 +14,7 @@ import { validateFilename } from './PathValidator.ts';
 
 type Formatter = (substitutions: Substitutions, app: App, format: string) => MaybePromise<string>;
 
-export const SUBSTITUTION_VARIABLE_REG_EXP = /\${(.+?)(?::(.+?))?}/g;
+export const SUBSTITUTION_TOKEN_REG_EXP = /\${(.+?)(?::(.+?))?}/g;
 
 export class Substitutions {
   private static readonly formatters = new Map<string, Formatter>();
@@ -44,7 +44,7 @@ export class Substitutions {
   }
 
   public async fillTemplate(app: App, template: string): Promise<string> {
-    return await replaceAllAsync(template, SUBSTITUTION_VARIABLE_REG_EXP, async (_: string, token: string, format: string) => {
+    return await replaceAllAsync(template, SUBSTITUTION_TOKEN_REG_EXP, async (_: string, token: string, format: string) => {
       const formatter = Substitutions.formatters.get(token.toLowerCase());
       if (!formatter) {
         throw new Error(`Invalid token: ${token}`);
@@ -69,5 +69,9 @@ export class Substitutions {
       throw new Error('Prompt cancelled');
     }
     return promptResult;
+  }
+
+  public static isRegisteredToken(token: string): boolean {
+    return Substitutions.formatters.has(token.toLowerCase());
   }
 }

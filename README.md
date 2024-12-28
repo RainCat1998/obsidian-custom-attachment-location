@@ -1,6 +1,6 @@
 # Obsidian Custom Attachment location
 
-Customize attachment location with variables($filename, $data, etc) like typora.
+Customize attachment location with tokens (${fileName}, ${date:format}, etc) like typora.
 
 ## Features
 
@@ -13,12 +13,12 @@ Customize attachment location with variables($filename, $data, etc) like typora.
 
 - Same to "Files & Links -> Default location for new attachments".
 - **Put "./" at the beginning of the path if you want to use relative path.**
-- See available [variables](#Variables).
+- See available [tokens](#tokens).
 - example: `assets/${filename}`, `./assets/${filename}`, `./assets/${filename}/${date:YYYY}`
 
 ### Pasted File Name
 
-- See available [variables](#Variables).
+- See available [tokens](#tokens).
 - example: `${originalCopiedFilename}-${date:YYYYMMDDHHmmssSSS}`, `${filename}-img-${date:YYYYMMDD}`
 - Obsidian default: `Pasted image ${date:YYYYMMDDHHmmss}`.
 - **Note**: This setting only changes image filename from clipboard. If your attachment is copied from the explorer, obsidian will just copy the original file to the attachment folder without renaming.
@@ -88,11 +88,11 @@ If enabled, empty attachment folders will be preserved, useful for source contro
 
 If enabled, when the note is deleted, its orphan attachments are deleted as well.
 
-## Variables
+## Tokens
 
-The following variables can be used in the [Location for New Attachments](#location-for-new-attachments) and [Pasted File Name](#pasted-file-name) settings.
+The following tokens can be used in the [Location for New Attachments](#location-for-new-attachments) and [Pasted File Name](#pasted-file-name) settings.
 
-The variables are case-insensitive.
+The tokens are case-insensitive.
 
 - `${date:format}`: Current date/time using [Moment.js formatting][Moment.js formatting] (the format is case-sensitive).
 - `${fileName}`: Current note filename.

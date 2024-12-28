@@ -1,12 +1,16 @@
 import { trimEnd, trimStart } from "obsidian-dev-utils/String";
-import { SUBSTITUTION_VARIABLE_REG_EXP } from "./Substitutions.ts";
+import { SUBSTITUTION_TOKEN_REG_EXP, Substitutions } from "./Substitutions.ts";
 
 export const INVALID_FILENAME_PATH_CHARS_REG_EXP = /[\\/:*?"<>|]/;
 const MORE_THAN_TWO_DOTS_REG_EXP = /^\.{3,}$/;
 const TRAILING_DOTS_AND_SPACES_REG_EXP = /[. ]+$/;
 
 export function validateFilename(filename: string): string {
-  filename = removeVariableFormatting(filename);
+  filename = removeTokenFormatting(filename);
+  const unknownToken = validateTokens(filename);
+  if (unknownToken) {
+    return `Unknown token: ${unknownToken}`;
+  }
 
   if (!filename) {
     return 'File name is empty';
@@ -28,7 +32,7 @@ export function validateFilename(filename: string): string {
 }
 
 export function validatePath(path: string): string {
-  path = removeVariableFormatting(path);
+  path = removeTokenFormatting(path);
 
   path = trimStart(path, '/');
   path = trimEnd(path, '/');
@@ -49,6 +53,17 @@ export function validatePath(path: string): string {
   return '';
 }
 
-function removeVariableFormatting(str: string): string {
-  return str.replace(SUBSTITUTION_VARIABLE_REG_EXP, (_, key) => `\${${key}}`);
+function removeTokenFormatting(str: string): string {
+  return str.replace(SUBSTITUTION_TOKEN_REG_EXP, (_, token) => `\${${token}}`);
+}
+
+function validateTokens(str: string): string | null {
+  const matches = str.matchAll(SUBSTITUTION_TOKEN_REG_EXP);
+  for (const match of matches) {
+    const token = match[1] ?? '';
+    if (!Substitutions.isRegisteredToken(token)) {
+      return token;
+    }
+  }
+  return null;
 }

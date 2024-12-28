@@ -99,8 +99,8 @@ The tokens are case-insensitive.
 - `${filePath}`: Full path to current note.
 - `${folderName}`: Current note's folder name.
 - `${folderPath}`: Full path to current note's folder.
-- `${originalCopiedFileExtension}`: Extension of the original copied to clipboard file.
-- `${originalCopiedFileName}`: Original copied to clipboard filename.
+- `${originalCopiedFileExtension}`: Extension of the original copied to clipboard or dragged file.
+- `${originalCopiedFileName}`: File name of the original copied to clipboard or dragged file.
 - `${prompt}`: The value asked from the user prompt.
 
 ## Changelog

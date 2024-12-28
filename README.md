@@ -12,22 +12,15 @@ Customize attachment location with variables($filename, $data, etc) like typora.
 ### Location for New Attachments
 
 - Same to "Files & Links -> Default location for new attachments".
-- `${filename}` representing for current note filename.
-- `${foldername}` representing for current note's folder name.
-- `${folderPath}` representing for full path to current note's folder.
-- `${date:format}` representing for the current date/time using [Moment.js formatting][Moment.js formatting].
 - **Put "./" at the beginning of the path if you want to use relative path.**
+- See available [variables](#Variables).
 - example: `assets/${filename}`, `./assets/${filename}`, `./assets/${filename}/${date:YYYY}`
 
 ### Pasted File Name
 
-- `${filename}` representing for current note filename.
-- `${foldername}` representing for current note's folder name.
-- `${date:format}` representing for the current date/time using [Moment.js formatting][Moment.js formatting].
-- `${originalCopiedFilename}` representing for original copied to clipboard filename.
-- `${prompt}` representing the value asked from the user prompt.
+- See available [variables](#Variables).
 - example: `${originalCopiedFilename}-${date:YYYYMMDDHHmmssSSS}`, `${filename}-img-${date:YYYYMMDD}`
-- Obsidian default: `Pasted image YYYYMMDDHHmmss`.
+- Obsidian default: `Pasted image ${date:YYYYMMDDHHmmss}`.
 - **Note**: This setting only changes image filename from clipboard. If your attachment is copied from the explorer, obsidian will just copy the original file to the attachment folder without renaming.
 
 ### Automatically rename attachment folder
@@ -94,6 +87,19 @@ If enabled, empty attachment folders will be preserved, useful for source contro
 ### Delete orphan attachments
 
 If enabled, when the note is deleted, its orphan attachments are deleted as well.
+
+## Variables
+
+The following variables can be used in the [Location for New Attachments](#location-for-new-attachments) and [Pasted File Name](#pasted-file-name) settings.
+
+The variables are case-insensitive.
+
+- `${date:format}`: Current date/time using [Moment.js formatting][Moment.js formatting] (the format is case-sensitive).
+- `${fileName}`: Current note filename.
+- `${folderName}`: Current note's folder name.
+- `${folderPath}`: Full path to current note's folder.
+- `${originalCopiedFileName}`: Original copied to clipboard filename.
+- `${prompt}`: The value asked from the user prompt.
 
 ## Changelog
 

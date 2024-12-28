@@ -23,15 +23,10 @@ export class CustomAttachmentLocationPluginSettingsTab extends PluginSettingsTab
       .setDesc(createFragment((f) => {
         f.appendText('Start with ');
         appendCodeBlock(f, '.');
-        f.appendText(' to use relative path. Available variables: ');
-        appendCodeBlock(f, '${filename}');
-        f.appendText(', ');
-        appendCodeBlock(f, '${foldername}');
-        f.appendText(', ');
-        appendCodeBlock(f, '${folderPath}');
-        f.appendText(', ');
-        appendCodeBlock(f, '${date:format}');
-        f.appendText('.');
+        f.appendText(' to use relative path.');
+        f.createEl('br');
+        f.appendText('See available ');
+        f.createEl('a', { href: 'https://github.com/RainCat1998/obsidian-custom-attachment-location?tab=readme-ov-file#variables', text: 'variables' });
         f.appendChild(createEl('br'));
         f.appendText('Dot-folders like ');
         appendCodeBlock(f, '.attachments');
@@ -56,17 +51,8 @@ export class CustomAttachmentLocationPluginSettingsTab extends PluginSettingsTab
     new Setting(this.containerEl)
       .setName('Pasted File Name')
       .setDesc(createFragment((f) => {
-        f.appendText('Available variables: ');
-        appendCodeBlock(f, '${filename}');
-        f.appendText(', ');
-        appendCodeBlock(f, '${foldername}');
-        f.appendText(', ');
-        appendCodeBlock(f, '${date:format}');
-        f.appendText(', ');
-        appendCodeBlock(f, '${originalCopiedFilename}');
-        f.appendText(', ');
-        appendCodeBlock(f, '${prompt}');
-        f.appendText('.');
+        f.appendText('See available ');
+        f.createEl('a', { href: 'https://github.com/RainCat1998/obsidian-custom-attachment-location?tab=readme-ov-file#variables', text: 'variables' });
       }))
       .addText((text) => extend(text).bind(this.plugin, 'pastedFileName', {
         valueValidator(uiValue): null | string {

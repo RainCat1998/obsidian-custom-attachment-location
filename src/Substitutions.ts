@@ -39,6 +39,10 @@ export class Substitutions {
     this.folderPath = dirname(filePath);
   }
 
+  public static isRegisteredToken(token: string): boolean {
+    return Substitutions.formatters.has(token.toLowerCase());
+  }
+
   private static registerFormatter(token: string, formatter: Formatter): void {
     this.formatters.set(token.toLowerCase(), formatter);
   }
@@ -69,9 +73,5 @@ export class Substitutions {
       throw new Error('Prompt cancelled');
     }
     return promptResult;
-  }
-
-  public static isRegisteredToken(token: string): boolean {
-    return Substitutions.formatters.has(token.toLowerCase());
   }
 }

@@ -1,5 +1,12 @@
-import { trimEnd, trimStart } from "obsidian-dev-utils/String";
-import { SUBSTITUTION_TOKEN_REG_EXP, Substitutions } from "./Substitutions.ts";
+import {
+  trimEnd,
+  trimStart
+} from 'obsidian-dev-utils/String';
+
+import {
+  SUBSTITUTION_TOKEN_REG_EXP,
+  Substitutions
+} from './Substitutions.ts';
 
 export const INVALID_FILENAME_PATH_CHARS_REG_EXP = /[\\/:*?"<>|]/;
 const MORE_THAN_TWO_DOTS_REG_EXP = /^\.{3,}$/;
@@ -57,7 +64,7 @@ function removeTokenFormatting(str: string): string {
   return str.replace(SUBSTITUTION_TOKEN_REG_EXP, (_, token) => `\${${token}}`);
 }
 
-function validateTokens(str: string): string | null {
+function validateTokens(str: string): null | string {
   const matches = str.matchAll(SUBSTITUTION_TOKEN_REG_EXP);
   for (const match of matches) {
     const token = match[1] ?? '';

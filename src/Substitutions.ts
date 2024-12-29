@@ -26,7 +26,7 @@ function formatDate(format: string): string {
 }
 
 function random(format: string): string {
-  const [min, max] = format.split(',').map(Number);
+  const [min = 0, max = 100] = format.split(',').map(Number);
   return (Math.floor(Math.random() * (max - min + 1)) + min).toString();
 }
 

@@ -102,6 +102,7 @@ The tokens are case-insensitive.
 - `${originalCopiedFileExtension}`: Extension of the original copied to clipboard or dragged file.
 - `${originalCopiedFileName}`: File name of the original copied to clipboard or dragged file.
 - `${prompt}`: The value asked from the user prompt.
+- `${random}`: A random number between `0` and `100`.
 - `${random:min,max}`: A random number between `min` and `max`.
 
 ## Changelog

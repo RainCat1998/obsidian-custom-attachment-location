@@ -33,6 +33,7 @@ export class Substitutions {
     this.registerFormatter('originalCopiedFileExtension', (substitutions) => substitutions.originalCopiedFileExtension);
     this.registerFormatter('originalCopiedFileName', (substitutions) => substitutions.originalCopiedFileName);
     this.registerFormatter('prompt', (substitutions, app) => substitutions.prompt(app));
+    this.registerFormatter('random', (_substitutions, _app, format) => random(format));
   }
 
   private readonly originalCopiedFileExtension: string;
@@ -166,4 +167,9 @@ function validateTokens(str: string): null | string {
     }
   }
   return null;
+}
+
+function random(format: string): string {
+  const [min, max] = format.split(',').map(Number);
+  return (Math.floor(Math.random() * (max - min + 1)) + min).toString();
 }

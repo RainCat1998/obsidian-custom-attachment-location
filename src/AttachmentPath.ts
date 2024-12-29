@@ -4,7 +4,10 @@ import { escapeRegExp } from 'obsidian-dev-utils/RegExp';
 
 import type { CustomAttachmentLocationPlugin } from './CustomAttachmentLocationPlugin.ts';
 
-import { Substitutions } from './Substitutions.ts';
+import {
+  Substitutions,
+  validatePath
+} from './Substitutions.ts';
 
 export async function getAttachmentFolderFullPathForPath(plugin: CustomAttachmentLocationPlugin, path: string): Promise<string> {
   return await getAttachmentFolderPath(plugin, new Substitutions(path));
@@ -30,6 +33,10 @@ async function getAttachmentFolderPath(plugin: CustomAttachmentLocationPlugin, s
 
 async function resolvePathTemplate(plugin: CustomAttachmentLocationPlugin, template: string, substitutions: Substitutions): Promise<string> {
   let resolvedPath = await substitutions.fillTemplate(plugin.app, template);
+  const validationError = validatePath(resolvedPath, false);
+  if (validationError) {
+    throw new Error(`Resolved path ${resolvedPath} is invalid: ${validationError}`);
+  }
 
   if (plugin.settingsCopy.toLowerCase) {
     resolvedPath = resolvedPath.toLowerCase();

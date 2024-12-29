@@ -161,11 +161,18 @@ export function validateFilename(filename: string, areTokensAllowed = true): str
   return '';
 }
 
-export function validatePath(path: string): string {
-  path = removeTokenFormatting(path);
-  const unknownToken = validateTokens(path);
-  if (unknownToken) {
-    return `Unknown token: ${unknownToken}`;
+export function validatePath(path: string, areTokensAllowed = true): string {
+  if (areTokensAllowed) {
+    path = removeTokenFormatting(path);
+    const unknownToken = validateTokens(path);
+    if (unknownToken) {
+      return `Unknown token: ${unknownToken}`;
+    }
+  } else {
+    const match = path.match(SUBSTITUTION_TOKEN_REG_EXP);
+    if (match) {
+      return 'Tokens are not allowed in path';
+    }
   }
 
   path = trimStart(path, '/');

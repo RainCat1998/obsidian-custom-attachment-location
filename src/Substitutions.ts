@@ -25,9 +25,20 @@ function formatDate(format: string): string {
   return moment().format(format);
 }
 
-function random(format: string): string {
-  const [min = 0, max = 100] = format.split(',').map(Number);
-  return (Math.floor(Math.random() * (max - min + 1)) + min).toString();
+function generateRandomDigit(): string {
+  return generateRandomSymbol('0123456789');
+}
+
+function generateRandomDigitOrLetter(): string {
+  return generateRandomSymbol('0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ');
+}
+
+function generateRandomLetter(): string {
+  return generateRandomSymbol('ABCDEFGHIJKLMNOPQRSTUVWXYZ');
+}
+
+function generateUuid(): string {
+  return crypto.randomUUID();
 }
 
 export class Substitutions {
@@ -42,7 +53,10 @@ export class Substitutions {
     this.registerFormatter('originalCopiedFileExtension', (substitutions) => substitutions.originalCopiedFileExtension);
     this.registerFormatter('originalCopiedFileName', (substitutions) => substitutions.originalCopiedFileName);
     this.registerFormatter('prompt', (substitutions, app) => substitutions.prompt(app));
-    this.registerFormatter('random', (_substitutions, _app, format) => random(format));
+    this.registerFormatter('randomDigit', () => generateRandomDigit());
+    this.registerFormatter('randomDigitOrLetter', () => generateRandomDigitOrLetter());
+    this.registerFormatter('randomLetter', () => generateRandomLetter());
+    this.registerFormatter('uuid', () => generateUuid());
   }
 
   public readonly folderPath: string;
@@ -157,6 +171,10 @@ export function validatePath(path: string): string {
   }
 
   return '';
+}
+
+function generateRandomSymbol(symbols: string): string {
+  return symbols[Math.floor(Math.random() * symbols.length)] ?? '';
 }
 
 function removeTokenFormatting(str: string): string {

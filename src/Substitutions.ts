@@ -21,11 +21,20 @@ const TRAILING_DOTS_AND_SPACES_REG_EXP = /[. ]+$/;
 export const INVALID_FILENAME_PATH_CHARS_REG_EXP = /[\\/:*?"<>|]/;
 export const SUBSTITUTION_TOKEN_REG_EXP = /\${(.+?)(?::(.+?))?}/g;
 
+function formatDate(format: string): string {
+  return moment().format(format);
+}
+
+function random(format: string): string {
+  const [min, max] = format.split(',').map(Number);
+  return (Math.floor(Math.random() * (max - min + 1)) + min).toString();
+}
+
 export class Substitutions {
   private static readonly formatters = new Map<string, Formatter>();
 
   static {
-    this.registerFormatter('date', (substitutions, _app, format) => substitutions.formatDate(format));
+    this.registerFormatter('date', (_substitutions, _app, format) => formatDate(format));
     this.registerFormatter('fileName', (substitutions) => substitutions.fileName);
     this.registerFormatter('filePath', (substitutions) => substitutions.filePath);
     this.registerFormatter('folderName', (substitutions) => substitutions.folderName);
@@ -36,11 +45,11 @@ export class Substitutions {
     this.registerFormatter('random', (_substitutions, _app, format) => random(format));
   }
 
-  private readonly originalCopiedFileExtension: string;
   public readonly folderPath: string;
   private readonly fileName: string;
   private readonly filePath: string;
   private readonly folderName: string;
+  private readonly originalCopiedFileExtension: string;
   private readonly originalCopiedFileName: string;
 
   public constructor(filePath: string, originalCopiedFileName?: string) {
@@ -73,10 +82,6 @@ export class Substitutions {
     });
   }
 
-  private formatDate(format: string): string {
-    return moment().format(format);
-  }
-
   private async prompt(app: App): Promise<string> {
     const promptResult = await prompt({
       app,
@@ -91,7 +96,7 @@ export class Substitutions {
   }
 }
 
-export function validateFilename(filename: string, areTokensAllowed: boolean = true): string {
+export function validateFilename(filename: string, areTokensAllowed = true): string {
   if (areTokensAllowed) {
     filename = removeTokenFormatting(filename);
     const unknownToken = validateTokens(filename);
@@ -101,7 +106,7 @@ export function validateFilename(filename: string, areTokensAllowed: boolean = t
   } else {
     const match = filename.match(SUBSTITUTION_TOKEN_REG_EXP);
     if (match) {
-      return `Tokens are not allowed in file name`;
+      return 'Tokens are not allowed in file name';
     }
   }
 
@@ -167,9 +172,4 @@ function validateTokens(str: string): null | string {
     }
   }
   return null;
-}
-
-function random(format: string): string {
-  const [min, max] = format.split(',').map(Number);
-  return (Math.floor(Math.random() * (max - min + 1)) + min).toString();
 }

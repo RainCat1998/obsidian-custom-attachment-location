@@ -1,5 +1,19 @@
 # CHANGELOG
 
+## 5.0.0
+
+- Add custom tokens
+- Add frontmatter formatter
+- Validate path after applying tokens
+- Add fileCreationDate/fileModificationDate
+- Handle ../ paths
+- Add randoms and uuid
+- Add originalCopiedFileExtension
+- Don't allow tokens in prompt
+- Allow root path
+- Allow leading and trailing /
+- Allow . and ..
+
 ## 4.31.1
 
 - Respect renameOnlyImages when collecting

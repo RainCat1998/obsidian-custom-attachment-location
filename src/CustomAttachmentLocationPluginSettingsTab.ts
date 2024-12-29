@@ -9,6 +9,7 @@ import { extend } from 'obsidian-dev-utils/obsidian/Plugin/ValueComponent';
 import type { CustomAttachmentLocationPlugin } from './CustomAttachmentLocationPlugin.ts';
 
 import {
+  getCustomTokenFormatters,
   INVALID_FILENAME_PATH_CHARS_REG_EXP,
   validateFilename,
   validatePath
@@ -205,7 +206,29 @@ export class CustomAttachmentLocationPluginSettingsTab extends PluginSettingsTab
       .setName('Delete orphan attachments')
       .setDesc('If enabled, when the note is deleted, its orphan attachments are deleted as well.')
       .addToggle((toggle) => extend(toggle).bind(this.plugin, 'deleteOrphanAttachments'));
+
+    new Setting(this.containerEl)
+      .setName('Custom tokens')
+      .setDesc(createFragment((f) => {
+        f.appendText('Custom tokens to be used in the attachment folder path and pasted file name.');
+        f.appendChild(createEl('br'));
+        f.appendText('See ');
+        f.createEl('a', { href: 'https://github.com/RainCat1998/obsidian-custom-attachment-location?tab=readme-ov-file#custom-tokens', text: 'documentation' });
+        f.appendText(' for more information.');
+      }))
+      .addTextArea((textArea) => extend(textArea).bind(this.plugin, 'customTokensStr', {
+        valueValidator: customTokensValidator
+      }));
   }
+}
+
+function customTokensValidator(value: string): null | string {
+  const formatters = getCustomTokenFormatters(value);
+  if (formatters === null) {
+    return 'Invalid custom tokens code';
+  }
+
+  return null;
 }
 
 function generateJpegQualityOptions(): Record<string, string> {

@@ -110,6 +110,36 @@ The tokens are case-insensitive. The formats are case-sensitive.
 - `${randomLetter}`: A random letter.
 - `${uuid}`: A random UUID.
 
+## Custom tokens
+
+You can define custom tokens in the `Custom tokens` setting.
+
+The custom tokens are defined as a functions, both sync and async are supported.
+
+Example:
+
+```javascript
+exports.myCustomToken1 = (substitutions, app, format) => {
+  return substitutions.fileName + app.appId + format;
+}
+
+exports.myCustomToken2 = async (substitutions, app, format) => {
+  return await Promise.resolve(substitutions.fileName + app.appId + format);
+}
+```
+
+Then you can use the defined `${myCustomToken1}`, `${myCustomToken2:format}` tokens in the [Location for New Attachments](#location-for-new-attachments) and [Pasted File Name](#pasted-file-name) settings.
+
+- `substitutions`: is an object with the following properties:
+  - `fileName`: The filename of the current note.
+  - `filePath`: The full path to the current note.
+  - `folderName`: The name of the folder containing the current note.
+  - `folderPath`: The full path to the folder containing the current note.
+  - `originalCopiedFileExtension`: Extension of the original copied to clipboard or dragged file.
+  - `originalCopiedFileName`: File name of the original copied to clipboard or dragged file.
+- `app`: Obsidian app object.
+- `format`: optional format string.
+
 ## Changelog
 
 All notable changes to this project will be documented in the [CHANGELOG](./CHANGELOG.md).

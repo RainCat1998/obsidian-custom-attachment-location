@@ -1,6 +1,8 @@
 import { deleteProperties } from 'obsidian-dev-utils/Object';
 import { PluginSettingsBase } from 'obsidian-dev-utils/obsidian/Plugin/PluginSettingsBase';
 
+import { Substitutions } from './Substitutions.ts';
+
 export class CustomAttachmentLocationPluginSettings extends PluginSettingsBase {
   public attachmentFolderPath = './assets/${filename}';
 
@@ -19,7 +21,19 @@ export class CustomAttachmentLocationPluginSettings extends PluginSettingsBase {
   public renamePastedFilesWithKnownNames = false;
   public toLowerCase = false;
   public whitespaceReplacement = '';
+  public get customTokensStr(): string {
+    return this.#customTokensStr;
+  }
+
+  public set customTokensStr(value: string) {
+    this.#customTokensStr = value;
+    Substitutions.registerCustomFormatters(this.#customTokensStr);
+  }
+
+  #customTokensStr = '';
+
   #shouldSave = false;
+
   public constructor(data: unknown) {
     super();
     this.init(data);
@@ -27,6 +41,13 @@ export class CustomAttachmentLocationPluginSettings extends PluginSettingsBase {
 
   public override shouldSaveAfterLoad(): boolean {
     return this.#shouldSave;
+  }
+
+  public override toJSON(): Record<string, unknown> {
+    return {
+      ...super.toJSON(),
+      customTokensStr: this.customTokensStr
+    };
   }
 
   protected override initFromRecord(record: Record<string, unknown>): void {

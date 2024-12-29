@@ -19,12 +19,30 @@ import {
   trimStart
 } from 'obsidian-dev-utils/String';
 
-type Formatter = (substitutions: Substitutions, app: App, format: string) => MaybePromise<string>;
+import type { CustomAttachmentLocationPlugin } from './CustomAttachmentLocationPlugin.ts';
+
+type Formatter = (substitutions: Substitutions, app: App, format: string) => MaybePromise<unknown>;
 
 const MORE_THAN_TWO_DOTS_REG_EXP = /^\.{3,}$/;
 const TRAILING_DOTS_AND_SPACES_REG_EXP = /[. ]+$/;
 export const INVALID_FILENAME_PATH_CHARS_REG_EXP = /[\\/:*?"<>|]/;
 export const SUBSTITUTION_TOKEN_REG_EXP = /\${(.+?)(?::(.+?))?}/g;
+
+export function getCustomTokenFormatters(customTokensStr: string): Map<string, Formatter> | null {
+  const formatters = new Map<string, Formatter>();
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-implied-eval
+    const customTokenInitFn = new Function('exports', customTokensStr) as (exports: object) => void;
+    const exports = {};
+    customTokenInitFn(exports);
+    for (const [token, formatter] of Object.entries(exports)) {
+      formatters.set(token, formatter as Formatter);
+    }
+    return formatters;
+  } catch (e) {
+    throw new Error('Error initializing custom token formatters', { cause: e });
+  }
+}
 
 function formatDate(format: string): string {
   return moment().format(format);
@@ -75,30 +93,16 @@ export class Substitutions {
   private static readonly formatters = new Map<string, Formatter>();
 
   static {
-    this.registerFormatter('date', (_substitutions, _app, format) => formatDate(format));
-    this.registerFormatter('fileCreationDate', (substitutions, app, format) => formatFileDate(app, substitutions.filePath, format, (file) => file.stat.ctime));
-    this.registerFormatter('fileModificationDate', (substitutions, app, format) => formatFileDate(app, substitutions.filePath, format, (file) => file.stat.mtime));
-    this.registerFormatter('fileName', (substitutions) => substitutions.fileName);
-    this.registerFormatter('filePath', (substitutions) => substitutions.filePath);
-    this.registerFormatter('folderName', (substitutions) => substitutions.folderName);
-    this.registerFormatter('folderPath', (substitutions) => substitutions.folderPath);
-    this.registerFormatter('frontmatter', (substitutions, app, key) => getFrontmatterValue(app, substitutions.filePath, key));
-    this.registerFormatter('originalCopiedFileExtension', (substitutions) => substitutions.originalCopiedFileExtension);
-    this.registerFormatter('originalCopiedFileName', (substitutions) => substitutions.originalCopiedFileName);
-    this.registerFormatter('prompt', (substitutions, app) => substitutions.prompt(app));
-    this.registerFormatter('randomDigit', () => generateRandomDigit());
-    this.registerFormatter('randomDigitOrLetter', () => generateRandomDigitOrLetter());
-    this.registerFormatter('randomLetter', () => generateRandomLetter());
-    this.registerFormatter('uuid', () => generateUuid());
+    this.registerCustomFormatters('');
   }
 
-  public readonly folderPath: string;
-  private readonly fileName: string;
-  private readonly filePath: string;
-  private readonly folderName: string;
-  private readonly originalCopiedFileExtension: string;
-  private readonly originalCopiedFileName: string;
+  public readonly fileName: string;
 
+  public readonly filePath: string;
+  public readonly folderName: string;
+  public readonly folderPath: string;
+  public readonly originalCopiedFileExtension: string;
+  public readonly originalCopiedFileName: string;
   public constructor(filePath: string, originalCopiedFileName?: string) {
     this.filePath = filePath;
     this.fileName = basename(filePath, extname(filePath));
@@ -114,18 +118,47 @@ export class Substitutions {
     return Substitutions.formatters.has(token.toLowerCase());
   }
 
+  public static registerCustomFormatters(customTokensStr: string): void {
+    this.formatters.clear();
+    this.registerFormatter('date', (_substitutions, _app, format) => formatDate(format));
+    this.registerFormatter('fileCreationDate', (substitutions, app, format) => formatFileDate(app, substitutions.filePath, format, (file) => file.stat.ctime));
+    this.registerFormatter('fileModificationDate', (substitutions, app, format) => formatFileDate(app, substitutions.filePath, format, (file) => file.stat.mtime));
+    this.registerFormatter('fileName', (substitutions) => substitutions.fileName);
+    this.registerFormatter('filePath', (substitutions) => substitutions.filePath);
+    this.registerFormatter('folderName', (substitutions) => substitutions.folderName);
+    this.registerFormatter('folderPath', (substitutions) => substitutions.folderPath);
+    this.registerFormatter('frontmatter', (substitutions, app, key) => getFrontmatterValue(app, substitutions.filePath, key));
+    this.registerFormatter('originalCopiedFileExtension', (substitutions) => substitutions.originalCopiedFileExtension);
+    this.registerFormatter('originalCopiedFileName', (substitutions) => substitutions.originalCopiedFileName);
+    this.registerFormatter('prompt', (substitutions, app) => substitutions.prompt(app));
+    this.registerFormatter('randomDigit', () => generateRandomDigit());
+    this.registerFormatter('randomDigitOrLetter', () => generateRandomDigitOrLetter());
+    this.registerFormatter('randomLetter', () => generateRandomLetter());
+    this.registerFormatter('uuid', () => generateUuid());
+
+    const customFormatters = getCustomTokenFormatters(customTokensStr) ?? new Map<string, Formatter>();
+    for (const [token, formatter] of customFormatters.entries()) {
+      this.registerFormatter(token, formatter);
+    }
+  }
+
   private static registerFormatter(token: string, formatter: Formatter): void {
     this.formatters.set(token.toLowerCase(), formatter);
   }
 
-  public async fillTemplate(app: App, template: string): Promise<string> {
+  public async fillTemplate(plugin: CustomAttachmentLocationPlugin, template: string): Promise<string> {
     return await replaceAllAsync(template, SUBSTITUTION_TOKEN_REG_EXP, async (_: string, token: string, format: string) => {
       const formatter = Substitutions.formatters.get(token.toLowerCase());
       if (!formatter) {
         throw new Error(`Invalid token: ${token}`);
       }
 
-      return await formatter(this, app, format);
+      try {
+        // eslint-disable-next-line @typescript-eslint/no-base-to-string
+        return String(await formatter(this, plugin.app, format) ?? '');
+      } catch (e) {
+        throw new Error(`Error formatting token \${${token}}`, { cause: e });
+      }
     });
   }
 

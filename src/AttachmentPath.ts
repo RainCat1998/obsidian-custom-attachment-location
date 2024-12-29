@@ -32,7 +32,7 @@ async function getAttachmentFolderPath(plugin: CustomAttachmentLocationPlugin, s
 }
 
 async function resolvePathTemplate(plugin: CustomAttachmentLocationPlugin, template: string, substitutions: Substitutions): Promise<string> {
-  let resolvedPath = await substitutions.fillTemplate(plugin.app, template);
+  let resolvedPath = await substitutions.fillTemplate(plugin, template);
   const validationError = validatePath(resolvedPath, false);
   if (validationError) {
     throw new Error(`Resolved path ${resolvedPath} is invalid: ${validationError}`);

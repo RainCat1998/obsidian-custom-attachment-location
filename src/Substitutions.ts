@@ -1,7 +1,11 @@
-import type { App } from 'obsidian';
+import type {
+  App,
+  TFile
+} from 'obsidian';
 import type { MaybePromise } from 'obsidian-dev-utils/Async';
 
 import moment from 'moment';
+import { getFileOrNull } from 'obsidian-dev-utils/obsidian/FileSystem';
 import { prompt } from 'obsidian-dev-utils/obsidian/Modal/Prompt';
 import {
   basename,
@@ -25,6 +29,14 @@ function formatDate(format: string): string {
   return moment().format(format);
 }
 
+function formatFileDate(app: App, filePath: string, format: string, getTimestamp: (file: TFile) => number): string {
+  const file = getFileOrNull(app, filePath);
+  if (!file) {
+    return '';
+  }
+  return moment(getTimestamp(file)).format(format);
+}
+
 function generateRandomDigit(): string {
   return generateRandomSymbol('0123456789');
 }
@@ -46,6 +58,8 @@ export class Substitutions {
 
   static {
     this.registerFormatter('date', (_substitutions, _app, format) => formatDate(format));
+    this.registerFormatter('fileCreationDate', (substitutions, app, format) => formatFileDate(app, substitutions.filePath, format, (file) => file.stat.ctime));
+    this.registerFormatter('fileModificationDate', (substitutions, app, format) => formatFileDate(app, substitutions.filePath, format, (file) => file.stat.mtime));
     this.registerFormatter('fileName', (substitutions) => substitutions.fileName);
     this.registerFormatter('filePath', (substitutions) => substitutions.filePath);
     this.registerFormatter('folderName', (substitutions) => substitutions.folderName);

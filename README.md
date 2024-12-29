@@ -92,9 +92,11 @@ If enabled, when the note is deleted, its orphan attachments are deleted as well
 
 The following tokens can be used in the [Location for New Attachments](#location-for-new-attachments) and [Pasted File Name](#pasted-file-name) settings.
 
-The tokens are case-insensitive.
+The tokens are case-insensitive. The formats are case-sensitive.
 
-- `${date:format}`: Current date/time using [Moment.js formatting][Moment.js formatting] (the format is case-sensitive).
+- `${date:format}`: Current date/time using [Moment.js formatting][Moment.js formatting].
+- `${fileCreationDate:format}`: File creation date/time using [Moment.js formatting][Moment.js formatting].
+- `${fileModificationDate:format}`: File modification date/time using [Moment.js formatting][Moment.js formatting].
 - `${fileName}`: Current note filename.
 - `${filePath}`: Full path to current note.
 - `${folderName}`: Current note's folder name.

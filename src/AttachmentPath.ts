@@ -35,8 +35,12 @@ async function resolvePathTemplate(plugin: CustomAttachmentLocationPlugin, templ
     resolvedPath = resolvedPath.toLowerCase();
   }
 
+  if (!resolvedPath.endsWith('/')) {
+    resolvedPath = resolvedPath + '/';
+  }
+
   resolvedPath = replaceWhitespace(plugin, resolvedPath);
-  if (resolvedPath.startsWith('./')) {
+  if (resolvedPath.startsWith('./') || resolvedPath.startsWith('../')) {
     resolvedPath = join(substitutions.folderPath, resolvedPath);
   }
 

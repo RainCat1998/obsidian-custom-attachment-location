@@ -101,6 +101,7 @@ The tokens are case-insensitive. The formats are case-sensitive.
 - `${filePath}`: Full path to current note.
 - `${folderName}`: Current note's folder name.
 - `${folderPath}`: Full path to current note's folder.
+- `${frontmatter:key}`: Frontmatter value of the current note. Nested keys are supported, e.g., `key1.key2.3.key4`.
 - `${originalCopiedFileExtension}`: Extension of the original copied to clipboard or dragged file.
 - `${originalCopiedFileName}`: File name of the original copied to clipboard or dragged file.
 - `${prompt}`: The value asked from the user prompt.

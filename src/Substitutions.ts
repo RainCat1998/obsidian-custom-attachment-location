@@ -5,6 +5,7 @@ import type {
 import type { MaybePromise } from 'obsidian-dev-utils/Async';
 
 import moment from 'moment';
+import { getNestedPropertyValue } from 'obsidian-dev-utils/Object';
 import { getFileOrNull } from 'obsidian-dev-utils/obsidian/FileSystem';
 import { prompt } from 'obsidian-dev-utils/obsidian/Modal/Prompt';
 import {
@@ -53,6 +54,23 @@ function generateUuid(): string {
   return crypto.randomUUID();
 }
 
+function getFrontmatterValue(app: App, filePath: string, key: string): string {
+  const file = getFileOrNull(app, filePath);
+  if (!file) {
+    return '';
+  }
+
+  const cache = app.metadataCache.getFileCache(file);
+
+  if (!cache?.frontmatter) {
+    return '';
+  }
+
+  const value = getNestedPropertyValue(cache.frontmatter, key) ?? '';
+  // eslint-disable-next-line @typescript-eslint/no-base-to-string
+  return String(value);
+}
+
 export class Substitutions {
   private static readonly formatters = new Map<string, Formatter>();
 
@@ -64,6 +82,7 @@ export class Substitutions {
     this.registerFormatter('filePath', (substitutions) => substitutions.filePath);
     this.registerFormatter('folderName', (substitutions) => substitutions.folderName);
     this.registerFormatter('folderPath', (substitutions) => substitutions.folderPath);
+    this.registerFormatter('frontmatter', (substitutions, app, key) => getFrontmatterValue(app, substitutions.filePath, key));
     this.registerFormatter('originalCopiedFileExtension', (substitutions) => substitutions.originalCopiedFileExtension);
     this.registerFormatter('originalCopiedFileName', (substitutions) => substitutions.originalCopiedFileName);
     this.registerFormatter('prompt', (substitutions, app) => substitutions.prompt(app));

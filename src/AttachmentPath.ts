@@ -9,8 +9,8 @@ import {
   validatePath
 } from './Substitutions.ts';
 
-export async function getAttachmentFolderFullPathForPath(plugin: CustomAttachmentLocationPlugin, path: string): Promise<string> {
-  return await getAttachmentFolderPath(plugin, new Substitutions(path));
+export async function getAttachmentFolderFullPathForPath(plugin: CustomAttachmentLocationPlugin, notePath: string, attachmentFilename: string): Promise<string> {
+  return await getAttachmentFolderPath(plugin, new Substitutions(notePath, attachmentFilename));
 }
 
 export async function getPastedFileName(plugin: CustomAttachmentLocationPlugin, substitutions: Substitutions): Promise<string> {

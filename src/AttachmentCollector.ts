@@ -251,7 +251,7 @@ async function prepareAttachmentToMove(plugin: CustomAttachmentLocationPlugin, l
     newAttachmentName = oldAttachmentName;
   }
 
-  const newAttachmentFolderPath = await getAttachmentFolderFullPathForPath(plugin, newNotePath);
+  const newAttachmentFolderPath = await getAttachmentFolderFullPathForPath(plugin, newNotePath, newAttachmentName);
   const newAttachmentPath = join(newAttachmentFolderPath, newAttachmentName);
 
   if (oldAttachmentPath === newAttachmentPath) {

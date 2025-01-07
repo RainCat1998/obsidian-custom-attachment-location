@@ -126,7 +126,7 @@ export class CustomAttachmentLocationPlugin extends PluginBase<CustomAttachmentL
     if (!file || !isNote(this.app, file)) {
       attachmentPath = await getAvailablePathForAttachments(this.app, filename, extension, file, true);
     } else {
-      const attachmentFolderFullPath = await getAttachmentFolderFullPathForPath(this, file.path);
+      const attachmentFolderFullPath = await getAttachmentFolderFullPathForPath(this, file.path, makeFileName(filename, extension));
       attachmentPath = this.app.vault.getAvailablePath(join(attachmentFolderFullPath, filename), extension);
     }
 

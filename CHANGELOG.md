@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 5.0.1
+
+- Pass attachment filename
+
 ## 5.0.0
 
 - Add custom tokens

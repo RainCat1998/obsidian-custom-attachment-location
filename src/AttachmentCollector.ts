@@ -13,8 +13,8 @@ import {
   setIcon,
   Vault
 } from 'obsidian';
-import { appendCodeBlock } from 'obsidian-dev-utils/DocumentFragment';
 import { throwExpression } from 'obsidian-dev-utils/Error';
+import { appendCodeBlock } from 'obsidian-dev-utils/HTMLElement';
 import { toJson } from 'obsidian-dev-utils/Object';
 import { applyFileChanges } from 'obsidian-dev-utils/obsidian/FileChange';
 import {

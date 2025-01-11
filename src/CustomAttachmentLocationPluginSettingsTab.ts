@@ -2,7 +2,7 @@ import {
   normalizePath,
   Setting
 } from 'obsidian';
-import { appendCodeBlock } from 'obsidian-dev-utils/DocumentFragment';
+import { appendCodeBlock } from 'obsidian-dev-utils/HTMLElement';
 import { PluginSettingsTabBase } from 'obsidian-dev-utils/obsidian/Plugin/PluginSettingsTabBase';
 import { extend } from 'obsidian-dev-utils/obsidian/Plugin/ValueComponent';
 

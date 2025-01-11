@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 5.1.0
+
+- Show visible whitespace
+
 ## 5.0.2
 
 - https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/12.2.1

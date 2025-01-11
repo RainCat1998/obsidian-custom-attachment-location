@@ -191,7 +191,7 @@ export class CustomAttachmentLocationPluginSettingsTab extends PluginSettingsTab
       }))
       .addText((text) => extend(text).bind(this.plugin, 'duplicateNameSeparator', {
         valueValidator(uiValue): null | string {
-          return uiValue === '' ? null : validateFilename(uiValue);
+          return validateFilename(`filename${uiValue}1`, false);
         }
       })
         .setPlaceholder(' ')

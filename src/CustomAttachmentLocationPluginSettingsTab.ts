@@ -15,6 +15,8 @@ import {
   validatePath
 } from './Substitutions.ts';
 
+const VISIBLE_WHITESPACE_CHARACTER = '␣';
+
 export class CustomAttachmentLocationPluginSettingsTab extends PluginSettingsTabBase<CustomAttachmentLocationPlugin> {
   public override display(): void {
     this.containerEl.empty();
@@ -189,13 +191,19 @@ export class CustomAttachmentLocationPluginSettingsTab extends PluginSettingsTab
         appendCodeBlock(f, 'existingFile 2.pdf');
         f.appendText(', etc, getting the first name available.');
       }))
-      .addText((text) => extend(text).bind(this.plugin, 'duplicateNameSeparator', {
-        valueValidator(uiValue): null | string {
-          return validateFilename(`filename${uiValue}1`, false);
-        }
-      })
-        .setPlaceholder(' ')
-      );
+      .addText((text) => {
+        extend(text).bind(this.plugin, 'duplicateNameSeparator', {
+          componentToPluginSettingsValueConverter: (value: string) => value.replaceAll(VISIBLE_WHITESPACE_CHARACTER, ' '),
+          pluginSettingsToComponentValueConverter: showWhitespaceCharacter,
+          valueValidator(uiValue): null | string {
+            return validateFilename(`filename${uiValue}1`, false);
+          }
+        })
+          .setPlaceholder(VISIBLE_WHITESPACE_CHARACTER);
+        text.inputEl.addEventListener('input', () => {
+          text.inputEl.value = showWhitespaceCharacter(text.inputEl.value);
+        });
+      });
 
     new Setting(this.containerEl)
       .setName('Keep empty attachment folders')
@@ -239,4 +247,8 @@ function generateJpegQualityOptions(): Record<string, string> {
   }
 
   return ans;
+}
+
+function showWhitespaceCharacter(value: string): string {
+  return value.replaceAll(' ', VISIBLE_WHITESPACE_CHARACTER);
 }

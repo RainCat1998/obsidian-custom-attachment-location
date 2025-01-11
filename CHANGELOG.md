@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## 5.0.2
+
+- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/12.2.1
+- Validate separator
+
 ## 5.0.1
 
 - Pass attachment filename

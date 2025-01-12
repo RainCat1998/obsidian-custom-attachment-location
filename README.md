@@ -78,7 +78,7 @@ When you are pasting/dragging a file with the same name as an existing file, thi
 
 E.g., when you are dragging file `existingFile.pdf`, it will be renamed to `existingFile 1.pdf`, `existingFile 2.pdf`, etc, getting the first name available.
 
-Default value is ` ` (`space`).
+Default value is `␣` (`space`).
 
 ### Keep empty attachment folders
 

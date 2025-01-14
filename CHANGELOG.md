@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 5.1.1
+
+- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/13.9.0
+
 ## 5.1.0
 
 - Show visible whitespace

@@ -187,7 +187,7 @@ export async function collectAttachmentsInFolder(plugin: CustomAttachmentLocatio
   })) {
     return;
   }
-  console.debug(`Collect attachments in folder: ${folder.path}`);
+  plugin.consoleDebug(`Collect attachments in folder: ${folder.path}`);
   const files: TFile[] = [];
   Vault.recurseChildren(folder, (child) => {
     if (isNote(plugin.app, child)) {

@@ -59,7 +59,7 @@ export class CustomAttachmentLocationPlugin extends PluginBase<CustomAttachmentL
         const extendedWrapper: ExtendedWrapper = {
           isExtended: true as const
         };
-        return Object.assign(this.getAvailablePathForAttachments.bind(this), extendedWrapper);
+        return Object.assign(this.getAvailablePathForAttachments.bind(this), extendedWrapper) as ExtendedWrapper & GetAvailablePathForAttachmentsExtendedFn;
       }
     }));
 

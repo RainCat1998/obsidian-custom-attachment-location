@@ -14,6 +14,7 @@ import {
   extname
 } from 'obsidian-dev-utils/Path';
 import {
+  replaceAll,
   replaceAllAsync,
   trimEnd,
   trimStart
@@ -147,7 +148,7 @@ export class Substitutions {
   }
 
   public async fillTemplate(plugin: CustomAttachmentLocationPlugin, template: string): Promise<string> {
-    return await replaceAllAsync(template, SUBSTITUTION_TOKEN_REG_EXP, async (_: string, token: string, format: string) => {
+    return await replaceAllAsync(template, SUBSTITUTION_TOKEN_REG_EXP, async (_, token, format) => {
       const formatter = Substitutions.formatters.get(token.toLowerCase());
       if (!formatter) {
         throw new Error(`Invalid token: ${token}`);
@@ -251,7 +252,7 @@ function generateRandomSymbol(symbols: string): string {
 }
 
 function removeTokenFormatting(str: string): string {
-  return str.replace(SUBSTITUTION_TOKEN_REG_EXP, (_, token: string) => `\${${token}}`);
+  return replaceAll(str, SUBSTITUTION_TOKEN_REG_EXP, (_, token) => `\${${token}}`);
 }
 
 function validateTokens(str: string): null | string {

@@ -63,7 +63,7 @@ abstract class EventWrapper<TEvent extends ClipboardEvent | DragEvent> {
       return;
     }
 
-    console.debug(`Handle ${targetType} ${this.eventType}`);
+    this.plugin.consoleDebug(`Handle ${targetType} ${this.eventType}`);
 
     const noteFile = this.plugin.app.workspace.getActiveFile();
 

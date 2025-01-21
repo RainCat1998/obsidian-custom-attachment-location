@@ -4,7 +4,6 @@ import {
 } from 'obsidian';
 import { appendCodeBlock } from 'obsidian-dev-utils/HTMLElement';
 import { PluginSettingsTabBase } from 'obsidian-dev-utils/obsidian/Plugin/PluginSettingsTabBase';
-import { extend } from 'obsidian-dev-utils/obsidian/Plugin/ValueComponent';
 
 import type { CustomAttachmentLocationPlugin } from './CustomAttachmentLocationPlugin.ts';
 
@@ -37,14 +36,14 @@ export class CustomAttachmentLocationPluginSettingsTab extends PluginSettingsTab
         f.createEl('a', { href: 'https://github.com/polyipseity/obsidian-show-hidden-files/', text: 'Show Hidden Files' });
         f.appendText(' Plugin to manage them.');
       }))
-      .addText((text) => extend(text).bind(this.plugin, 'attachmentFolderPath', {
+      .addText((text) => this.bind(text, 'attachmentFolderPath', {
         componentToPluginSettingsValueConverter(uiValue: string): string {
           return normalizePath(uiValue);
         },
         pluginSettingsToComponentValueConverter(pluginSettingsValue: string): string {
           return pluginSettingsValue;
         },
-        valueValidator(uiValue): null | string {
+        valueValidator(uiValue): string {
           return validatePath(uiValue);
         }
       })
@@ -57,8 +56,8 @@ export class CustomAttachmentLocationPluginSettingsTab extends PluginSettingsTab
         f.appendText('See available ');
         f.createEl('a', { href: 'https://github.com/RainCat1998/obsidian-custom-attachment-location?tab=readme-ov-file#tokens', text: 'tokens' });
       }))
-      .addText((text) => extend(text).bind(this.plugin, 'pastedFileName', {
-        valueValidator(uiValue): null | string {
+      .addText((text) => this.bind(text, 'pastedFileName', {
+        valueValidator(uiValue): string {
           return validatePath(uiValue);
         }
       })
@@ -72,7 +71,7 @@ export class CustomAttachmentLocationPluginSettingsTab extends PluginSettingsTab
         appendCodeBlock(f, '${filename}');
         f.appendText('.');
       }))
-      .addToggle((toggle) => extend(toggle).bind(this.plugin, 'autoRenameFolder'));
+      .addToggle((toggle) => this.bind(toggle, 'autoRenameFolder'));
 
     new Setting(this.containerEl)
       .setName('Automatically rename attachment files')
@@ -81,7 +80,7 @@ export class CustomAttachmentLocationPluginSettingsTab extends PluginSettingsTab
         appendCodeBlock(f, '${filename}');
         f.appendText('.');
       }))
-      .addToggle((toggle) => extend(toggle).bind(this.plugin, 'autoRenameFiles'));
+      .addToggle((toggle) => this.bind(toggle, 'autoRenameFiles'));
 
     new Setting(this.containerEl)
       .setName('Replace whitespaces')
@@ -90,42 +89,42 @@ export class CustomAttachmentLocationPluginSettingsTab extends PluginSettingsTab
         f.appendChild(createEl('br'));
         f.appendText('Leave blank to disable replacement.');
       }))
-      .addText((text) => extend(text)
-        .bind(this.plugin, 'whitespaceReplacement', {
-          valueValidator(uiValue): null | string {
-            if (uiValue === '') {
-              return null;
-            }
-
-            if (uiValue.length > 1) {
-              return 'Whitespace replacement must be a single character or blank.';
-            }
-
-            if (INVALID_FILENAME_PATH_CHARS_REG_EXP.exec(uiValue)) {
-              return 'Whitespace replacement must not contain invalid filename path characters.';
-            }
-
-            return null;
+      .addText((text) => this.bind(text, 'whitespaceReplacement', {
+        // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
+        valueValidator(uiValue): string | void {
+          if (uiValue === '') {
+            return;
           }
-        })
+
+          if (uiValue.length > 1) {
+            return 'Whitespace replacement must be a single character or blank.';
+          }
+
+          if (INVALID_FILENAME_PATH_CHARS_REG_EXP.exec(uiValue)) {
+            return 'Whitespace replacement must not contain invalid filename path characters.';
+          }
+
+          return;
+        }
+      })
         .setPlaceholder('-'));
 
     new Setting(this.containerEl)
       .setName('All lowercase names')
       .setDesc('Automatically set all characters in folder name and pasted image name to be lowercase.')
-      .addToggle((toggle) => extend(toggle).bind(this.plugin, 'toLowerCase'));
+      .addToggle((toggle) => this.bind(toggle, 'toLowerCase'));
 
     new Setting(this.containerEl)
       .setName('Convert pasted images to JPEG')
       .setDesc('Paste images from clipboard converting them to JPEG.')
-      .addToggle((toggle) => extend(toggle).bind(this.plugin, 'convertImagesToJpeg'));
+      .addToggle((toggle) => this.bind(toggle, 'convertImagesToJpeg'));
 
     new Setting(this.containerEl)
       .setName('JPEG Quality')
       .setDesc('The smaller the quality, the greater the compression ratio.')
       .addDropdown((dropDown) => {
         dropDown.addOptions(generateJpegQualityOptions());
-        extend(dropDown).bind(this.plugin, 'jpegQuality', {
+        this.bind(dropDown, 'jpegQuality', {
           componentToPluginSettingsValueConverter: (value) => Number(value),
           pluginSettingsToComponentValueConverter: (value) => value.toString()
         });
@@ -138,7 +137,7 @@ export class CustomAttachmentLocationPluginSettingsTab extends PluginSettingsTab
         appendCodeBlock(f, 'Convert pasted images to JPEG');
         f.appendText(' setting is enabled, images drag&dropped into the editor will be converted to JPEG.');
       }))
-      .addToggle((toggle) => extend(toggle).bind(this.plugin, 'convertImagesOnDragAndDrop'));
+      .addToggle((toggle) => this.bind(toggle, 'convertImagesOnDragAndDrop'));
 
     new Setting(this.containerEl)
       .setName('Rename only images')
@@ -147,7 +146,7 @@ export class CustomAttachmentLocationPluginSettingsTab extends PluginSettingsTab
         f.appendChild(createEl('br'));
         f.appendText('If disabled, all attachment files will be renamed.');
       }))
-      .addToggle((toggle) => extend(toggle).bind(this.plugin, 'renameOnlyImages'));
+      .addToggle((toggle) => this.bind(toggle, 'renameOnlyImages'));
 
     new Setting(this.containerEl)
       .setName('Rename pasted files with known names')
@@ -156,7 +155,7 @@ export class CustomAttachmentLocationPluginSettingsTab extends PluginSettingsTab
         f.appendChild(createEl('br'));
         f.appendText('If disabled, only clipboard image objects (e.g., screenshots) will be renamed.');
       }))
-      .addToggle((toggle) => extend(toggle).bind(this.plugin, 'renamePastedFilesWithKnownNames'));
+      .addToggle((toggle) => this.bind(toggle, 'renamePastedFilesWithKnownNames'));
 
     new Setting(this.containerEl)
       .setName('Rename attachments on drag&drop')
@@ -165,7 +164,7 @@ export class CustomAttachmentLocationPluginSettingsTab extends PluginSettingsTab
         appendCodeBlock(f, 'Pasted File Name');
         f.appendText(' setting.');
       }))
-      .addToggle((toggle) => extend(toggle).bind(this.plugin, 'renameAttachmentsOnDragAndDrop'));
+      .addToggle((toggle) => this.bind(toggle, 'renameAttachmentsOnDragAndDrop'));
 
     new Setting(this.containerEl)
       .setName('Rename attachments on collecting')
@@ -176,7 +175,7 @@ export class CustomAttachmentLocationPluginSettingsTab extends PluginSettingsTab
         appendCodeBlock(f, 'Pasted File Name');
         f.appendText(' setting.');
       }))
-      .addToggle((toggle) => extend(toggle).bind(this.plugin, 'renameCollectedFiles'));
+      .addToggle((toggle) => this.bind(toggle, 'renameCollectedFiles'));
 
     new Setting(this.containerEl)
       .setName('Duplicate name separator')
@@ -192,10 +191,10 @@ export class CustomAttachmentLocationPluginSettingsTab extends PluginSettingsTab
         f.appendText(', etc, getting the first name available.');
       }))
       .addText((text) => {
-        extend(text).bind(this.plugin, 'duplicateNameSeparator', {
+        this.bind(text, 'duplicateNameSeparator', {
           componentToPluginSettingsValueConverter: (value: string) => value.replaceAll(VISIBLE_WHITESPACE_CHARACTER, ' '),
           pluginSettingsToComponentValueConverter: showWhitespaceCharacter,
-          valueValidator(uiValue): null | string {
+          valueValidator(uiValue): string {
             return validateFilename(`filename${uiValue}1`, false);
           }
         })
@@ -208,12 +207,12 @@ export class CustomAttachmentLocationPluginSettingsTab extends PluginSettingsTab
     new Setting(this.containerEl)
       .setName('Keep empty attachment folders')
       .setDesc('If enabled, empty attachment folders will be preserved, useful for source control purposes.')
-      .addToggle((toggle) => extend(toggle).bind(this.plugin, 'keepEmptyAttachmentFolders'));
+      .addToggle((toggle) => this.bind(toggle, 'keepEmptyAttachmentFolders'));
 
     new Setting(this.containerEl)
       .setName('Delete orphan attachments')
       .setDesc('If enabled, when the note is deleted, its orphan attachments are deleted as well.')
-      .addToggle((toggle) => extend(toggle).bind(this.plugin, 'deleteOrphanAttachments'));
+      .addToggle((toggle) => this.bind(toggle, 'deleteOrphanAttachments'));
 
     new Setting(this.containerEl)
       .setName('Custom tokens')
@@ -224,19 +223,20 @@ export class CustomAttachmentLocationPluginSettingsTab extends PluginSettingsTab
         f.createEl('a', { href: 'https://github.com/RainCat1998/obsidian-custom-attachment-location?tab=readme-ov-file#custom-tokens', text: 'documentation' });
         f.appendText(' for more information.');
       }))
-      .addTextArea((textArea) => extend(textArea).bind(this.plugin, 'customTokensStr', {
+      .addTextArea((textArea) => this.bind(textArea, 'customTokensStr', {
         valueValidator: customTokensValidator
       }));
   }
 }
 
-function customTokensValidator(value: string): null | string {
+// eslint-disable-next-line @typescript-eslint/no-invalid-void-type
+function customTokensValidator(value: string): string | void {
   const formatters = getCustomTokenFormatters(value);
   if (formatters === null) {
     return 'Invalid custom tokens code';
   }
 
-  return null;
+  return;
 }
 
 function generateJpegQualityOptions(): Record<string, string> {

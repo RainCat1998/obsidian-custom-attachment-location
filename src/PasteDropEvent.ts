@@ -121,7 +121,7 @@ abstract class EventWrapper<TEvent extends ClipboardEvent | DragEvent> {
 
         let fileArrayBuffer: ArrayBuffer;
         if (this.shouldConvertImages() && isImageFile(entry.file)) {
-          fileArrayBuffer = await blobToJpegArrayBuffer(entry.file, this.plugin.settingsCopy.jpegQuality);
+          fileArrayBuffer = await blobToJpegArrayBuffer(entry.file, this.plugin.settings.jpegQuality);
           extension = 'jpg';
         } else {
           fileArrayBuffer = await blobToArrayBuffer(entry.file);
@@ -215,7 +215,7 @@ class DropEventWrapper extends EventWrapper<DragEvent> {
   }
 
   protected override shouldConvertImages(): boolean {
-    return this.plugin.settingsCopy.convertImagesToJpeg && this.plugin.settingsCopy.convertImagesOnDragAndDrop;
+    return this.plugin.settings.convertImagesToJpeg && this.plugin.settings.convertImagesOnDragAndDrop;
   }
 
   protected override shouldInsertRawLink(): boolean {
@@ -223,11 +223,11 @@ class DropEventWrapper extends EventWrapper<DragEvent> {
   }
 
   protected override shouldRenameAttachments(file: File): boolean {
-    if (this.plugin.settingsCopy.renameOnlyImages && !isImageFile(file)) {
+    if (this.plugin.settings.renameOnlyImages && !isImageFile(file)) {
       return false;
     }
 
-    return this.plugin.settingsCopy.renameAttachmentsOnDragAndDrop;
+    return this.plugin.settings.renameAttachmentsOnDragAndDrop;
   }
 }
 
@@ -253,14 +253,14 @@ class PasteEventWrapper extends EventWrapper<ClipboardEvent> {
   }
 
   protected override shouldConvertImages(): boolean {
-    return this.plugin.settingsCopy.convertImagesToJpeg;
+    return this.plugin.settings.convertImagesToJpeg;
   }
 
   protected override shouldRenameAttachments(file: File): boolean {
-    if (this.plugin.settingsCopy.renameOnlyImages && !isImageFile(file)) {
+    if (this.plugin.settings.renameOnlyImages && !isImageFile(file)) {
       return false;
     }
-    return getFilePath(file) === '' || this.plugin.settingsCopy.renamePastedFilesWithKnownNames;
+    return getFilePath(file) === '' || this.plugin.settings.renamePastedFilesWithKnownNames;
   }
 }
 

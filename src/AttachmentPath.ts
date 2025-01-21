@@ -14,21 +14,21 @@ export async function getAttachmentFolderFullPathForPath(plugin: CustomAttachmen
 }
 
 export async function getPastedFileName(plugin: CustomAttachmentLocationPlugin, substitutions: Substitutions): Promise<string> {
-  return await resolvePathTemplate(plugin, plugin.settingsCopy.pastedFileName, substitutions);
+  return await resolvePathTemplate(plugin, plugin.settings.pastedFileName, substitutions);
 }
 
 export function replaceWhitespace(plugin: CustomAttachmentLocationPlugin, str: string): string {
-  if (plugin.settingsCopy.whitespaceReplacement) {
-    str = str.replace(/\s/g, plugin.settingsCopy.whitespaceReplacement);
-    const escaped = escapeRegExp(plugin.settingsCopy.whitespaceReplacement);
-    str = str.replace(new RegExp(`${escaped}{2,}`, 'g'), plugin.settingsCopy.whitespaceReplacement);
+  if (plugin.settings.whitespaceReplacement) {
+    str = str.replace(/\s/g, plugin.settings.whitespaceReplacement);
+    const escaped = escapeRegExp(plugin.settings.whitespaceReplacement);
+    str = str.replace(new RegExp(`${escaped}{2,}`, 'g'), plugin.settings.whitespaceReplacement);
   }
 
   return str;
 }
 
 async function getAttachmentFolderPath(plugin: CustomAttachmentLocationPlugin, substitutions: Substitutions): Promise<string> {
-  return await resolvePathTemplate(plugin, plugin.settingsCopy.attachmentFolderPath, substitutions);
+  return await resolvePathTemplate(plugin, plugin.settings.attachmentFolderPath, substitutions);
 }
 
 async function resolvePathTemplate(plugin: CustomAttachmentLocationPlugin, template: string, substitutions: Substitutions): Promise<string> {
@@ -38,7 +38,7 @@ async function resolvePathTemplate(plugin: CustomAttachmentLocationPlugin, templ
     throw new Error(`Resolved path ${resolvedPath} is invalid: ${validationError}`);
   }
 
-  if (plugin.settingsCopy.toLowerCase) {
+  if (plugin.settings.toLowerCase) {
     resolvedPath = resolvedPath.toLowerCase();
   }
 

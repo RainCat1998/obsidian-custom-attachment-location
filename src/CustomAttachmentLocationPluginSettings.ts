@@ -22,25 +22,19 @@ export class CustomAttachmentLocationPluginSettings extends PluginSettingsBase {
   public toLowerCase = false;
   public whitespaceReplacement = '';
   public get customTokensStr(): string {
-    return this.#customTokensStr;
+    return this._customTokensStr;
   }
 
   public set customTokensStr(value: string) {
-    this.#customTokensStr = value;
-    Substitutions.registerCustomFormatters(this.#customTokensStr);
+    this._customTokensStr = value;
+    Substitutions.registerCustomFormatters(this._customTokensStr);
   }
 
-  #customTokensStr = '';
-
-  #shouldSave = false;
+  private _customTokensStr = '';
 
   public constructor(data: unknown) {
     super();
     this.init(data);
-  }
-
-  public override shouldSaveAfterLoad(): boolean {
-    return this.#shouldSave;
   }
 
   public override toJSON(): Record<string, unknown> {
@@ -58,7 +52,7 @@ export class CustomAttachmentLocationPluginSettings extends PluginSettingsBase {
     if (legacySettings.replaceWhitespace !== undefined) {
       legacySettings.whitespaceReplacement = legacySettings.replaceWhitespace ? '-' : '';
     }
-    this.#shouldSave = deleteProperties(legacySettings, ['dateTimeFormat', 'pastedImageFileName', 'replaceWhitespace']);
+    this._shouldSaveAfterLoad = deleteProperties(legacySettings, ['dateTimeFormat', 'pastedImageFileName', 'replaceWhitespace']);
     super.initFromRecord(legacySettings);
   }
 }

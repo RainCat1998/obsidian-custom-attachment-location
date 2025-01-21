@@ -241,11 +241,11 @@ async function prepareAttachmentToMove(plugin: CustomAttachmentLocationPlugin, l
 
   let newAttachmentName: string;
 
-  if (plugin.settingsCopy.renameOnlyImages && !IMAGE_EXTENSIONS.includes('.' + oldAttachmentFile.extension.toLowerCase())) {
+  if (plugin.settings.renameOnlyImages && !IMAGE_EXTENSIONS.includes('.' + oldAttachmentFile.extension.toLowerCase())) {
     newAttachmentName = oldAttachmentName;
-  } else if (plugin.settingsCopy.renameCollectedFiles) {
+  } else if (plugin.settings.renameCollectedFiles) {
     newAttachmentName = makeFileName(await getPastedFileName(plugin, new Substitutions(newNotePath, oldAttachmentFile.name)), oldAttachmentFile.extension);
-  } else if (plugin.settingsCopy.autoRenameFiles) {
+  } else if (plugin.settings.autoRenameFiles) {
     newAttachmentName = oldAttachmentName.replaceAll(oldNoteBaseName, newNoteBaseName);
   } else {
     newAttachmentName = oldAttachmentName;

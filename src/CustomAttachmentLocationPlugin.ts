@@ -99,7 +99,9 @@ export class CustomAttachmentLocationPlugin extends PluginBase<CustomAttachmentL
     });
 
     this.addCommand({
-      callback: () => { collectAttachmentsEntireVault(this); },
+      callback: () => {
+        collectAttachmentsEntireVault(this);
+      },
       id: 'collect-attachments-entire-vault',
       name: 'Collect attachments in entire vault'
     });
@@ -110,8 +112,8 @@ export class CustomAttachmentLocationPlugin extends PluginBase<CustomAttachmentL
   private getAvailablePath(filename: string, extension: string): string {
     let suffixNum = 0;
 
-    for (; ;) {
-      const path = makeFileName(suffixNum == 0 ? filename : `${filename}${this.settings.duplicateNameSeparator}${suffixNum.toString()}`, extension);
+    for (;;) {
+      const path = makeFileName(suffixNum === 0 ? filename : `${filename}${this.settings.duplicateNameSeparator}${suffixNum.toString()}`, extension);
 
       if (!getAbstractFileOrNull(this.app, path, true)) {
         return path;
@@ -121,7 +123,12 @@ export class CustomAttachmentLocationPlugin extends PluginBase<CustomAttachmentL
     }
   }
 
-  private async getAvailablePathForAttachments(filename: string, extension: string, file: null | TFile, skipFolderCreation: boolean | undefined): Promise<string> {
+  private async getAvailablePathForAttachments(
+    filename: string,
+    extension: string,
+    file: null | TFile,
+    skipFolderCreation: boolean | undefined
+  ): Promise<string> {
     let attachmentPath: string;
     if (!file || !isNote(this.app, file)) {
       attachmentPath = await getAvailablePathForAttachments(this.app, filename, extension, file, true);

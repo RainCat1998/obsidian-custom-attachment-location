@@ -121,11 +121,11 @@ Example:
 ```javascript
 exports.myCustomToken1 = (substitutions, app, format) => {
   return substitutions.fileName + app.appId + format;
-}
+};
 
 exports.myCustomToken2 = async (substitutions, app, format) => {
   return await Promise.resolve(substitutions.fileName + app.appId + format);
-}
+};
 ```
 
 Then you can use the defined `${myCustomToken1}`, `${myCustomToken2:format}` tokens in the [Location for New Attachments](#location-for-new-attachments) and [Pasted File Name](#pasted-file-name) settings.

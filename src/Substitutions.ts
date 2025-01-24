@@ -123,7 +123,10 @@ export class Substitutions {
     this.formatters.clear();
     this.registerFormatter('date', (_substitutions, _app, format) => formatDate(format));
     this.registerFormatter('fileCreationDate', (substitutions, app, format) => formatFileDate(app, substitutions.filePath, format, (file) => file.stat.ctime));
-    this.registerFormatter('fileModificationDate', (substitutions, app, format) => formatFileDate(app, substitutions.filePath, format, (file) => file.stat.mtime));
+    this.registerFormatter(
+      'fileModificationDate',
+      (substitutions, app, format) => formatFileDate(app, substitutions.filePath, format, (file) => file.stat.mtime)
+    );
     this.registerFormatter('fileName', (substitutions) => substitutions.fileName);
     this.registerFormatter('filePath', (substitutions) => substitutions.filePath);
     this.registerFormatter('folderName', (substitutions) => substitutions.folderName);

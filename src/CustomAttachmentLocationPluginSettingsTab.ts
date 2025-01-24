@@ -36,18 +36,19 @@ export class CustomAttachmentLocationPluginSettingsTab extends PluginSettingsTab
         f.createEl('a', { href: 'https://github.com/polyipseity/obsidian-show-hidden-files/', text: 'Show Hidden Files' });
         f.appendText(' Plugin to manage them.');
       }))
-      .addText((text) => this.bind(text, 'attachmentFolderPath', {
-        componentToPluginSettingsValueConverter(uiValue: string): string {
-          return normalizePath(uiValue);
-        },
-        pluginSettingsToComponentValueConverter(pluginSettingsValue: string): string {
-          return pluginSettingsValue;
-        },
-        valueValidator(uiValue): string {
-          return validatePath(uiValue);
-        }
-      })
-        .setPlaceholder('./assets/${filename}')
+      .addText((text) =>
+        this.bind(text, 'attachmentFolderPath', {
+          componentToPluginSettingsValueConverter(uiValue: string): string {
+            return normalizePath(uiValue);
+          },
+          pluginSettingsToComponentValueConverter(pluginSettingsValue: string): string {
+            return pluginSettingsValue;
+          },
+          valueValidator(uiValue): string {
+            return validatePath(uiValue);
+          }
+        })
+          .setPlaceholder('./assets/${filename}')
       );
 
     new Setting(this.containerEl)
@@ -56,12 +57,13 @@ export class CustomAttachmentLocationPluginSettingsTab extends PluginSettingsTab
         f.appendText('See available ');
         f.createEl('a', { href: 'https://github.com/RainCat1998/obsidian-custom-attachment-location?tab=readme-ov-file#tokens', text: 'tokens' });
       }))
-      .addText((text) => this.bind(text, 'pastedFileName', {
-        valueValidator(uiValue): string {
-          return validatePath(uiValue);
-        }
-      })
-        .setPlaceholder('file-${date:YYYYMMDDHHmmssSSS}')
+      .addText((text) =>
+        this.bind(text, 'pastedFileName', {
+          valueValidator(uiValue): string {
+            return validatePath(uiValue);
+          }
+        })
+          .setPlaceholder('file-${date:YYYYMMDDHHmmssSSS}')
       );
 
     new Setting(this.containerEl)
@@ -89,25 +91,27 @@ export class CustomAttachmentLocationPluginSettingsTab extends PluginSettingsTab
         f.appendChild(createEl('br'));
         f.appendText('Leave blank to disable replacement.');
       }))
-      .addText((text) => this.bind(text, 'whitespaceReplacement', {
-        // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
-        valueValidator(uiValue): string | void {
-          if (uiValue === '') {
+      .addText((text) =>
+        this.bind(text, 'whitespaceReplacement', {
+          // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
+          valueValidator(uiValue): string | void {
+            if (uiValue === '') {
+              return;
+            }
+
+            if (uiValue.length > 1) {
+              return 'Whitespace replacement must be a single character or blank.';
+            }
+
+            if (INVALID_FILENAME_PATH_CHARS_REG_EXP.exec(uiValue)) {
+              return 'Whitespace replacement must not contain invalid filename path characters.';
+            }
+
             return;
           }
-
-          if (uiValue.length > 1) {
-            return 'Whitespace replacement must be a single character or blank.';
-          }
-
-          if (INVALID_FILENAME_PATH_CHARS_REG_EXP.exec(uiValue)) {
-            return 'Whitespace replacement must not contain invalid filename path characters.';
-          }
-
-          return;
-        }
-      })
-        .setPlaceholder('-'));
+        })
+          .setPlaceholder('-')
+      );
 
     new Setting(this.containerEl)
       .setName('All lowercase names')
@@ -223,9 +227,11 @@ export class CustomAttachmentLocationPluginSettingsTab extends PluginSettingsTab
         f.createEl('a', { href: 'https://github.com/RainCat1998/obsidian-custom-attachment-location?tab=readme-ov-file#custom-tokens', text: 'documentation' });
         f.appendText(' for more information.');
       }))
-      .addTextArea((textArea) => this.bind(textArea, 'customTokensStr', {
-        valueValidator: customTokensValidator
-      }));
+      .addTextArea((textArea) =>
+        this.bind(textArea, 'customTokensStr', {
+          valueValidator: customTokensValidator
+        })
+      );
   }
 }
 

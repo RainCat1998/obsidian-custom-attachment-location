@@ -42,7 +42,7 @@ abstract class EventWrapper<TEvent extends ClipboardEvent | DragEvent> {
     protected readonly event: TEvent,
     private readonly eventType: string,
     protected readonly plugin: CustomAttachmentLocationPlugin
-  ) { }
+  ) {}
 
   public async handle(): Promise<void> {
     let handledEvent = this.event as HandledEvent;
@@ -283,6 +283,8 @@ function getFilePath(file: File): string {
 }
 
 async function handlePasteAndDrop(plugin: CustomAttachmentLocationPlugin, event: ClipboardEvent | DragEvent): Promise<void> {
-  const eventWrapper = event.constructor.name === 'ClipboardEvent' ? new PasteEventWrapper(event as ClipboardEvent, plugin) : new DropEventWrapper(event as DragEvent, plugin);
+  const eventWrapper = event.constructor.name === 'ClipboardEvent'
+    ? new PasteEventWrapper(event as ClipboardEvent, plugin)
+    : new DropEventWrapper(event as DragEvent, plugin);
   await eventWrapper.handle();
 }

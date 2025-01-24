@@ -64,7 +64,12 @@ interface AttachmentMoveResult {
   oldAttachmentPath: string;
 }
 
-export async function collectAttachments(plugin: CustomAttachmentLocationPlugin, note: TFile, oldPath?: string, attachmentFilter?: (path: string) => boolean): Promise<void> {
+export async function collectAttachments(
+  plugin: CustomAttachmentLocationPlugin,
+  note: TFile,
+  oldPath?: string,
+  attachmentFilter?: (path: string) => boolean
+): Promise<void> {
   const app = plugin.app;
   oldPath ??= note.path;
   attachmentFilter ??= (): boolean => true;
@@ -171,20 +176,22 @@ export function collectAttachmentsEntireVault(plugin: CustomAttachmentLocationPl
 }
 
 export async function collectAttachmentsInFolder(plugin: CustomAttachmentLocationPlugin, folder: TFolder): Promise<void> {
-  if (!await confirm({
-    app: plugin.app,
-    message: createFragment((f) => {
-      f.appendText('Do you want to collect attachments for all notes in folder: ');
-      appendCodeBlock(f, folder.path);
-      f.appendText(' and all its subfolders?');
-      f.createEl('br');
-      f.appendText('This operation cannot be undone.');
-    }),
-    title: createFragment((f) => {
-      setIcon(f.createSpan(), 'lucide-alert-triangle');
-      f.appendText(' Collect attachments in folder');
+  if (
+    !await confirm({
+      app: plugin.app,
+      message: createFragment((f) => {
+        f.appendText('Do you want to collect attachments for all notes in folder: ');
+        appendCodeBlock(f, folder.path);
+        f.appendText(' and all its subfolders?');
+        f.createEl('br');
+        f.appendText('This operation cannot be undone.');
+      }),
+      title: createFragment((f) => {
+        setIcon(f.createSpan(), 'lucide-alert-triangle');
+        f.appendText(' Collect attachments in folder');
+      })
     })
-  })) {
+  ) {
     return;
   }
   plugin.consoleDebug(`Collect attachments in folder: ${folder.path}`);
@@ -221,7 +228,12 @@ async function getCanvasLinks(app: App, file: TFile): Promise<ReferenceCache[]> 
   }));
 }
 
-async function prepareAttachmentToMove(plugin: CustomAttachmentLocationPlugin, link: Reference, newNotePath: string, oldNotePath: string): Promise<AttachmentMoveResult | null> {
+async function prepareAttachmentToMove(
+  plugin: CustomAttachmentLocationPlugin,
+  link: Reference,
+  newNotePath: string,
+  oldNotePath: string
+): Promise<AttachmentMoveResult | null> {
   const app = plugin.app;
 
   const oldAttachmentFile = extractLinkFile(app, link, oldNotePath);

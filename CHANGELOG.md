@@ -92,10 +92,10 @@
 
 - Use image-override to be compatible with `Paste Mode` plugin
 - Fix check for pasted image
-- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/4.13.3
 
 ## 4.28.5
 
+- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/4.13.3
 
 ## 4.28.4
 

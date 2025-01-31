@@ -111,7 +111,7 @@ export async function collectAttachments(
 
       if (!isCanvas) {
         const newContent = updateLink({
-          app: app,
+          app,
           link,
           newSourcePathOrFile: note,
           newTargetPathOrFile: attachmentMoveResult.newAttachmentPath,
@@ -215,12 +215,12 @@ export async function collectAttachmentsInFolder(plugin: CustomAttachmentLocatio
   });
 }
 
-async function getCanvasLinks(app: App, file: TFile): Promise<ReferenceCache[]> {
-  const canvasData = await app.vault.readJson(file.path) as CanvasData;
-  const files = canvasData.nodes.filter((node) => node.type === 'file').map((node) => node.file);
-  return files.map((file) => ({
-    link: file,
-    original: file,
+async function getCanvasLinks(app: App, canvasFile: TFile): Promise<ReferenceCache[]> {
+  const canvasData = await app.vault.readJson(canvasFile.path) as CanvasData;
+  const paths = canvasData.nodes.filter((node) => node.type === 'file').map((node) => node.file);
+  return paths.map((path) => ({
+    link: path,
+    original: path,
     position: {
       end: { col: 0, line: 0, loc: 0, offset: 0 },
       start: { col: 0, line: 0, loc: 0, offset: 0 }
@@ -253,7 +253,7 @@ async function prepareAttachmentToMove(
 
   let newAttachmentName: string;
 
-  if (plugin.settings.renameOnlyImages && !IMAGE_EXTENSIONS.includes('.' + oldAttachmentFile.extension.toLowerCase())) {
+  if (plugin.settings.renameOnlyImages && !IMAGE_EXTENSIONS.includes(`.${oldAttachmentFile.extension.toLowerCase()}`)) {
     newAttachmentName = oldAttachmentName;
   } else if (plugin.settings.renameCollectedFiles) {
     newAttachmentName = makeFileName(await getPastedFileName(plugin, new Substitutions(newNotePath, oldAttachmentFile.name)), oldAttachmentFile.extension);

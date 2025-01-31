@@ -48,6 +48,7 @@ export class CustomAttachmentLocationPluginSettingsTab extends PluginSettingsTab
             return validatePath(uiValue);
           }
         })
+          // eslint-disable-next-line no-template-curly-in-string
           .setPlaceholder('./assets/${filename}')
       );
 
@@ -63,6 +64,7 @@ export class CustomAttachmentLocationPluginSettingsTab extends PluginSettingsTab
             return validatePath(uiValue);
           }
         })
+          // eslint-disable-next-line no-template-curly-in-string
           .setPlaceholder('file-${date:YYYYMMDDHHmmssSSS}')
       );
 
@@ -70,6 +72,7 @@ export class CustomAttachmentLocationPluginSettingsTab extends PluginSettingsTab
       .setName('Automatically rename attachment folder')
       .setDesc(createFragment((f) => {
         f.appendText('When renaming md files, automatically rename attachment folder if folder name contains ');
+        // eslint-disable-next-line no-template-curly-in-string
         appendCodeBlock(f, '${filename}');
         f.appendText('.');
       }))
@@ -79,6 +82,7 @@ export class CustomAttachmentLocationPluginSettingsTab extends PluginSettingsTab
       .setName('Automatically rename attachment files')
       .setDesc(createFragment((f) => {
         f.appendText('When renaming md files, automatically rename attachment files if file name contains ');
+        // eslint-disable-next-line no-template-curly-in-string
         appendCodeBlock(f, '${filename}');
         f.appendText('.');
       }))
@@ -106,8 +110,6 @@ export class CustomAttachmentLocationPluginSettingsTab extends PluginSettingsTab
             if (INVALID_FILENAME_PATH_CHARS_REG_EXP.exec(uiValue)) {
               return 'Whitespace replacement must not contain invalid filename path characters.';
             }
-
-            return;
           }
         })
           .setPlaceholder('-')
@@ -241,14 +243,13 @@ function customTokensValidator(value: string): string | void {
   if (formatters === null) {
     return 'Invalid custom tokens code';
   }
-
-  return;
 }
 
 function generateJpegQualityOptions(): Record<string, string> {
+  const MAX_QUALITY = 10;
   const ans: Record<string, string> = {};
-  for (let i = 1; i <= 10; i++) {
-    const valueStr = (i / 10).toFixed(1);
+  for (let i = 1; i <= MAX_QUALITY; i++) {
+    const valueStr = (i / MAX_QUALITY).toFixed(1);
     ans[valueStr] = valueStr;
   }
 

@@ -47,7 +47,7 @@ async function resolvePathTemplate(plugin: CustomAttachmentLocationPlugin, templ
   }
 
   if (!resolvedPath.endsWith('/')) {
-    resolvedPath = resolvedPath + '/';
+    resolvedPath += '/';
   }
 
   resolvedPath = replaceWhitespace(plugin, resolvedPath);

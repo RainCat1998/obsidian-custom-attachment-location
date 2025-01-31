@@ -27,12 +27,12 @@ type Formatter = (substitutions: Substitutions, app: App, format: string) => May
 const MORE_THAN_TWO_DOTS_REG_EXP = /^\.{3,}$/;
 const TRAILING_DOTS_AND_SPACES_REG_EXP = /[. ]+$/;
 export const INVALID_FILENAME_PATH_CHARS_REG_EXP = /[\\/:*?"<>|]/;
-export const SUBSTITUTION_TOKEN_REG_EXP = /\${(.+?)(?::(.+?))?}/g;
+export const SUBSTITUTION_TOKEN_REG_EXP = /\${(?<Token>.+?)(?::(?<Format>.+?))?}/g;
 
 export function getCustomTokenFormatters(customTokensStr: string): Map<string, Formatter> | null {
   const formatters = new Map<string, Formatter>();
   try {
-    // eslint-disable-next-line @typescript-eslint/no-implied-eval
+    // eslint-disable-next-line @typescript-eslint/no-implied-eval, no-new-func
     const customTokenInitFn = new Function('exports', customTokensStr) as (exports: object) => void;
     const exports = {};
     customTokenInitFn(exports);
@@ -170,6 +170,7 @@ export class Substitutions {
     const promptResult = await prompt({
       app,
       defaultValue: this.originalCopiedFileName,
+      // eslint-disable-next-line no-template-curly-in-string
       title: 'Provide a value for ${prompt} template',
       valueValidator: (value) => validateFilename(value, false)
     });

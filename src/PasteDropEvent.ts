@@ -6,6 +6,7 @@ import {
   blobToJpegArrayBuffer,
   isImageFile
 } from 'obsidian-dev-utils/Blob';
+import { noop } from 'obsidian-dev-utils/Function';
 import { isNote } from 'obsidian-dev-utils/obsidian/FileSystem';
 import {
   basename,
@@ -42,7 +43,9 @@ abstract class EventWrapper<TEvent extends ClipboardEvent | DragEvent> {
     protected readonly event: TEvent,
     private readonly eventType: string,
     protected readonly plugin: CustomAttachmentLocationPlugin
-  ) {}
+  ) {
+    noop();
+  }
 
   public async handle(): Promise<void> {
     let handledEvent = this.event as HandledEvent;
@@ -95,7 +98,8 @@ abstract class EventWrapper<TEvent extends ClipboardEvent | DragEvent> {
           file,
           type
         };
-      } else if (item.kind === 'string') {
+      }
+      if (item.kind === 'string') {
         const textPromise = new Promise<string>((resolve) => {
           item.getAsString((text) => {
             resolve(text);
@@ -105,9 +109,8 @@ abstract class EventWrapper<TEvent extends ClipboardEvent | DragEvent> {
           textPromise,
           type
         };
-      } else {
-        throw new Error(`Unsupported item kind ${item.kind}`);
       }
+      throw new Error(`Unsupported item kind ${item.kind}`);
     });
 
     const newDataTransfer = new DataTransfer();
@@ -117,7 +120,7 @@ abstract class EventWrapper<TEvent extends ClipboardEvent | DragEvent> {
         newDataTransfer.items.add(await entry.textPromise, entry.type);
       } else if (entry.file) {
         let extension = extname(entry.file.name).slice(1);
-        const originalCopiedFileName = basename(entry.file.name, '.' + extension);
+        const originalCopiedFileName = basename(entry.file.name, `.${extension}`);
 
         let fileArrayBuffer: ArrayBuffer;
         if (this.shouldConvertImages() && isImageFile(entry.file)) {
@@ -265,7 +268,9 @@ class PasteEventWrapper extends EventWrapper<ClipboardEvent> {
 }
 
 export function registerPasteDropEventHandlers(plugin: CustomAttachmentLocationPlugin): void {
-  const listener = convertAsyncToSync(async (event: ClipboardEvent | DragEvent) => handlePasteAndDrop(plugin, event));
+  const listener = convertAsyncToSync(async (event: ClipboardEvent | DragEvent) => {
+    await handlePasteAndDrop(plugin, event);
+  });
   registerHandlersForWindow(window);
   plugin.app.workspace.on('window-open', (_, window) => {
     registerHandlersForWindow(window);

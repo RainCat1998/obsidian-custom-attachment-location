@@ -4,6 +4,7 @@ import { PluginSettingsBase } from 'obsidian-dev-utils/obsidian/Plugin/PluginSet
 import { Substitutions } from './Substitutions.ts';
 
 export class CustomAttachmentLocationPluginSettings extends PluginSettingsBase {
+  // eslint-disable-next-line no-template-curly-in-string
   public attachmentFolderPath = './assets/${filename}';
 
   public autoRenameFiles = false;
@@ -12,8 +13,10 @@ export class CustomAttachmentLocationPluginSettings extends PluginSettingsBase {
   public convertImagesToJpeg = false;
   public deleteOrphanAttachments = false;
   public duplicateNameSeparator = ' ';
+  // eslint-disable-next-line no-magic-numbers
   public jpegQuality = 0.8;
   public keepEmptyAttachmentFolders = false;
+  // eslint-disable-next-line no-template-curly-in-string
   public pastedFileName = 'file-${date:YYYYMMDDHHmmssSSS}';
   public renameAttachmentsOnDragAndDrop = false;
   public renameCollectedFiles = false;
@@ -48,6 +51,7 @@ export class CustomAttachmentLocationPluginSettings extends PluginSettingsBase {
     const legacySettings = record as Partial<LegacySettings>;
     const dateTimeFormat = legacySettings.dateTimeFormat ?? 'YYYYMMDDHHmmssSSS';
     legacySettings.attachmentFolderPath = addDateTimeFormat(legacySettings.attachmentFolderPath ?? '', dateTimeFormat);
+    // eslint-disable-next-line no-template-curly-in-string
     legacySettings.pastedFileName = addDateTimeFormat(legacySettings.pastedFileName ?? legacySettings.pastedImageFileName ?? 'file-${date}', dateTimeFormat);
     if (legacySettings.replaceWhitespace !== undefined) {
       legacySettings.whitespaceReplacement = legacySettings.replaceWhitespace ? '-' : '';
@@ -64,5 +68,6 @@ class LegacySettings extends CustomAttachmentLocationPluginSettings {
 }
 
 function addDateTimeFormat(str: string, dateTimeFormat: string): string {
+  // eslint-disable-next-line no-template-curly-in-string
   return str.replaceAll('${date}', `\${date:${dateTimeFormat}}`);
 }

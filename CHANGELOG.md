@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## 5.1.6
+
+- Lint
+- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/17.2.2
+
 ## 5.1.5
 
 - Format

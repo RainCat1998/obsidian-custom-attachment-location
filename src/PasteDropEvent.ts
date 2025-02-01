@@ -169,6 +169,10 @@ abstract class EventWrapper<TEvent extends ClipboardEvent | DragEvent> {
       return TargetType.Unsupported;
     }
 
+    if (this.event.target.tagName === 'INPUT' || this.event.target.tagName === 'TEXTAREA') {
+      return TargetType.Unsupported;
+    }
+
     if (this.plugin.app.workspace.activeEditor?.metadataEditor?.contentEl.contains(this.event.target)) {
       return TargetType.Unsupported;
     }

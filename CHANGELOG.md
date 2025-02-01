@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 5.1.7
+
+- Paste in input/textarea
+
 ## 5.1.6
 
 - Lint

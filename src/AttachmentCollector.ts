@@ -255,9 +255,9 @@ async function prepareAttachmentToMove(
 
   if (plugin.settings.renameOnlyImages && !IMAGE_EXTENSIONS.includes(`.${oldAttachmentFile.extension.toLowerCase()}`)) {
     newAttachmentName = oldAttachmentName;
-  } else if (plugin.settings.renameCollectedFiles) {
+  } else if (plugin.settings.shouldRenameCollectedAttachments) {
     newAttachmentName = makeFileName(await getPastedFileName(plugin, new Substitutions(newNotePath, oldAttachmentFile.name)), oldAttachmentFile.extension);
-  } else if (plugin.settings.autoRenameFiles) {
+  } else if (plugin.settings.shouldRenameAttachmentFiles) {
     newAttachmentName = oldAttachmentName.replaceAll(oldNoteBaseName, newNoteBaseName);
   } else {
     newAttachmentName = oldAttachmentName;

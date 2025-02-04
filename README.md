@@ -9,38 +9,37 @@ Customize attachment location with tokens (`${fileName}`, `${date:format}`, etc)
 
 ## Settings
 
-### Location for New Attachments
+### Location for new attachments
 
 - Same to "Files & Links -> Default location for new attachments".
 - **Put "./" at the beginning of the path if you want to use relative path.**
 - See available [tokens](#tokens).
 - example: `assets/${filename}`, `./assets/${filename}`, `./assets/${filename}/${date:YYYY}`
 
-### Pasted File Name
+### Generated attachment filename
 
 - See available [tokens](#tokens).
 - example: `${originalCopiedFilename}-${date:YYYYMMDDHHmmssSSS}`, `${filename}-img-${date:YYYYMMDD}`
 - Obsidian default: `Pasted image ${date:YYYYMMDDHHmmss}`.
 - **Note**: This setting only changes image filename from clipboard. If your attachment is copied from the explorer, obsidian will just copy the original file to the attachment folder without renaming.
 
-### Automatically rename attachment folder
+### Should rename attachment folder
 
-Automatically update attachment folder name if "Location for New Attachments" contains `${filename}`.
+Automatically update attachment folder name if [Location for New Attachments](#location-for-new-attachments) contains `${filename}`.
 
-### Automatically rename attachment files
+### Should rename attachment files
 
-- Automatically update attachment files in target md file if "Pasted Image Name" contains `${filename}`.
-- Just simply substitute `${filename}` string in attachment filename. So it may be dangerous if multiple files share the same prefix.
+Automatically update attachment files in target md file if [Generated attachment filename](#generated-attachment-filename) contains `${filename}`.
 
-### Replace whitespace with hyphen
+### Whitespace replacement
 
-Automatically replace whitespace in attachment folder and file name with hyphens.
+Automatically replace whitespace in attachment folder and file name with the specified character.
 
-### All lowercase names
+### Should rename attachments to lowercase
 
 Automatically set all characters in folder name and pasted image name to be lowercase.
 
-### Convert pasted images to JPEG
+### Should convert pasted images to JPEG
 
 Paste images from clipboard converting them to JPEG.
 
@@ -66,11 +65,11 @@ If disabled, only clipboard image objects (e.g., screenshots) will be renamed.
 
 ### Rename attachments on drag&drop
 
-If enabled, attachments dragged and dropped into the editor will be renamed according to the `Pasted File Name` setting.
+If enabled, attachments dragged and dropped into the editor will be renamed according to the [Generated attachment filename](#generated-attachment-filename) setting.
 
-### Rename attachments on collecting
+### Should rename collected attachments
 
-If enabled, attachments processed via `Collect attachments` commands will be renamed according to the `Pasted File Name` setting.
+If enabled, attachments processed via `Collect attachments` commands will be renamed according to the [Generated attachment filename](#generated-attachment-filename) setting.
 
 ### Duplicate name separator
 
@@ -80,17 +79,17 @@ E.g., when you are dragging file `existingFile.pdf`, it will be renamed to `exis
 
 Default value is `␣` (`space`).
 
-### Keep empty attachment folders
+### Should keep empty attachment folders
 
 If enabled, empty attachment folders will be preserved, useful for source control purposes.
 
-### Delete orphan attachments
+### Should delete orphan attachments
 
 If enabled, when the note is deleted, its orphan attachments are deleted as well.
 
 ## Tokens
 
-The following tokens can be used in the [Location for New Attachments](#location-for-new-attachments) and [Pasted File Name](#pasted-file-name) settings.
+The following tokens can be used in the [Location for New Attachments](#location-for-new-attachments) and [Generated attachment filename](#generated-attachment-filename) settings.
 
 The tokens are case-insensitive. The formats are case-sensitive.
 
@@ -128,7 +127,7 @@ exports.myCustomToken2 = async (substitutions, app, format) => {
 };
 ```
 
-Then you can use the defined `${myCustomToken1}`, `${myCustomToken2:format}` tokens in the [Location for New Attachments](#location-for-new-attachments) and [Pasted File Name](#pasted-file-name) settings.
+Then you can use the defined `${myCustomToken1}`, `${myCustomToken2:format}` tokens in the [Location for New Attachments](#location-for-new-attachments) and [Generated attachment filename](#generated-attachment-filename) settings.
 
 - `substitutions`: is an object with the following properties:
   - `fileName`: The filename of the current note.

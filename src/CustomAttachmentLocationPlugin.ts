@@ -74,11 +74,11 @@ export class CustomAttachmentLocationPlugin extends PluginBase<CustomAttachmentL
   protected override onloadComplete(): MaybePromise<void> {
     registerRenameDeleteHandlers(this, () => {
       const settings: Partial<RenameDeleteHandlerSettings> = {
-        shouldDeleteEmptyFolders: !this.settings.keepEmptyAttachmentFolders,
-        shouldHandleDeletions: this.settings.deleteOrphanAttachments,
+        shouldDeleteEmptyFolders: !this.settings.shouldKeepEmptyAttachmentFolders,
+        shouldHandleDeletions: this.settings.shouldDeleteOrphanAttachments,
         shouldHandleRenames: true,
-        shouldRenameAttachmentFiles: this.settings.autoRenameFiles,
-        shouldRenameAttachmentFolder: this.settings.autoRenameFolder,
+        shouldRenameAttachmentFiles: this.settings.shouldRenameAttachmentFiles,
+        shouldRenameAttachmentFolder: this.settings.shouldRenameAttachmentFolder,
         shouldUpdateFilenameAliases: true
       };
       return settings;
@@ -141,7 +141,7 @@ export class CustomAttachmentLocationPlugin extends PluginBase<CustomAttachmentL
       const folderPath = parentFolderPath(attachmentPath);
       if (!await this.app.vault.exists(folderPath)) {
         await createFolderSafe(this.app, folderPath);
-        if (this.settings.keepEmptyAttachmentFolders) {
+        if (this.settings.shouldKeepEmptyAttachmentFolders) {
           await this.app.vault.create(join(folderPath, '.gitkeep'), '');
         }
       }

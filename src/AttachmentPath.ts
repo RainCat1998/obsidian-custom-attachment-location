@@ -18,7 +18,7 @@ export async function getAttachmentFolderFullPathForPath(
 }
 
 export async function getPastedFileName(plugin: CustomAttachmentLocationPlugin, substitutions: Substitutions): Promise<string> {
-  return await resolvePathTemplate(plugin, plugin.settings.pastedFileName, substitutions);
+  return await resolvePathTemplate(plugin, plugin.settings.generatedAttachmentFilename, substitutions);
 }
 
 export function replaceWhitespace(plugin: CustomAttachmentLocationPlugin, str: string): string {
@@ -42,7 +42,7 @@ async function resolvePathTemplate(plugin: CustomAttachmentLocationPlugin, templ
     throw new Error(`Resolved path ${resolvedPath} is invalid: ${validationError}`);
   }
 
-  if (plugin.settings.toLowerCase) {
+  if (plugin.settings.shouldRenameAttachmentsToLowerCase) {
     resolvedPath = resolvedPath.toLowerCase();
   }
 

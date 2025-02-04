@@ -222,7 +222,7 @@ class DropEventWrapper extends EventWrapper<DragEvent> {
   }
 
   protected override shouldConvertImages(): boolean {
-    return this.plugin.settings.convertImagesToJpeg && this.plugin.settings.convertImagesOnDragAndDrop;
+    return this.plugin.settings.shouldConvertPastedImagesToJpeg && this.plugin.settings.convertImagesOnDragAndDrop;
   }
 
   protected override shouldInsertRawLink(): boolean {
@@ -260,7 +260,7 @@ class PasteEventWrapper extends EventWrapper<ClipboardEvent> {
   }
 
   protected override shouldConvertImages(): boolean {
-    return this.plugin.settings.convertImagesToJpeg;
+    return this.plugin.settings.shouldConvertPastedImagesToJpeg;
   }
 
   protected override shouldRenameAttachments(file: File): boolean {

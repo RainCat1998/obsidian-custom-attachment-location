@@ -19,12 +19,12 @@
   "license": "MIT",
   "devDependencies": {
     "@tsconfig/strictest": "^2.0.5",
-    "@types/node": "^22.13.0",
+    "@types/node": "^22.13.1",
     "electron": "^34.0.2",
     "moment": "^2.30.1",
     "monkey-around": "^3.0.0",
     "obsidian": "^1.7.2",
-    "obsidian-dev-utils": "^17.5.0",
+    "obsidian-dev-utils": "^17.8.0",
     "obsidian-typings": "^2.16.0",
     "tsx": "^4.19.2",
     "typescript": "^5.7.3"

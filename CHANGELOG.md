@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## 6.0.0
+
+- Refactor to support insert attachment
+- Rename settings
+- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/17.8.0
+
 ## 5.1.7
 
 - Paste in input/textarea

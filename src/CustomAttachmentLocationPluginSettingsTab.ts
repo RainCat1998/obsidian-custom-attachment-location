@@ -2,11 +2,16 @@ import {
   normalizePath,
   Setting
 } from 'obsidian';
+import {
+  getEnumKey,
+  getEnumValue
+} from 'obsidian-dev-utils/Enum';
 import { appendCodeBlock } from 'obsidian-dev-utils/HTMLElement';
 import { PluginSettingsTabBase } from 'obsidian-dev-utils/obsidian/Plugin/PluginSettingsTabBase';
 
 import type { CustomAttachmentLocationPlugin } from './CustomAttachmentLocationPlugin.ts';
 
+import { AttachmentRenameMode } from './CustomAttachmentLocationPluginSettings.ts';
 import {
   getCustomTokenFormatters,
   INVALID_FILENAME_PATH_CHARS_REG_EXP,
@@ -67,6 +72,16 @@ export class CustomAttachmentLocationPluginSettingsTab extends PluginSettingsTab
           // eslint-disable-next-line no-template-curly-in-string
           .setPlaceholder('file-${date:YYYYMMDDHHmmssSSS}')
       );
+
+    new Setting(this.containerEl)
+      .setName('Attachment rename mode')
+      .addDropdown((dropdown) => {
+        dropdown.addOptions(AttachmentRenameMode);
+        this.bind(dropdown, 'attachmentRenameMode', {
+          componentToPluginSettingsValueConverter: (value) => getEnumValue(AttachmentRenameMode, value),
+          pluginSettingsToComponentValueConverter: (value) => getEnumKey(AttachmentRenameMode, value)
+        });
+      });
 
     new Setting(this.containerEl)
       .setName('Should rename attachment folder')
@@ -135,42 +150,6 @@ export class CustomAttachmentLocationPluginSettingsTab extends PluginSettingsTab
           pluginSettingsToComponentValueConverter: (value) => value.toString()
         });
       });
-
-    new Setting(this.containerEl)
-      .setName('Convert images on drag&drop')
-      .setDesc(createFragment((f) => {
-        f.appendText('If enabled and ');
-        appendCodeBlock(f, 'Convert pasted images to JPEG');
-        f.appendText(' setting is enabled, images drag&dropped into the editor will be converted to JPEG.');
-      }))
-      .addToggle((toggle) => this.bind(toggle, 'convertImagesOnDragAndDrop'));
-
-    new Setting(this.containerEl)
-      .setName('Rename only images')
-      .setDesc(createFragment((f) => {
-        f.appendText('If enabled, only image files will be renamed.');
-        f.appendChild(createEl('br'));
-        f.appendText('If disabled, all attachment files will be renamed.');
-      }))
-      .addToggle((toggle) => this.bind(toggle, 'renameOnlyImages'));
-
-    new Setting(this.containerEl)
-      .setName('Rename pasted files with known names')
-      .setDesc(createFragment((f) => {
-        f.appendText('If enabled, pasted copied files with known names will be renamed.');
-        f.appendChild(createEl('br'));
-        f.appendText('If disabled, only clipboard image objects (e.g., screenshots) will be renamed.');
-      }))
-      .addToggle((toggle) => this.bind(toggle, 'renamePastedFilesWithKnownNames'));
-
-    new Setting(this.containerEl)
-      .setName('Rename attachments on drag&drop')
-      .setDesc(createFragment((f) => {
-        f.appendText('If enabled, attachments dragged and dropped into the editor will be renamed according to the ');
-        appendCodeBlock(f, 'Pasted File Name');
-        f.appendText(' setting.');
-      }))
-      .addToggle((toggle) => this.bind(toggle, 'renameAttachmentsOnDragAndDrop'));
 
     new Setting(this.containerEl)
       .setName('Should rename collected attachments')

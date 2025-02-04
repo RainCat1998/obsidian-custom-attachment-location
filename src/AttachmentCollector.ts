@@ -56,9 +56,6 @@ import {
 } from './AttachmentPath.ts';
 import { Substitutions } from './Substitutions.ts';
 
-// https://help.obsidian.md/Files+and+folders/Accepted+file+formats#Supported+File+Formats+in+Obsidian
-const IMAGE_EXTENSIONS = ['.avif', '.bmp', '.gif', '.jpeg', '.jpg', '.png', '.svg', '.webp'];
-
 interface AttachmentMoveResult {
   newAttachmentPath: string;
   oldAttachmentPath: string;
@@ -253,9 +250,7 @@ async function prepareAttachmentToMove(
 
   let newAttachmentName: string;
 
-  if (plugin.settings.renameOnlyImages && !IMAGE_EXTENSIONS.includes(`.${oldAttachmentFile.extension.toLowerCase()}`)) {
-    newAttachmentName = oldAttachmentName;
-  } else if (plugin.settings.shouldRenameCollectedAttachments) {
+  if (plugin.settings.shouldRenameCollectedAttachments) {
     newAttachmentName = makeFileName(await getPastedFileName(plugin, new Substitutions(newNotePath, oldAttachmentFile.name)), oldAttachmentFile.extension);
   } else if (plugin.settings.shouldRenameAttachmentFiles) {
     newAttachmentName = oldAttachmentName.replaceAll(oldNoteBaseName, newNoteBaseName);

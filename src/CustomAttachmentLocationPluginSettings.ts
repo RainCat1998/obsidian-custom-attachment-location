@@ -3,23 +3,28 @@ import { PluginSettingsBase } from 'obsidian-dev-utils/obsidian/Plugin/PluginSet
 
 import { Substitutions } from './Substitutions.ts';
 
+export enum AttachmentRenameMode {
+  None = 'None',
+  // eslint-disable-next-line perfectionist/sort-enums
+  OnlyPastedImages = 'Only pasted images',
+  // eslint-disable-next-line perfectionist/sort-enums
+  All = 'All'
+}
+
 export class CustomAttachmentLocationPluginSettings extends PluginSettingsBase {
   // eslint-disable-next-line no-template-curly-in-string
   public attachmentFolderPath = './assets/${filename}';
-  public convertImagesOnDragAndDrop = false;
+  public attachmentRenameMode: AttachmentRenameMode = AttachmentRenameMode.OnlyPastedImages;
   public duplicateNameSeparator = ' ';
   // eslint-disable-next-line no-template-curly-in-string
   public generatedAttachmentFilename = 'file-${date:YYYYMMDDHHmmssSSS}';
   // eslint-disable-next-line no-magic-numbers
   public jpegQuality = 0.8;
-  public renameAttachmentsOnDragAndDrop = false;
-  public renameOnlyImages = true;
-  public renamePastedFilesWithKnownNames = false;
   public shouldConvertPastedImagesToJpeg = false;
   public shouldDeleteOrphanAttachments = false;
   public shouldKeepEmptyAttachmentFolders = false;
-  public shouldRenameAttachmentFolder = true;
   public shouldRenameAttachmentFiles = false;
+  public shouldRenameAttachmentFolder = true;
   public shouldRenameAttachmentsToLowerCase = false;
   public shouldRenameCollectedAttachments = false;
   public whitespaceReplacement = '';
@@ -50,8 +55,12 @@ export class CustomAttachmentLocationPluginSettings extends PluginSettingsBase {
     const legacySettings = record as Partial<LegacySettings>;
     const dateTimeFormat = legacySettings.dateTimeFormat ?? 'YYYYMMDDHHmmssSSS';
     legacySettings.attachmentFolderPath = addDateTimeFormat(legacySettings.attachmentFolderPath ?? '', dateTimeFormat);
-    // eslint-disable-next-line no-template-curly-in-string
-    legacySettings.generatedAttachmentFilename = addDateTimeFormat(legacySettings.generatedAttachmentFilename ?? legacySettings.pastedFileName ?? legacySettings.pastedImageFileName ?? 'file-${date}', dateTimeFormat);
+
+    legacySettings.generatedAttachmentFilename = addDateTimeFormat(
+      // eslint-disable-next-line no-template-curly-in-string
+      legacySettings.generatedAttachmentFilename ?? legacySettings.pastedFileName ?? legacySettings.pastedImageFileName ?? 'file-${date}',
+      dateTimeFormat
+    );
     if (legacySettings.replaceWhitespace !== undefined) {
       legacySettings.whitespaceReplacement = legacySettings.replaceWhitespace ? '-' : '';
     }
@@ -60,8 +69,8 @@ export class CustomAttachmentLocationPluginSettings extends PluginSettingsBase {
       legacySettings.shouldRenameAttachmentFiles = legacySettings.autoRenameFiles;
     }
 
-    if (legacySettings.autoRenameFolders !== undefined) {
-      legacySettings.shouldRenameAttachmentFolder = legacySettings.autoRenameFolders;
+    if (legacySettings.autoRenameFolder !== undefined) {
+      legacySettings.shouldRenameAttachmentFolder = legacySettings.autoRenameFolder;
     }
 
     if (legacySettings.deleteOrphanAttachments !== undefined) {
@@ -86,13 +95,18 @@ export class CustomAttachmentLocationPluginSettings extends PluginSettingsBase {
 
     this._shouldSaveAfterLoad = deleteProperties(legacySettings, [
       'autoRenameFiles',
-      'autoRenameFolders',
+      'autoRenameFolder',
+      'convertImagesOnDragAndDrop',
+      'convertImagesToJpeg',
       'dateTimeFormat',
       'deleteOrphanAttachments',
       'keepEmptyAttachmentFolders',
-      'pastedImageFileName',
       'pastedFileName',
+      'pastedImageFileName',
+      'renameAttachmentsOnDragAndDrop',
       'renameCollectedFiles',
+      'renameOnlyImages',
+      'renamePastedFilesWithKnownNames',
       'replaceWhitespace',
       'toLowerCase'
     ]);
@@ -102,16 +116,20 @@ export class CustomAttachmentLocationPluginSettings extends PluginSettingsBase {
 
 class LegacySettings extends CustomAttachmentLocationPluginSettings {
   public autoRenameFiles = false;
-  public autoRenameFolders = true;
+  public autoRenameFolder = true;
+  public convertImagesOnDragAndDrop = false;
   public convertImagesToJpeg = false;
   public dateTimeFormat = '';
-  public pastedImageFileName = '';
-  public replaceWhitespace = false;
   public deleteOrphanAttachments = false;
   public keepEmptyAttachmentFolders = false;
   // eslint-disable-next-line no-template-curly-in-string
   public pastedFileName = 'file-${date:YYYYMMDDHHmmssSSS}';
+  public pastedImageFileName = '';
+  public renameAttachmentsOnDragAndDrop = false;
   public renameCollectedFiles = false;
+  public renameOnlyImages = false;
+  public renamePastedFilesWithKnownNames = false;
+  public replaceWhitespace = false;
   public toLowerCase = false;
 }
 

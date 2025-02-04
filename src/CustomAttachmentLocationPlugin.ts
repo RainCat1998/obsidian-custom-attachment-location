@@ -6,6 +6,7 @@ import type {
 import type { RenameDeleteHandlerSettings } from 'obsidian-dev-utils/obsidian/RenameDeleteHandler';
 
 import { webUtils } from 'electron';
+import moment from 'moment';
 import { around } from 'monkey-around';
 import {
   Menu,
@@ -15,6 +16,7 @@ import {
   TFolder,
   Vault
 } from 'obsidian';
+import { blobToJpegArrayBuffer } from 'obsidian-dev-utils/Blob';
 import { getAvailablePathForAttachments } from 'obsidian-dev-utils/obsidian/AttachmentPath';
 import {
   getAbstractFileOrNull,
@@ -35,13 +37,24 @@ import {
   collectAttachmentsEntireVault,
   collectAttachmentsInFolder
 } from './AttachmentCollector.ts';
-import { getAttachmentFolderFullPathForPath } from './AttachmentPath.ts';
-import { CustomAttachmentLocationPluginSettings } from './CustomAttachmentLocationPluginSettings.ts';
+import {
+  getAttachmentFolderFullPathForPath,
+  getPastedFileName
+} from './AttachmentPath.ts';
+import {
+  AttachmentRenameMode,
+  CustomAttachmentLocationPluginSettings
+} from './CustomAttachmentLocationPluginSettings.ts';
 import { CustomAttachmentLocationPluginSettingsTab } from './CustomAttachmentLocationPluginSettingsTab.ts';
-import { registerPasteDropEventHandlers } from './PasteDropEvent.ts';
+import { Substitutions } from './Substitutions.ts';
 
 type GetAvailablePathFn = Vault['getAvailablePath'];
 type GetPathForFileFn = typeof webUtils['getPathForFile'];
+type SaveAttachmentFn = (name: string, extension: string, data: ArrayBuffer) => Promise<TFile>;
+
+const PASTED_IMAGE_NAME_REG_EXP = /Pasted image (?<Timestamp>\d{14})/;
+const PASTED_IMAGE_DATE_FORMAT = 'YYYYMMDDHHmmss';
+const THRESHOLD_IN_SECONDS = 10;
 
 export class CustomAttachmentLocationPlugin extends PluginBase<CustomAttachmentLocationPluginSettings> {
   protected override createPluginSettings(data: unknown): CustomAttachmentLocationPluginSettings {
@@ -84,8 +97,6 @@ export class CustomAttachmentLocationPlugin extends PluginBase<CustomAttachmentL
       return settings;
     });
 
-    registerPasteDropEventHandlers(this);
-
     this.addCommand({
       checkCallback: (checking) => collectAttachmentsCurrentNote(this, checking),
       id: 'collect-attachments-current-note',
@@ -107,6 +118,10 @@ export class CustomAttachmentLocationPlugin extends PluginBase<CustomAttachmentL
     });
 
     this.registerEvent(this.app.workspace.on('file-menu', this.handleFileMenu.bind(this)));
+
+    this.register(around(this.app, {
+      saveAttachment: (next: SaveAttachmentFn) => (name, extension, data): Promise<TFile> => this.saveAttachment(next, name, extension, data)
+    }));
   }
 
   private getAvailablePath(filename: string, extension: string): string {
@@ -164,5 +179,47 @@ export class CustomAttachmentLocationPlugin extends PluginBase<CustomAttachmentL
         .setIcon('download')
         .onClick(() => collectAttachmentsInFolder(this, file));
     });
+  }
+
+  private async saveAttachment(next: SaveAttachmentFn, name: string, extension: string, data: ArrayBuffer): Promise<TFile> {
+    let isPastedImage = false;
+    const match = PASTED_IMAGE_NAME_REG_EXP.exec(name);
+    if (match) {
+      const timestampString = match.groups?.['Timestamp'];
+      if (timestampString) {
+        const parsedDate = moment(timestampString, PASTED_IMAGE_DATE_FORMAT);
+        if (parsedDate.isValid()) {
+          if (moment().diff(parsedDate, 'seconds') < THRESHOLD_IN_SECONDS) {
+            isPastedImage = true;
+          }
+        }
+      }
+    }
+
+    if (isPastedImage && extension === 'png' && this.settings.shouldConvertPastedImagesToJpeg) {
+      extension = 'jpg';
+      data = await blobToJpegArrayBuffer(new Blob([data], { type: 'image/png' }), this.settings.jpegQuality);
+    }
+
+    let shouldRename = false;
+
+    switch (this.settings.attachmentRenameMode) {
+      case AttachmentRenameMode.All:
+        shouldRename = true;
+        break;
+      case AttachmentRenameMode.None:
+        break;
+      case AttachmentRenameMode.OnlyPastedImages:
+        shouldRename = isPastedImage;
+        break;
+      default:
+        throw new Error('Invalid attachment rename mode');
+    }
+
+    if (shouldRename) {
+      name = await getPastedFileName(this, new Substitutions(this.app.workspace.getActiveFile()?.path ?? '', name));
+    }
+
+    return await next.call(this.app, name, extension, data);
   }
 }

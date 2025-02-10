@@ -1,13 +1,11 @@
-import {
-  normalizePath,
-  Setting
-} from 'obsidian';
+import { normalizePath } from 'obsidian';
 import {
   getEnumKey,
   getEnumValue
 } from 'obsidian-dev-utils/Enum';
 import { appendCodeBlock } from 'obsidian-dev-utils/HTMLElement';
 import { PluginSettingsTabBase } from 'obsidian-dev-utils/obsidian/Plugin/PluginSettingsTabBase';
+import { SettingEx } from 'obsidian-dev-utils/obsidian/SettingEx';
 
 import type { CustomAttachmentLocationPlugin } from './CustomAttachmentLocationPlugin.ts';
 
@@ -25,7 +23,7 @@ export class CustomAttachmentLocationPluginSettingsTab extends PluginSettingsTab
   public override display(): void {
     this.containerEl.empty();
 
-    new Setting(this.containerEl)
+    new SettingEx(this.containerEl)
       .setName('Location for new attachments')
       .setDesc(createFragment((f) => {
         f.appendText('Start with ');
@@ -57,7 +55,7 @@ export class CustomAttachmentLocationPluginSettingsTab extends PluginSettingsTab
           .setPlaceholder('./assets/${filename}')
       );
 
-    new Setting(this.containerEl)
+    new SettingEx(this.containerEl)
       .setName('Generated attachment filename')
       .setDesc(createFragment((f) => {
         f.appendText('See available ');
@@ -73,7 +71,7 @@ export class CustomAttachmentLocationPluginSettingsTab extends PluginSettingsTab
           .setPlaceholder('file-${date:YYYYMMDDHHmmssSSS}')
       );
 
-    new Setting(this.containerEl)
+    new SettingEx(this.containerEl)
       .setName('Attachment rename mode')
       .addDropdown((dropdown) => {
         dropdown.addOptions(AttachmentRenameMode);
@@ -83,7 +81,7 @@ export class CustomAttachmentLocationPluginSettingsTab extends PluginSettingsTab
         });
       });
 
-    new Setting(this.containerEl)
+    new SettingEx(this.containerEl)
       .setName('Should rename attachment folder')
       .setDesc(createFragment((f) => {
         f.appendText('When renaming md files, automatically rename attachment folder if folder name contains ');
@@ -91,9 +89,11 @@ export class CustomAttachmentLocationPluginSettingsTab extends PluginSettingsTab
         appendCodeBlock(f, '${filename}');
         f.appendText('.');
       }))
-      .addToggle((toggle) => this.bind(toggle, 'shouldRenameAttachmentFolder'));
+      .addToggle((toggle) => {
+        this.bind(toggle, 'shouldRenameAttachmentFolder');
+      });
 
-    new Setting(this.containerEl)
+    new SettingEx(this.containerEl)
       .setName('Should rename attachment files')
       .setDesc(createFragment((f) => {
         f.appendText('When renaming md files, automatically rename attachment files if file name contains ');
@@ -101,16 +101,18 @@ export class CustomAttachmentLocationPluginSettingsTab extends PluginSettingsTab
         appendCodeBlock(f, '${filename}');
         f.appendText('.');
       }))
-      .addToggle((toggle) => this.bind(toggle, 'shouldRenameAttachmentFiles'));
+      .addToggle((toggle) => {
+        this.bind(toggle, 'shouldRenameAttachmentFiles');
+      });
 
-    new Setting(this.containerEl)
+    new SettingEx(this.containerEl)
       .setName('Whitespace replacement')
       .setDesc(createFragment((f) => {
         f.appendText('Automatically replace whitespace in attachment folder and file name with the specified character.');
         f.appendChild(createEl('br'));
         f.appendText('Leave blank to disable replacement.');
       }))
-      .addText((text) =>
+      .addText((text) => {
         this.bind(text, 'whitespaceReplacement', {
           // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
           valueValidator(uiValue): string | void {
@@ -127,20 +129,24 @@ export class CustomAttachmentLocationPluginSettingsTab extends PluginSettingsTab
             }
           }
         })
-          .setPlaceholder('-')
-      );
+          .setPlaceholder('-');
+      });
 
-    new Setting(this.containerEl)
+    new SettingEx(this.containerEl)
       .setName('Should rename attachments to lowercase')
       .setDesc('Automatically set all characters in folder name and pasted image name to be lowercase.')
-      .addToggle((toggle) => this.bind(toggle, 'shouldRenameAttachmentsToLowerCase'));
+      .addToggle((toggle) => {
+        this.bind(toggle, 'shouldRenameAttachmentsToLowerCase');
+      });
 
-    new Setting(this.containerEl)
+    new SettingEx(this.containerEl)
       .setName('Should convert pasted images to JPEG')
       .setDesc('Paste images from clipboard converting them to JPEG.')
-      .addToggle((toggle) => this.bind(toggle, 'shouldConvertPastedImagesToJpeg'));
+      .addToggle((toggle) => {
+        this.bind(toggle, 'shouldConvertPastedImagesToJpeg');
+      });
 
-    new Setting(this.containerEl)
+    new SettingEx(this.containerEl)
       .setName('JPEG Quality')
       .setDesc('The smaller the quality, the greater the compression ratio.')
       .addDropdown((dropDown) => {
@@ -151,7 +157,7 @@ export class CustomAttachmentLocationPluginSettingsTab extends PluginSettingsTab
         });
       });
 
-    new Setting(this.containerEl)
+    new SettingEx(this.containerEl)
       .setName('Should rename collected attachments')
       .setDesc(createFragment((f) => {
         f.appendText('If enabled, attachments processed via ');
@@ -160,9 +166,11 @@ export class CustomAttachmentLocationPluginSettingsTab extends PluginSettingsTab
         appendCodeBlock(f, 'Pasted File Name');
         f.appendText(' setting.');
       }))
-      .addToggle((toggle) => this.bind(toggle, 'shouldRenameCollectedAttachments'));
+      .addToggle((toggle) => {
+        this.bind(toggle, 'shouldRenameCollectedAttachments');
+      });
 
-    new Setting(this.containerEl)
+    new SettingEx(this.containerEl)
       .setName('Duplicate name separator')
       .setDesc(createFragment((f) => {
         f.appendText('When you are pasting/dragging a file with the same name as an existing file, this separator will be added to the file name.');
@@ -189,17 +197,21 @@ export class CustomAttachmentLocationPluginSettingsTab extends PluginSettingsTab
         });
       });
 
-    new Setting(this.containerEl)
+    new SettingEx(this.containerEl)
       .setName('Should keep empty attachment folders')
       .setDesc('If enabled, empty attachment folders will be preserved, useful for source control purposes.')
-      .addToggle((toggle) => this.bind(toggle, 'shouldKeepEmptyAttachmentFolders'));
+      .addToggle((toggle) => {
+        this.bind(toggle, 'shouldKeepEmptyAttachmentFolders');
+      });
 
-    new Setting(this.containerEl)
+    new SettingEx(this.containerEl)
       .setName('Should delete orphan attachments')
       .setDesc('If enabled, when the note is deleted, its orphan attachments are deleted as well.')
-      .addToggle((toggle) => this.bind(toggle, 'shouldDeleteOrphanAttachments'));
+      .addToggle((toggle) => {
+        this.bind(toggle, 'shouldDeleteOrphanAttachments');
+      });
 
-    new Setting(this.containerEl)
+    new SettingEx(this.containerEl)
       .setName('Custom tokens')
       .setDesc(createFragment((f) => {
         f.appendText('Custom tokens to be used in the attachment folder path and pasted file name.');
@@ -208,11 +220,11 @@ export class CustomAttachmentLocationPluginSettingsTab extends PluginSettingsTab
         f.createEl('a', { href: 'https://github.com/RainCat1998/obsidian-custom-attachment-location?tab=readme-ov-file#custom-tokens', text: 'documentation' });
         f.appendText(' for more information.');
       }))
-      .addTextArea((textArea) =>
+      .addTextArea((textArea) => {
         this.bind(textArea, 'customTokensStr', {
           valueValidator: customTokensValidator
-        })
-      );
+        });
+      });
   }
 }
 

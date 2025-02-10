@@ -31,7 +31,7 @@ import {
   getBacklinksForFileSafe,
   getCacheSafe
 } from 'obsidian-dev-utils/obsidian/MetadataCache';
-import { confirm } from 'obsidian-dev-utils/obsidian/Modal/Confirm';
+import { confirm } from 'obsidian-dev-utils/obsidian/Modals/Confirm';
 import { addToQueue } from 'obsidian-dev-utils/obsidian/Queue';
 import { referenceToFileChange } from 'obsidian-dev-utils/obsidian/Reference';
 import {

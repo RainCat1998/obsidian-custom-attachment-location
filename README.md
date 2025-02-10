@@ -145,8 +145,8 @@ All notable changes to this project will be documented in the [CHANGELOG](./CHAN
 
 ## Installation
 
-- `Custom Attachment Location` is available in [the official Community Plugins repository](https://obsidian.md/plugins?id=obsidian-custom-attachment-location).
-- Beta releases can be installed through [BRAT](https://obsidian.md/plugins?id=obsidian42-brat).
+- The plugin is available in [the official Community Plugins repository](https://obsidian.md/plugins?id=obsidian-custom-attachment-location).
+- [Beta releases](obsidian://brat?plugin=https://github.com/RainCat1998/obsidian-custom-attachment-location) can be installed via [BRAT](https://obsidian.md/plugins?id=obsidian42-brat).
 
 ## Debugging
 

@@ -7,7 +7,7 @@ import type { MaybePromise } from 'obsidian-dev-utils/Async';
 import moment from 'moment';
 import { getNestedPropertyValue } from 'obsidian-dev-utils/Object';
 import { getFileOrNull } from 'obsidian-dev-utils/obsidian/FileSystem';
-import { prompt } from 'obsidian-dev-utils/obsidian/Modal/Prompt';
+import { prompt } from 'obsidian-dev-utils/obsidian/Modals/Prompt';
 import {
   basename,
   dirname,

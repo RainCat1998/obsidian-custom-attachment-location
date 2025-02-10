@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## 6.0.1
+
+- Update template
+- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/18.4.2
+
 ## 6.0.0
 
 - Refactor to support insert attachment

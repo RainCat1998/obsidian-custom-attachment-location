@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 6.0.2
+
+- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/19.2.1
+
 ## 6.0.1
 
 - Update template

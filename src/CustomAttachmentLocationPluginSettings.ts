@@ -31,6 +31,7 @@ export class CustomAttachmentLocationPluginSettings extends PluginSettingsBase {
   public shouldRenameAttachmentFolder = true;
   public shouldRenameAttachmentsToLowerCase = false;
   public shouldRenameCollectedAttachments = false;
+  public warningVersion = '0.0.0';
   public whitespaceReplacement = '';
   public get customTokensStr(): string {
     return this._customTokensStr;

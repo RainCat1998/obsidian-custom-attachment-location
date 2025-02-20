@@ -22,6 +22,7 @@ import {
   getAbstractFileOrNull,
   isNote
 } from 'obsidian-dev-utils/obsidian/FileSystem';
+import { alert } from 'obsidian-dev-utils/obsidian/Modals/Alert';
 import { PluginBase } from 'obsidian-dev-utils/obsidian/Plugin/PluginBase';
 import { registerRenameDeleteHandlers } from 'obsidian-dev-utils/obsidian/RenameDeleteHandler';
 import { createFolderSafe } from 'obsidian-dev-utils/obsidian/Vault';
@@ -30,6 +31,7 @@ import {
   makeFileName
 } from 'obsidian-dev-utils/Path';
 import { parentFolderPath } from 'obsidian-typings/implementations';
+import { compare } from 'semver';
 
 import {
   collectAttachmentsCurrentFolder,
@@ -65,7 +67,7 @@ export class CustomAttachmentLocationPlugin extends PluginBase<CustomAttachmentL
     return new CustomAttachmentLocationPluginSettingsTab(this);
   }
 
-  protected override onLayoutReady(): void {
+  protected override async onLayoutReady(): Promise<void> {
     this.register(around(this.app.vault, {
       getAvailablePath: (): GetAvailablePathFn => this.getAvailablePath.bind(this),
       getAvailablePathForAttachments: (): ExtendedWrapper & GetAvailablePathForAttachmentsExtendedFn => {
@@ -81,6 +83,25 @@ export class CustomAttachmentLocationPlugin extends PluginBase<CustomAttachmentL
       this.register(around(webUtils, {
         getPathForFile: (next: GetPathForFileFn): GetPathForFileFn => (file: File): string => this.getPathForFile(file, next)
       }));
+    }
+
+    if (compare(this.settings.warningVersion, '7.0.0') < 0) {
+      if (this.settings.customTokensStr) {
+        await alert({
+          app: this.app,
+          message: createFragment((f) => {
+            f.appendText('In plugin version 7.0.0, the format for custom tokens has changed. Please update your custom tokens accordingly. Refer to the ');
+            f.createEl('a', {
+              href: 'https://github.com/RainCat1998/obsidian-custom-attachment-location?tab=readme-ov-file#custom-tokens',
+              text: 'documentation'
+            });
+            f.appendText(' for more information.');
+          })
+        });
+      }
+      const newSettings = this.settingsClone;
+      newSettings.warningVersion = this.manifest.version;
+      await this.saveSettings(newSettings);
     }
   }
 

@@ -20,9 +20,7 @@ import {
   trimStart
 } from 'obsidian-dev-utils/String';
 
-import type { CustomAttachmentLocationPlugin } from './CustomAttachmentLocationPlugin.ts';
-
-type Formatter = (substitutions: Substitutions, app: App, format: string) => MaybePromise<unknown>;
+type Formatter = (substitutions: Substitutions, format: string) => MaybePromise<unknown>;
 
 const MORE_THAN_TWO_DOTS_REG_EXP = /^\.{3,}$/;
 const TRAILING_DOTS_AND_SPACES_REG_EXP = /[. ]+$/;
@@ -99,19 +97,16 @@ export class Substitutions {
 
   public readonly fileName: string;
 
-  public readonly filePath: string;
   public readonly folderName: string;
   public readonly folderPath: string;
   public readonly originalCopiedFileExtension: string;
-  public readonly originalCopiedFileName: string;
-  public constructor(filePath: string, originalCopiedFileName?: string) {
-    this.filePath = filePath;
+  public constructor(private readonly app: App, private readonly filePath: string, private readonly originalCopiedFileName = '') {
     this.fileName = basename(filePath, extname(filePath));
     this.folderName = basename(dirname(filePath));
     this.folderPath = dirname(filePath);
 
-    const originalCopiedFileExtension = extname(originalCopiedFileName ?? '');
-    this.originalCopiedFileName = basename(originalCopiedFileName ?? '', originalCopiedFileExtension);
+    const originalCopiedFileExtension = extname(originalCopiedFileName);
+    this.originalCopiedFileName = basename(originalCopiedFileName, originalCopiedFileExtension);
     this.originalCopiedFileExtension = originalCopiedFileExtension.slice(1);
   }
 
@@ -121,20 +116,23 @@ export class Substitutions {
 
   public static registerCustomFormatters(customTokensStr: string): void {
     this.formatters.clear();
-    this.registerFormatter('date', (_substitutions, _app, format) => formatDate(format));
-    this.registerFormatter('fileCreationDate', (substitutions, app, format) => formatFileDate(app, substitutions.filePath, format, (file) => file.stat.ctime));
+    this.registerFormatter('date', (_substitutions, format) => formatDate(format));
+    this.registerFormatter(
+      'fileCreationDate',
+      (substitutions, format) => formatFileDate(substitutions.app, substitutions.filePath, format, (file) => file.stat.ctime)
+    );
     this.registerFormatter(
       'fileModificationDate',
-      (substitutions, app, format) => formatFileDate(app, substitutions.filePath, format, (file) => file.stat.mtime)
+      (substitutions, format) => formatFileDate(substitutions.app, substitutions.filePath, format, (file) => file.stat.mtime)
     );
     this.registerFormatter('fileName', (substitutions) => substitutions.fileName);
     this.registerFormatter('filePath', (substitutions) => substitutions.filePath);
     this.registerFormatter('folderName', (substitutions) => substitutions.folderName);
     this.registerFormatter('folderPath', (substitutions) => substitutions.folderPath);
-    this.registerFormatter('frontmatter', (substitutions, app, key) => getFrontmatterValue(app, substitutions.filePath, key));
+    this.registerFormatter('frontmatter', (substitutions, key) => getFrontmatterValue(substitutions.app, substitutions.filePath, key));
     this.registerFormatter('originalCopiedFileExtension', (substitutions) => substitutions.originalCopiedFileExtension);
     this.registerFormatter('originalCopiedFileName', (substitutions) => substitutions.originalCopiedFileName);
-    this.registerFormatter('prompt', (substitutions, app) => substitutions.prompt(app));
+    this.registerFormatter('prompt', (substitutions) => substitutions.prompt());
     this.registerFormatter('randomDigit', () => generateRandomDigit());
     this.registerFormatter('randomDigitOrLetter', () => generateRandomDigitOrLetter());
     this.registerFormatter('randomLetter', () => generateRandomLetter());
@@ -150,7 +148,7 @@ export class Substitutions {
     this.formatters.set(token.toLowerCase(), formatter);
   }
 
-  public async fillTemplate(plugin: CustomAttachmentLocationPlugin, template: string): Promise<string> {
+  public async fillTemplate(template: string): Promise<string> {
     return await replaceAllAsync(template, SUBSTITUTION_TOKEN_REG_EXP, async (_, token, format) => {
       const formatter = Substitutions.formatters.get(token.toLowerCase());
       if (!formatter) {
@@ -159,16 +157,16 @@ export class Substitutions {
 
       try {
         // eslint-disable-next-line @typescript-eslint/no-base-to-string
-        return String(await formatter(this, plugin.app, format) ?? '');
+        return String(await formatter(this, format) ?? '');
       } catch (e) {
         throw new Error(`Error formatting token \${${token}}`, { cause: e });
       }
     });
   }
 
-  private async prompt(app: App): Promise<string> {
+  private async prompt(): Promise<string> {
     const promptResult = await prompt({
-      app,
+      app: this.app,
       defaultValue: this.originalCopiedFileName,
       // eslint-disable-next-line no-template-curly-in-string
       title: 'Provide a value for ${prompt} template',

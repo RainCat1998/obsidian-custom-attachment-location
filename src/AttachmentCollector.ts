@@ -259,7 +259,10 @@ async function prepareAttachmentToMove(
   let newAttachmentName: string;
 
   if (plugin.settings.shouldRenameCollectedAttachments) {
-    newAttachmentName = makeFileName(await getPastedFileName(plugin, new Substitutions(newNotePath, oldAttachmentFile.name)), oldAttachmentFile.extension);
+    newAttachmentName = makeFileName(
+      await getPastedFileName(plugin, new Substitutions(plugin.app, newNotePath, oldAttachmentFile.name)),
+      oldAttachmentFile.extension
+    );
   } else if (plugin.settings.shouldRenameAttachmentFiles) {
     newAttachmentName = oldAttachmentName.replaceAll(oldNoteBaseName, newNoteBaseName);
   } else {

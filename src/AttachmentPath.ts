@@ -14,7 +14,7 @@ export async function getAttachmentFolderFullPathForPath(
   notePath: string,
   attachmentFilename: string
 ): Promise<string> {
-  return await getAttachmentFolderPath(plugin, new Substitutions(notePath, attachmentFilename));
+  return await getAttachmentFolderPath(plugin, new Substitutions(plugin.app, notePath, attachmentFilename));
 }
 
 export async function getPastedFileName(plugin: CustomAttachmentLocationPlugin, substitutions: Substitutions): Promise<string> {
@@ -36,7 +36,7 @@ async function getAttachmentFolderPath(plugin: CustomAttachmentLocationPlugin, s
 }
 
 async function resolvePathTemplate(plugin: CustomAttachmentLocationPlugin, template: string, substitutions: Substitutions): Promise<string> {
-  let resolvedPath = await substitutions.fillTemplate(plugin, template);
+  let resolvedPath = await substitutions.fillTemplate(template);
   const validationError = validatePath(resolvedPath, false);
   if (validationError) {
     throw new Error(`Resolved path ${resolvedPath} is invalid: ${validationError}`);

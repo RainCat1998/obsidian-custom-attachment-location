@@ -118,25 +118,28 @@ The custom tokens are defined as a functions, both sync and async are supported.
 Example:
 
 ```javascript
-exports.myCustomToken1 = (substitutions, app, format) => {
-  return substitutions.fileName + app.appId + format;
+exports.myCustomToken1 = (substitutions, format) => {
+  return substitutions.fileName + substitutions.app.appId + format;
 };
 
-exports.myCustomToken2 = async (substitutions, app, format) => {
-  return await Promise.resolve(substitutions.fileName + app.appId + format);
+exports.myCustomToken2 = async (substitutions, format) => {
+  return await Promise.resolve(
+    substitutions.fileName + substitutions.app.appId + format
+  );
 };
 ```
 
 Then you can use the defined `${myCustomToken1}`, `${myCustomToken2:format}` tokens in the [Location for New Attachments](#location-for-new-attachments) and [Generated attachment filename](#generated-attachment-filename) settings.
 
 - `substitutions`: is an object with the following properties:
+  - `app`: Obsidian app object.
   - `fileName`: The filename of the current note.
   - `filePath`: The full path to the current note.
   - `folderName`: The name of the folder containing the current note.
   - `folderPath`: The full path to the folder containing the current note.
   - `originalCopiedFileExtension`: Extension of the original copied to clipboard or dragged file.
   - `originalCopiedFileName`: File name of the original copied to clipboard or dragged file.
-- `app`: Obsidian app object.
+  - `fillTemplate(template)`: Function to fill the template with the given format. E.g., `substitutions.fillTemplate('${date:YYYY-MM-DD}')`.
 - `format`: optional format string.
 
 ## Changelog

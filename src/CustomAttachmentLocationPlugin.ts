@@ -223,7 +223,7 @@ export class CustomAttachmentLocationPlugin extends PluginBase<CustomAttachmentL
     }
 
     if (shouldRename) {
-      name = await getPastedFileName(this, new Substitutions(activeFile.path, name));
+      name = await getPastedFileName(this, new Substitutions(this.app, activeFile.path, name));
     }
 
     return await next.call(this.app, name, extension, data);

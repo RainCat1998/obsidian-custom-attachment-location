@@ -21,7 +21,6 @@ Customize attachment location with tokens (`${fileName}`, `${date:format}`, etc)
 - See available [tokens](#tokens).
 - example: `${originalCopiedFilename}-${date:YYYYMMDDHHmmssSSS}`, `${filename}-img-${date:YYYYMMDD}`
 - Obsidian default: `Pasted image ${date:YYYYMMDDHHmmss}`.
-- **Note**: This setting only changes image filename from clipboard. If your attachment is copied from the explorer, obsidian will just copy the original file to the attachment folder without renaming.
 
 ### Should rename attachment folder
 

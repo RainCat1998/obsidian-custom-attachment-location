@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## 7.0.0
+
+- Allow call fillTemplate() from custom token
+- Add include/exclude settings
+
 ## 6.0.2
 
 - https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/19.2.1

@@ -162,6 +162,11 @@ export function collectAttachmentsCurrentNote(plugin: CustomAttachmentLocationPl
   }
 
   if (!checking) {
+    if (plugin.settings.isPathIgnored(note.path)) {
+      new Notice('Note path is ignored');
+      return true;
+    }
+
     addToQueue(plugin.app, () => collectAttachments(plugin, note));
   }
 
@@ -206,6 +211,9 @@ export async function collectAttachmentsInFolder(plugin: CustomAttachmentLocatio
     buildNoticeMessage: (file, iterationStr) => `Collecting attachments ${iterationStr} - ${file.path}`,
     items: files,
     processItem: async (file) => {
+      if (plugin.settings.isPathIgnored(file.path)) {
+        return;
+      }
       await collectAttachments(plugin, file);
     },
     shouldContinueOnError: true

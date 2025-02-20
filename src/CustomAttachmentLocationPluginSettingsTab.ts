@@ -6,6 +6,7 @@ import {
 import { appendCodeBlock } from 'obsidian-dev-utils/HTMLElement';
 import { PluginSettingsTabBase } from 'obsidian-dev-utils/obsidian/Plugin/PluginSettingsTabBase';
 import { SettingEx } from 'obsidian-dev-utils/obsidian/SettingEx';
+import { isValidRegExp } from 'obsidian-dev-utils/RegExp';
 
 import type { CustomAttachmentLocationPlugin } from './CustomAttachmentLocationPlugin.ts';
 
@@ -212,6 +213,42 @@ export class CustomAttachmentLocationPluginSettingsTab extends PluginSettingsTab
       });
 
     new SettingEx(this.containerEl)
+      .setName('Include paths')
+      .setDesc(createFragment((f) => {
+        f.appendText('Include notes from the following paths');
+        f.createEl('br');
+        f.appendText('Insert each path on a new line');
+        f.createEl('br');
+        f.appendText('You can use path string or ');
+        appendCodeBlock(f, '/regular expression/');
+        f.createEl('br');
+        f.appendText('If the setting is empty, all notes are included');
+      }))
+      .addMultipleText((multipleText) => {
+        this.bind(multipleText, 'includePaths', {
+          valueValidator: pathsValidator
+        });
+      });
+
+    new SettingEx(this.containerEl)
+      .setName('Exclude paths')
+      .setDesc(createFragment((f) => {
+        f.appendText('Exclude notes from the following paths');
+        f.createEl('br');
+        f.appendText('Insert each path on a new line');
+        f.createEl('br');
+        f.appendText('You can use path string or ');
+        appendCodeBlock(f, '/regular expression/');
+        f.createEl('br');
+        f.appendText('If the setting is empty, no notes are excluded');
+      }))
+      .addMultipleText((multipleText) => {
+        this.bind(multipleText, 'excludePaths', {
+          valueValidator: pathsValidator
+        });
+      });
+
+    new SettingEx(this.containerEl)
       .setName('Custom tokens')
       .setDesc(createFragment((f) => {
         f.appendText('Custom tokens to be used in the attachment folder path and pasted file name.');
@@ -245,6 +282,18 @@ function generateJpegQualityOptions(): Record<string, string> {
   }
 
   return ans;
+}
+
+// eslint-disable-next-line @typescript-eslint/no-invalid-void-type
+function pathsValidator(paths: string[]): string | void {
+  for (const path of paths) {
+    if (path.startsWith('/') && path.endsWith('/')) {
+      const regExp = path.slice(1, -1);
+      if (!isValidRegExp(regExp)) {
+        return `Invalid regular expression ${path}`;
+      }
+    }
+  }
 }
 
 function showWhitespaceCharacter(value: string): string {

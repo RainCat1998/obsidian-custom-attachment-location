@@ -87,6 +87,7 @@ export class CustomAttachmentLocationPlugin extends PluginBase<CustomAttachmentL
   protected override onloadComplete(): MaybePromise<void> {
     registerRenameDeleteHandlers(this, () => {
       const settings: Partial<RenameDeleteHandlerSettings> = {
+        isPathIgnored: (path) => this.settings.isPathIgnored(path),
         shouldDeleteEmptyFolders: !this.settings.shouldKeepEmptyAttachmentFolders,
         shouldHandleDeletions: this.settings.shouldDeleteOrphanAttachments,
         shouldHandleRenames: true,
@@ -182,6 +183,11 @@ export class CustomAttachmentLocationPlugin extends PluginBase<CustomAttachmentL
   }
 
   private async saveAttachment(next: SaveAttachmentFn, name: string, extension: string, data: ArrayBuffer): Promise<TFile> {
+    const activeFile = this.app.workspace.getActiveFile();
+    if (!activeFile || this.settings.isPathIgnored(activeFile.path)) {
+      return next.call(this.app, name, extension, data);
+    }
+
     let isPastedImage = false;
     const match = PASTED_IMAGE_NAME_REG_EXP.exec(name);
     if (match) {
@@ -217,7 +223,7 @@ export class CustomAttachmentLocationPlugin extends PluginBase<CustomAttachmentL
     }
 
     if (shouldRename) {
-      name = await getPastedFileName(this, new Substitutions(this.app.workspace.getActiveFile()?.path ?? '', name));
+      name = await getPastedFileName(this, new Substitutions(activeFile.path, name));
     }
 
     return await next.call(this.app, name, extension, data);

@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 7.0.1
+
+- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/19.3.0
+
 ## 7.0.0
 
 - Allow call fillTemplate() from custom token

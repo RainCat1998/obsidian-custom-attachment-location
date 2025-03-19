@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 7.0.5
+
+- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/19.17.5
+
 ## 7.0.4
 
 - https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/19.17.2

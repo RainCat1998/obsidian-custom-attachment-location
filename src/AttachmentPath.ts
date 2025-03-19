@@ -21,13 +21,14 @@ export async function getPastedFileName(plugin: CustomAttachmentLocationPlugin, 
   return await resolvePathTemplate(plugin, plugin.settings.generatedAttachmentFilename, substitutions);
 }
 
-export function replaceWhitespace(plugin: CustomAttachmentLocationPlugin, str: string): string {
-  if (plugin.settings.whitespaceReplacement) {
-    str = str.replace(/\s/g, plugin.settings.whitespaceReplacement);
-    const escaped = escapeRegExp(plugin.settings.whitespaceReplacement);
-    str = str.replace(new RegExp(`${escaped}{2,}`, 'g'), plugin.settings.whitespaceReplacement);
+export function replaceSpecialCharacters(plugin: CustomAttachmentLocationPlugin, str: string): string {
+  if (!plugin.settings.specialCharacters) {
+    return str;
   }
 
+  str = str.replace(plugin.settings.specialCharactersRegExp, plugin.settings.specialCharactersReplacement);
+  const escaped = escapeRegExp(plugin.settings.specialCharactersReplacement);
+  str = str.replace(new RegExp(`${escaped}{2,}`, 'g'), plugin.settings.specialCharactersReplacement);
   return str;
 }
 
@@ -46,11 +47,7 @@ async function resolvePathTemplate(plugin: CustomAttachmentLocationPlugin, templ
     resolvedPath = resolvedPath.toLowerCase();
   }
 
-  if (!resolvedPath.endsWith('/')) {
-    resolvedPath += '/';
-  }
-
-  resolvedPath = replaceWhitespace(plugin, resolvedPath);
+  resolvedPath = replaceSpecialCharacters(plugin, resolvedPath);
   if (resolvedPath.startsWith('./') || resolvedPath.startsWith('../')) {
     resolvedPath = join(substitutions.folderPath, resolvedPath);
   }

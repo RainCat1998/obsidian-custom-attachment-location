@@ -107,26 +107,42 @@ export class CustomAttachmentLocationPluginSettingsTab extends PluginSettingsTab
       });
 
     new SettingEx(this.containerEl)
-      .setName('Whitespace replacement')
+      .setName('Special characters')
       .setDesc(createFragment((f) => {
-        f.appendText('Automatically replace whitespace in attachment folder and file name with the specified character.');
-        f.appendChild(createEl('br'));
-        f.appendText('Leave blank to disable replacement.');
+        f.appendText('Special characters in attachment folder and file name to be replaced or removed.');
+        f.createEl('br');
+        f.appendText('Leave blank to preserve special characters.');
       }))
       .addText((text) => {
-        this.bind(text, 'whitespaceReplacement', {
+        this.bind(text, 'specialCharacters', {
+          componentToPluginSettingsValueConverter: (value: string): string => value.replaceAll(VISIBLE_WHITESPACE_CHARACTER, ''),
+          pluginSettingsToComponentValueConverter: (value: string): string => value.replaceAll(' ', VISIBLE_WHITESPACE_CHARACTER),
           // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
           valueValidator(uiValue): string | void {
-            if (uiValue === '') {
-              return;
+            if (uiValue.includes('/')) {
+              return 'Special characters must not contain /';
             }
+          }
+        })
+          .setPlaceholder('#^[]|*\\<>:?');
+        text.inputEl.addEventListener('input', () => {
+          text.inputEl.value = showWhitespaceCharacter(text.inputEl.value);
+        });
+      });
 
-            if (uiValue.length > 1) {
-              return 'Whitespace replacement must be a single character or blank.';
-            }
-
+    new SettingEx(this.containerEl)
+      .setName('Special characters replacement')
+      .setDesc(createFragment((f) => {
+        f.appendText('Replacement string for special characters in attachment folder and file name.');
+        f.createEl('br');
+        f.appendText('Leave blank to remove special characters.');
+      }))
+      .addText((text) => {
+        this.bind(text, 'specialCharactersReplacement', {
+          // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
+          valueValidator(uiValue): string | void {
             if (INVALID_FILENAME_PATH_CHARS_REG_EXP.exec(uiValue)) {
-              return 'Whitespace replacement must not contain invalid filename path characters.';
+              return 'Special character replacement must not contain invalid filename path characters.';
             }
           }
         })

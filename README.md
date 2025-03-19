@@ -30,9 +30,9 @@ Automatically update attachment folder name if [Location for New Attachments](#l
 
 Automatically update attachment files in target md file if [Generated attachment filename](#generated-attachment-filename) contains `${filename}`.
 
-### Whitespace replacement
+### Special characters replacement
 
-Automatically replace whitespace in attachment folder and file name with the specified character.
+Automatically replace special characters in attachment folder and file name with the specified string.
 
 ### Should rename attachments to lowercase
 

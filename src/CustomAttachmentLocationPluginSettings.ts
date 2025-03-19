@@ -31,8 +31,9 @@ export class CustomAttachmentLocationPluginSettings extends PluginSettingsBase {
   public shouldRenameAttachmentFolder = true;
   public shouldRenameAttachmentsToLowerCase = false;
   public shouldRenameCollectedAttachments = false;
+  public specialCharacters = '#^[]|*\\<>:?';
+  public specialCharactersReplacement = '-';
   public warningVersion = '0.0.0';
-  public whitespaceReplacement = '';
   public get customTokensStr(): string {
     return this._customTokensStr;
   }
@@ -60,11 +61,15 @@ export class CustomAttachmentLocationPluginSettings extends PluginSettingsBase {
     this._includePathsRegExp = makeRegExp(this._includePaths, ALWAYS_MATCH_REG_EXP);
   }
 
-  private _customTokensStr = '';
+  public get specialCharactersRegExp(): RegExp {
+    return new RegExp(`[${escapeRegExp(this.specialCharacters)}]`, 'g');
+  }
 
+  private _customTokensStr = '';
   private _excludePaths: string[] = [];
   private _excludePathsRegExp = NEVER_MATCH_REG_EXP;
   private _includePaths: string[] = [];
+
   private _includePathsRegExp = ALWAYS_MATCH_REG_EXP;
 
   public constructor(data: unknown) {
@@ -127,6 +132,11 @@ export class CustomAttachmentLocationPluginSettings extends PluginSettingsBase {
       legacySettings.shouldConvertPastedImagesToJpeg = legacySettings.convertImagesToJpeg;
     }
 
+    if (legacySettings.whitespaceReplacement) {
+      legacySettings.specialCharacters = `${legacySettings.specialCharacters ?? ''} `;
+      legacySettings.specialCharactersReplacement = legacySettings.whitespaceReplacement;
+    }
+
     this._shouldSaveAfterLoad = deleteProperties(legacySettings, [
       'autoRenameFiles',
       'autoRenameFolder',
@@ -142,7 +152,8 @@ export class CustomAttachmentLocationPluginSettings extends PluginSettingsBase {
       'renameOnlyImages',
       'renamePastedFilesWithKnownNames',
       'replaceWhitespace',
-      'toLowerCase'
+      'toLowerCase',
+      'whitespaceReplacement'
     ]);
     super.initFromRecord(legacySettings);
   }
@@ -165,6 +176,7 @@ class LegacySettings extends CustomAttachmentLocationPluginSettings {
   public renamePastedFilesWithKnownNames = false;
   public replaceWhitespace = false;
   public toLowerCase = false;
+  public whitespaceReplacement = '';
 }
 
 function addDateTimeFormat(str: string, dateTimeFormat: string): string {

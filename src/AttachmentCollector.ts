@@ -216,7 +216,9 @@ export async function collectAttachmentsInFolder(plugin: CustomAttachmentLocatio
       }
       await collectAttachments(plugin, file);
     },
-    shouldContinueOnError: true
+    progressBarTitle: 'Custom Attachment Location: Collecting attachments...',
+    shouldContinueOnError: true,
+    shouldShowProgressBar: true
   });
 }
 

@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## 7.2.0
+
+- Show progress bar
+- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/21.1.0
+
 ## 7.1.0
 
 - Replace special characters

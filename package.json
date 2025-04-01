@@ -30,6 +30,7 @@
     "obsidian-typings": "^2.41.4",
     "semver": "^7.7.1",
     "tsx": "^4.19.3",
+    "type-fest": "^4.39.0",
     "typescript": "^5.8.2"
   },
   "type": "module"

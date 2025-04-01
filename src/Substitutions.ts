@@ -2,7 +2,7 @@ import type {
   App,
   TFile
 } from 'obsidian';
-import type { MaybePromise } from 'obsidian-dev-utils/Async';
+import type { Promisable } from 'type-fest';
 
 import moment from 'moment';
 import { getNestedPropertyValue } from 'obsidian-dev-utils/Object';
@@ -20,7 +20,7 @@ import {
   trimStart
 } from 'obsidian-dev-utils/String';
 
-type Formatter = (substitutions: Substitutions, format: string) => MaybePromise<unknown>;
+type Formatter = (substitutions: Substitutions, format: string) => Promisable<unknown>;
 
 const MORE_THAN_TWO_DOTS_REG_EXP = /^\.{3,}$/;
 const TRAILING_DOTS_AND_SPACES_REG_EXP = /[. ]+$/;

@@ -28,6 +28,7 @@
     "outfile",
     "postversion",
     "preversion",
+    "Promisable",
     "redrop",
     "tsbuildinfo",
     "typora",

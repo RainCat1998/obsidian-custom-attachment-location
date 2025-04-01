@@ -1,4 +1,3 @@
-import type { MaybePromise } from 'obsidian-dev-utils/Async';
 import type {
   ExtendedWrapper,
   GetAvailablePathForAttachmentsExtendedFn
@@ -105,7 +104,7 @@ export class CustomAttachmentLocationPlugin extends PluginBase<CustomAttachmentL
     }
   }
 
-  protected override onloadComplete(): MaybePromise<void> {
+  protected override onloadComplete(): void {
     registerRenameDeleteHandlers(this, () => {
       const settings: Partial<RenameDeleteHandlerSettings> = {
         isPathIgnored: (path) => this.settings.isPathIgnored(path),

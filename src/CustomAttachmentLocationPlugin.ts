@@ -148,7 +148,8 @@ export class CustomAttachmentLocationPlugin extends PluginBase<CustomAttachmentL
   private getAvailablePath(filename: string, extension: string): string {
     let suffixNum = 0;
 
-    for (;;) {
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    while (true) {
       const path = makeFileName(suffixNum === 0 ? filename : `${filename}${this.settings.duplicateNameSeparator}${suffixNum.toString()}`, extension);
 
       if (!getAbstractFileOrNull(this.app, path, true)) {

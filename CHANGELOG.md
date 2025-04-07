@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 7.2.1
+
+- New template
+
 ## 7.2.0
 
 - Show progress bar

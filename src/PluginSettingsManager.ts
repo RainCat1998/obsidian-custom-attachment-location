@@ -1,5 +1,4 @@
 import type { MaybeReturn } from 'obsidian-dev-utils/Type';
-import type { Promisable } from 'type-fest';
 
 import { PluginSettingsManagerBase } from 'obsidian-dev-utils/obsidian/Plugin/PluginSettingsManagerBase';
 import { isValidRegExp } from 'obsidian-dev-utils/RegExp';
@@ -39,7 +38,8 @@ export class PluginSettingsManager extends PluginSettingsManagerBase<PluginTypes
     return new PluginSettings();
   }
 
-  protected override onLoadRecord(record: Record<string, unknown>): Promisable<void> {
+  protected override async onLoadRecord(record: Record<string, unknown>): Promise<void> {
+    await super.onLoadRecord(record);
     const legacySettings = record as Partial<LegacySettings>;
     const dateTimeFormat = legacySettings.dateTimeFormat ?? 'YYYYMMDDHHmmssSSS';
     legacySettings.attachmentFolderPath = addDateTimeFormat(legacySettings.attachmentFolderPath ?? '', dateTimeFormat);

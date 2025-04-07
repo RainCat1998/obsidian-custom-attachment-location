@@ -35,38 +35,6 @@ class LegacySettings extends PluginSettings {
 }
 
 export class PluginSettingsManager extends PluginSettingsManagerBase<PluginTypes> {
-  protected override addValidators(): void {
-    this.addValidator('attachmentFolderPath', validatePath);
-    this.addValidator('generatedAttachmentFilename', validatePath);
-    this.addValidator('specialCharacters', (value): MaybeReturn<string> => {
-      if (value.includes('/')) {
-        return 'Special characters must not contain /';
-      }
-    });
-
-    this.addValidator('specialCharactersReplacement', (value): MaybeReturn<string> => {
-      if (INVALID_FILENAME_PATH_CHARS_REG_EXP.exec(value)) {
-        return 'Special character replacement must not contain invalid filename path characters.';
-      }
-    });
-
-    this.addValidator('duplicateNameSeparator', (value): MaybeReturn<string> => {
-      return validateFilename(`filename${value}1`, false);
-    });
-
-    this.addValidator('includePaths', (value): MaybeReturn<string> => {
-      return pathsValidator(value);
-    });
-
-    this.addValidator('excludePaths', (value): MaybeReturn<string> => {
-      return pathsValidator(value);
-    });
-
-    this.addValidator('customTokensStr', (value): MaybeReturn<string> => {
-      customTokensValidator(value);
-    });
-  }
-
   protected override createDefaultSettings(): PluginSettings {
     return new PluginSettings();
   }
@@ -117,6 +85,38 @@ export class PluginSettingsManager extends PluginSettingsManagerBase<PluginTypes
       legacySettings.specialCharacters = `${legacySettings.specialCharacters ?? ''} `;
       legacySettings.specialCharactersReplacement = legacySettings.whitespaceReplacement;
     }
+  }
+
+  protected override registerValidators(): void {
+    this.registerValidator('attachmentFolderPath', validatePath);
+    this.registerValidator('generatedAttachmentFilename', validatePath);
+    this.registerValidator('specialCharacters', (value): MaybeReturn<string> => {
+      if (value.includes('/')) {
+        return 'Special characters must not contain /';
+      }
+    });
+
+    this.registerValidator('specialCharactersReplacement', (value): MaybeReturn<string> => {
+      if (INVALID_FILENAME_PATH_CHARS_REG_EXP.exec(value)) {
+        return 'Special character replacement must not contain invalid filename path characters.';
+      }
+    });
+
+    this.registerValidator('duplicateNameSeparator', (value): MaybeReturn<string> => {
+      return validateFilename(`filename${value}1`, false);
+    });
+
+    this.registerValidator('includePaths', (value): MaybeReturn<string> => {
+      return pathsValidator(value);
+    });
+
+    this.registerValidator('excludePaths', (value): MaybeReturn<string> => {
+      return pathsValidator(value);
+    });
+
+    this.registerValidator('customTokensStr', (value): MaybeReturn<string> => {
+      customTokensValidator(value);
+    });
   }
 }
 

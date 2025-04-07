@@ -1,3 +1,4 @@
+import type { App } from 'obsidian';
 import type {
   ExtendedWrapper,
   GetAvailablePathForAttachmentsExtendedFn
@@ -6,10 +7,8 @@ import type { RenameDeleteHandlerSettings } from 'obsidian-dev-utils/obsidian/Re
 
 import { webUtils } from 'electron';
 import moment from 'moment';
-import { around } from 'monkey-around';
 import {
   Menu,
-  PluginSettingTab,
   TAbstractFile,
   TFile,
   TFolder,
@@ -22,6 +21,7 @@ import {
   isNote
 } from 'obsidian-dev-utils/obsidian/FileSystem';
 import { alert } from 'obsidian-dev-utils/obsidian/Modals/Alert';
+import { registerPatch } from 'obsidian-dev-utils/obsidian/MonkeyAround';
 import { PluginBase } from 'obsidian-dev-utils/obsidian/Plugin/PluginBase';
 import { registerRenameDeleteHandlers } from 'obsidian-dev-utils/obsidian/RenameDeleteHandler';
 import { createFolderSafe } from 'obsidian-dev-utils/obsidian/Vault';
@@ -31,6 +31,8 @@ import {
 } from 'obsidian-dev-utils/Path';
 import { parentFolderPath } from 'obsidian-typings/implementations';
 import { compare } from 'semver';
+
+import type { PluginTypes } from './PluginTypes.ts';
 
 import {
   collectAttachmentsCurrentFolder,
@@ -42,32 +44,30 @@ import {
   getAttachmentFolderFullPathForPath,
   getPastedFileName
 } from './AttachmentPath.ts';
-import {
-  AttachmentRenameMode,
-  CustomAttachmentLocationPluginSettings
-} from './CustomAttachmentLocationPluginSettings.ts';
-import { CustomAttachmentLocationPluginSettingsTab } from './CustomAttachmentLocationPluginSettingsTab.ts';
+import { AttachmentRenameMode } from './PluginSettings.ts';
+import { PluginSettingsManager } from './PluginSettingsManager.ts';
+import { PluginSettingsTab } from './PluginSettingsTab.ts';
 import { Substitutions } from './Substitutions.ts';
 
 type GetAvailablePathFn = Vault['getAvailablePath'];
 type GetPathForFileFn = typeof webUtils['getPathForFile'];
-type SaveAttachmentFn = (name: string, extension: string, data: ArrayBuffer) => Promise<TFile>;
+type SaveAttachmentFn = App['saveAttachment'];
 
 const PASTED_IMAGE_NAME_REG_EXP = /Pasted image (?<Timestamp>\d{14})/;
 const PASTED_IMAGE_DATE_FORMAT = 'YYYYMMDDHHmmss';
 const THRESHOLD_IN_SECONDS = 10;
 
-export class CustomAttachmentLocationPlugin extends PluginBase<CustomAttachmentLocationPluginSettings> {
-  protected override createPluginSettings(data: unknown): CustomAttachmentLocationPluginSettings {
-    return new CustomAttachmentLocationPluginSettings(data);
+export class Plugin extends PluginBase<PluginTypes> {
+  protected override createPluginSettingsTab(): null | PluginSettingsTab {
+    return new PluginSettingsTab(this);
   }
 
-  protected override createPluginSettingsTab(): null | PluginSettingTab {
-    return new CustomAttachmentLocationPluginSettingsTab(this);
+  protected override createSettingsManager(): PluginSettingsManager {
+    return new PluginSettingsManager(this);
   }
 
   protected override async onLayoutReady(): Promise<void> {
-    this.register(around(this.app.vault, {
+    registerPatch(this, this.app.vault, {
       getAvailablePath: (): GetAvailablePathFn => this.getAvailablePath.bind(this),
       getAvailablePathForAttachments: (): ExtendedWrapper & GetAvailablePathForAttachmentsExtendedFn => {
         const extendedWrapper: ExtendedWrapper = {
@@ -75,13 +75,13 @@ export class CustomAttachmentLocationPlugin extends PluginBase<CustomAttachmentL
         };
         return Object.assign(this.getAvailablePathForAttachments.bind(this), extendedWrapper) as ExtendedWrapper & GetAvailablePathForAttachmentsExtendedFn;
       }
-    }));
+    });
 
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     if (webUtils) {
-      this.register(around(webUtils, {
+      registerPatch(this, webUtils, {
         getPathForFile: (next: GetPathForFileFn): GetPathForFileFn => (file: File): string => this.getPathForFile(file, next)
-      }));
+      });
     }
 
     if (compare(this.settings.warningVersion, '7.0.0') < 0) {
@@ -98,13 +98,15 @@ export class CustomAttachmentLocationPlugin extends PluginBase<CustomAttachmentL
           })
         });
       }
-      const newSettings = this.settingsClone;
-      newSettings.warningVersion = this.manifest.version;
-      await this.saveSettings(newSettings);
+
+      await this.settingsManager.editAndSave((settings) => {
+        settings.warningVersion = this.manifest.version;
+      });
     }
   }
 
-  protected override onloadComplete(): void {
+  protected override async onloadImpl(): Promise<void> {
+    await super.onloadImpl();
     registerRenameDeleteHandlers(this, () => {
       const settings: Partial<RenameDeleteHandlerSettings> = {
         isPathIgnored: (path) => this.settings.isPathIgnored(path),
@@ -140,9 +142,9 @@ export class CustomAttachmentLocationPlugin extends PluginBase<CustomAttachmentL
 
     this.registerEvent(this.app.workspace.on('file-menu', this.handleFileMenu.bind(this)));
 
-    this.register(around(this.app, {
+    registerPatch(this, this.app, {
       saveAttachment: (next: SaveAttachmentFn) => (name, extension, data): Promise<TFile> => this.saveAttachment(next, name, extension, data)
-    }));
+    });
   }
 
   private getAvailablePath(filename: string, extension: string): string {

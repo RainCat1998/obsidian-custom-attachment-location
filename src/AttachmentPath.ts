@@ -2,7 +2,7 @@ import { normalizePath } from 'obsidian';
 import { join } from 'obsidian-dev-utils/Path';
 import { escapeRegExp } from 'obsidian-dev-utils/RegExp';
 
-import type { CustomAttachmentLocationPlugin } from './CustomAttachmentLocationPlugin.ts';
+import type { Plugin } from './Plugin.ts';
 
 import {
   Substitutions,
@@ -10,18 +10,18 @@ import {
 } from './Substitutions.ts';
 
 export async function getAttachmentFolderFullPathForPath(
-  plugin: CustomAttachmentLocationPlugin,
+  plugin: Plugin,
   notePath: string,
   attachmentFilename: string
 ): Promise<string> {
   return await getAttachmentFolderPath(plugin, new Substitutions(plugin.app, notePath, attachmentFilename));
 }
 
-export async function getPastedFileName(plugin: CustomAttachmentLocationPlugin, substitutions: Substitutions): Promise<string> {
+export async function getPastedFileName(plugin: Plugin, substitutions: Substitutions): Promise<string> {
   return await resolvePathTemplate(plugin, plugin.settings.generatedAttachmentFilename, substitutions);
 }
 
-export function replaceSpecialCharacters(plugin: CustomAttachmentLocationPlugin, str: string): string {
+export function replaceSpecialCharacters(plugin: Plugin, str: string): string {
   if (!plugin.settings.specialCharacters) {
     return str;
   }
@@ -32,11 +32,11 @@ export function replaceSpecialCharacters(plugin: CustomAttachmentLocationPlugin,
   return str;
 }
 
-async function getAttachmentFolderPath(plugin: CustomAttachmentLocationPlugin, substitutions: Substitutions): Promise<string> {
+async function getAttachmentFolderPath(plugin: Plugin, substitutions: Substitutions): Promise<string> {
   return await resolvePathTemplate(plugin, plugin.settings.attachmentFolderPath, substitutions);
 }
 
-async function resolvePathTemplate(plugin: CustomAttachmentLocationPlugin, template: string, substitutions: Substitutions): Promise<string> {
+async function resolvePathTemplate(plugin: Plugin, template: string, substitutions: Substitutions): Promise<string> {
   let resolvedPath = await substitutions.fillTemplate(template);
   const validationError = validatePath(resolvedPath, false);
   if (validationError) {

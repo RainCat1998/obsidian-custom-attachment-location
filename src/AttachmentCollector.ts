@@ -48,7 +48,7 @@ import {
   makeFileName
 } from 'obsidian-dev-utils/Path';
 
-import type { CustomAttachmentLocationPlugin } from './CustomAttachmentLocationPlugin.ts';
+import type { Plugin } from './Plugin.ts';
 
 import {
   getAttachmentFolderFullPathForPath,
@@ -62,7 +62,7 @@ interface AttachmentMoveResult {
 }
 
 export async function collectAttachments(
-  plugin: CustomAttachmentLocationPlugin,
+  plugin: Plugin,
   note: TFile,
   oldPath?: string,
   attachmentFilter?: (path: string) => boolean
@@ -142,7 +142,7 @@ export async function collectAttachments(
   notice.hide();
 }
 
-export function collectAttachmentsCurrentFolder(plugin: CustomAttachmentLocationPlugin, checking: boolean): boolean {
+export function collectAttachmentsCurrentFolder(plugin: Plugin, checking: boolean): boolean {
   const note = plugin.app.workspace.getActiveFile();
   if (!isNote(plugin.app, note)) {
     return false;
@@ -155,7 +155,7 @@ export function collectAttachmentsCurrentFolder(plugin: CustomAttachmentLocation
   return true;
 }
 
-export function collectAttachmentsCurrentNote(plugin: CustomAttachmentLocationPlugin, checking: boolean): boolean {
+export function collectAttachmentsCurrentNote(plugin: Plugin, checking: boolean): boolean {
   const note = plugin.app.workspace.getActiveFile();
   if (!note || !isNote(plugin.app, note)) {
     return false;
@@ -173,11 +173,11 @@ export function collectAttachmentsCurrentNote(plugin: CustomAttachmentLocationPl
   return true;
 }
 
-export function collectAttachmentsEntireVault(plugin: CustomAttachmentLocationPlugin): void {
+export function collectAttachmentsEntireVault(plugin: Plugin): void {
   addToQueue(plugin.app, () => collectAttachmentsInFolder(plugin, plugin.app.vault.getRoot()));
 }
 
-export async function collectAttachmentsInFolder(plugin: CustomAttachmentLocationPlugin, folder: TFolder): Promise<void> {
+export async function collectAttachmentsInFolder(plugin: Plugin, folder: TFolder): Promise<void> {
   if (
     !await confirm({
       app: plugin.app,
@@ -236,7 +236,7 @@ async function getCanvasLinks(app: App, canvasFile: TFile): Promise<ReferenceCac
 }
 
 async function prepareAttachmentToMove(
-  plugin: CustomAttachmentLocationPlugin,
+  plugin: Plugin,
   link: Reference,
   newNotePath: string,
   oldNotePath: string

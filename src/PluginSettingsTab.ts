@@ -6,21 +6,14 @@ import {
 import { appendCodeBlock } from 'obsidian-dev-utils/HTMLElement';
 import { PluginSettingsTabBase } from 'obsidian-dev-utils/obsidian/Plugin/PluginSettingsTabBase';
 import { SettingEx } from 'obsidian-dev-utils/obsidian/SettingEx';
-import { isValidRegExp } from 'obsidian-dev-utils/RegExp';
 
-import type { CustomAttachmentLocationPlugin } from './CustomAttachmentLocationPlugin.ts';
+import type { PluginTypes } from './PluginTypes.ts';
 
-import { AttachmentRenameMode } from './CustomAttachmentLocationPluginSettings.ts';
-import {
-  getCustomTokenFormatters,
-  INVALID_FILENAME_PATH_CHARS_REG_EXP,
-  validateFilename,
-  validatePath
-} from './Substitutions.ts';
+import { AttachmentRenameMode } from './PluginSettings.ts';
 
 const VISIBLE_WHITESPACE_CHARACTER = '␣';
 
-export class CustomAttachmentLocationPluginSettingsTab extends PluginSettingsTabBase<CustomAttachmentLocationPlugin> {
+export class PluginSettingsTab extends PluginSettingsTabBase<PluginTypes> {
   public override display(): void {
     this.containerEl.empty();
 
@@ -47,13 +40,8 @@ export class CustomAttachmentLocationPluginSettingsTab extends PluginSettingsTab
           },
           pluginSettingsToComponentValueConverter(pluginSettingsValue: string): string {
             return pluginSettingsValue;
-          },
-          valueValidator(uiValue): string {
-            return validatePath(uiValue);
           }
         })
-          // eslint-disable-next-line no-template-curly-in-string
-          .setPlaceholder('./assets/${filename}')
       );
 
     new SettingEx(this.containerEl)
@@ -62,15 +50,9 @@ export class CustomAttachmentLocationPluginSettingsTab extends PluginSettingsTab
         f.appendText('See available ');
         f.createEl('a', { href: 'https://github.com/RainCat1998/obsidian-custom-attachment-location?tab=readme-ov-file#tokens', text: 'tokens' });
       }))
-      .addText((text) =>
-        this.bind(text, 'generatedAttachmentFilename', {
-          valueValidator(uiValue): string {
-            return validatePath(uiValue);
-          }
-        })
-          // eslint-disable-next-line no-template-curly-in-string
-          .setPlaceholder('file-${date:YYYYMMDDHHmmssSSS}')
-      );
+      .addText((text) => {
+        this.bind(text, 'generatedAttachmentFilename');
+      });
 
     new SettingEx(this.containerEl)
       .setName('Attachment rename mode')
@@ -117,14 +99,8 @@ export class CustomAttachmentLocationPluginSettingsTab extends PluginSettingsTab
         this.bind(text, 'specialCharacters', {
           componentToPluginSettingsValueConverter: (value: string): string => value.replaceAll(VISIBLE_WHITESPACE_CHARACTER, ''),
           pluginSettingsToComponentValueConverter: (value: string): string => value.replaceAll(' ', VISIBLE_WHITESPACE_CHARACTER),
-          // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
-          valueValidator(uiValue): string | void {
-            if (uiValue.includes('/')) {
-              return 'Special characters must not contain /';
-            }
-          }
-        })
-          .setPlaceholder('#^[]|*\\<>:?');
+          shouldResetSettingWhenComponentIsEmpty: false
+        });
         text.inputEl.addEventListener('input', () => {
           text.inputEl.value = showWhitespaceCharacter(text.inputEl.value);
         });
@@ -139,14 +115,8 @@ export class CustomAttachmentLocationPluginSettingsTab extends PluginSettingsTab
       }))
       .addText((text) => {
         this.bind(text, 'specialCharactersReplacement', {
-          // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
-          valueValidator(uiValue): string | void {
-            if (INVALID_FILENAME_PATH_CHARS_REG_EXP.exec(uiValue)) {
-              return 'Special character replacement must not contain invalid filename path characters.';
-            }
-          }
-        })
-          .setPlaceholder('-');
+          shouldResetSettingWhenComponentIsEmpty: false
+        });
       });
 
     new SettingEx(this.containerEl)
@@ -203,12 +173,8 @@ export class CustomAttachmentLocationPluginSettingsTab extends PluginSettingsTab
       .addText((text) => {
         this.bind(text, 'duplicateNameSeparator', {
           componentToPluginSettingsValueConverter: (value: string) => value.replaceAll(VISIBLE_WHITESPACE_CHARACTER, ' '),
-          pluginSettingsToComponentValueConverter: showWhitespaceCharacter,
-          valueValidator(uiValue): string {
-            return validateFilename(`filename${uiValue}1`, false);
-          }
-        })
-          .setPlaceholder(VISIBLE_WHITESPACE_CHARACTER);
+          pluginSettingsToComponentValueConverter: showWhitespaceCharacter
+        });
         text.inputEl.addEventListener('input', () => {
           text.inputEl.value = showWhitespaceCharacter(text.inputEl.value);
         });
@@ -241,9 +207,7 @@ export class CustomAttachmentLocationPluginSettingsTab extends PluginSettingsTab
         f.appendText('If the setting is empty, all notes are included');
       }))
       .addMultipleText((multipleText) => {
-        this.bind(multipleText, 'includePaths', {
-          valueValidator: pathsValidator
-        });
+        this.bind(multipleText, 'includePaths');
       });
 
     new SettingEx(this.containerEl)
@@ -259,9 +223,7 @@ export class CustomAttachmentLocationPluginSettingsTab extends PluginSettingsTab
         f.appendText('If the setting is empty, no notes are excluded');
       }))
       .addMultipleText((multipleText) => {
-        this.bind(multipleText, 'excludePaths', {
-          valueValidator: pathsValidator
-        });
+        this.bind(multipleText, 'excludePaths');
       });
 
     new SettingEx(this.containerEl)
@@ -274,18 +236,8 @@ export class CustomAttachmentLocationPluginSettingsTab extends PluginSettingsTab
         f.appendText(' for more information.');
       }))
       .addTextArea((textArea) => {
-        this.bind(textArea, 'customTokensStr', {
-          valueValidator: customTokensValidator
-        });
+        this.bind(textArea, 'customTokensStr');
       });
-  }
-}
-
-// eslint-disable-next-line @typescript-eslint/no-invalid-void-type
-function customTokensValidator(value: string): string | void {
-  const formatters = getCustomTokenFormatters(value);
-  if (formatters === null) {
-    return 'Invalid custom tokens code';
   }
 }
 
@@ -298,18 +250,6 @@ function generateJpegQualityOptions(): Record<string, string> {
   }
 
   return ans;
-}
-
-// eslint-disable-next-line @typescript-eslint/no-invalid-void-type
-function pathsValidator(paths: string[]): string | void {
-  for (const path of paths) {
-    if (path.startsWith('/') && path.endsWith('/')) {
-      const regExp = path.slice(1, -1);
-      if (!isValidRegExp(regExp)) {
-        return `Invalid regular expression ${path}`;
-      }
-    }
-  }
 }
 
 function showWhitespaceCharacter(value: string): string {

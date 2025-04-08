@@ -15,6 +15,7 @@ const VISIBLE_WHITESPACE_CHARACTER = '␣';
 
 export class PluginSettingsTab extends PluginSettingsTabBase<PluginTypes> {
   public override display(): void {
+    super.display();
     this.containerEl.empty();
 
     new SettingEx(this.containerEl)

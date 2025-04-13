@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 7.2.6
+
+- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/26.1.2
+
 ## 7.2.5
 
 - Pass original file name with extension

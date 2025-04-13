@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## 7.2.5
+
+- Pass original file name with extension
+- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/26.1.0
+
 ## 7.2.4
 
 - https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/24.1.1

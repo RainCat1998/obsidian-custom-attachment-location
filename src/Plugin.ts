@@ -246,7 +246,7 @@ export class Plugin extends PluginBase<PluginTypes> {
     }
 
     if (shouldRename) {
-      name = await getPastedFileName(this, new Substitutions(this.app, activeFile.path, name));
+      name = await getPastedFileName(this, new Substitutions(this.app, activeFile.path, makeFileName(name, extension)));
     }
 
     return await next.call(this.app, name, extension, data);

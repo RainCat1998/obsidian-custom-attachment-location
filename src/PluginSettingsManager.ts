@@ -88,8 +88,8 @@ export class PluginSettingsManager extends PluginSettingsManagerBase<PluginTypes
   }
 
   protected override registerValidators(): void {
-    this.registerValidator('attachmentFolderPath', validatePath);
-    this.registerValidator('generatedAttachmentFilename', validatePath);
+    this.registerValidator('attachmentFolderPath', (value) => validatePath(value));
+    this.registerValidator('generatedAttachmentFilename', (value) => validatePath(value));
     this.registerValidator('specialCharacters', (value): MaybeReturn<string> => {
       if (value.includes('/')) {
         return 'Special characters must not contain /';

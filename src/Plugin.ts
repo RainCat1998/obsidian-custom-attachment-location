@@ -16,10 +16,7 @@ import {
 } from 'obsidian';
 import { blobToJpegArrayBuffer } from 'obsidian-dev-utils/Blob';
 import { getAvailablePathForAttachments } from 'obsidian-dev-utils/obsidian/AttachmentPath';
-import {
-  getAbstractFileOrNull,
-  isNote
-} from 'obsidian-dev-utils/obsidian/FileSystem';
+import { getAbstractFileOrNull } from 'obsidian-dev-utils/obsidian/FileSystem';
 import { alert } from 'obsidian-dev-utils/obsidian/Modals/Alert';
 import { registerPatch } from 'obsidian-dev-utils/obsidian/MonkeyAround';
 import { PluginBase } from 'obsidian-dev-utils/obsidian/Plugin/PluginBase';
@@ -38,7 +35,8 @@ import {
   collectAttachmentsCurrentFolder,
   collectAttachmentsCurrentNote,
   collectAttachmentsEntireVault,
-  collectAttachmentsInFolder
+  collectAttachmentsInFolder,
+  isNoteEx
 } from './AttachmentCollector.ts';
 import {
   getAttachmentFolderFullPathForPath,
@@ -111,6 +109,7 @@ export class Plugin extends PluginBase<PluginTypes> {
     await super.onloadImpl();
     registerRenameDeleteHandlers(this, () => {
       const settings: Partial<RenameDeleteHandlerSettings> = {
+        isNote: (path) => isNoteEx(this, path),
         isPathIgnored: (path) => this.settings.isPathIgnored(path),
         shouldDeleteEmptyFolders: !this.settings.shouldKeepEmptyAttachmentFolders,
         shouldHandleDeletions: this.settings.shouldDeleteOrphanAttachments,
@@ -172,7 +171,7 @@ export class Plugin extends PluginBase<PluginTypes> {
     skipFolderCreation: boolean | undefined
   ): Promise<string> {
     let attachmentPath: string;
-    if (!file || !isNote(this.app, file)) {
+    if (!file || !isNoteEx(this, file)) {
       attachmentPath = await getAvailablePathForAttachments(this.app, filename, extension, file, true);
     } else {
       const attachmentFolderFullPath = await getAttachmentFolderFullPathForPath(this, file.path, makeFileName(filename, extension));

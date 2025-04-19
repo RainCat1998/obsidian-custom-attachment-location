@@ -31,6 +31,7 @@ export class PluginSettings {
   public shouldRenameCollectedAttachments = false;
   public specialCharacters = '#^[]|*\\<>:?';
   public specialCharactersReplacement = '-';
+  public treatAsAttachmentExtensions: readonly string[] = ['.excalidraw.md'];
   public warningVersion = '0.0.0';
   public get customTokensStr(): string {
     return this._customTokensStr;

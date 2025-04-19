@@ -5,6 +5,7 @@ import type {
   TFolder
 } from 'obsidian';
 import type { FileChange } from 'obsidian-dev-utils/obsidian/FileChange';
+import type { PathOrAbstractFile } from 'obsidian-dev-utils/obsidian/FileSystem';
 import type { CanvasData } from 'obsidian/canvas.d.ts';
 
 import {
@@ -18,6 +19,7 @@ import { appendCodeBlock } from 'obsidian-dev-utils/HTMLElement';
 import { toJson } from 'obsidian-dev-utils/Object';
 import { applyFileChanges } from 'obsidian-dev-utils/obsidian/FileChange';
 import {
+  getPath,
   isCanvasFile,
   isNote
 } from 'obsidian-dev-utils/obsidian/FileSystem';
@@ -144,7 +146,7 @@ export async function collectAttachments(
 
 export function collectAttachmentsCurrentFolder(plugin: Plugin, checking: boolean): boolean {
   const note = plugin.app.workspace.getActiveFile();
-  if (!isNote(plugin.app, note)) {
+  if (!isNoteEx(plugin, note)) {
     return false;
   }
 
@@ -157,7 +159,7 @@ export function collectAttachmentsCurrentFolder(plugin: Plugin, checking: boolea
 
 export function collectAttachmentsCurrentNote(plugin: Plugin, checking: boolean): boolean {
   const note = plugin.app.workspace.getActiveFile();
-  if (!note || !isNote(plugin.app, note)) {
+  if (!note || !isNoteEx(plugin, note)) {
     return false;
   }
 
@@ -199,7 +201,7 @@ export async function collectAttachmentsInFolder(plugin: Plugin, folder: TFolder
   plugin.consoleDebug(`Collect attachments in folder: ${folder.path}`);
   const files: TFile[] = [];
   Vault.recurseChildren(folder, (child) => {
-    if (isNote(plugin.app, child)) {
+    if (isNoteEx(plugin, child)) {
       files.push(child as TFile);
     }
   });
@@ -220,6 +222,15 @@ export async function collectAttachmentsInFolder(plugin: Plugin, folder: TFolder
     shouldContinueOnError: true,
     shouldShowProgressBar: true
   });
+}
+
+export function isNoteEx(plugin: Plugin, pathOrFile: null | PathOrAbstractFile): boolean {
+  if (!pathOrFile || !isNote(plugin.app, pathOrFile)) {
+    return false;
+  }
+
+  const path = getPath(plugin.app, pathOrFile);
+  return plugin.settings.treatAsAttachmentExtensions.every((extension) => !path.endsWith(extension));
 }
 
 async function getCanvasLinks(app: App, canvasFile: TFile): Promise<ReferenceCache[]> {
@@ -248,7 +259,7 @@ async function prepareAttachmentToMove(
     return null;
   }
 
-  if (isNote(plugin.app, oldAttachmentFile)) {
+  if (isNoteEx(plugin, oldAttachmentFile)) {
     return null;
   }
 

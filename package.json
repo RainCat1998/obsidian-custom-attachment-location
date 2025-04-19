@@ -1,6 +1,6 @@
 {
   "name": "obsidian-custom-attachment-location",
-  "version": "7.2.6",
+  "version": "7.3.0",
   "description": "Customize attachment location with variables($filename, $data, etc) like typora.",
   "main": "main.js",
   "scripts": {

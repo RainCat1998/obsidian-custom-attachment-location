@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## 7.3.0
+
+- Add settings code highlighting
+- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/26.7.0
+
 ## 7.2.6
 
 - https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/26.1.2

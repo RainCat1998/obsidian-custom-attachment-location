@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## 7.4.0
+
+- Add Treat as attachment extensions.
+- [FR #147 Support .md Attachments](https://github.com/RainCat1998/obsidian-custom-attachment-location/issues/147).
+
 ## 7.3.0
 
 - Add settings code highlighting

@@ -28,7 +28,7 @@ export class PluginSettingsTab extends PluginSettingsTabBase<PluginTypes> {
         f.createEl('br');
         f.appendText('See available ');
         f.createEl('a', { href: 'https://github.com/RainCat1998/obsidian-custom-attachment-location?tab=readme-ov-file#tokens', text: 'tokens' });
-        f.appendChild(createEl('br'));
+        f.createEl('br');
         f.appendText('Dot-folders like ');
         appendCodeBlock(f, '.attachments');
         f.appendText(' are not recommended, because Obsidian doesn\'t track them. You might need to use ');
@@ -167,7 +167,7 @@ export class PluginSettingsTab extends PluginSettingsTabBase<PluginTypes> {
       .setName('Duplicate name separator')
       .setDesc(createFragment((f) => {
         f.appendText('When you are pasting/dragging a file with the same name as an existing file, this separator will be added to the file name.');
-        f.appendChild(createEl('br'));
+        f.createEl('br');
         f.appendText('E.g., when you are dragging file ');
         appendCodeBlock(f, 'existingFile.pdf');
         f.appendText(', it will be renamed to ');
@@ -236,7 +236,7 @@ export class PluginSettingsTab extends PluginSettingsTabBase<PluginTypes> {
       .setName('Custom tokens')
       .setDesc(createFragment((f) => {
         f.appendText('Custom tokens to be used in the attachment folder path and pasted file name.');
-        f.appendChild(createEl('br'));
+        f.createEl('br');
         f.appendText('See ');
         f.createEl('a', { href: 'https://github.com/RainCat1998/obsidian-custom-attachment-location?tab=readme-ov-file#custom-tokens', text: 'documentation' });
         f.appendText(' for more information.');

@@ -47,6 +47,7 @@ import {
 import { AttachmentRenameMode } from './PluginSettings.ts';
 import { PluginSettingsManager } from './PluginSettingsManager.ts';
 import { PluginSettingsTab } from './PluginSettingsTab.ts';
+import { PrismComponent } from './PrismComponent.ts';
 import { Substitutions } from './Substitutions.ts';
 
 type GetAvailablePathFn = Vault['getAvailablePath'];
@@ -67,6 +68,7 @@ export class Plugin extends PluginBase<PluginTypes> {
   }
 
   protected override async onLayoutReady(): Promise<void> {
+    await super.onLayoutReady();
     registerPatch(this, this.app.vault, {
       getAvailablePath: (): GetAvailablePathFn => this.getAvailablePath.bind(this),
       getAvailablePathForAttachments: (): ExtendedWrapper & GetAvailablePathForAttachmentsExtendedFn => {
@@ -145,6 +147,7 @@ export class Plugin extends PluginBase<PluginTypes> {
     registerPatch(this, this.app, {
       saveAttachment: (next: SaveAttachmentFn) => (name, extension, data): Promise<TFile> => this.saveAttachment(next, name, extension, data)
     });
+    this.addChild(new PrismComponent());
   }
 
   private getAvailablePath(filename: string, extension: string): string {

@@ -10,6 +10,7 @@ import { SettingEx } from 'obsidian-dev-utils/obsidian/SettingEx';
 import type { PluginTypes } from './PluginTypes.ts';
 
 import { AttachmentRenameMode } from './PluginSettings.ts';
+import { TOKENIZED_STRING_LANGUAGE } from './PrismComponent.ts';
 
 const VISIBLE_WHITESPACE_CHARACTER = '␣';
 
@@ -34,16 +35,18 @@ export class PluginSettingsTab extends PluginSettingsTabBase<PluginTypes> {
         f.createEl('a', { href: 'https://github.com/polyipseity/obsidian-show-hidden-files/', text: 'Show Hidden Files' });
         f.appendText(' Plugin to manage them.');
       }))
-      .addText((text) =>
-        this.bind(text, 'attachmentFolderPath', {
+      .addCodeHighlighter((codeHighlighter) => {
+        codeHighlighter.setLanguage(TOKENIZED_STRING_LANGUAGE);
+        codeHighlighter.inputEl.addClass('tokenized-string-setting-control');
+        this.bind(codeHighlighter, 'attachmentFolderPath', {
           componentToPluginSettingsValueConverter(uiValue: string): string {
             return normalizePath(uiValue);
           },
           pluginSettingsToComponentValueConverter(pluginSettingsValue: string): string {
             return pluginSettingsValue;
           }
-        })
-      );
+        });
+      });
 
     new SettingEx(this.containerEl)
       .setName('Generated attachment filename')
@@ -51,8 +54,10 @@ export class PluginSettingsTab extends PluginSettingsTabBase<PluginTypes> {
         f.appendText('See available ');
         f.createEl('a', { href: 'https://github.com/RainCat1998/obsidian-custom-attachment-location?tab=readme-ov-file#tokens', text: 'tokens' });
       }))
-      .addText((text) => {
-        this.bind(text, 'generatedAttachmentFilename');
+      .addCodeHighlighter((codeHighlighter) => {
+        codeHighlighter.setLanguage(TOKENIZED_STRING_LANGUAGE);
+        codeHighlighter.inputEl.addClass('tokenized-string-setting-control');
+        this.bind(codeHighlighter, 'generatedAttachmentFilename');
       });
 
     new SettingEx(this.containerEl)
@@ -236,8 +241,9 @@ export class PluginSettingsTab extends PluginSettingsTabBase<PluginTypes> {
         f.createEl('a', { href: 'https://github.com/RainCat1998/obsidian-custom-attachment-location?tab=readme-ov-file#custom-tokens', text: 'documentation' });
         f.appendText(' for more information.');
       }))
-      .addTextArea((textArea) => {
-        this.bind(textArea, 'customTokensStr');
+      .addCodeHighlighter((codeHighlighter) => {
+        codeHighlighter.setLanguage('javascript');
+        this.bind(codeHighlighter, 'customTokensStr');
       });
   }
 }

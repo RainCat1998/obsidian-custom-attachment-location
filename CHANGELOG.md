@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 7.4.1
+
+- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/26.11.0
+
 ## 7.4.0
 
 - Add Treat as attachment extensions.

@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## 7.4.2
+
+- Improve performance
+- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/26.15.2
+
 ## 7.4.1
 
 - https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/26.11.0

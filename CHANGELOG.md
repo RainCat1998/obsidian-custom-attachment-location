@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 7.4.3
+
+- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/26.16.0
+
 ## 7.4.2
 
 - Improve performance

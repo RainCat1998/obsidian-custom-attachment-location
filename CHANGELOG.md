@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## 7.5.0
+
+- Switch to EmptyAttachmentFolderBehavior
+- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/26.22.0
+
 ## 7.4.3
 
 - https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/26.16.0

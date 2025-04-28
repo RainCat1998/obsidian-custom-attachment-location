@@ -5,6 +5,7 @@ import {
 } from 'obsidian-dev-utils/Enum';
 import { appendCodeBlock } from 'obsidian-dev-utils/HTMLElement';
 import { PluginSettingsTabBase } from 'obsidian-dev-utils/obsidian/Plugin/PluginSettingsTabBase';
+import { EmptyAttachmentFolderBehavior } from 'obsidian-dev-utils/obsidian/RenameDeleteHandler';
 import { SettingEx } from 'obsidian-dev-utils/obsidian/SettingEx';
 
 import type { PluginTypes } from './PluginTypes.ts';
@@ -187,10 +188,31 @@ export class PluginSettingsTab extends PluginSettingsTabBase<PluginTypes> {
       });
 
     new SettingEx(this.containerEl)
-      .setName('Should keep empty attachment folders')
-      .setDesc('If enabled, empty attachment folders will be preserved, useful for source control purposes.')
-      .addToggle((toggle) => {
-        this.bind(toggle, 'shouldKeepEmptyAttachmentFolders');
+      .setName('Empty attachment folder behavior')
+      .setDesc(createFragment((f) => {
+        f.appendText('When the attachment folder becomes empty, ');
+        f.createEl('br');
+        appendCodeBlock(f, 'Keep');
+        f.appendText(' - will keep the empty attachment folder, ');
+        f.createEl('br');
+        appendCodeBlock(f, 'Delete');
+        f.appendText(' - will delete the empty attachment folder, ');
+        f.createEl('br');
+        appendCodeBlock(f, 'Delete with empty parents');
+        f.appendText(' - will delete the empty attachment folder and its empty parent folders.');
+      }))
+      .addDropdown((dropdown) => {
+        dropdown.addOptions({
+          /* eslint-disable perfectionist/sort-objects */
+          [EmptyAttachmentFolderBehavior.Keep]: 'Keep',
+          [EmptyAttachmentFolderBehavior.Delete]: 'Delete',
+          [EmptyAttachmentFolderBehavior.DeleteWithEmptyParents]: 'Delete with empty parents'
+          /* eslint-enable perfectionist/sort-objects */
+        });
+        this.bind(dropdown, 'emptyAttachmentFolderBehavior', {
+          componentToPluginSettingsValueConverter: (value) => getEnumValue(EmptyAttachmentFolderBehavior, value),
+          pluginSettingsToComponentValueConverter: (value) => getEnumKey(EmptyAttachmentFolderBehavior, value)
+        });
       });
 
     new SettingEx(this.containerEl)

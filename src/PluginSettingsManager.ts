@@ -1,6 +1,7 @@
 import type { MaybeReturn } from 'obsidian-dev-utils/Type';
 
 import { PluginSettingsManagerBase } from 'obsidian-dev-utils/obsidian/Plugin/PluginSettingsManagerBase';
+import { EmptyAttachmentFolderBehavior } from 'obsidian-dev-utils/obsidian/RenameDeleteHandler';
 import { isValidRegExp } from 'obsidian-dev-utils/RegExp';
 
 import type { PluginTypes } from './PluginTypes.ts';
@@ -29,6 +30,7 @@ class LegacySettings extends PluginSettings {
   public renameOnlyImages = false;
   public renamePastedFilesWithKnownNames = false;
   public replaceWhitespace = false;
+  public shouldKeepEmptyAttachmentFolders = false;
   public toLowerCase = false;
   public whitespaceReplacement = '';
 }
@@ -84,6 +86,12 @@ export class PluginSettingsManager extends PluginSettingsManagerBase<PluginTypes
     if (legacySettings.whitespaceReplacement) {
       legacySettings.specialCharacters = `${legacySettings.specialCharacters ?? ''} `;
       legacySettings.specialCharactersReplacement = legacySettings.whitespaceReplacement;
+    }
+
+    if (legacySettings.shouldKeepEmptyAttachmentFolders !== undefined) {
+      legacySettings.emptyAttachmentFolderBehavior = legacySettings.shouldKeepEmptyAttachmentFolders
+        ? EmptyAttachmentFolderBehavior.Keep
+        : EmptyAttachmentFolderBehavior.DeleteWithEmptyParents;
     }
   }
 

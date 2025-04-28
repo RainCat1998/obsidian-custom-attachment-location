@@ -63,6 +63,18 @@ export class PluginSettingsTab extends PluginSettingsTabBase<PluginTypes> {
 
     new SettingEx(this.containerEl)
       .setName('Attachment rename mode')
+      .setDesc(createFragment((f) => {
+        f.appendText('When attaching files, ');
+        f.createEl('br');
+        appendCodeBlock(f, 'None');
+        f.appendText(' - their names are preserved, ');
+        f.createEl('br');
+        appendCodeBlock(f, 'Only pasted images');
+        f.appendText(' - only pasted images are renamed.');
+        f.createEl('br');
+        appendCodeBlock(f, 'All');
+        f.appendText(' - all files are renamed.');
+      }))
       .addDropdown((dropdown) => {
         dropdown.addOptions(AttachmentRenameMode);
         this.bind(dropdown, 'attachmentRenameMode', {

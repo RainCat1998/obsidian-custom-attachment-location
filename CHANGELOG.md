@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 7.6.1
+
+- Update libs
+
 ## 7.6.0
 
 - Fix size

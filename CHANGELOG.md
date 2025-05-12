@@ -1,5 +1,12 @@
 # CHANGELOG
 
+## 7.6.0
+
+- Fix size
+- Add placeholder
+- Fix compilation
+- Update libs
+
 ## 7.5.0
 
 - Switch to EmptyAttachmentFolderBehavior

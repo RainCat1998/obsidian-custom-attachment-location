@@ -277,7 +277,17 @@ export class PluginSettingsTab extends PluginSettingsTabBase<PluginTypes> {
       }))
       .addCodeHighlighter((codeHighlighter) => {
         codeHighlighter.setLanguage('javascript');
+        codeHighlighter.inputEl.addClass('custom-tokens-setting-control');
         this.bind(codeHighlighter, 'customTokensStr');
+        codeHighlighter.setPlaceholder(`exports.myCustomToken1 = (substitutions, format) => {
+  return substitutions.fileName + substitutions.app.appId + format;
+};
+
+exports.myCustomToken2 = async (substitutions, format) => {
+  return await Promise.resolve(
+    substitutions.fileName + substitutions.app.appId + format
+  );
+};`);
       });
 
     new SettingEx(this.containerEl)

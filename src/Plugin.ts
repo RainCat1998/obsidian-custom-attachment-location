@@ -59,6 +59,10 @@ const PASTED_IMAGE_NAME_REG_EXP = /Pasted image (?<Timestamp>\d{14})/;
 const PASTED_IMAGE_DATE_FORMAT = 'YYYYMMDDHHmmss';
 const THRESHOLD_IN_SECONDS = 10;
 
+interface FileEx {
+  path: string;
+}
+
 export class Plugin extends PluginBase<PluginTypes> {
   protected override createSettingsManager(): PluginSettingsManager {
     return new PluginSettingsManager(this);
@@ -195,7 +199,11 @@ export class Plugin extends PluginBase<PluginTypes> {
   }
 
   private getPathForFile(file: File, next: GetPathForFileFn): string {
-    return file.path || next(file);
+    const fileEx = file as Partial<FileEx>;
+    if (fileEx.path) {
+      return fileEx.path;
+    }
+    return next(file);
   }
 
   private handleFileMenu(menu: Menu, file: TAbstractFile): void {

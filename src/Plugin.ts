@@ -87,7 +87,11 @@ export class Plugin extends PluginBase<PluginTypes> {
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     if (webUtils) {
       registerPatch(this, webUtils, {
-        getPathForFile: (next: GetPathForFileFn): GetPathForFileFn => (file: File): string => this.getPathForFile(file, next)
+        getPathForFile: (next: GetPathForFileFn): GetPathForFileFn => {
+          return (file: File): string => {
+            return this.getPathForFile(file, next);
+          };
+        }
       });
     }
 
@@ -151,7 +155,11 @@ export class Plugin extends PluginBase<PluginTypes> {
     this.registerEvent(this.app.workspace.on('file-menu', this.handleFileMenu.bind(this)));
 
     registerPatch(this, this.app, {
-      saveAttachment: (next: SaveAttachmentFn) => (name, extension, data): Promise<TFile> => this.saveAttachment(next, name, extension, data)
+      saveAttachment: (next: SaveAttachmentFn): SaveAttachmentFn => {
+        return (name, extension, data): Promise<TFile> => {
+          return this.saveAttachment(next, name, extension, data);
+        };
+      }
     });
     this.addChild(new PrismComponent());
   }

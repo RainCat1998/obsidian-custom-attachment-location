@@ -62,6 +62,26 @@ export class PluginSettingsTab extends PluginSettingsTabBase<PluginTypes> {
       });
 
     new SettingEx(this.containerEl)
+      .setName('Markdown URL format')
+      .setDesc(createFragment((f) => {
+        f.appendText('Format for the URL that will be inserted into Markdown.');
+        f.createEl('br');
+        f.appendText('Note: You need to set ');
+        appendCodeBlock(f, 'Files & links > New link format');
+        f.appendText(' to ');
+        appendCodeBlock(f, 'Absolute path in vault');
+        f.appendText(' for URL rewriting to work.');
+        f.createEl('br');
+        f.appendText('See available ');
+        f.createEl('a', { href: 'https://github.com/RainCat1998/obsidian-custom-attachment-location?tab=readme-ov-file#tokens', text: 'tokens' });
+      }))
+      .addCodeHighlighter((codeHighlighter) => {
+        codeHighlighter.setLanguage(TOKENIZED_STRING_LANGUAGE);
+        codeHighlighter.inputEl.addClass('tokenized-string-setting-control');
+        this.bind(codeHighlighter, 'markdownUrlFormat');
+      });
+
+    new SettingEx(this.containerEl)
       .setName('Attachment rename mode')
       .setDesc(createFragment((f) => {
         f.appendText('When attaching files, ');

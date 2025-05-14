@@ -262,6 +262,11 @@ export class Plugin extends PluginBase<PluginTypes> {
       name = await getPastedFileName(this, new Substitutions(this.app, activeFile.path, makeFileName(name, extension)));
     }
 
-    return await next.call(this.app, name, extension, data);
+    const result = await next.call(this.app, name, extension, data);
+
+    result.path = await new Substitutions(this.app, result.path, result.name)
+      .fillTemplate(this.settings.markdownUrlFormat);
+
+    return result;
   }
 }

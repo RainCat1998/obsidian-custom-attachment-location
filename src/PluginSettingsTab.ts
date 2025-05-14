@@ -66,14 +66,10 @@ export class PluginSettingsTab extends PluginSettingsTabBase<PluginTypes> {
       .setDesc(createFragment((f) => {
         f.appendText('Format for the URL that will be inserted into Markdown.');
         f.createEl('br');
-        f.appendText('Note: You need to set ');
-        appendCodeBlock(f, 'Files & links > New link format');
-        f.appendText(' to ');
-        appendCodeBlock(f, 'Absolute path in vault');
-        f.appendText(' for URL rewriting to work.');
-        f.createEl('br');
         f.appendText('See available ');
         f.createEl('a', { href: 'https://github.com/RainCat1998/obsidian-custom-attachment-location?tab=readme-ov-file#tokens', text: 'tokens' });
+        f.createEl('br');
+        f.appendText('Leave blank to use the default format.');
       }))
       .addCodeHighlighter((codeHighlighter) => {
         codeHighlighter.setLanguage(TOKENIZED_STRING_LANGUAGE);

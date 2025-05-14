@@ -1,4 +1,7 @@
-import type { App } from 'obsidian';
+import type {
+  App,
+  FileManager
+} from 'obsidian';
 import type {
   ExtendedWrapper,
   GetAvailablePathForAttachmentsExtendedFn
@@ -17,6 +20,12 @@ import {
 import { blobToJpegArrayBuffer } from 'obsidian-dev-utils/Blob';
 import { getAvailablePathForAttachments } from 'obsidian-dev-utils/obsidian/AttachmentPath';
 import { getAbstractFileOrNull } from 'obsidian-dev-utils/obsidian/FileSystem';
+import {
+  encodeUrl,
+  generateMarkdownLink,
+  testAngleBrackets,
+  testWikilink
+} from 'obsidian-dev-utils/obsidian/Link';
 import { alert } from 'obsidian-dev-utils/obsidian/Modals/Alert';
 import { registerPatch } from 'obsidian-dev-utils/obsidian/MonkeyAround';
 import { PluginBase } from 'obsidian-dev-utils/obsidian/Plugin/PluginBase';
@@ -51,6 +60,7 @@ import { PluginSettingsTab } from './PluginSettingsTab.ts';
 import { PrismComponent } from './PrismComponent.ts';
 import { Substitutions } from './Substitutions.ts';
 
+type GenerateMarkdownLinkFn = FileManager['generateMarkdownLink'];
 type GetAvailablePathFn = Vault['getAvailablePath'];
 type GetPathForFileFn = typeof webUtils['getPathForFile'];
 type SaveAttachmentFn = App['saveAttachment'];
@@ -64,6 +74,8 @@ interface FileEx {
 }
 
 export class Plugin extends PluginBase<PluginTypes> {
+  private readonly pathMarkdownUrlMap = new Map<string, string>();
+
   protected override createSettingsManager(): PluginSettingsManager {
     return new PluginSettingsManager(this);
   }
@@ -94,6 +106,14 @@ export class Plugin extends PluginBase<PluginTypes> {
         }
       });
     }
+
+    registerPatch(this, this.app.fileManager, {
+      generateMarkdownLink: (next: GenerateMarkdownLinkFn): GenerateMarkdownLinkFn => {
+        return (file: TFile, sourcePath: string, subpath?: string, alias?: string): string => {
+          return this.generateMarkdownLink(next, file, sourcePath, subpath, alias);
+        };
+      }
+    });
 
     if (compare(this.settings.warningVersion, '7.0.0') < 0) {
       if (this.settings.customTokensStr) {
@@ -162,6 +182,36 @@ export class Plugin extends PluginBase<PluginTypes> {
       }
     });
     this.addChild(new PrismComponent());
+  }
+
+  private generateMarkdownLink(next: GenerateMarkdownLinkFn, file: TFile, sourcePath: string, subpath?: string, alias?: string): string {
+    let defaultLink = next.call(this.app.fileManager, file, sourcePath, subpath, alias);
+
+    if (!this.settings.markdownUrlFormat) {
+      return defaultLink;
+    }
+
+    const markdownUrl = this.pathMarkdownUrlMap.get(file.path);
+
+    if (!markdownUrl) {
+      return defaultLink;
+    }
+
+    if (testWikilink(defaultLink)) {
+      defaultLink = generateMarkdownLink({
+        app: this.app,
+        isWikilink: false,
+        originalLink: defaultLink,
+        sourcePathOrFile: sourcePath,
+        targetPathOrFile: file
+      });
+    }
+
+    if (testAngleBrackets(defaultLink)) {
+      return defaultLink.replace(/\]\(<.+?>\)/, `](<${markdownUrl}>)`);
+    }
+
+    return defaultLink.replace(/\]\(.+?\)/, `](${encodeUrl(markdownUrl)})`);
   }
 
   private getAvailablePath(filename: string, extension: string): string {
@@ -270,11 +320,13 @@ export class Plugin extends PluginBase<PluginTypes> {
       name = await getPastedFileName(this, new Substitutions(this.app, activeFile.path, makeFileName(name, extension)));
     }
 
-    const result = await next.call(this.app, name, extension, data);
-
-    result.path = await new Substitutions(this.app, result.path, result.name)
-      .fillTemplate(this.settings.markdownUrlFormat);
-
-    return result;
+    const file = await next.call(this.app, name, extension, data);
+    if (this.settings.markdownUrlFormat) {
+      const markdownUrl = await new Substitutions(this.app, file.path, file.name).fillTemplate(this.settings.markdownUrlFormat);
+      this.pathMarkdownUrlMap.set(file.path, markdownUrl);
+    } else {
+      this.pathMarkdownUrlMap.delete(file.path);
+    }
+    return file;
   }
 }

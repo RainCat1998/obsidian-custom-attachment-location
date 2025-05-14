@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## 7.7.0
+
+- Modify url generation not faking the file instances
+- Add markdown URL format customization #152 (thanks to @Kamesuta)
+- Update libs
+
 ## 7.6.1
 
 - Update libs

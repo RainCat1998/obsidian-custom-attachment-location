@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 7.7.1
+
+- Reset default url format
+
 ## 7.7.0
 
 - Modify url generation not faking the file instances

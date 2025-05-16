@@ -24,8 +24,7 @@ export class PluginSettings {
   public generatedAttachmentFilename = 'file-${date:YYYYMMDDHHmmssSSS}';
   // eslint-disable-next-line no-magic-numbers
   public jpegQuality = 0.8;
-  // eslint-disable-next-line no-template-curly-in-string
-  public markdownUrlFormat = '${filePath}';
+  public markdownUrlFormat = '';
   public shouldConvertPastedImagesToJpeg = false;
   public shouldDeleteOrphanAttachments = false;
   public shouldRenameAttachmentFiles = false;

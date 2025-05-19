@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 7.7.2
+
+- Update libs
+
 ## 7.7.1
 
 - Reset default url format

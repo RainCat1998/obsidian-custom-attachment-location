@@ -1,6 +1,5 @@
 import { normalizePath } from 'obsidian';
 import { join } from 'obsidian-dev-utils/Path';
-import { escapeRegExp } from 'obsidian-dev-utils/RegExp';
 
 import type { Plugin } from './Plugin.ts';
 

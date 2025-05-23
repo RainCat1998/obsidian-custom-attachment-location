@@ -27,8 +27,6 @@ export function replaceSpecialCharacters(plugin: Plugin, str: string): string {
   }
 
   str = str.replace(plugin.settings.specialCharactersRegExp, plugin.settings.specialCharactersReplacement);
-  const escaped = escapeRegExp(plugin.settings.specialCharactersReplacement);
-  str = str.replace(new RegExp(`${escaped}{2,}`, 'g'), plugin.settings.specialCharactersReplacement);
   return str;
 }
 

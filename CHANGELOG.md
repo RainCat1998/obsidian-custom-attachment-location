@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 7.7.4
+
+- Update libs
+
 ## 7.7.3
 
 - Properly handle sequential special characters

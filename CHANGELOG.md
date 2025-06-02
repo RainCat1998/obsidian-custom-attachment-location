@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 7.7.6
+
+- Update libs
+
 ## 7.7.5
 
 - Update libs

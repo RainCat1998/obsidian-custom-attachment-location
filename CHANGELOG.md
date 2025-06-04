@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 7.8.0
+
+- Update attachmentFolderPath on opening file
+
 ## 7.7.6
 
 - Update libs

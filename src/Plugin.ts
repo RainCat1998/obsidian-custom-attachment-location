@@ -7,6 +7,7 @@ import type {
   GetAvailablePathForAttachmentsExtendedFn
 } from 'obsidian-dev-utils/obsidian/AttachmentPath';
 import type { RenameDeleteHandlerSettings } from 'obsidian-dev-utils/obsidian/RenameDeleteHandler';
+import type { ConfigItem } from 'obsidian-typings/implementations';
 
 import { webUtils } from 'electron';
 import moment from 'moment';
@@ -17,6 +18,7 @@ import {
   TFolder,
   Vault
 } from 'obsidian';
+import { convertAsyncToSync } from 'obsidian-dev-utils/Async';
 import { blobToJpegArrayBuffer } from 'obsidian-dev-utils/Blob';
 import { getAvailablePathForAttachments } from 'obsidian-dev-utils/obsidian/AttachmentPath';
 import { getAbstractFileOrNull } from 'obsidian-dev-utils/obsidian/FileSystem';
@@ -62,6 +64,7 @@ import { Substitutions } from './Substitutions.ts';
 
 type GenerateMarkdownLinkFn = FileManager['generateMarkdownLink'];
 type GetAvailablePathFn = Vault['getAvailablePath'];
+type GetConfigFn = Vault['getConfig'];
 type GetPathForFileFn = typeof webUtils['getPathForFile'];
 type SaveAttachmentFn = App['saveAttachment'];
 
@@ -74,6 +77,7 @@ interface FileEx {
 }
 
 export class Plugin extends PluginBase<PluginTypes> {
+  private currentAttachmentFolderPath: null | string = null;
   private readonly pathMarkdownUrlMap = new Map<string, string>();
 
   protected override createSettingsManager(): PluginSettingsManager {
@@ -93,6 +97,11 @@ export class Plugin extends PluginBase<PluginTypes> {
           isExtended: true as const
         };
         return Object.assign(this.getAvailablePathForAttachments.bind(this), extendedWrapper) as ExtendedWrapper & GetAvailablePathForAttachmentsExtendedFn;
+      },
+      getConfig: (next: GetConfigFn): GetConfigFn => {
+        return (name: ConfigItem): unknown => {
+          return this.getConfig(next, name);
+        };
       }
     });
 
@@ -182,6 +191,8 @@ export class Plugin extends PluginBase<PluginTypes> {
       }
     });
     this.addChild(new PrismComponent());
+
+    this.registerEvent(this.app.workspace.on('file-open', convertAsyncToSync(this.handleFileOpen.bind(this))));
   }
 
   private generateMarkdownLink(next: GenerateMarkdownLinkFn, file: TFile, sourcePath: string, subpath?: string, alias?: string): string {
@@ -256,6 +267,14 @@ export class Plugin extends PluginBase<PluginTypes> {
     return attachmentPath;
   }
 
+  private getConfig(next: GetConfigFn, name: ConfigItem): unknown {
+    if (name !== 'attachmentFolderPath' || this.currentAttachmentFolderPath === null) {
+      return next.call(this.app.vault, name);
+    }
+
+    return this.currentAttachmentFolderPath;
+  }
+
   private getPathForFile(file: File, next: GetPathForFileFn): string {
     const fileEx = file as Partial<FileEx>;
     if (fileEx.path) {
@@ -274,6 +293,15 @@ export class Plugin extends PluginBase<PluginTypes> {
         .setIcon('download')
         .onClick(() => collectAttachmentsInFolder(this, file));
     });
+  }
+
+  private async handleFileOpen(file: null | TFile): Promise<void> {
+    if (file === null) {
+      this.currentAttachmentFolderPath = null;
+      return;
+    }
+
+    this.currentAttachmentFolderPath = await getAttachmentFolderFullPathForPath(this, file.path, 'dummy.pdf');
   }
 
   private async saveAttachment(next: SaveAttachmentFn, name: string, extension: string, data: ArrayBuffer): Promise<TFile> {

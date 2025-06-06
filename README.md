@@ -19,7 +19,7 @@ Customize attachment location with tokens (`${fileName}`, `${date:format}`, etc)
 ### Generated attachment filename
 
 - See available [tokens](#tokens).
-- example: `${originalCopiedFilename}-${date:YYYYMMDDHHmmssSSS}`, `${filename}-img-${date:YYYYMMDD}`
+- example: `${originalCopiedFileName}-${date:YYYYMMDDHHmmssSSS}`, `${filename}-img-${date:YYYYMMDD}`
 - Obsidian default: `Pasted image ${date:YYYYMMDDHHmmss}`.
 
 ### Should rename attachment folder
@@ -101,7 +101,7 @@ The tokens are case-insensitive. The formats are case-sensitive.
 - `${folderPath}`: Full path to current note's folder.
 - `${frontmatter:key}`: Frontmatter value of the current note. Nested keys are supported, e.g., `key1.key2.3.key4`.
 - `${originalCopiedFileExtension}`: Extension of the original copied to clipboard or dragged file.
-- `${originalCopiedFileName}`: File name of the original copied to clipboard or dragged file.
+- `${}`: File name of the original copied to clipboard or dragged file.
 - `${prompt}`: The value asked from the user prompt.
 - `${randomDigit}`: A random digit.
 - `${randomDigitOrLetter}`: A random digit or letter.
@@ -137,7 +137,7 @@ Then you can use the defined `${myCustomToken1}`, `${myCustomToken2:format}` tok
   - `folderName`: The name of the folder containing the current note.
   - `folderPath`: The full path to the folder containing the current note.
   - `originalCopiedFileExtension`: Extension of the original copied to clipboard or dragged file.
-  - `originalCopiedFileName`: File name of the original copied to clipboard or dragged file.
+  - ``: File name of the original copied to clipboard or dragged file.
   - `fillTemplate(template)`: Function to fill the template with the given format. E.g., `substitutions.fillTemplate('${date:YYYY-MM-DD}')`.
 - `format`: optional format string.
 

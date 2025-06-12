@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## 7.8.2
+
+- Ensure attachment folder is updated on rename
+- Update libs
+
 ## 7.8.1
 
 - Fix build

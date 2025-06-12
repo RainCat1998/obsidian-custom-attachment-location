@@ -78,6 +78,7 @@ interface FileEx {
 
 export class Plugin extends PluginBase<PluginTypes> {
   private currentAttachmentFolderPath: null | string = null;
+  private lastOpenFilePath: null | string = null;
   private readonly pathMarkdownUrlMap = new Map<string, string>();
 
   protected override createSettingsManager(): PluginSettingsManager {
@@ -193,6 +194,7 @@ export class Plugin extends PluginBase<PluginTypes> {
     this.addChild(new PrismComponent());
 
     this.registerEvent(this.app.workspace.on('file-open', convertAsyncToSync(this.handleFileOpen.bind(this))));
+    this.registerEvent(this.app.vault.on('rename', convertAsyncToSync(this.handleRename.bind(this))));
   }
 
   private generateMarkdownLink(next: GenerateMarkdownLinkFn, file: TFile, sourcePath: string, subpath?: string, alias?: string): string {
@@ -298,10 +300,20 @@ export class Plugin extends PluginBase<PluginTypes> {
   private async handleFileOpen(file: null | TFile): Promise<void> {
     if (file === null) {
       this.currentAttachmentFolderPath = null;
+      this.lastOpenFilePath = null;
       return;
     }
 
+    if (file.path === this.lastOpenFilePath) {
+      return;
+    }
+
+    this.lastOpenFilePath = file.path;
     this.currentAttachmentFolderPath = await getAttachmentFolderFullPathForPath(this, file.path, 'dummy.pdf');
+  }
+
+  private async handleRename(): Promise<void> {
+    await this.handleFileOpen(this.app.workspace.getActiveFile());
   }
 
   private async saveAttachment(next: SaveAttachmentFn, name: string, extension: string, data: ArrayBuffer): Promise<TFile> {

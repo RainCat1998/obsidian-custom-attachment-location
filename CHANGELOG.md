@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 7.9.0
+
+- Exclude paths from attachment collecting
+
 ## 7.8.2
 
 - Ensure attachment folder is updated on rename

@@ -65,13 +65,9 @@ interface AttachmentMoveResult {
 
 export async function collectAttachments(
   plugin: Plugin,
-  note: TFile,
-  oldPath?: string,
-  attachmentFilter?: (path: string) => boolean
+  note: TFile
 ): Promise<void> {
   const app = plugin.app;
-  oldPath ??= note.path;
-  attachmentFilter ??= (): boolean => true;
 
   const notice = new Notice(`Collecting attachments for ${note.path}`);
 
@@ -89,12 +85,12 @@ export async function collectAttachments(
     const changes: FileChange[] = [];
 
     for (const link of links) {
-      const attachmentMoveResult = await prepareAttachmentToMove(plugin, link, note.path, oldPath);
+      const attachmentMoveResult = await prepareAttachmentToMove(plugin, link, note.path, note.path);
       if (!attachmentMoveResult) {
         continue;
       }
 
-      if (!attachmentFilter(attachmentMoveResult.oldAttachmentPath)) {
+      if (plugin.settings.isExcludedFromAttachmentCollecting(attachmentMoveResult.oldAttachmentPath)) {
         continue;
       }
 

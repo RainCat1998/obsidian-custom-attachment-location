@@ -283,6 +283,24 @@ export class PluginSettingsTab extends PluginSettingsTabBase<PluginTypes> {
       });
 
     new SettingEx(this.containerEl)
+      .setName('Exclude paths from attachment collecting')
+      .setDesc(createFragment((f) => {
+        f.appendText('Exclude attachments from the following paths when ');
+        appendCodeBlock(f, 'Collect attachments');
+        f.appendText(' command is executed.');
+        f.createEl('br');
+        f.appendText('Insert each path on a new line');
+        f.createEl('br');
+        f.appendText('You can use path string or ');
+        appendCodeBlock(f, '/regular expression/');
+        f.createEl('br');
+        f.appendText('If the setting is empty, no paths are excluded from attachment collecting.');
+      }))
+      .addMultipleText((multipleText) => {
+        this.bind(multipleText, 'excludePathsFromAttachmentCollecting');
+      });
+
+    new SettingEx(this.containerEl)
       .setName('Custom tokens')
       .setDesc(createFragment((f) => {
         f.appendText('Custom tokens to be used in the attachment folder path and pasted file name.');

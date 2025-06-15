@@ -28,6 +28,7 @@ export class PluginSettings {
 
   public shouldConvertPastedImagesToJpeg = false;
   public shouldDeleteOrphanAttachments = false;
+  public shouldDuplicateAttachments = false;
   public shouldRenameAttachmentFiles = false;
   public shouldRenameAttachmentFolder = true;
   public shouldRenameAttachmentsToLowerCase = false;

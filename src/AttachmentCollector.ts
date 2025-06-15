@@ -95,8 +95,12 @@ export async function collectAttachments(
       }
 
       const backlinks = await getBacklinksForFileSafe(app, attachmentMoveResult.oldAttachmentPath);
-      if (backlinks.count() > 1) {
-        attachmentMoveResult.newAttachmentPath = await copySafe(app, attachmentMoveResult.oldAttachmentPath, attachmentMoveResult.newAttachmentPath);
+      if (backlinks.keys().length > 1) {
+        if (plugin.settings.shouldDuplicateAttachments) {
+          attachmentMoveResult.newAttachmentPath = await copySafe(app, attachmentMoveResult.oldAttachmentPath, attachmentMoveResult.newAttachmentPath);
+        } else {
+          continue;
+        }
       } else {
         attachmentMoveResult.newAttachmentPath = await renameSafe(app, attachmentMoveResult.oldAttachmentPath, attachmentMoveResult.newAttachmentPath);
         await deleteEmptyFolderHierarchy(app, dirname(attachmentMoveResult.oldAttachmentPath));

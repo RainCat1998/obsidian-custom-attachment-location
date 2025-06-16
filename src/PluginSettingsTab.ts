@@ -193,6 +193,18 @@ export class PluginSettingsTab extends PluginSettingsTabBase<PluginTypes> {
       });
 
     new SettingEx(this.containerEl)
+      .setName('Should duplicate collected attachments')
+      .setDesc('If enabled, when an attachment is linked by more than one note, a duplicate of the attachment is created for each note. When disabled, such attachments will not be processed by the plugin.')
+      .setDesc(createFragment((f) => {
+        f.appendText('If enabled, if an attachments processed via ');
+        appendCodeBlock(f, 'Collect attachments');
+        f.appendText(' commands has been linked by more than one note, a duplicate of the attachment will be created for each note according to the rules. When disabled, such attachments will not be processed by the plugin.');
+      }))
+      .addToggle((toggle) => {
+        this.bind(toggle, 'shouldDuplicateAttachments');
+      });
+
+    new SettingEx(this.containerEl)
       .setName('Duplicate name separator')
       .setDesc(createFragment((f) => {
         f.appendText('When you are pasting/dragging a file with the same name as an existing file, this separator will be added to the file name.');

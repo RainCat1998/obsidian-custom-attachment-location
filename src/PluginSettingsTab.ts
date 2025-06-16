@@ -194,14 +194,15 @@ export class PluginSettingsTab extends PluginSettingsTabBase<PluginTypes> {
 
     new SettingEx(this.containerEl)
       .setName('Should duplicate collected attachments')
-      .setDesc('If enabled, when an attachment is linked by more than one note, a duplicate of the attachment is created for each note. When disabled, such attachments will not be processed by the plugin.')
       .setDesc(createFragment((f) => {
-        f.appendText('If enabled, if an attachments processed via ');
+        f.appendText('If enabled, for attachments processed via ');
         appendCodeBlock(f, 'Collect attachments');
-        f.appendText(' commands has been linked by more than one note, a duplicate of the attachment will be created for each note according to the rules. When disabled, such attachments will not be processed by the plugin.');
+        f.appendText(' command, that are linked by multiple notes, duplicate copy of those attachments will be created for each note.');
+        f.createEl('br');
+        f.appendText('When disabled, such attachments will be kept in the original location.');
       }))
       .addToggle((toggle) => {
-        this.bind(toggle, 'shouldDuplicateAttachments');
+        this.bind(toggle, 'shouldDuplicateCollectedAttachments');
       });
 
     new SettingEx(this.containerEl)

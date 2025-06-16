@@ -96,7 +96,7 @@ export async function collectAttachments(
 
       const backlinks = await getBacklinksForFileSafe(app, attachmentMoveResult.oldAttachmentPath);
       if (backlinks.keys().length > 1) {
-        if (plugin.settings.shouldDuplicateAttachments) {
+        if (plugin.settings.shouldDuplicateCollectedAttachments) {
           attachmentMoveResult.newAttachmentPath = await copySafe(app, attachmentMoveResult.oldAttachmentPath, attachmentMoveResult.newAttachmentPath);
         } else {
           continue;

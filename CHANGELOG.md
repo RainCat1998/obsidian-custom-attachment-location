@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## 7.10.0
+
+- Add toggle for avoiding attachment duplication during collection. #166 (by @Accelsnow)
+- Update libs
+
 ## 7.9.0
 
 - Exclude paths from attachment collecting

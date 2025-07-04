@@ -27,6 +27,12 @@ const TRAILING_DOTS_AND_SPACES_REG_EXP = /[. ]+$/;
 export const INVALID_FILENAME_PATH_CHARS_REG_EXP = /[\\/:*?"<>|]/;
 export const SUBSTITUTION_TOKEN_REG_EXP = /\${(?<Token>.+?)(?::(?<Format>.+?))?}/g;
 
+interface SubstitutionsOptions {
+  app: App;
+  noteFilePath: string;
+  originalAttachmentFileName?: string;
+}
+
 export function getCustomTokenFormatters(customTokensStr: string): Map<string, Formatter> | null {
   const formatters = new Map<string, Formatter>();
   try {
@@ -47,12 +53,12 @@ function formatDate(format: string): string {
   return moment().format(format);
 }
 
-function formatFileDate(app: App, filePath: string, format: string, getTimestamp: (file: TFile) => number): string {
-  const file = getFileOrNull(app, filePath);
-  if (!file) {
+function formatFileDate(app: App, noteFilePath: string, format: string, getTimestamp: (file: TFile) => number): string {
+  const noteFile = getFileOrNull(app, noteFilePath);
+  if (!noteFile) {
     return '';
   }
-  return moment(getTimestamp(file)).format(format);
+  return moment(getTimestamp(noteFile)).format(format);
 }
 
 function generateRandomDigit(): string {
@@ -95,19 +101,27 @@ export class Substitutions {
     this.registerCustomFormatters('');
   }
 
-  public readonly fileName: string;
+  public readonly noteFolderPath: string;
 
-  public readonly folderName: string;
-  public readonly folderPath: string;
-  public readonly originalCopiedFileExtension: string;
-  public constructor(private readonly app: App, private readonly filePath: string, private readonly originalCopiedFileName = '') {
-    this.fileName = basename(filePath, extname(filePath));
-    this.folderName = basename(dirname(filePath));
-    this.folderPath = dirname(filePath);
+  private readonly app: App;
+  private readonly noteFileName: string;
+  private readonly noteFilePath: string;
+  private readonly noteFolderName: string;
+  private readonly originalAttachmentFileExtension: string;
+  private readonly originalAttachmentFileName: string;
 
-    const originalCopiedFileExtension = extname(originalCopiedFileName);
-    this.originalCopiedFileName = basename(originalCopiedFileName, originalCopiedFileExtension);
-    this.originalCopiedFileExtension = originalCopiedFileExtension.slice(1);
+  public constructor(options: SubstitutionsOptions) {
+    this.app = options.app;
+
+    this.noteFilePath = options.noteFilePath;
+    this.noteFileName = basename(this.noteFilePath, extname(this.noteFilePath));
+    this.noteFolderName = basename(dirname(this.noteFilePath));
+    this.noteFolderPath = dirname(this.noteFilePath);
+
+    const originalAttachmentFileName = options.originalAttachmentFileName ?? '';
+    const originalAttachmentFileExtension = extname(originalAttachmentFileName);
+    this.originalAttachmentFileName = basename(originalAttachmentFileName, originalAttachmentFileExtension);
+    this.originalAttachmentFileExtension = originalAttachmentFileExtension.slice(1);
   }
 
   public static isRegisteredToken(token: string): boolean {
@@ -118,24 +132,30 @@ export class Substitutions {
     this.formatters.clear();
     this.registerFormatter('date', (_substitutions, format) => formatDate(format));
     this.registerFormatter(
-      'fileCreationDate',
-      (substitutions, format) => formatFileDate(substitutions.app, substitutions.filePath, format, (file) => file.stat.ctime)
+      'noteFileCreationDate',
+      (substitutions, format) => formatFileDate(substitutions.app, substitutions.noteFilePath, format, (file) => file.stat.ctime)
     );
     this.registerFormatter(
-      'fileModificationDate',
-      (substitutions, format) => formatFileDate(substitutions.app, substitutions.filePath, format, (file) => file.stat.mtime)
+      'noteFileModificationDate',
+      (substitutions, format) => formatFileDate(substitutions.app, substitutions.noteFilePath, format, (file) => file.stat.mtime)
     );
-    this.registerFormatter('fileName', (substitutions) => substitutions.fileName);
-    this.registerFormatter('filePath', (substitutions) => substitutions.filePath);
-    this.registerFormatter('folderName', (substitutions) => substitutions.folderName);
-    this.registerFormatter('folderPath', (substitutions) => substitutions.folderPath);
-    this.registerFormatter('frontmatter', (substitutions, key) => getFrontmatterValue(substitutions.app, substitutions.filePath, key));
-    this.registerFormatter('originalCopiedFileExtension', (substitutions) => substitutions.originalCopiedFileExtension);
-    this.registerFormatter('originalCopiedFileName', (substitutions) => substitutions.originalCopiedFileName);
+
+    this.registerFormatter('noteFileName', (substitutions) => substitutions.noteFileName);
+    this.registerFormatter('noteFilePath', (substitutions) => substitutions.noteFilePath);
+    this.registerFormatter('noteFolderName', (substitutions) => substitutions.noteFolderName);
+    this.registerFormatter('noteFolderPath', (substitutions) => substitutions.noteFolderPath);
+
+    this.registerFormatter('frontmatter', (substitutions, key) => getFrontmatterValue(substitutions.app, substitutions.noteFilePath, key));
+
+    this.registerFormatter('originalAttachmentFileExtension', (substitutions) => substitutions.originalAttachmentFileExtension);
+    this.registerFormatter('originalAttachmentFileName', (substitutions) => substitutions.originalAttachmentFileName);
+
     this.registerFormatter('prompt', (substitutions) => substitutions.prompt());
+
     this.registerFormatter('randomDigit', () => generateRandomDigit());
     this.registerFormatter('randomDigitOrLetter', () => generateRandomDigitOrLetter());
     this.registerFormatter('randomLetter', () => generateRandomLetter());
+
     this.registerFormatter('uuid', () => generateUuid());
 
     const customFormatters = getCustomTokenFormatters(customTokensStr) ?? new Map<string, Formatter>();
@@ -167,7 +187,7 @@ export class Substitutions {
   private async prompt(): Promise<string> {
     const promptResult = await prompt({
       app: this.app,
-      defaultValue: this.originalCopiedFileName,
+      defaultValue: this.originalAttachmentFileName,
       // eslint-disable-next-line no-template-curly-in-string
       title: 'Provide a value for ${prompt} template',
       valueValidator: (value) => validateFilename(value, false)

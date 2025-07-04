@@ -125,14 +125,14 @@ export class Plugin extends PluginBase<PluginTypes> {
       }
     });
 
-    if (compare(this.settings.warningVersion, '7.0.0') < 0) {
+    if (compare(this.settings.warningVersion, '8.0.0') < 0) {
       if (this.settings.customTokensStr) {
         await alert({
           app: this.app,
           message: createFragment((f) => {
-            f.appendText('In plugin version 7.0.0, the format for custom tokens has changed. Please update your custom tokens accordingly. Refer to the ');
+            f.appendText('In plugin version 8.0.0, some token names changed. Please update your tokens accordingly. Refer to the ');
             f.createEl('a', {
-              href: 'https://github.com/RainCat1998/obsidian-custom-attachment-location?tab=readme-ov-file#custom-tokens',
+              href: 'https://github.com/RainCat1998/obsidian-custom-attachment-location?tab=readme-ov-file#tokens',
               text: 'documentation'
             });
             f.appendText(' for more information.');
@@ -357,12 +357,23 @@ export class Plugin extends PluginBase<PluginTypes> {
     }
 
     if (shouldRename) {
-      name = await getPastedFileName(this, new Substitutions(this.app, activeFile.path, makeFileName(name, extension)));
+      name = await getPastedFileName(
+        this,
+        new Substitutions({
+          app: this.app,
+          noteFilePath: activeFile.path,
+          originalAttachmentFileName: makeFileName(name, extension)
+        })
+      );
     }
 
     const file = await next.call(this.app, name, extension, data);
     if (this.settings.markdownUrlFormat) {
-      const markdownUrl = await new Substitutions(this.app, file.path, file.name).fillTemplate(this.settings.markdownUrlFormat);
+      const markdownUrl = await new Substitutions({
+        app: this.app,
+        noteFilePath: file.path,
+        originalAttachmentFileName: file.name
+      }).fillTemplate(this.settings.markdownUrlFormat);
       this.pathMarkdownUrlMap.set(file.path, markdownUrl);
     } else {
       this.pathMarkdownUrlMap.delete(file.path);

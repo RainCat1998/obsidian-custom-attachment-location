@@ -93,17 +93,16 @@ The following tokens can be used in the [Location for New Attachments](#location
 The tokens are case-insensitive. The formats are case-sensitive.
 
 - `${date:format}`: Current date/time using [Moment.js formatting][Moment.js formatting].
-- `${fileCreationDate:format}`: File creation date/time using [Moment.js formatting][Moment.js formatting].
-- `${fileModificationDate:format}`: File modification date/time using [Moment.js formatting][Moment.js formatting].
-- `${fileName}`: Current note filename.
-- `${filePath}`: Full path to current note.
-- `${folderName}`: Current note's folder name.
-- `${folderPath}`: Full path to current note's folder.
 - `${frontmatter:key}`: Frontmatter value of the current note. Nested keys are supported, e.g., `key1.key2.3.key4`.
-- `${originalCopiedFileExtension}`: Extension of the original copied to clipboard or dragged file.
-- `${originalCopiedFileName}`: File name of the original copied to clipboard or dragged file.
+- `${noteFileCreationDate:format}`: Note file creation date/time using [Moment.js formatting][Moment.js formatting].
+- `${noteFileModificationDate:format}`: Note file modification date/time using [Moment.js formatting][Moment.js formatting].
+- `${noteFileName}`: Current note filename.
+- `${noteFilePath}`: Full path to current note.
+- `${noteFolderName}`: Current note's folder name.
+- `${noteFolderPath}`: Full path to current note's folder.
+- `${originalAttachmentFileExtension}`: Extension of the original attachment file.
+- `${originalAttachmentFileName}`: File name of the original attachment file.
 - `${prompt}`: The value asked from the user prompt.
-- `${randomDigit}`: A random digit.
 - `${randomDigitOrLetter}`: A random digit or letter.
 - `${randomLetter}`: A random letter.
 - `${uuid}`: A random UUID.
@@ -118,12 +117,12 @@ Example:
 
 ```javascript
 exports.myCustomToken1 = (substitutions, format) => {
-  return substitutions.fileName + substitutions.app.appId + format;
+  return substitutions.noteFileName + substitutions.app.appId + format;
 };
 
 exports.myCustomToken2 = async (substitutions, format) => {
   return await Promise.resolve(
-    substitutions.fileName + substitutions.app.appId + format
+    substitutions.noteFileName + substitutions.app.appId + format
   );
 };
 ```
@@ -132,12 +131,12 @@ Then you can use the defined `${myCustomToken1}`, `${myCustomToken2:format}` tok
 
 - `substitutions`: is an object with the following properties:
   - `app`: Obsidian app object.
-  - `fileName`: The filename of the current note.
-  - `filePath`: The full path to the current note.
-  - `folderName`: The name of the folder containing the current note.
-  - `folderPath`: The full path to the folder containing the current note.
-  - `originalCopiedFileExtension`: Extension of the original copied to clipboard or dragged file.
-  - ``: File name of the original copied to clipboard or dragged file.
+  - `noteFileName`: The filename of the current note.
+  - `noteFilePath`: The full path to the current note.
+  - `noteFolderName`: The name of the folder containing the current note.
+  - `noteFolderPath`: The full path to the folder containing the current note.
+  - `originalAttachmentFileExtension`: Extension of the original attachment file.
+  - `originalAttachmentFileName`: File name of the original attachment file.
   - `fillTemplate(template)`: Function to fill the template with the given format. E.g., `substitutions.fillTemplate('${date:YYYY-MM-DD}')`.
 - `format`: optional format string.
 

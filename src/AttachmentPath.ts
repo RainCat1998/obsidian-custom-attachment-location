@@ -13,7 +13,14 @@ export async function getAttachmentFolderFullPathForPath(
   notePath: string,
   attachmentFilename: string
 ): Promise<string> {
-  return await getAttachmentFolderPath(plugin, new Substitutions(plugin.app, notePath, attachmentFilename));
+  return await getAttachmentFolderPath(
+    plugin,
+    new Substitutions({
+      app: plugin.app,
+      noteFilePath: notePath,
+      originalAttachmentFileName: attachmentFilename
+    })
+  );
 }
 
 export async function getPastedFileName(plugin: Plugin, substitutions: Substitutions): Promise<string> {
@@ -46,7 +53,7 @@ async function resolvePathTemplate(plugin: Plugin, template: string, substitutio
 
   resolvedPath = replaceSpecialCharacters(plugin, resolvedPath);
   if (resolvedPath.startsWith('./') || resolvedPath.startsWith('../')) {
-    resolvedPath = join(substitutions.folderPath, resolvedPath);
+    resolvedPath = join(substitutions.noteFolderPath, resolvedPath);
   }
 
   resolvedPath = normalizePath(resolvedPath);

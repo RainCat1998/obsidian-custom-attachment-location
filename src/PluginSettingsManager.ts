@@ -3,6 +3,7 @@ import type { MaybeReturn } from 'obsidian-dev-utils/Type';
 import { PluginSettingsManagerBase } from 'obsidian-dev-utils/obsidian/Plugin/PluginSettingsManagerBase';
 import { EmptyAttachmentFolderBehavior } from 'obsidian-dev-utils/obsidian/RenameDeleteHandler';
 import { isValidRegExp } from 'obsidian-dev-utils/RegExp';
+import { replaceAll } from 'obsidian-dev-utils/String';
 
 import type { PluginTypes } from './PluginTypes.ts';
 
@@ -93,6 +94,10 @@ export class PluginSettingsManager extends PluginSettingsManagerBase<PluginTypes
         ? EmptyAttachmentFolderBehavior.Keep
         : EmptyAttachmentFolderBehavior.DeleteWithEmptyParents;
     }
+
+    legacySettings.attachmentFolderPath = this.replaceLegacyTokens(legacySettings.attachmentFolderPath);
+    legacySettings.generatedAttachmentFilename = this.replaceLegacyTokens(legacySettings.generatedAttachmentFilename);
+    legacySettings.customTokensStr = this.replaceLegacyTokens(legacySettings.customTokensStr ?? '');
   }
 
   protected override registerValidators(): void {
@@ -125,6 +130,26 @@ export class PluginSettingsManager extends PluginSettingsManagerBase<PluginTypes
     this.registerValidator('customTokensStr', (value): MaybeReturn<string> => {
       customTokensValidator(value);
     });
+  }
+
+  private replaceLegacyTokens(str: string): string {
+    const TOKEN_NAME_MAP: Record<string, string> = {
+      fileCreationDate: 'noteFileCreationDate',
+      fileModificationDate: 'noteFileModificationDate',
+      fileName: 'noteFileName',
+      filePath: 'noteFilePath',
+      folderName: 'noteFolderName',
+      folderPath: 'noteFolderPath',
+      originalCopiedFileExtension: 'originalAttachmentFileExtension',
+      originalCopiedFileName: 'originalAttachmentFileName'
+    };
+
+    for (const [oldTokenName, newTokenName] of Object.entries(TOKEN_NAME_MAP)) {
+      str = replaceAll(str, `\${${oldTokenName}(?<Suffix>[:}])`, `\${${newTokenName}$<Suffix>`);
+      str = replaceAll(str, `substitutions.${oldTokenName}`, `substitutions.${newTokenName}`);
+    }
+
+    return str;
   }
 }
 

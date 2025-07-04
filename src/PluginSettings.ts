@@ -16,7 +16,7 @@ export enum AttachmentRenameMode {
 
 export class PluginSettings {
   // eslint-disable-next-line no-template-curly-in-string
-  public attachmentFolderPath = './assets/${filename}';
+  public attachmentFolderPath = './assets/${noteFileName}';
   public attachmentRenameMode: AttachmentRenameMode = AttachmentRenameMode.OnlyPastedImages;
   public duplicateNameSeparator = ' ';
   public emptyAttachmentFolderBehavior: EmptyAttachmentFolderBehavior = EmptyAttachmentFolderBehavior.DeleteWithEmptyParents;

@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## 8.0.0
+
+- \[FR\] File Size (#168)
+- Add attachmentFileSize
+- Rename tokens
+
 ## 7.11.0
 
 - Fix the lib version

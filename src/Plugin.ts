@@ -126,19 +126,17 @@ export class Plugin extends PluginBase<PluginTypes> {
     });
 
     if (compare(this.settings.warningVersion, '8.0.0') < 0) {
-      if (this.settings.customTokensStr) {
-        await alert({
-          app: this.app,
-          message: createFragment((f) => {
-            f.appendText('In plugin version 8.0.0, some token names changed. Please update your tokens accordingly. Refer to the ');
-            f.createEl('a', {
-              href: 'https://github.com/RainCat1998/obsidian-custom-attachment-location?tab=readme-ov-file#tokens',
-              text: 'documentation'
-            });
-            f.appendText(' for more information.');
-          })
-        });
-      }
+      await alert({
+        app: this.app,
+        message: createFragment((f) => {
+          f.appendText('In plugin version 8.0.0, some token names changed. Please update your tokens accordingly. Refer to the ');
+          f.createEl('a', {
+            href: 'https://github.com/RainCat1998/obsidian-custom-attachment-location?tab=readme-ov-file#tokens',
+            text: 'documentation'
+          });
+          f.appendText(' for more information.');
+        })
+      });
 
       await this.settingsManager.editAndSave((settings) => {
         settings.warningVersion = this.manifest.version;

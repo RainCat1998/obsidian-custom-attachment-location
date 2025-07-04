@@ -1,6 +1,6 @@
 # Obsidian Custom Attachment location
 
-Customize attachment location with tokens (`${fileName}`, `${date:format}`, etc) like typora.
+Customize attachment location with tokens (`${noteFileName}`, `${date:format}`, etc) like typora.
 
 ## Features
 

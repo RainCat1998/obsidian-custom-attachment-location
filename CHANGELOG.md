@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 8.0.2
+
+- Update renamed token
+
 ## 8.0.1
 
 - Fix warning condition

@@ -185,9 +185,9 @@ export class Plugin extends PluginBase<PluginTypes> {
     this.registerEvent(this.app.workspace.on('file-menu', this.handleFileMenu.bind(this)));
 
     registerPatch(this, this.app, {
-      saveAttachment: (next: SaveAttachmentFn): SaveAttachmentFn => {
+      saveAttachment: (): SaveAttachmentFn => {
         return (name, extension, data): Promise<TFile> => {
-          return this.saveAttachment(next, name, extension, data);
+          return this.saveAttachment(name, extension, data);
         };
       }
     });
@@ -246,13 +246,14 @@ export class Plugin extends PluginBase<PluginTypes> {
     filename: string,
     extension: string,
     file: null | TFile,
-    skipFolderCreation: boolean | undefined
+    skipFolderCreation: boolean | undefined,
+    attachmentFileSizeInBytes?: number
   ): Promise<string> {
     let attachmentPath: string;
     if (!file || !isNoteEx(this, file)) {
       attachmentPath = await getAvailablePathForAttachments(this.app, filename, extension, file, true);
     } else {
-      const attachmentFolderFullPath = await getAttachmentFolderFullPathForPath(this, file.path, makeFileName(filename, extension));
+      const attachmentFolderFullPath = await getAttachmentFolderFullPathForPath(this, file.path, makeFileName(filename, extension), attachmentFileSizeInBytes);
       attachmentPath = this.app.vault.getAvailablePath(join(attachmentFolderFullPath, filename), extension);
     }
 
@@ -317,14 +318,13 @@ export class Plugin extends PluginBase<PluginTypes> {
   }
 
   private async saveAttachment(
-    next: SaveAttachmentFn,
     attachmentFileName: string,
     attachmentFileExtension: string,
     attachmentFileData: ArrayBuffer
   ): Promise<TFile> {
     const activeNoteFile = this.app.workspace.getActiveFile();
     if (!activeNoteFile || this.settings.isPathIgnored(activeNoteFile.path)) {
-      return next.call(this.app, attachmentFileName, attachmentFileExtension, attachmentFileData);
+      return await this.saveAttachmentCore(attachmentFileName, attachmentFileExtension, attachmentFileData);
     }
 
     let isPastedImage = false;
@@ -373,7 +373,7 @@ export class Plugin extends PluginBase<PluginTypes> {
       );
     }
 
-    const attachmentFile = await next.call(this.app, attachmentFileName, attachmentFileExtension, attachmentFileData);
+    const attachmentFile = await this.saveAttachmentCore(attachmentFileName, attachmentFileExtension, attachmentFileData);
     if (this.settings.markdownUrlFormat) {
       const markdownUrl = await new Substitutions({
         app: this.app,
@@ -386,5 +386,21 @@ export class Plugin extends PluginBase<PluginTypes> {
       this.pathMarkdownUrlMap.delete(attachmentFile.path);
     }
     return attachmentFile;
+  }
+
+  private async saveAttachmentCore(
+    attachmentFileName: string,
+    attachmentFileExtension: string,
+    attachmentFileData: ArrayBuffer
+  ): Promise<TFile> {
+    const noteFile = this.app.workspace.getActiveFile();
+    const attachmentPath = await this.getAvailablePathForAttachments(
+      attachmentFileName,
+      attachmentFileExtension,
+      noteFile,
+      false,
+      attachmentFileData.byteLength
+    );
+    return await this.app.vault.createBinary(attachmentPath, attachmentFileData);
   }
 }

@@ -11,12 +11,14 @@ import {
 export async function getAttachmentFolderFullPathForPath(
   plugin: Plugin,
   notePath: string,
-  attachmentFilename: string
+  attachmentFilename: string,
+  attachmentFileSizeInBytes?: number
 ): Promise<string> {
   return await getAttachmentFolderPath(
     plugin,
     new Substitutions({
       app: plugin.app,
+      attachmentFileSizeInBytes: attachmentFileSizeInBytes ?? 0,
       noteFilePath: notePath,
       originalAttachmentFileName: attachmentFilename
     })

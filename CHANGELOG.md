@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## 7.11.0
+
+- Fix the lib version
+- Update libs (Fixes #169)
+
 ## 7.10.0
 
 - Add toggle for avoiding attachment duplication during collection. #166 (by @Accelsnow)

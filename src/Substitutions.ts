@@ -29,6 +29,7 @@ export const SUBSTITUTION_TOKEN_REG_EXP = /\${(?<Token>.+?)(?::(?<Format>.+?))?}
 
 interface SubstitutionsOptions {
   app: App;
+  attachmentFileSizeInBytes?: number;
   noteFilePath: string;
   originalAttachmentFileName?: string;
 }
@@ -59,6 +60,23 @@ function formatFileDate(app: App, noteFilePath: string, format: string, getTimes
     return '';
   }
   return moment(getTimestamp(noteFile)).format(format);
+}
+
+function formatFileSize(sizeInBytes: number, format?: string): string {
+  const BYTES_IN_KB = 1024;
+  const BYTES_IN_MB = BYTES_IN_KB * BYTES_IN_KB;
+
+  switch (format) {
+    case 'B':
+    case undefined:
+      return String(sizeInBytes);
+    case 'KB':
+      return String(Math.floor(sizeInBytes / BYTES_IN_KB));
+    case 'MB':
+      return String(Math.floor(sizeInBytes / BYTES_IN_MB));
+    default:
+      throw new Error(`Invalid file size format: ${format}`);
+  }
 }
 
 function generateRandomDigit(): string {
@@ -96,7 +114,6 @@ function getFrontmatterValue(app: App, filePath: string, key: string): string {
 
 export class Substitutions {
   private static readonly formatters = new Map<string, Formatter>();
-
   static {
     this.registerCustomFormatters('');
   }
@@ -104,6 +121,8 @@ export class Substitutions {
   public readonly noteFolderPath: string;
 
   private readonly app: App;
+
+  private attachmentFileSizeInBytes: number;
   private readonly noteFileName: string;
   private readonly noteFilePath: string;
   private readonly noteFolderName: string;
@@ -122,6 +141,8 @@ export class Substitutions {
     const originalAttachmentFileExtension = extname(originalAttachmentFileName);
     this.originalAttachmentFileName = basename(originalAttachmentFileName, originalAttachmentFileExtension);
     this.originalAttachmentFileExtension = originalAttachmentFileExtension.slice(1);
+
+    this.attachmentFileSizeInBytes = options.attachmentFileSizeInBytes ?? 0;
   }
 
   public static isRegisteredToken(token: string): boolean {
@@ -157,6 +178,8 @@ export class Substitutions {
     this.registerFormatter('randomLetter', () => generateRandomLetter());
 
     this.registerFormatter('uuid', () => generateUuid());
+
+    this.registerFormatter('attachmentFileSize', (substitutions, format) => formatFileSize(substitutions.attachmentFileSizeInBytes, format));
 
     const customFormatters = getCustomTokenFormatters(customTokensStr) ?? new Map<string, Formatter>();
     for (const [token, formatter] of customFormatters.entries()) {

@@ -92,6 +92,10 @@ The following tokens can be used in the [Location for New Attachments](#location
 
 The tokens are case-insensitive. The formats are case-sensitive.
 
+- `${attachmentFileSize}` / `${attachmentFileSize:format}`: Size of the attachment file.
+  - `B` or format omitted: size in bytes.
+  - `KB`: size in kilobytes.
+  - `MB`: size in megabytes.
 - `${date:format}`: Current date/time using [Moment.js formatting][Moment.js formatting].
 - `${frontmatter:key}`: Frontmatter value of the current note. Nested keys are supported, e.g., `key1.key2.3.key4`.
 - `${noteFileCreationDate:format}`: Note file creation date/time using [Moment.js formatting][Moment.js formatting].

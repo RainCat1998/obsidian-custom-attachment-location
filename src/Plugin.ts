@@ -316,7 +316,12 @@ export class Plugin extends PluginBase<PluginTypes> {
     await this.handleFileOpen(this.app.workspace.getActiveFile());
   }
 
-  private async saveAttachment(next: SaveAttachmentFn, attachmentFileName: string, attachmentFileExtension: string, attachmentFileData: ArrayBuffer): Promise<TFile> {
+  private async saveAttachment(
+    next: SaveAttachmentFn,
+    attachmentFileName: string,
+    attachmentFileExtension: string,
+    attachmentFileData: ArrayBuffer
+  ): Promise<TFile> {
     const activeNoteFile = this.app.workspace.getActiveFile();
     if (!activeNoteFile || this.settings.isPathIgnored(activeNoteFile.path)) {
       return next.call(this.app, attachmentFileName, attachmentFileExtension, attachmentFileData);
@@ -361,6 +366,7 @@ export class Plugin extends PluginBase<PluginTypes> {
         this,
         new Substitutions({
           app: this.app,
+          attachmentFileSizeInBytes: attachmentFileData.byteLength,
           noteFilePath: activeNoteFile.path,
           originalAttachmentFileName: makeFileName(attachmentFileName, attachmentFileExtension)
         })
@@ -371,6 +377,7 @@ export class Plugin extends PluginBase<PluginTypes> {
     if (this.settings.markdownUrlFormat) {
       const markdownUrl = await new Substitutions({
         app: this.app,
+        attachmentFileSizeInBytes: attachmentFileData.byteLength,
         noteFilePath: activeNoteFile.path,
         originalAttachmentFileName: attachmentFile.name
       }).fillTemplate(this.settings.markdownUrlFormat);

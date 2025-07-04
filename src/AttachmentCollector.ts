@@ -277,6 +277,7 @@ async function prepareAttachmentToMove(
         plugin,
         new Substitutions({
           app: plugin.app,
+          attachmentFileSizeInBytes: oldAttachmentFile.stat.size,
           noteFilePath: newNotePath,
           originalAttachmentFileName: oldAttachmentFile.name
         })

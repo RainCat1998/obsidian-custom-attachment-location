@@ -316,14 +316,14 @@ export class Plugin extends PluginBase<PluginTypes> {
     await this.handleFileOpen(this.app.workspace.getActiveFile());
   }
 
-  private async saveAttachment(next: SaveAttachmentFn, name: string, extension: string, data: ArrayBuffer): Promise<TFile> {
-    const activeFile = this.app.workspace.getActiveFile();
-    if (!activeFile || this.settings.isPathIgnored(activeFile.path)) {
-      return next.call(this.app, name, extension, data);
+  private async saveAttachment(next: SaveAttachmentFn, attachmentFileName: string, attachmentFileExtension: string, attachmentFileData: ArrayBuffer): Promise<TFile> {
+    const activeNoteFile = this.app.workspace.getActiveFile();
+    if (!activeNoteFile || this.settings.isPathIgnored(activeNoteFile.path)) {
+      return next.call(this.app, attachmentFileName, attachmentFileExtension, attachmentFileData);
     }
 
     let isPastedImage = false;
-    const match = PASTED_IMAGE_NAME_REG_EXP.exec(name);
+    const match = PASTED_IMAGE_NAME_REG_EXP.exec(attachmentFileName);
     if (match) {
       const timestampString = match.groups?.['Timestamp'];
       if (timestampString) {
@@ -336,9 +336,9 @@ export class Plugin extends PluginBase<PluginTypes> {
       }
     }
 
-    if (isPastedImage && extension === 'png' && this.settings.shouldConvertPastedImagesToJpeg) {
-      extension = 'jpg';
-      data = await blobToJpegArrayBuffer(new Blob([data], { type: 'image/png' }), this.settings.jpegQuality);
+    if (isPastedImage && attachmentFileExtension === 'png' && this.settings.shouldConvertPastedImagesToJpeg) {
+      attachmentFileExtension = 'jpg';
+      attachmentFileData = await blobToJpegArrayBuffer(new Blob([attachmentFileData], { type: 'image/png' }), this.settings.jpegQuality);
     }
 
     let shouldRename = false;
@@ -357,27 +357,27 @@ export class Plugin extends PluginBase<PluginTypes> {
     }
 
     if (shouldRename) {
-      name = await getPastedFileName(
+      attachmentFileName = await getPastedFileName(
         this,
         new Substitutions({
           app: this.app,
-          noteFilePath: activeFile.path,
-          originalAttachmentFileName: makeFileName(name, extension)
+          noteFilePath: activeNoteFile.path,
+          originalAttachmentFileName: makeFileName(attachmentFileName, attachmentFileExtension)
         })
       );
     }
 
-    const file = await next.call(this.app, name, extension, data);
+    const attachmentFile = await next.call(this.app, attachmentFileName, attachmentFileExtension, attachmentFileData);
     if (this.settings.markdownUrlFormat) {
       const markdownUrl = await new Substitutions({
         app: this.app,
-        noteFilePath: file.path,
-        originalAttachmentFileName: file.name
+        noteFilePath: activeNoteFile.path,
+        originalAttachmentFileName: attachmentFile.name
       }).fillTemplate(this.settings.markdownUrlFormat);
-      this.pathMarkdownUrlMap.set(file.path, markdownUrl);
+      this.pathMarkdownUrlMap.set(attachmentFile.path, markdownUrl);
     } else {
-      this.pathMarkdownUrlMap.delete(file.path);
+      this.pathMarkdownUrlMap.delete(attachmentFile.path);
     }
-    return file;
+    return attachmentFile;
   }
 }

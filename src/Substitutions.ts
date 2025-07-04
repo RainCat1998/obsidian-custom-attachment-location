@@ -62,13 +62,13 @@ function formatFileDate(app: App, noteFilePath: string, format: string, getTimes
   return moment(getTimestamp(noteFile)).format(format);
 }
 
-function formatFileSize(sizeInBytes: number, format?: string): string {
+function formatFileSize(sizeInBytes: number, format: string): string {
   const BYTES_IN_KB = 1024;
   const BYTES_IN_MB = BYTES_IN_KB * BYTES_IN_KB;
 
   switch (format) {
     case 'B':
-    case undefined:
+    case '':
       return String(sizeInBytes);
     case 'KB':
       return String(Math.floor(sizeInBytes / BYTES_IN_KB));

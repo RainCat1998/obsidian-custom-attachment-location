@@ -145,7 +145,7 @@ export class PluginSettingsManager extends PluginSettingsManagerBase<PluginTypes
     };
 
     for (const [oldTokenName, newTokenName] of Object.entries(TOKEN_NAME_MAP)) {
-      str = replaceAll(str, `\${${oldTokenName}(?<Suffix>[:}])`, `\${${newTokenName}$<Suffix>`);
+      str = replaceAll(str, new RegExp(`\\\${${oldTokenName}(?<Suffix>[:}])`, 'i'), `\${${newTokenName}$<Suffix>`);
       str = replaceAll(str, `substitutions.${oldTokenName}`, `substitutions.${newTokenName}`);
     }
 

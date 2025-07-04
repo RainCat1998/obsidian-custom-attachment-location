@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 8.0.1
+
+- Fix warning condition
+
 ## 8.0.0
 
 - \[FR\] File Size (#168)

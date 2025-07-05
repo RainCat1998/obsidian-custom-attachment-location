@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 8.2.0
+
+- Round size to decimal points
+
 ## 8.1.0
 
 - \[FR\] Slugify as an option (#167)

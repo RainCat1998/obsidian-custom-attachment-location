@@ -19,6 +19,7 @@ import {
   trimEnd,
   trimStart
 } from 'obsidian-dev-utils/String';
+// eslint-disable-next-line import-x/no-rename-default
 import slugify_ from 'slugify';
 
 const slugify = ('default' in slugify_ ? slugify_.default : slugify_) as unknown as typeof slugify_.default;
@@ -108,9 +109,9 @@ function generateRandomValue(format: string): string {
   }
 
   const baseFormat = match.groups?.['BaseFormat'] as 'D' | 'DL' | 'L';
-  const count = parseInt(match.groups?.['Count'] || '1', 10);
+  const count = parseInt((match.groups?.['Count'] ?? '') || '1', 10);
 
-  let symbols = '';
+  let symbols: string;
 
   switch (baseFormat) {
     case 'D':
@@ -122,6 +123,8 @@ function generateRandomValue(format: string): string {
     case 'L':
       symbols = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
       break;
+    default:
+      throw new Error(`Invalid random value format: ${format}`);
   }
 
   let ans = '';

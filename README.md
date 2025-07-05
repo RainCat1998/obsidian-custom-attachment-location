@@ -14,21 +14,27 @@ Customize attachment location with tokens (`${noteFileName}`, `${date:format}`, 
 - Same to "Files & Links -> Default location for new attachments".
 - **Put "./" at the beginning of the path if you want to use relative path.**
 - See available [tokens](#tokens).
-- example: `assets/${filename}`, `./assets/${filename}`, `./assets/${filename}/${date:YYYY}`
+- example: `assets/${noteFileName}`, `./assets/${noteFileName}`, `./assets/${noteFileName}/${date:YYYY}`
 
 ### Generated attachment filename
 
 - See available [tokens](#tokens).
-- example: `${originalCopiedFileName}-${date:YYYYMMDDHHmmssSSS}`, `${filename}-img-${date:YYYYMMDD}`
+- example: `${originalAttachmentFileName}-${date:YYYYMMDDHHmmssSSS}`, `${noteFileName}-img-${date:YYYYMMDD}`
 - Obsidian default: `Pasted image ${date:YYYYMMDDHHmmss}`.
+
+### Markdown URL format
+
+Format for the URL that will be inserted into Markdown.
+
+- See available [tokens](#tokens).
 
 ### Should rename attachment folder
 
-Automatically update attachment folder name if [Location for New Attachments](#location-for-new-attachments) contains `${filename}`.
+Automatically update attachment folder name if [Location for New Attachments](#location-for-new-attachments) contains `${noteFileName}`.
 
 ### Should rename attachment files
 
-Automatically update attachment files in target md file if [Generated attachment filename](#generated-attachment-filename) contains `${filename}`.
+Automatically update attachment files in target md file if [Generated attachment filename](#generated-attachment-filename) contains `${noteFileName}`.
 
 ### Special characters replacement
 
@@ -88,28 +94,109 @@ If enabled, when the note is deleted, its orphan attachments are deleted as well
 
 ## Tokens
 
-The following tokens can be used in the [Location for New Attachments](#location-for-new-attachments) and [Generated attachment filename](#generated-attachment-filename) settings.
+The following tokens can be used in the [Location for New Attachments](#location-for-new-attachments), [Generated attachment filename](#generated-attachment-filename) and [Markdown URL format](#markdown-url-format) settings.
 
-The tokens are case-insensitive. The formats are case-sensitive.
+Token strings: `${token}` or `${token:format}`. `token` is case-insensitive. `format` is case-sensitive. When `${token}` is used, `format` is empty string.
 
-- `${attachmentFileSize}` / `${attachmentFileSize:format}`: Size of the attachment file.
-  - `B` or format omitted: size in bytes.
-  - `KB`: size in kilobytes.
-  - `MB`: size in megabytes.
-- `${date:format}`: Current date/time using [Moment.js formatting][Moment.js formatting].
-- `${frontmatter:key}`: Frontmatter value of the current note. Nested keys are supported, e.g., `key1.key2.3.key4`.
-- `${noteFileCreationDate:format}`: Note file creation date/time using [Moment.js formatting][Moment.js formatting].
-- `${noteFileModificationDate:format}`: Note file modification date/time using [Moment.js formatting][Moment.js formatting].
-- `${noteFileName}`: Current note filename.
-- `${noteFilePath}`: Full path to current note.
-- `${noteFolderName}`: Current note's folder name.
-- `${noteFolderPath}`: Full path to current note's folder.
-- `${originalAttachmentFileExtension}`: Extension of the original attachment file.
-- `${originalAttachmentFileName}`: File name of the original attachment file.
-- `${prompt}`: The value asked from the user prompt.
-- `${randomDigitOrLetter}`: A random digit or letter.
-- `${randomLetter}`: A random letter.
-- `${uuid}`: A random UUID.
+### `${attachmentFileSize}`
+
+Size of the attachment file.
+
+**Format**:
+
+- `B` (default): size in bytes.
+- `KB`: size in kilobytes.
+- `MB`: size in megabytes.
+
+### `${date}`
+
+Current date/time.
+
+**Format**: [Moment.js formatting][Moment.js formatting].
+
+### `${frontmatter}`
+
+Frontmatter value of the current note.
+
+**Format**: frontmatter key. Nested keys are supported, e.g., `key1.key2.3.key4`.
+
+### `${noteFileCreationDate}`
+
+Note file creation date/time.
+
+**Format**: [Moment.js formatting][Moment.js formatting].
+
+### `${noteFileModificationDate}`
+
+Note file modification date/time.
+
+**Format**: [Moment.js formatting][Moment.js formatting].
+
+### `${noteFileName}`
+
+Current note file name.
+
+**Format**:
+
+- (default): Unchanged file name. **Example**: `foo/bar/baz qux quux.md` -> `baz qux quux`.
+- lower: Lowercase file name. **Example**: `foo/bar/Baz QUX quux.md` -> `baz qux quux`.
+- slug: Slugified file name. **Example**: `foo/bar/baz qux quux.md` -> `baz-qux-quux`.
+- upper: Uppercase file name. **Example**: `foo/bar/Baz QUX quux.md` -> `BAZ QUX QUUX`.
+
+### `${noteFilePath}`
+
+Current note full path.
+
+**Example**: `foo/bar/baz.md` -> `foo/bar/baz.md`.
+
+### `${noteFolderName}`
+
+Current note's folder name.
+
+**Format**:
+
+- (default): Unchanged folder name. **Example**: `foo/bar baz qux/quux.md` -> `bar baz qux`.
+- lower: Lowercase folder name. **Example**: `foo/Bar BAZ qux/quux.md` -> `bar baz qux`.
+- slug: Slugified folder name. **Example**: `foo/bar baz qux/quux.md` -> `bar-baz-qux`.
+- upper: Uppercase folder name. **Example**: `foo/Bar BAZ qux/quux.md` -> `BAR BAZ QUX`.
+
+### `${noteFolderPath}`
+
+Current note's folder full path.
+
+**Example**: `foo/bar/baz.md` -> `foo/bar`.
+
+### `${originalAttachmentFileExtension}`
+
+Extension of the original attachment file.
+
+**Example**: `foo.bar.pdf` -> `pdf`.
+
+### `${originalAttachmentFileName}`
+
+File name of the original attachment file.
+
+**Format**:
+
+- (default): File name as is. **Example**: `foo bar.baz.pdf` -> `foo bar.baz`.
+- lower: Lowercase folder name. **Example**: `foo Bar.BAZ.pdf` -> `foo bar.baz`.
+- slug: Slugified file name. **Example**: `foo bar.baz.pdf` -> `foo-bar-baz`.
+- upper: Uppercase folder name. **Example**: `foo Bar.BAZ.pdf` -> `FOO BAR.BAZ`.
+
+### `${prompt}`
+
+The value asked from the user prompt.
+
+### `${random}`
+
+Random value.
+
+**Format**:
+
+- `Dn`: `n` random digits. `n` is a number (`1` if omitted).
+- `Ln`: `n` random letters. `n` is a number (`1` if omitted).
+- `DLn`: `n` random digits or letters. `n` is a number (`1` if omitted).
+- `${uuid}`: Random UUID.
 
 ## Custom tokens
 

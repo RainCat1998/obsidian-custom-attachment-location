@@ -85,14 +85,22 @@ function formatFileSize(sizeInBytes: number, format: string): string {
   const BYTES_IN_KB = 1024;
   const BYTES_IN_MB = BYTES_IN_KB * BYTES_IN_KB;
 
-  switch (format) {
+  const match = /^(?<BaseFormat>|B|KB|MB)(?<FractionDigits>\d*)$/.exec(format);
+  if (!match) {
+    throw new Error(`Invalid random value format: ${format}`);
+  }
+
+  const baseFormat = match.groups?.['BaseFormat'] as '' | 'B' | 'KB' | 'MB';
+  const fractionDigits = parseInt((match.groups?.['FractionDigits'] ?? '') || '0', 10);
+
+  switch (baseFormat) {
     case '':
     case 'B':
-      return String(sizeInBytes);
+      return sizeInBytes.toFixed(fractionDigits);
     case 'KB':
-      return String(Math.floor(sizeInBytes / BYTES_IN_KB));
+      return (sizeInBytes / BYTES_IN_KB).toFixed(fractionDigits);
     case 'MB':
-      return String(Math.floor(sizeInBytes / BYTES_IN_MB));
+      return (sizeInBytes / BYTES_IN_MB).toFixed(fractionDigits);
     default:
       throw new Error(`Invalid file size format: ${format}`);
   }

@@ -104,9 +104,9 @@ Size of the attachment file.
 
 **Format**:
 
-- `B` (default): size in bytes.
-- `KB`: size in kilobytes.
-- `MB`: size in megabytes.
+- `Bn` (default): size in bytes rounded to `n` decimal points. `n` is a number (`0` if omitted).
+- `KBn`: size in kilobytes rounded to `n` decimal points. `n` is a number (`0` if omitted).
+- `MBn`: size in megabytes rounded to `n` decimal points. `n` is a number (`0` if omitted).
 
 ### `${date}`
 

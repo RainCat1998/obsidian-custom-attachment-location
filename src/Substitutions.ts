@@ -19,6 +19,9 @@ import {
   trimEnd,
   trimStart
 } from 'obsidian-dev-utils/String';
+import slugify_ from 'slugify';
+
+const slugify = ('default' in slugify_ ? slugify_.default : slugify_) as unknown as typeof slugify_.default;
 
 type Formatter = (substitutions: Substitutions, format: string) => Promisable<unknown>;
 
@@ -62,13 +65,28 @@ function formatFileDate(app: App, noteFilePath: string, format: string, getTimes
   return moment(getTimestamp(noteFile)).format(format);
 }
 
+function formatFileName(fileName: string, format: string): string {
+  switch (format) {
+    case '':
+      return fileName;
+    case 'lower':
+      return fileName.toLowerCase();
+    case 'slug':
+      return slugifyEx(fileName);
+    case 'upper':
+      return fileName.toUpperCase();
+    default:
+      throw new Error(`Invalid file name format: ${format}`);
+  }
+}
+
 function formatFileSize(sizeInBytes: number, format: string): string {
   const BYTES_IN_KB = 1024;
   const BYTES_IN_MB = BYTES_IN_KB * BYTES_IN_KB;
 
   switch (format) {
-    case 'B':
     case '':
+    case 'B':
       return String(sizeInBytes);
     case 'KB':
       return String(Math.floor(sizeInBytes / BYTES_IN_KB));
@@ -161,15 +179,15 @@ export class Substitutions {
       (substitutions, format) => formatFileDate(substitutions.app, substitutions.noteFilePath, format, (file) => file.stat.mtime)
     );
 
-    this.registerFormatter('noteFileName', (substitutions) => substitutions.noteFileName);
+    this.registerFormatter('noteFileName', (substitutions, format) => formatFileName(substitutions.noteFileName, format));
     this.registerFormatter('noteFilePath', (substitutions) => substitutions.noteFilePath);
-    this.registerFormatter('noteFolderName', (substitutions) => substitutions.noteFolderName);
+    this.registerFormatter('noteFolderName', (substitutions, format) => formatFileName(substitutions.noteFolderName, format));
     this.registerFormatter('noteFolderPath', (substitutions) => substitutions.noteFolderPath);
 
     this.registerFormatter('frontmatter', (substitutions, key) => getFrontmatterValue(substitutions.app, substitutions.noteFilePath, key));
 
     this.registerFormatter('originalAttachmentFileExtension', (substitutions) => substitutions.originalAttachmentFileExtension);
-    this.registerFormatter('originalAttachmentFileName', (substitutions) => substitutions.originalAttachmentFileName);
+    this.registerFormatter('originalAttachmentFileName', (substitutions, format) => formatFileName(substitutions.originalAttachmentFileName, format));
 
     this.registerFormatter('prompt', (substitutions) => substitutions.prompt());
 
@@ -298,6 +316,12 @@ function generateRandomSymbol(symbols: string): string {
 
 function removeTokenFormatting(str: string): string {
   return replaceAll(str, SUBSTITUTION_TOKEN_REG_EXP, (_, token) => `\${${token}}`);
+}
+
+function slugifyEx(str: string): string {
+  return slugify(str, {
+    lower: true
+  });
 }
 
 function validateTokens(str: string): null | string {

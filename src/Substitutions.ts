@@ -97,20 +97,40 @@ function formatFileSize(sizeInBytes: number, format: string): string {
   }
 }
 
-function generateRandomDigit(): string {
-  return generateRandomSymbol('0123456789');
-}
+function generateRandomValue(format: string): string {
+  if (format === 'uuid') {
+    return crypto.randomUUID();
+  }
 
-function generateRandomDigitOrLetter(): string {
-  return generateRandomSymbol('0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ');
-}
+  const match = /^(?<BaseFormat>D|L|DL)(?<Count>\d*)$/.exec(format);
+  if (!match) {
+    throw new Error(`Invalid random value format: ${format}`);
+  }
 
-function generateRandomLetter(): string {
-  return generateRandomSymbol('ABCDEFGHIJKLMNOPQRSTUVWXYZ');
-}
+  const baseFormat = match.groups?.['BaseFormat'] as 'D' | 'DL' | 'L';
+  const count = parseInt(match.groups?.['Count'] || '1', 10);
 
-function generateUuid(): string {
-  return crypto.randomUUID();
+  let symbols = '';
+
+  switch (baseFormat) {
+    case 'D':
+      symbols = '0123456789';
+      break;
+    case 'DL':
+      symbols = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+      break;
+    case 'L':
+      symbols = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+      break;
+  }
+
+  let ans = '';
+
+  for (let i = 0; i < count; i++) {
+    ans += generateRandomSymbol(symbols);
+  }
+
+  return ans;
 }
 
 function getFrontmatterValue(app: App, filePath: string, key: string): string {
@@ -191,11 +211,7 @@ export class Substitutions {
 
     this.registerFormatter('prompt', (substitutions) => substitutions.prompt());
 
-    this.registerFormatter('randomDigit', () => generateRandomDigit());
-    this.registerFormatter('randomDigitOrLetter', () => generateRandomDigitOrLetter());
-    this.registerFormatter('randomLetter', () => generateRandomLetter());
-
-    this.registerFormatter('uuid', () => generateUuid());
+    this.registerFormatter('random', (_substitutions, format) => generateRandomValue(format));
 
     this.registerFormatter('attachmentFileSize', (substitutions, format) => formatFileSize(substitutions.attachmentFileSizeInBytes, format));
 

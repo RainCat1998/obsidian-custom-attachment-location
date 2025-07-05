@@ -141,7 +141,11 @@ export class PluginSettingsManager extends PluginSettingsManagerBase<PluginTypes
       folderName: 'noteFolderName',
       folderPath: 'noteFolderPath',
       originalCopiedFileExtension: 'originalAttachmentFileExtension',
-      originalCopiedFileName: 'originalAttachmentFileName'
+      originalCopiedFileName: 'originalAttachmentFileName',
+      randomDigit: 'random:D',
+      randomDigitOrLetter: 'random:DL',
+      randomLetter: 'random:L',
+      uuid: 'random:uuid'
     };
 
     for (const [oldTokenName, newTokenName] of Object.entries(TOKEN_NAME_MAP)) {

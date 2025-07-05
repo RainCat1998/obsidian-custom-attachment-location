@@ -125,11 +125,11 @@ export class Plugin extends PluginBase<PluginTypes> {
       }
     });
 
-    if (compare(this.settings.warningVersion, '8.0.0') < 0) {
+    if (compare(this.settings.warningVersion, '8.1.0') < 0) {
       await alert({
         app: this.app,
         message: createFragment((f) => {
-          f.appendText('In plugin version 8.0.0, some token names changed. Please update your tokens accordingly. Refer to the ');
+          f.appendText('In plugin version 8.1.0, some token names changed. Please update your tokens accordingly. Refer to the ');
           f.createEl('a', {
             href: 'https://github.com/RainCat1998/obsidian-custom-attachment-location?tab=readme-ov-file#tokens',
             text: 'documentation'

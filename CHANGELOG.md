@@ -2,6 +2,7 @@
 
 ## 8.1.0
 
+- \[FR\] Slugify as an option (#167)
 - Refactor random
 - Upper, lower, slugify file/folder names
 

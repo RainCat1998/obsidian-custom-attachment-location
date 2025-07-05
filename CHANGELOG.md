@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## 8.1.0
+
+- Refactor random
+- Upper, lower, slugify file/folder names
+
 ## 8.0.2
 
 - Update renamed token

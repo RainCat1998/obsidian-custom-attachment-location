@@ -97,6 +97,7 @@ export class PluginSettingsManager extends PluginSettingsManagerBase<PluginTypes
 
     legacySettings.attachmentFolderPath = this.replaceLegacyTokens(legacySettings.attachmentFolderPath);
     legacySettings.generatedAttachmentFilename = this.replaceLegacyTokens(legacySettings.generatedAttachmentFilename);
+    legacySettings.markdownUrlFormat = this.replaceLegacyTokens(legacySettings.markdownUrlFormat);
     legacySettings.customTokensStr = this.replaceLegacyTokens(legacySettings.customTokensStr ?? '');
   }
 
@@ -132,7 +133,11 @@ export class PluginSettingsManager extends PluginSettingsManagerBase<PluginTypes
     });
   }
 
-  private replaceLegacyTokens(str: string): string {
+  private replaceLegacyTokens(str: string | undefined): string {
+    if (str === undefined) {
+      return '';
+    }
+
     const TOKEN_NAME_MAP: Record<string, string> = {
       fileCreationDate: 'noteFileCreationDate',
       fileModificationDate: 'noteFileModificationDate',

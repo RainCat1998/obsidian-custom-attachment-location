@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 8.2.2
+
+- Update libs (#170)
+
 ## 8.2.1
 
 - Replace legacy tokens in markdownUrlFormat

@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 8.2.1
+
+- Replace legacy tokens in markdownUrlFormat
+
 ## 8.2.0
 
 - Round size to decimal points

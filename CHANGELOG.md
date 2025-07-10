@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## 8.3.0
+
+- Add left/right formatting (fixes #174)
+- Update libs
+
 ## 8.2.2
 
 - Update libs (#170)

@@ -139,7 +139,9 @@ Current note file name.
 **Format**:
 
 - (default): Unchanged file name. **Example**: `foo/bar/baz qux quux.md` -> `baz qux quux`.
+- leftn: Left n characters of the file name. **Example** `left2`: `foo/bar/baz qux quux.md` -> `ba`.
 - lower: Lowercase file name. **Example**: `foo/bar/Baz QUX quux.md` -> `baz qux quux`.
+- rightn: Right n characters of the file name. **Example** `right2`: `foo/bar/baz qux quux.md` -> `ux`.
 - slug: Slugified file name. **Example**: `foo/bar/baz qux quux.md` -> `baz-qux-quux`.
 - upper: Uppercase file name. **Example**: `foo/bar/Baz QUX quux.md` -> `BAZ QUX QUUX`.
 
@@ -156,7 +158,9 @@ Current note's folder name.
 **Format**:
 
 - (default): Unchanged folder name. **Example**: `foo/bar baz qux/quux.md` -> `bar baz qux`.
+- leftn: Left n characters of the folder name. **Example** `left2`: `foo/bar baz qux/quux.md` -> `ba`.
 - lower: Lowercase folder name. **Example**: `foo/Bar BAZ qux/quux.md` -> `bar baz qux`.
+- rightn: Right n characters of the folder name. **Example** `right2`: `foo/bar baz qux/quux.md` -> `ux`.
 - slug: Slugified folder name. **Example**: `foo/bar baz qux/quux.md` -> `bar-baz-qux`.
 - upper: Uppercase folder name. **Example**: `foo/Bar BAZ qux/quux.md` -> `BAR BAZ QUX`.
 
@@ -179,8 +183,10 @@ File name of the original attachment file.
 **Format**:
 
 - (default): File name as is. **Example**: `foo bar.baz.pdf` -> `foo bar.baz`.
+- leftn: Left n characters of the file name. **Example** `left2`: `foo/bar baz qux/quux.pdf` -> `ba`.
 - lower: Lowercase folder name. **Example**: `foo Bar.BAZ.pdf` -> `foo bar.baz`.
 - slug: Slugified file name. **Example**: `foo bar.baz.pdf` -> `foo-bar-baz`.
+- rightn: Right n characters of the folder name. **Example** `left2`: `foo/bar baz qux/quux.pdf` -> `ux`.
 - upper: Uppercase folder name. **Example**: `foo Bar.BAZ.pdf` -> `FOO BAR.BAZ`.
 
 ### `${prompt}`

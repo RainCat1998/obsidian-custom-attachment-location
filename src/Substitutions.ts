@@ -26,6 +26,11 @@ const slugify = ('default' in slugify_ ? slugify_.default : slugify_) as unknown
 
 type Formatter = (substitutions: Substitutions, format: string) => Promisable<unknown>;
 
+interface FormatWithParameter {
+  base: string;
+  parameter: number | undefined;
+}
+
 const MORE_THAN_TWO_DOTS_REG_EXP = /^\.{3,}$/;
 const TRAILING_DOTS_AND_SPACES_REG_EXP = /[. ]+$/;
 export const INVALID_FILENAME_PATH_CHARS_REG_EXP = /[\\/:*?"<>|]/;
@@ -67,11 +72,17 @@ function formatFileDate(app: App, noteFilePath: string, format: string, getTimes
 }
 
 function formatFileName(fileName: string, format: string): string {
-  switch (format) {
+  const { base, parameter } = parseFormatWithParameter(format);
+
+  switch (base) {
     case '':
       return fileName;
+    case 'left':
+      return fileName.slice(0, parameter ?? 1);
     case 'lower':
       return fileName.toLowerCase();
+    case 'right':
+      return fileName.slice(-(parameter ?? 1));
     case 'slug':
       return slugifyEx(fileName);
     case 'upper':
@@ -85,22 +96,16 @@ function formatFileSize(sizeInBytes: number, format: string): string {
   const BYTES_IN_KB = 1024;
   const BYTES_IN_MB = BYTES_IN_KB * BYTES_IN_KB;
 
-  const match = /^(?<BaseFormat>|B|KB|MB)(?<FractionDigits>\d*)$/.exec(format);
-  if (!match) {
-    throw new Error(`Invalid random value format: ${format}`);
-  }
+  const { base, parameter } = parseFormatWithParameter(format);
 
-  const baseFormat = match.groups?.['BaseFormat'] as '' | 'B' | 'KB' | 'MB';
-  const fractionDigits = parseInt((match.groups?.['FractionDigits'] ?? '') || '0', 10);
-
-  switch (baseFormat) {
+  switch (base) {
     case '':
     case 'B':
-      return sizeInBytes.toFixed(fractionDigits);
+      return sizeInBytes.toFixed(parameter ?? 0);
     case 'KB':
-      return (sizeInBytes / BYTES_IN_KB).toFixed(fractionDigits);
+      return (sizeInBytes / BYTES_IN_KB).toFixed(parameter ?? 0);
     case 'MB':
-      return (sizeInBytes / BYTES_IN_MB).toFixed(fractionDigits);
+      return (sizeInBytes / BYTES_IN_MB).toFixed(parameter ?? 0);
     default:
       throw new Error(`Invalid file size format: ${format}`);
   }
@@ -111,17 +116,11 @@ function generateRandomValue(format: string): string {
     return crypto.randomUUID();
   }
 
-  const match = /^(?<BaseFormat>D|L|DL)(?<Count>\d*)$/.exec(format);
-  if (!match) {
-    throw new Error(`Invalid random value format: ${format}`);
-  }
-
-  const baseFormat = match.groups?.['BaseFormat'] as 'D' | 'DL' | 'L';
-  const count = parseInt((match.groups?.['Count'] ?? '') || '1', 10);
+  const { base, parameter } = parseFormatWithParameter(format);
 
   let symbols: string;
 
-  switch (baseFormat) {
+  switch (base) {
     case 'D':
       symbols = '0123456789';
       break;
@@ -137,7 +136,7 @@ function generateRandomValue(format: string): string {
 
   let ans = '';
 
-  for (let i = 0; i < count; i++) {
+  for (let i = 0; i < (parameter ?? 1); i++) {
     ans += generateRandomSymbol(symbols);
   }
 
@@ -339,6 +338,22 @@ export function validatePath(path: string, areTokensAllowed = true): string {
 
 function generateRandomSymbol(symbols: string): string {
   return symbols[Math.floor(Math.random() * symbols.length)] ?? '';
+}
+
+function parseFormatWithParameter(format: string): FormatWithParameter {
+  const match = /^(?<Base>\w*?)(?<Parameter>\d*)$/.exec(format);
+  if (!match) {
+    throw new Error(`Invalid format: ${format}`);
+  }
+
+  const base = match.groups?.['Base'] ?? '';
+  const parameterStr = match.groups?.['Parameter'];
+  const parameter = parameterStr ? parseInt(parameterStr, 10) : undefined;
+
+  return {
+    base,
+    parameter
+  };
 }
 
 function removeTokenFormatting(str: string): string {

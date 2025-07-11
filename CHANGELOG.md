@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 8.3.1
+
+- Properly exclude paths (Fixes #175)
+
 ## 8.3.0
 
 - Add left/right formatting (fixes #174)

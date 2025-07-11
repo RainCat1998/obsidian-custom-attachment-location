@@ -64,6 +64,7 @@ import { Substitutions } from './Substitutions.ts';
 
 type GenerateMarkdownLinkFn = FileManager['generateMarkdownLink'];
 type GetAvailablePathFn = Vault['getAvailablePath'];
+type GetAvailablePathForAttachmentsFn = Vault['getAvailablePathForAttachments'];
 type GetConfigFn = Vault['getConfig'];
 type GetPathForFileFn = typeof webUtils['getPathForFile'];
 type SaveAttachmentFn = App['saveAttachment'];
@@ -78,6 +79,7 @@ interface FileEx {
 
 export class Plugin extends PluginBase<PluginTypes> {
   private currentAttachmentFolderPath: null | string = null;
+  private getAvailablePathForAttachmentsOriginal: GetAvailablePathForAttachmentsFn | null = null;
   private lastOpenFilePath: null | string = null;
   private readonly pathMarkdownUrlMap = new Map<string, string>();
 
@@ -93,7 +95,8 @@ export class Plugin extends PluginBase<PluginTypes> {
     await super.onLayoutReady();
     registerPatch(this, this.app.vault, {
       getAvailablePath: (): GetAvailablePathFn => this.getAvailablePath.bind(this),
-      getAvailablePathForAttachments: (): ExtendedWrapper & GetAvailablePathForAttachmentsExtendedFn => {
+      getAvailablePathForAttachments: (next: GetAvailablePathForAttachmentsFn): ExtendedWrapper & GetAvailablePathForAttachmentsExtendedFn => {
+        this.getAvailablePathForAttachmentsOriginal = next.bind(this.app.vault);
         const extendedWrapper: ExtendedWrapper = {
           isExtended: true as const
         };
@@ -247,6 +250,10 @@ export class Plugin extends PluginBase<PluginTypes> {
     skipFolderCreation: boolean | undefined,
     attachmentFileSizeInBytes?: number
   ): Promise<string> {
+    if (file && this.settings.isPathIgnored(file.path) && this.getAvailablePathForAttachmentsOriginal) {
+      return this.getAvailablePathForAttachmentsOriginal(filename, extension, file);
+    }
+
     let attachmentPath: string;
     if (!file || !isNoteEx(this, file)) {
       attachmentPath = await getAvailablePathForAttachments(this.app, filename, extension, file, true);
@@ -297,7 +304,7 @@ export class Plugin extends PluginBase<PluginTypes> {
   }
 
   private async handleFileOpen(file: null | TFile): Promise<void> {
-    if (file === null) {
+    if (file === null || this.settings.isPathIgnored(file.path)) {
       this.currentAttachmentFolderPath = null;
       this.lastOpenFilePath = null;
       return;

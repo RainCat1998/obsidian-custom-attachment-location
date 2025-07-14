@@ -158,7 +158,7 @@ export class Plugin extends PluginBase<PluginTypes> {
         shouldHandleRenames: true,
         shouldRenameAttachmentFiles: this.settings.shouldRenameAttachmentFiles,
         shouldRenameAttachmentFolder: this.settings.shouldRenameAttachmentFolder,
-        shouldUpdateFilenameAliases: true
+        shouldUpdateFileNameAliases: true
       };
       return settings;
     });

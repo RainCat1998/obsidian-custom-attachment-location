@@ -104,7 +104,7 @@ export class PluginSettingsTab extends PluginSettingsTabBase<PluginTypes> {
       .setDesc(createFragment((f) => {
         f.appendText('When renaming md files, automatically rename attachment folder if folder name contains ');
         // eslint-disable-next-line no-template-curly-in-string
-        appendCodeBlock(f, '${filename}');
+        appendCodeBlock(f, '${noteFileName}');
         f.appendText('.');
       }))
       .addToggle((toggle) => {
@@ -116,7 +116,7 @@ export class PluginSettingsTab extends PluginSettingsTabBase<PluginTypes> {
       .setDesc(createFragment((f) => {
         f.appendText('When renaming md files, automatically rename attachment files if file name contains ');
         // eslint-disable-next-line no-template-curly-in-string
-        appendCodeBlock(f, '${filename}');
+        appendCodeBlock(f, '${noteFileName}');
         f.appendText('.');
       }))
       .addToggle((toggle) => {

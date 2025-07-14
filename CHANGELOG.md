@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## 8.4.0
+
+- generatedAttachmentFileName/generatedAttachmentFilePath
+- Fix outdated descriptions
+- Update libs
+
 ## 8.3.1
 
 - Properly exclude paths (Fixes #175)

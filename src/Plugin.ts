@@ -391,10 +391,10 @@ export class Plugin extends PluginBase<PluginTypes> {
       const markdownUrl = await new Substitutions({
         app: this.app,
         attachmentFileSizeInBytes: attachmentFileData.byteLength,
-        noteFilePath: activeNoteFile.path,
-        originalAttachmentFileName: makeFileName(attachmentFileName, attachmentFileExtension),
         generatedAttachmentFileName: attachmentFile.name,
-        generatedAttachmentFilePath: attachmentFile.path
+        generatedAttachmentFilePath: attachmentFile.path,
+        noteFilePath: activeNoteFile.path,
+        originalAttachmentFileName: makeFileName(attachmentFileName, attachmentFileExtension)
       }).fillTemplate(this.settings.markdownUrlFormat);
       this.pathMarkdownUrlMap.set(attachmentFile.path, markdownUrl);
     } else {

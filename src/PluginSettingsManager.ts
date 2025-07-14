@@ -43,6 +43,7 @@ export class PluginSettingsManager extends PluginSettingsManagerBase<PluginTypes
   }
 
   protected override registerLegacySettingsConverters(): void {
+    // eslint-disable-next-line complexity
     this.registerLegacySettingsConverter(LegacySettings, (legacySettings) => {
       const dateTimeFormat = legacySettings.dateTimeFormat ?? 'YYYYMMDDHHmmssSSS';
       legacySettings.attachmentFolderPath = addDateTimeFormat(legacySettings.attachmentFolderPath ?? '', dateTimeFormat);

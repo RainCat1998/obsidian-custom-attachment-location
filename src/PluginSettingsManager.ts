@@ -15,7 +15,7 @@ import {
   validatePath
 } from './Substitutions.ts';
 
-class LegacySettings extends PluginSettings {
+class LegacySettings {
   public autoRenameFiles = false;
   public autoRenameFolder = true;
   public convertImagesOnDragAndDrop = false;
@@ -42,64 +42,65 @@ export class PluginSettingsManager extends PluginSettingsManagerBase<PluginTypes
     return new PluginSettings();
   }
 
-  protected override async onLoadRecord(record: Record<string, unknown>): Promise<void> {
-    await super.onLoadRecord(record);
-    const legacySettings = record as Partial<LegacySettings>;
-    const dateTimeFormat = legacySettings.dateTimeFormat ?? 'YYYYMMDDHHmmssSSS';
-    legacySettings.attachmentFolderPath = addDateTimeFormat(legacySettings.attachmentFolderPath ?? '', dateTimeFormat);
+  protected override registerLegacySettingsConverters(): void {
+    this.registerLegacySettingsConverter(LegacySettings, (legacySettings) => {
+      const dateTimeFormat = legacySettings.dateTimeFormat ?? 'YYYYMMDDHHmmssSSS';
+      legacySettings.attachmentFolderPath = addDateTimeFormat(legacySettings.attachmentFolderPath ?? '', dateTimeFormat);
 
-    legacySettings.generatedAttachmentFileName = addDateTimeFormat(
-      // eslint-disable-next-line no-template-curly-in-string
-      legacySettings.generatedAttachmentFileName ?? legacySettings.generatedAttachmentFilename ?? legacySettings.pastedFileName ?? legacySettings.pastedImageFileName ?? 'file-${date}',
-      dateTimeFormat
-    );
-    if (legacySettings.replaceWhitespace !== undefined) {
-      legacySettings.whitespaceReplacement = legacySettings.replaceWhitespace ? '-' : '';
-    }
+      legacySettings.generatedAttachmentFileName = addDateTimeFormat(
+        // eslint-disable-next-line no-template-curly-in-string
+        legacySettings.generatedAttachmentFileName ?? legacySettings.generatedAttachmentFilename ?? legacySettings.pastedFileName
+          ?? legacySettings.pastedImageFileName ?? 'file-${date}',
+        dateTimeFormat
+      );
+      if (legacySettings.replaceWhitespace !== undefined) {
+        legacySettings.whitespaceReplacement = legacySettings.replaceWhitespace ? '-' : '';
+      }
 
-    if (legacySettings.autoRenameFiles !== undefined) {
-      legacySettings.shouldRenameAttachmentFiles = legacySettings.autoRenameFiles;
-    }
+      if (legacySettings.autoRenameFiles !== undefined) {
+        legacySettings.shouldRenameAttachmentFiles = legacySettings.autoRenameFiles;
+      }
 
-    if (legacySettings.autoRenameFolder !== undefined) {
-      legacySettings.shouldRenameAttachmentFolder = legacySettings.autoRenameFolder;
-    }
+      if (legacySettings.autoRenameFolder !== undefined) {
+        legacySettings.shouldRenameAttachmentFolder = legacySettings.autoRenameFolder;
+      }
 
-    if (legacySettings.deleteOrphanAttachments !== undefined) {
-      legacySettings.shouldDeleteOrphanAttachments = legacySettings.deleteOrphanAttachments;
-    }
+      if (legacySettings.deleteOrphanAttachments !== undefined) {
+        legacySettings.shouldDeleteOrphanAttachments = legacySettings.deleteOrphanAttachments;
+      }
 
-    if (legacySettings.keepEmptyAttachmentFolders !== undefined) {
-      legacySettings.shouldKeepEmptyAttachmentFolders = legacySettings.keepEmptyAttachmentFolders;
-    }
+      if (legacySettings.keepEmptyAttachmentFolders !== undefined) {
+        legacySettings.shouldKeepEmptyAttachmentFolders = legacySettings.keepEmptyAttachmentFolders;
+      }
 
-    if (legacySettings.renameCollectedFiles !== undefined) {
-      legacySettings.shouldRenameCollectedAttachments = legacySettings.renameCollectedFiles;
-    }
+      if (legacySettings.renameCollectedFiles !== undefined) {
+        legacySettings.shouldRenameCollectedAttachments = legacySettings.renameCollectedFiles;
+      }
 
-    if (legacySettings.toLowerCase !== undefined) {
-      legacySettings.shouldRenameAttachmentsToLowerCase = legacySettings.toLowerCase;
-    }
+      if (legacySettings.toLowerCase !== undefined) {
+        legacySettings.shouldRenameAttachmentsToLowerCase = legacySettings.toLowerCase;
+      }
 
-    if (legacySettings.convertImagesToJpeg !== undefined) {
-      legacySettings.shouldConvertPastedImagesToJpeg = legacySettings.convertImagesToJpeg;
-    }
+      if (legacySettings.convertImagesToJpeg !== undefined) {
+        legacySettings.shouldConvertPastedImagesToJpeg = legacySettings.convertImagesToJpeg;
+      }
 
-    if (legacySettings.whitespaceReplacement) {
-      legacySettings.specialCharacters = `${legacySettings.specialCharacters ?? ''} `;
-      legacySettings.specialCharactersReplacement = legacySettings.whitespaceReplacement;
-    }
+      if (legacySettings.whitespaceReplacement) {
+        legacySettings.specialCharacters = `${legacySettings.specialCharacters ?? ''} `;
+        legacySettings.specialCharactersReplacement = legacySettings.whitespaceReplacement;
+      }
 
-    if (legacySettings.shouldKeepEmptyAttachmentFolders !== undefined) {
-      legacySettings.emptyAttachmentFolderBehavior = legacySettings.shouldKeepEmptyAttachmentFolders
-        ? EmptyAttachmentFolderBehavior.Keep
-        : EmptyAttachmentFolderBehavior.DeleteWithEmptyParents;
-    }
+      if (legacySettings.shouldKeepEmptyAttachmentFolders !== undefined) {
+        legacySettings.emptyAttachmentFolderBehavior = legacySettings.shouldKeepEmptyAttachmentFolders
+          ? EmptyAttachmentFolderBehavior.Keep
+          : EmptyAttachmentFolderBehavior.DeleteWithEmptyParents;
+      }
 
-    legacySettings.attachmentFolderPath = this.replaceLegacyTokens(legacySettings.attachmentFolderPath);
-    legacySettings.generatedAttachmentFileName = this.replaceLegacyTokens(legacySettings.generatedAttachmentFileName);
-    legacySettings.markdownUrlFormat = this.replaceLegacyTokens(legacySettings.markdownUrlFormat);
-    legacySettings.customTokensStr = this.replaceLegacyTokens(legacySettings.customTokensStr ?? '');
+      legacySettings.attachmentFolderPath = this.replaceLegacyTokens(legacySettings.attachmentFolderPath);
+      legacySettings.generatedAttachmentFileName = this.replaceLegacyTokens(legacySettings.generatedAttachmentFileName);
+      legacySettings.markdownUrlFormat = this.replaceLegacyTokens(legacySettings.markdownUrlFormat);
+      legacySettings.customTokensStr = this.replaceLegacyTokens(legacySettings.customTokensStr ?? '');
+    });
   }
 
   protected override registerValidators(): void {

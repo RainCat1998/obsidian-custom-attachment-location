@@ -120,6 +120,25 @@ Frontmatter value of the current note.
 
 **Format**: frontmatter key. Nested keys are supported, e.g., `key1.key2.3.key4`.
 
+### `${generatedAttachmentFileName}`
+
+The generated file name of the attachment (available only inside [Markdown URL format](#markdown-url-format) setting).
+
+**Format**:
+
+- (default): Unchanged file name. **Example**: `foo/bar/baz qux quux.pdf` -> `baz qux quux`.
+- leftn: Left n characters of the file name. **Example** `left2`: `foo/bar/baz qux quux.pdf` -> `ba`.
+- lower: Lowercase file name. **Example**: `foo/bar/Baz QUX quux.pdf` -> `baz qux quux`.
+- rightn: Right n characters of the file name. **Example** `right2`: `foo/bar/baz qux quux.pdf` -> `ux`.
+- slug: Slugified file name. **Example**: `foo/bar/baz qux quux.pdf` -> `baz-qux-quux`.
+- upper: Uppercase file name. **Example**: `foo/bar/Baz QUX quux.pdf` -> `BAZ QUX QUUX`.
+
+### `${generatedAttachmentFilePath}`
+
+The generated file path of the attachment (available only inside [Markdown URL format](#markdown-url-format) setting).
+
+**Example**: `foo/bar/baz.pdf` -> `foo/bar/baz.pdf`.
+
 ### `${noteFileCreationDate}`
 
 Note file creation date/time.
@@ -224,10 +243,12 @@ exports.myCustomToken2 = async (substitutions, format) => {
 };
 ```
 
-Then you can use the defined `${myCustomToken1}`, `${myCustomToken2:format}` tokens in the [Location for New Attachments](#location-for-new-attachments) and [Generated attachment file name](#generated-attachment-file-name) settings.
+Then you can use the defined `${myCustomToken1}`, `${myCustomToken2:format}` tokens in the [Location for New Attachments](#location-for-new-attachments), [Generated attachment file name](#generated-attachment-file-name) and [Markdown URL format](#markdown-url-format) settings.
 
 - `substitutions`: is an object with the following properties:
   - `app`: Obsidian app object.
+  - `generatedAttachmentFileName`: The generated file name of the attachment (available only inside [Markdown URL format](#markdown-url-format) setting).
+  - `generatedAttachmentFilePath`: The generated file path of the attachment (available only inside [Markdown URL format](#markdown-url-format) setting).
   - `noteFileName`: The file name of the current note.
   - `noteFilePath`: The full path to the current note.
   - `noteFolderName`: The name of the folder containing the current note.

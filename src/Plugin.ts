@@ -392,7 +392,9 @@ export class Plugin extends PluginBase<PluginTypes> {
         app: this.app,
         attachmentFileSizeInBytes: attachmentFileData.byteLength,
         noteFilePath: activeNoteFile.path,
-        originalAttachmentFileName: attachmentFile.name
+        originalAttachmentFileName: makeFileName(attachmentFileName, attachmentFileExtension),
+        generatedAttachmentFileName: attachmentFile.name,
+        generatedAttachmentFilePath: attachmentFile.path
       }).fillTemplate(this.settings.markdownUrlFormat);
       this.pathMarkdownUrlMap.set(attachmentFile.path, markdownUrl);
     } else {

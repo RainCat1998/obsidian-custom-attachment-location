@@ -39,6 +39,8 @@ export const SUBSTITUTION_TOKEN_REG_EXP = /\${(?<Token>.+?)(?::(?<Format>.+?))?}
 interface SubstitutionsOptions {
   app: App;
   attachmentFileSizeInBytes?: number;
+  generatedAttachmentFileName?: string;
+  generatedAttachmentFilePath?: string;
   noteFilePath: string;
   originalAttachmentFileName?: string;
 }
@@ -171,6 +173,8 @@ export class Substitutions {
   private readonly app: App;
 
   private attachmentFileSizeInBytes: number;
+  private readonly generatedAttachmentFileName: string;
+  private readonly generatedAttachmentFilePath: string;
   private readonly noteFileName: string;
   private readonly noteFilePath: string;
   private readonly noteFolderName: string;
@@ -191,6 +195,9 @@ export class Substitutions {
     this.originalAttachmentFileExtension = originalAttachmentFileExtension.slice(1);
 
     this.attachmentFileSizeInBytes = options.attachmentFileSizeInBytes ?? 0;
+
+    this.generatedAttachmentFileName = options.generatedAttachmentFileName ?? '';
+    this.generatedAttachmentFilePath = options.generatedAttachmentFilePath ?? '';
   }
 
   public static isRegisteredToken(token: string): boolean {
@@ -224,6 +231,9 @@ export class Substitutions {
     this.registerFormatter('random', (_substitutions, format) => generateRandomValue(format));
 
     this.registerFormatter('attachmentFileSize', (substitutions, format) => formatFileSize(substitutions.attachmentFileSizeInBytes, format));
+
+    this.registerFormatter('generatedAttachmentFileName', (substitutions, format) => formatFileName(substitutions.generatedAttachmentFileName, format));
+    this.registerFormatter('generatedAttachmentFilePath', (substitutions) => substitutions.generatedAttachmentFilePath);
 
     const customFormatters = getCustomTokenFormatters(customTokensStr) ?? new Map<string, Formatter>();
     for (const [token, formatter] of customFormatters.entries()) {

@@ -48,9 +48,12 @@ export class PluginSettingsManager extends PluginSettingsManagerBase<PluginTypes
       legacySettings.attachmentFolderPath = addDateTimeFormat(legacySettings.attachmentFolderPath ?? '', dateTimeFormat);
 
       legacySettings.generatedAttachmentFileName = addDateTimeFormat(
-        // eslint-disable-next-line no-template-curly-in-string
-        legacySettings.generatedAttachmentFileName ?? legacySettings.generatedAttachmentFilename ?? legacySettings.pastedFileName
-          ?? legacySettings.pastedImageFileName ?? 'file-${date}',
+        legacySettings.generatedAttachmentFileName
+          ?? legacySettings.generatedAttachmentFilename
+          ?? legacySettings.pastedFileName
+          ?? legacySettings.pastedImageFileName
+          // eslint-disable-next-line no-template-curly-in-string
+          ?? 'file-${date}',
         dateTimeFormat
       );
       if (legacySettings.replaceWhitespace !== undefined) {

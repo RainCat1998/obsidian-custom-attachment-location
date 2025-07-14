@@ -1,7 +1,7 @@
 {
   "name": "obsidian-custom-attachment-location",
   "version": "8.3.1",
-  "description": "Customize attachment location with variables($filename, $data, etc) like typora.",
+  "description": "Customize attachment location with variables(${noteFileName}, ${date:format}, etc) like typora.",
   "main": "main.js",
   "scripts": {
     "build": "obsidian-dev-utils build",

@@ -228,12 +228,12 @@ export class Plugin extends PluginBase<PluginTypes> {
     return defaultLink.replace(/\]\(.+?\)/, `](${encodeUrl(markdownUrl)})`);
   }
 
-  private getAvailablePath(filename: string, extension: string): string {
+  private getAvailablePath(attachmentFileName: string, attachmentExtension: string): string {
     let suffixNum = 0;
 
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     while (true) {
-      const path = makeFileName(suffixNum === 0 ? filename : `${filename}${this.settings.duplicateNameSeparator}${suffixNum.toString()}`, extension);
+      const path = makeFileName(suffixNum === 0 ? attachmentFileName : `${attachmentFileName}${this.settings.duplicateNameSeparator}${suffixNum.toString()}`, attachmentExtension);
 
       if (!getAbstractFileOrNull(this.app, path, true)) {
         return path;
@@ -244,25 +244,25 @@ export class Plugin extends PluginBase<PluginTypes> {
   }
 
   private async getAvailablePathForAttachments(
-    filename: string,
-    extension: string,
-    file: null | TFile,
-    skipFolderCreation: boolean | undefined,
+    attachmentFileName: string,
+    attachmentExtension: string,
+    noteFile: null | TFile,
+    skipMissingAttachmentFolderCreation: boolean | undefined,
     attachmentFileSizeInBytes?: number
   ): Promise<string> {
-    if (file && this.settings.isPathIgnored(file.path) && this.getAvailablePathForAttachmentsOriginal) {
-      return this.getAvailablePathForAttachmentsOriginal(filename, extension, file);
+    if (noteFile && this.settings.isPathIgnored(noteFile.path) && this.getAvailablePathForAttachmentsOriginal) {
+      return this.getAvailablePathForAttachmentsOriginal(attachmentFileName, attachmentExtension, noteFile);
     }
 
     let attachmentPath: string;
-    if (!file || !isNoteEx(this, file)) {
-      attachmentPath = await getAvailablePathForAttachments(this.app, filename, extension, file, true);
+    if (!noteFile || !isNoteEx(this, noteFile)) {
+      attachmentPath = await getAvailablePathForAttachments(this.app, attachmentFileName, attachmentExtension, noteFile, true);
     } else {
-      const attachmentFolderFullPath = await getAttachmentFolderFullPathForPath(this, file.path, makeFileName(filename, extension), attachmentFileSizeInBytes);
-      attachmentPath = this.app.vault.getAvailablePath(join(attachmentFolderFullPath, filename), extension);
+      const attachmentFolderFullPath = await getAttachmentFolderFullPathForPath(this, noteFile.path, makeFileName(attachmentFileName, attachmentExtension), attachmentFileSizeInBytes);
+      attachmentPath = this.app.vault.getAvailablePath(join(attachmentFolderFullPath, attachmentFileName), attachmentExtension);
     }
 
-    if (!skipFolderCreation) {
+    if (!skipMissingAttachmentFolderCreation) {
       const folderPath = parentFolderPath(attachmentPath);
       if (!await this.app.vault.exists(folderPath)) {
         await createFolderSafe(this.app, folderPath);

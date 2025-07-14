@@ -5,7 +5,7 @@ Customize attachment location with tokens (`${noteFileName}`, `${date:format}`, 
 ## Features
 
 - Modify location for attachment folder.
-- Modify filename for **Pasted Files**.
+- Modify file name for **Pasted Files**.
 
 ## Settings
 
@@ -16,7 +16,7 @@ Customize attachment location with tokens (`${noteFileName}`, `${date:format}`, 
 - See available [tokens](#tokens).
 - example: `assets/${noteFileName}`, `./assets/${noteFileName}`, `./assets/${noteFileName}/${date:YYYY}`
 
-### Generated attachment filename
+### Generated attachment file name
 
 - See available [tokens](#tokens).
 - example: `${originalAttachmentFileName}-${date:YYYYMMDDHHmmssSSS}`, `${noteFileName}-img-${date:YYYYMMDD}`
@@ -34,7 +34,7 @@ Automatically update attachment folder name if [Location for New Attachments](#l
 
 ### Should rename attachment files
 
-Automatically update attachment files in target md file if [Generated attachment filename](#generated-attachment-filename) contains `${noteFileName}`.
+Automatically update attachment files in target md file if [Generated attachment file name](#generated-attachment-file-name) contains `${noteFileName}`.
 
 ### Special characters replacement
 
@@ -70,11 +70,11 @@ If disabled, only clipboard image objects (e.g., screenshots) will be renamed.
 
 ### Rename attachments on drag&drop
 
-If enabled, attachments dragged and dropped into the editor will be renamed according to the [Generated attachment filename](#generated-attachment-filename) setting.
+If enabled, attachments dragged and dropped into the editor will be renamed according to the [Generated attachment file name](#generated-attachment-file-name) setting.
 
 ### Should rename collected attachments
 
-If enabled, attachments processed via `Collect attachments` commands will be renamed according to the [Generated attachment filename](#generated-attachment-filename) setting.
+If enabled, attachments processed via `Collect attachments` commands will be renamed according to the [Generated attachment file name](#generated-attachment-file-name) setting.
 
 ### Duplicate name separator
 
@@ -94,7 +94,7 @@ If enabled, when the note is deleted, its orphan attachments are deleted as well
 
 ## Tokens
 
-The following tokens can be used in the [Location for New Attachments](#location-for-new-attachments), [Generated attachment filename](#generated-attachment-filename) and [Markdown URL format](#markdown-url-format) settings.
+The following tokens can be used in the [Location for New Attachments](#location-for-new-attachments), [Generated attachment file name](#generated-attachment-file-name) and [Markdown URL format](#markdown-url-format) settings.
 
 Token strings: `${token}` or `${token:format}`. `token` is case-insensitive. `format` is case-sensitive. When `${token}` is used, `format` is empty string.
 
@@ -224,11 +224,11 @@ exports.myCustomToken2 = async (substitutions, format) => {
 };
 ```
 
-Then you can use the defined `${myCustomToken1}`, `${myCustomToken2:format}` tokens in the [Location for New Attachments](#location-for-new-attachments) and [Generated attachment filename](#generated-attachment-filename) settings.
+Then you can use the defined `${myCustomToken1}`, `${myCustomToken2:format}` tokens in the [Location for New Attachments](#location-for-new-attachments) and [Generated attachment file name](#generated-attachment-file-name) settings.
 
 - `substitutions`: is an object with the following properties:
   - `app`: Obsidian app object.
-  - `noteFileName`: The filename of the current note.
+  - `noteFileName`: The file name of the current note.
   - `noteFilePath`: The full path to the current note.
   - `noteFolderName`: The name of the folder containing the current note.
   - `noteFolderPath`: The full path to the folder containing the current note.

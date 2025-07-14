@@ -11,7 +11,7 @@ import { PluginSettings } from './PluginSettings.ts';
 import {
   getCustomTokenFormatters,
   INVALID_FILENAME_PATH_CHARS_REG_EXP,
-  validateFilename,
+  validateFileName,
   validatePath
 } from './Substitutions.ts';
 
@@ -22,6 +22,7 @@ class LegacySettings extends PluginSettings {
   public convertImagesToJpeg = false;
   public dateTimeFormat = '';
   public deleteOrphanAttachments = false;
+  public generatedAttachmentFilename = '';
   public keepEmptyAttachmentFolders = false;
   // eslint-disable-next-line no-template-curly-in-string
   public pastedFileName = 'file-${date:YYYYMMDDHHmmssSSS}';
@@ -47,9 +48,9 @@ export class PluginSettingsManager extends PluginSettingsManagerBase<PluginTypes
     const dateTimeFormat = legacySettings.dateTimeFormat ?? 'YYYYMMDDHHmmssSSS';
     legacySettings.attachmentFolderPath = addDateTimeFormat(legacySettings.attachmentFolderPath ?? '', dateTimeFormat);
 
-    legacySettings.generatedAttachmentFilename = addDateTimeFormat(
+    legacySettings.generatedAttachmentFileName = addDateTimeFormat(
       // eslint-disable-next-line no-template-curly-in-string
-      legacySettings.generatedAttachmentFilename ?? legacySettings.pastedFileName ?? legacySettings.pastedImageFileName ?? 'file-${date}',
+      legacySettings.generatedAttachmentFileName ?? legacySettings.generatedAttachmentFilename ?? legacySettings.pastedFileName ?? legacySettings.pastedImageFileName ?? 'file-${date}',
       dateTimeFormat
     );
     if (legacySettings.replaceWhitespace !== undefined) {
@@ -96,14 +97,14 @@ export class PluginSettingsManager extends PluginSettingsManagerBase<PluginTypes
     }
 
     legacySettings.attachmentFolderPath = this.replaceLegacyTokens(legacySettings.attachmentFolderPath);
-    legacySettings.generatedAttachmentFilename = this.replaceLegacyTokens(legacySettings.generatedAttachmentFilename);
+    legacySettings.generatedAttachmentFileName = this.replaceLegacyTokens(legacySettings.generatedAttachmentFileName);
     legacySettings.markdownUrlFormat = this.replaceLegacyTokens(legacySettings.markdownUrlFormat);
     legacySettings.customTokensStr = this.replaceLegacyTokens(legacySettings.customTokensStr ?? '');
   }
 
   protected override registerValidators(): void {
     this.registerValidator('attachmentFolderPath', (value) => validatePath(value));
-    this.registerValidator('generatedAttachmentFilename', (value) => validatePath(value));
+    this.registerValidator('generatedAttachmentFileName', (value) => validatePath(value));
     this.registerValidator('specialCharacters', (value): MaybeReturn<string> => {
       if (value.includes('/')) {
         return 'Special characters must not contain /';
@@ -112,12 +113,12 @@ export class PluginSettingsManager extends PluginSettingsManagerBase<PluginTypes
 
     this.registerValidator('specialCharactersReplacement', (value): MaybeReturn<string> => {
       if (INVALID_FILENAME_PATH_CHARS_REG_EXP.exec(value)) {
-        return 'Special character replacement must not contain invalid filename path characters.';
+        return 'Special character replacement must not contain invalid file name path characters.';
       }
     });
 
     this.registerValidator('duplicateNameSeparator', (value): MaybeReturn<string> => {
-      return validateFilename(`filename${value}1`, false);
+      return validateFileName(`foo${value}1`, false);
     });
 
     this.registerValidator('includePaths', (value): MaybeReturn<string> => {

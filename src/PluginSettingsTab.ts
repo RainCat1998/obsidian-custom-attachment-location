@@ -50,7 +50,7 @@ export class PluginSettingsTab extends PluginSettingsTabBase<PluginTypes> {
       });
 
     new SettingEx(this.containerEl)
-      .setName('Generated attachment filename')
+      .setName('Generated attachment file name')
       .setDesc(createFragment((f) => {
         f.appendText('See available ');
         f.createEl('a', { href: 'https://github.com/RainCat1998/obsidian-custom-attachment-location?tab=readme-ov-file#tokens', text: 'tokens' });
@@ -58,7 +58,7 @@ export class PluginSettingsTab extends PluginSettingsTabBase<PluginTypes> {
       .addCodeHighlighter((codeHighlighter) => {
         codeHighlighter.setLanguage(TOKENIZED_STRING_LANGUAGE);
         codeHighlighter.inputEl.addClass('tokenized-string-setting-control');
-        this.bind(codeHighlighter, 'generatedAttachmentFilename');
+        this.bind(codeHighlighter, 'generatedAttachmentFileName');
       });
 
     new SettingEx(this.containerEl)

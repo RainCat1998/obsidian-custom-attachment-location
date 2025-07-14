@@ -11,7 +11,7 @@ import {
 export async function getAttachmentFolderFullPathForPath(
   plugin: Plugin,
   notePath: string,
-  attachmentFilename: string,
+  attachmentFileName: string,
   attachmentFileSizeInBytes?: number
 ): Promise<string> {
   return await getAttachmentFolderPath(
@@ -20,13 +20,13 @@ export async function getAttachmentFolderFullPathForPath(
       app: plugin.app,
       attachmentFileSizeInBytes: attachmentFileSizeInBytes ?? 0,
       noteFilePath: notePath,
-      originalAttachmentFileName: attachmentFilename
+      originalAttachmentFileName: attachmentFileName
     })
   );
 }
 
 export async function getPastedFileName(plugin: Plugin, substitutions: Substitutions): Promise<string> {
-  return await resolvePathTemplate(plugin, plugin.settings.generatedAttachmentFilename, substitutions);
+  return await resolvePathTemplate(plugin, plugin.settings.generatedAttachmentFileName, substitutions);
 }
 
 export function replaceSpecialCharacters(plugin: Plugin, str: string): string {

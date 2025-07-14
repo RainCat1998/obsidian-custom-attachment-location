@@ -257,7 +257,7 @@ export class Substitutions {
       defaultValue: this.originalAttachmentFileName,
       // eslint-disable-next-line no-template-curly-in-string
       title: 'Provide a value for ${prompt} template',
-      valueValidator: (value) => validateFilename(value, false)
+      valueValidator: (value) => validateFileName(value, false)
     });
     if (promptResult === null) {
       throw new Error('Prompt cancelled');
@@ -266,38 +266,38 @@ export class Substitutions {
   }
 }
 
-export function validateFilename(filename: string, areTokensAllowed = true): string {
+export function validateFileName(fileName: string, areTokensAllowed = true): string {
   if (areTokensAllowed) {
-    filename = removeTokenFormatting(filename);
-    const unknownToken = validateTokens(filename);
+    fileName = removeTokenFormatting(fileName);
+    const unknownToken = validateTokens(fileName);
     if (unknownToken) {
       return `Unknown token: ${unknownToken}`;
     }
   } else {
-    const match = filename.match(SUBSTITUTION_TOKEN_REG_EXP);
+    const match = fileName.match(SUBSTITUTION_TOKEN_REG_EXP);
     if (match) {
       return 'Tokens are not allowed in file name';
     }
   }
 
-  if (filename === '.' || filename === '..') {
+  if (fileName === '.' || fileName === '..') {
     return '';
   }
 
-  if (!filename) {
+  if (!fileName) {
     return 'File name is empty';
   }
 
-  if (INVALID_FILENAME_PATH_CHARS_REG_EXP.test(filename)) {
-    return `File name "${filename}" contains invalid symbols`;
+  if (INVALID_FILENAME_PATH_CHARS_REG_EXP.test(fileName)) {
+    return `File name "${fileName}" contains invalid symbols`;
   }
 
-  if (MORE_THAN_TWO_DOTS_REG_EXP.test(filename)) {
-    return `File name "${filename}" contains more than two dots`;
+  if (MORE_THAN_TWO_DOTS_REG_EXP.test(fileName)) {
+    return `File name "${fileName}" contains more than two dots`;
   }
 
-  if (TRAILING_DOTS_AND_SPACES_REG_EXP.test(filename)) {
-    return `File name "${filename}" contains trailing dots or spaces`;
+  if (TRAILING_DOTS_AND_SPACES_REG_EXP.test(fileName)) {
+    return `File name "${fileName}" contains trailing dots or spaces`;
   }
 
   return '';
@@ -326,7 +326,7 @@ export function validatePath(path: string, areTokensAllowed = true): string {
 
   const parts = path.split('/');
   for (const part of parts) {
-    const partValidationError = validateFilename(part);
+    const partValidationError = validateFileName(part);
 
     if (partValidationError) {
       return partValidationError;

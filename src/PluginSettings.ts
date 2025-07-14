@@ -21,7 +21,7 @@ export class PluginSettings {
   public duplicateNameSeparator = ' ';
   public emptyAttachmentFolderBehavior: EmptyAttachmentFolderBehavior = EmptyAttachmentFolderBehavior.DeleteWithEmptyParents;
   // eslint-disable-next-line no-template-curly-in-string
-  public generatedAttachmentFilename = 'file-${date:YYYYMMDDHHmmssSSS}';
+  public generatedAttachmentFileName = 'file-${date:YYYYMMDDHHmmssSSS}';
   // eslint-disable-next-line no-magic-numbers
   public jpegQuality = 0.8;
   public markdownUrlFormat = '';

@@ -233,7 +233,10 @@ export class Plugin extends PluginBase<PluginTypes> {
 
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     while (true) {
-      const path = makeFileName(suffixNum === 0 ? attachmentFileName : `${attachmentFileName}${this.settings.duplicateNameSeparator}${suffixNum.toString()}`, attachmentExtension);
+      const path = makeFileName(
+        suffixNum === 0 ? attachmentFileName : `${attachmentFileName}${this.settings.duplicateNameSeparator}${suffixNum.toString()}`,
+        attachmentExtension
+      );
 
       if (!getAbstractFileOrNull(this.app, path, true)) {
         return path;
@@ -258,7 +261,12 @@ export class Plugin extends PluginBase<PluginTypes> {
     if (!noteFile || !isNoteEx(this, noteFile)) {
       attachmentPath = await getAvailablePathForAttachments(this.app, attachmentFileName, attachmentExtension, noteFile, true);
     } else {
-      const attachmentFolderFullPath = await getAttachmentFolderFullPathForPath(this, noteFile.path, makeFileName(attachmentFileName, attachmentExtension), attachmentFileSizeInBytes);
+      const attachmentFolderFullPath = await getAttachmentFolderFullPathForPath(
+        this,
+        noteFile.path,
+        makeFileName(attachmentFileName, attachmentExtension),
+        attachmentFileSizeInBytes
+      );
       attachmentPath = this.app.vault.getAvailablePath(join(attachmentFolderFullPath, attachmentFileName), attachmentExtension);
     }
 

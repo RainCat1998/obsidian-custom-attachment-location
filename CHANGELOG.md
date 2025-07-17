@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 8.4.1
+
+- Update libs
+
 ## 8.4.0
 
 - generatedAttachmentFileName/generatedAttachmentFilePath

@@ -344,14 +344,18 @@ exports.myCustomToken2 = async (substitutions, format) => {
         f.createEl('br');
         f.appendText('By default, ');
         appendCodeBlock(f, '.md');
-        f.appendText(' and ');
+        f.appendText(', ');
         appendCodeBlock(f, '.canvas');
+        f.appendText(' and ');
+        appendCodeBlock(f, '.base');
         f.appendText(' linked files are not treated as attachments and are not moved with the note.');
         f.createEl('br');
         f.appendText('You can add custom extensions, e.g. ');
         appendCodeBlock(f, '.foo.md');
         f.appendText(', ');
         appendCodeBlock(f, '.bar.canvas');
+        f.appendText(', ');
+        appendCodeBlock(f, '.baz.base');
         f.appendText(', to override this behavior.');
       }))
       .addMultipleText((multipleText) => {

@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## 8.4.2
+
+- Add base examples
+- Add more logging
+- Update libs
+
 ## 8.4.1
 
 - Update libs

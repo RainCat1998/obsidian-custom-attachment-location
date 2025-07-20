@@ -91,6 +91,7 @@ export async function collectAttachments(
       }
 
       if (plugin.settings.isExcludedFromAttachmentCollecting(attachmentMoveResult.oldAttachmentPath)) {
+        console.warn(`Skipping collecting attachment ${attachmentMoveResult.oldAttachmentPath} as it is excluded from attachment collecting.`);
         continue;
       }
 
@@ -99,6 +100,7 @@ export async function collectAttachments(
         if (plugin.settings.shouldDuplicateCollectedAttachments) {
           attachmentMoveResult.newAttachmentPath = await copySafe(app, attachmentMoveResult.oldAttachmentPath, attachmentMoveResult.newAttachmentPath);
         } else {
+          console.warn(`Skipping collecting attachment ${attachmentMoveResult.oldAttachmentPath} as it is referenced by multiple notes.`);
           continue;
         }
       } else {
@@ -166,6 +168,7 @@ export function collectAttachmentsCurrentNote(plugin: Plugin, checking: boolean)
   if (!checking) {
     if (plugin.settings.isPathIgnored(note.path)) {
       new Notice('Note path is ignored');
+      console.warn(`Cannot collect attachments in the note as note path is ignored: ${note.path}.`);
       return true;
     }
 
@@ -199,24 +202,25 @@ export async function collectAttachmentsInFolder(plugin: Plugin, folder: TFolder
     return;
   }
   plugin.consoleDebug(`Collect attachments in folder: ${folder.path}`);
-  const files: TFile[] = [];
+  const noteFiles: TFile[] = [];
   Vault.recurseChildren(folder, (child) => {
     if (isNoteEx(plugin, child)) {
-      files.push(child as TFile);
+      noteFiles.push(child as TFile);
     }
   });
 
-  files.sort((a, b) => a.path.localeCompare(b.path));
+  noteFiles.sort((a, b) => a.path.localeCompare(b.path));
 
   await loop({
     abortSignal: plugin.abortSignal,
-    buildNoticeMessage: (file, iterationStr) => `Collecting attachments ${iterationStr} - ${file.path}`,
-    items: files,
-    processItem: async (file) => {
-      if (plugin.settings.isPathIgnored(file.path)) {
+    buildNoticeMessage: (noteFile, iterationStr) => `Collecting attachments ${iterationStr} - ${noteFile.path}`,
+    items: noteFiles,
+    processItem: async (noteFile) => {
+      if (plugin.settings.isPathIgnored(noteFile.path)) {
+        console.warn(`Cannot collect attachments in the note as note path is ignored: ${noteFile.path}.`);
         return;
       }
-      await collectAttachments(plugin, file);
+      await collectAttachments(plugin, noteFile);
     },
     progressBarTitle: 'Custom Attachment Location: Collecting attachments...',
     shouldContinueOnError: true,
@@ -256,10 +260,12 @@ async function prepareAttachmentToMove(
 
   const oldAttachmentFile = extractLinkFile(app, link, oldNotePath);
   if (!oldAttachmentFile) {
+    console.warn(`Skipping collecting attachment ${link.link} as it could not be resolved.`);
     return null;
   }
 
   if (isNoteEx(plugin, oldAttachmentFile)) {
+    console.warn(`Skipping collecting attachment ${oldAttachmentFile.path} as it is a note.`);
     return null;
   }
 
@@ -294,6 +300,7 @@ async function prepareAttachmentToMove(
   const newAttachmentPath = join(newAttachmentFolderPath, newAttachmentName);
 
   if (oldAttachmentPath === newAttachmentPath) {
+    console.warn(`Skipping collecting attachment ${oldAttachmentFile.path} as it is already in the destination folder.`);
     return null;
   }
 

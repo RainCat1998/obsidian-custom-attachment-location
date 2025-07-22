@@ -7,7 +7,10 @@ import { replaceAll } from 'obsidian-dev-utils/String';
 
 import type { PluginTypes } from './PluginTypes.ts';
 
-import { PluginSettings } from './PluginSettings.ts';
+import {
+  CollectAttachmentUsedByMultipleNotesMode,
+  PluginSettings
+} from './PluginSettings.ts';
 import {
   getCustomTokenFormatters,
   INVALID_FILENAME_PATH_CHARS_REG_EXP,
@@ -32,6 +35,7 @@ class LegacySettings {
   public renameOnlyImages = false;
   public renamePastedFilesWithKnownNames = false;
   public replaceWhitespace = false;
+  public shouldDuplicateCollectedAttachments = false;
   public shouldKeepEmptyAttachmentFolders = false;
   public toLowerCase = false;
   public whitespaceReplacement = '';
@@ -104,6 +108,12 @@ export class PluginSettingsManager extends PluginSettingsManagerBase<PluginTypes
       legacySettings.generatedAttachmentFileName = this.replaceLegacyTokens(legacySettings.generatedAttachmentFileName);
       legacySettings.markdownUrlFormat = this.replaceLegacyTokens(legacySettings.markdownUrlFormat);
       legacySettings.customTokensStr = this.replaceLegacyTokens(legacySettings.customTokensStr ?? '');
+
+      if (legacySettings.collectAttachmentUsedByMultipleNotesMode === undefined && legacySettings.shouldDuplicateCollectedAttachments !== undefined) {
+        legacySettings.collectAttachmentUsedByMultipleNotesMode = legacySettings.shouldDuplicateCollectedAttachments
+          ? CollectAttachmentUsedByMultipleNotesMode.Copy
+          : CollectAttachmentUsedByMultipleNotesMode.Skip;
+      }
     });
   }
 

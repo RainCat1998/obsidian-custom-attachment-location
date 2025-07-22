@@ -10,7 +10,10 @@ import { SettingEx } from 'obsidian-dev-utils/obsidian/SettingEx';
 
 import type { PluginTypes } from './PluginTypes.ts';
 
-import { AttachmentRenameMode } from './PluginSettings.ts';
+import {
+  AttachmentRenameMode,
+  CollectAttachmentUsedByMultipleNotesMode
+} from './PluginSettings.ts';
 import { TOKENIZED_STRING_LANGUAGE } from './PrismComponent.ts';
 
 const VISIBLE_WHITESPACE_CHARACTER = '␣';
@@ -193,16 +196,39 @@ export class PluginSettingsTab extends PluginSettingsTabBase<PluginTypes> {
       });
 
     new SettingEx(this.containerEl)
-      .setName('Should duplicate collected attachments')
+      .setName('Collect attachment used by multiple notes mode')
       .setDesc(createFragment((f) => {
-        f.appendText('If enabled, for attachments processed via ');
-        appendCodeBlock(f, 'Collect attachments');
-        f.appendText(' command, that are linked by multiple notes, duplicate copy of those attachments will be created for each note.');
+        f.appendText('When the collected attachment is used by multiple notes:');
         f.createEl('br');
-        f.appendText('When disabled, such attachments will be kept in the original location.');
+        appendCodeBlock(f, 'Skip');
+        f.appendText(' - skip the attachment and proceed to the next one.');
+        f.createEl('br');
+        appendCodeBlock(f, 'Move');
+        f.appendText(' - move the attachment to the new location.');
+        f.createEl('br');
+        appendCodeBlock(f, 'Copy');
+        f.appendText(' - copy the attachment to the new location.');
+        f.createEl('br');
+        appendCodeBlock(f, 'Cancel');
+        f.appendText(' - cancel the attachment collecting.');
+        f.createEl('br');
+        appendCodeBlock(f, 'Prompt');
+        f.appendText(' - prompt the user to select the action.');
       }))
-      .addToggle((toggle) => {
-        this.bind(toggle, 'shouldDuplicateCollectedAttachments');
+      .addDropdown((dropdown) => {
+        dropdown.addOptions({
+          /* eslint-disable perfectionist/sort-objects */
+          [CollectAttachmentUsedByMultipleNotesMode.Skip]: 'Skip',
+          [CollectAttachmentUsedByMultipleNotesMode.Move]: 'Move',
+          [CollectAttachmentUsedByMultipleNotesMode.Copy]: 'Copy',
+          [CollectAttachmentUsedByMultipleNotesMode.Cancel]: 'Cancel',
+          [CollectAttachmentUsedByMultipleNotesMode.Prompt]: 'Prompt'
+          /* eslint-enable perfectionist/sort-objects */
+        });
+        this.bind(dropdown, 'collectAttachmentUsedByMultipleNotesMode', {
+          componentToPluginSettingsValueConverter: (value) => getEnumValue(CollectAttachmentUsedByMultipleNotesMode, value),
+          pluginSettingsToComponentValueConverter: (value) => getEnumKey(CollectAttachmentUsedByMultipleNotesMode, value)
+        });
       });
 
     new SettingEx(this.containerEl)

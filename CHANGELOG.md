@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## 8.5.0
+
+- Add choice for CollectAttachmentUsedByMultipleNotesMode
+- Reformat settings tab
+- Update libs
+
 ## 8.4.2
 
 - Add base examples

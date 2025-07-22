@@ -80,10 +80,10 @@ export class PluginSettingsTab extends PluginSettingsTabBase<PluginTypes> {
     new SettingEx(this.containerEl)
       .setName('Attachment rename mode')
       .setDesc(createFragment((f) => {
-        f.appendText('When attaching files, ');
+        f.appendText('When attaching files:');
         f.createEl('br');
         appendCodeBlock(f, 'None');
-        f.appendText(' - their names are preserved, ');
+        f.appendText(' - their names are preserved.');
         f.createEl('br');
         appendCodeBlock(f, 'Only pasted images');
         f.appendText(' - only pasted images are renamed.');
@@ -231,13 +231,13 @@ export class PluginSettingsTab extends PluginSettingsTabBase<PluginTypes> {
     new SettingEx(this.containerEl)
       .setName('Empty attachment folder behavior')
       .setDesc(createFragment((f) => {
-        f.appendText('When the attachment folder becomes empty, ');
+        f.appendText('When the attachment folder becomes empty:');
         f.createEl('br');
         appendCodeBlock(f, 'Keep');
-        f.appendText(' - will keep the empty attachment folder, ');
+        f.appendText(' - will keep the empty attachment folder.');
         f.createEl('br');
         appendCodeBlock(f, 'Delete');
-        f.appendText(' - will delete the empty attachment folder, ');
+        f.appendText(' - will delete the empty attachment folder.');
         f.createEl('br');
         appendCodeBlock(f, 'Delete with empty parents');
         f.appendText(' - will delete the empty attachment folder and its empty parent folders.');
@@ -266,14 +266,14 @@ export class PluginSettingsTab extends PluginSettingsTabBase<PluginTypes> {
     new SettingEx(this.containerEl)
       .setName('Include paths')
       .setDesc(createFragment((f) => {
-        f.appendText('Include notes from the following paths');
+        f.appendText('Include notes from the following paths.');
         f.createEl('br');
-        f.appendText('Insert each path on a new line');
+        f.appendText('Insert each path on a new line.');
         f.createEl('br');
         f.appendText('You can use path string or ');
-        appendCodeBlock(f, '/regular expression/');
+        appendCodeBlock(f, '/regular expression/.');
         f.createEl('br');
-        f.appendText('If the setting is empty, all notes are included');
+        f.appendText('If the setting is empty, all notes are included.');
       }))
       .addMultipleText((multipleText) => {
         this.bind(multipleText, 'includePaths');
@@ -282,14 +282,14 @@ export class PluginSettingsTab extends PluginSettingsTabBase<PluginTypes> {
     new SettingEx(this.containerEl)
       .setName('Exclude paths')
       .setDesc(createFragment((f) => {
-        f.appendText('Exclude notes from the following paths');
+        f.appendText('Exclude notes from the following paths.');
         f.createEl('br');
-        f.appendText('Insert each path on a new line');
+        f.appendText('Insert each path on a new line.');
         f.createEl('br');
         f.appendText('You can use path string or ');
-        appendCodeBlock(f, '/regular expression/');
+        appendCodeBlock(f, '/regular expression/.');
         f.createEl('br');
-        f.appendText('If the setting is empty, no notes are excluded');
+        f.appendText('If the setting is empty, no notes are excluded.');
       }))
       .addMultipleText((multipleText) => {
         this.bind(multipleText, 'excludePaths');
@@ -302,10 +302,10 @@ export class PluginSettingsTab extends PluginSettingsTabBase<PluginTypes> {
         appendCodeBlock(f, 'Collect attachments');
         f.appendText(' command is executed.');
         f.createEl('br');
-        f.appendText('Insert each path on a new line');
+        f.appendText('Insert each path on a new line.');
         f.createEl('br');
         f.appendText('You can use path string or ');
-        appendCodeBlock(f, '/regular expression/');
+        appendCodeBlock(f, '/regular expression/.');
         f.createEl('br');
         f.appendText('If the setting is empty, no paths are excluded from attachment collecting.');
       }))

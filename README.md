@@ -1,6 +1,6 @@
-# Obsidian Custom Attachment location
+# Custom Attachment Location
 
-Customize attachment location with tokens (`${noteFileName}`, `${date:format}`, etc) like typora.
+This is a plugin for [Obsidian](https://obsidian.md/) that allows to customize attachment location with tokens (`${noteFileName}`, `${date:format}`, etc) like typora.
 
 ## Features
 

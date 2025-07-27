@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 8.5.2
+
+- Update libs
+
 ## 8.5.1
 
 - Update libs

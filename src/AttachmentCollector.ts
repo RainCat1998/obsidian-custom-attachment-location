@@ -17,7 +17,7 @@ import {
 import { INFINITE_TIMEOUT } from 'obsidian-dev-utils/Async';
 import { throwExpression } from 'obsidian-dev-utils/Error';
 import { appendCodeBlock } from 'obsidian-dev-utils/HTMLElement';
-import { toJson } from 'obsidian-dev-utils/Object';
+import { toJson } from 'obsidian-dev-utils/ObjectUtils';
 import { applyFileChanges } from 'obsidian-dev-utils/obsidian/FileChange';
 import {
   getPath,

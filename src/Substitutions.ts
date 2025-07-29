@@ -5,7 +5,7 @@ import type {
 import type { Promisable } from 'type-fest';
 
 import moment from 'moment';
-import { getNestedPropertyValue } from 'obsidian-dev-utils/Object';
+import { getNestedPropertyValue } from 'obsidian-dev-utils/ObjectUtils';
 import { getFileOrNull } from 'obsidian-dev-utils/obsidian/FileSystem';
 import { prompt } from 'obsidian-dev-utils/obsidian/Modals/Prompt';
 import {

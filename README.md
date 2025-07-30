@@ -105,9 +105,9 @@ Size of the attachment file.
 
 **Format**:
 
-- `Bn` (default): size in bytes rounded to `n` decimal points. `n` is a number (`0` if omitted).
-- `KBn`: size in kilobytes rounded to `n` decimal points. `n` is a number (`0` if omitted).
-- `MBn`: size in megabytes rounded to `n` decimal points. `n` is a number (`0` if omitted).
+- B`n` (default): size in bytes rounded to `n` decimal points. `n` is a number (`0` if omitted).
+- KB`n`: size in kilobytes rounded to `n` decimal points. `n` is a number (`0` if omitted).
+- MB`n`: size in megabytes rounded to `n` decimal points. `n` is a number (`0` if omitted).
 
 ### `${date}`
 
@@ -128,9 +128,9 @@ The generated file name of the attachment (available only inside [Markdown URL f
 **Format**:
 
 - (default): Unchanged file name. **Example**: `foo/bar/baz qux quux.pdf` -> `baz qux quux`.
-- leftn: Left n characters of the file name. **Example** `left2`: `foo/bar/baz qux quux.pdf` -> `ba`.
+- left`n`: Left `n` characters of the file name. **Example** `left2`: `foo/bar/baz qux quux.pdf` -> `ba`.
 - lower: Lowercase file name. **Example**: `foo/bar/Baz QUX quux.pdf` -> `baz qux quux`.
-- rightn: Right n characters of the file name. **Example** `right2`: `foo/bar/baz qux quux.pdf` -> `ux`.
+- right`n`: Right `n` characters of the file name. **Example** `right2`: `foo/bar/baz qux quux.pdf` -> `ux`.
 - slug: Slugified file name. **Example**: `foo/bar/baz qux quux.pdf` -> `baz-qux-quux`.
 - upper: Uppercase file name. **Example**: `foo/bar/Baz QUX quux.pdf` -> `BAZ QUX QUUX`.
 
@@ -159,9 +159,9 @@ Current note file name.
 **Format**:
 
 - (default): Unchanged file name. **Example**: `foo/bar/baz qux quux.md` -> `baz qux quux`.
-- leftn: Left n characters of the file name. **Example** `left2`: `foo/bar/baz qux quux.md` -> `ba`.
+- left`n`: Left `n` characters of the file name. **Example** `left2`: `foo/bar/baz qux quux.md` -> `ba`.
 - lower: Lowercase file name. **Example**: `foo/bar/Baz QUX quux.md` -> `baz qux quux`.
-- rightn: Right n characters of the file name. **Example** `right2`: `foo/bar/baz qux quux.md` -> `ux`.
+- right`n`: Right `n` characters of the file name. **Example** `right2`: `foo/bar/baz qux quux.md` -> `ux`.
 - slug: Slugified file name. **Example**: `foo/bar/baz qux quux.md` -> `baz-qux-quux`.
 - upper: Uppercase file name. **Example**: `foo/bar/Baz QUX quux.md` -> `BAZ QUX QUUX`.
 
@@ -178,9 +178,9 @@ Current note's folder name.
 **Format**:
 
 - (default): Unchanged folder name. **Example**: `foo/bar baz qux/quux.md` -> `bar baz qux`.
-- leftn: Left n characters of the folder name. **Example** `left2`: `foo/bar baz qux/quux.md` -> `ba`.
+- left`n`: Left `n` characters of the folder name. **Example** `left2`: `foo/bar baz qux/quux.md` -> `ba`.
 - lower: Lowercase folder name. **Example**: `foo/Bar BAZ qux/quux.md` -> `bar baz qux`.
-- rightn: Right n characters of the folder name. **Example** `right2`: `foo/bar baz qux/quux.md` -> `ux`.
+- right`n`: Right `n` characters of the folder name. **Example** `right2`: `foo/bar baz qux/quux.md` -> `ux`.
 - slug: Slugified folder name. **Example**: `foo/bar baz qux/quux.md` -> `bar-baz-qux`.
 - upper: Uppercase folder name. **Example**: `foo/Bar BAZ qux/quux.md` -> `BAR BAZ QUX`.
 
@@ -203,10 +203,10 @@ File name of the original attachment file.
 **Format**:
 
 - (default): File name as is. **Example**: `foo bar.baz.pdf` -> `foo bar.baz`.
-- leftn: Left n characters of the file name. **Example** `left2`: `foo/bar baz qux/quux.pdf` -> `ba`.
+- left`n`: Left `n` characters of the file name. **Example** `left2`: `foo/bar baz qux/quux.pdf` -> `ba`.
 - lower: Lowercase folder name. **Example**: `foo Bar.BAZ.pdf` -> `foo bar.baz`.
+- right`n`: Right `n` characters of the folder name. **Example** `left2`: `foo/bar baz qux/quux.pdf` -> `ux`.
 - slug: Slugified file name. **Example**: `foo bar.baz.pdf` -> `foo-bar-baz`.
-- rightn: Right n characters of the folder name. **Example** `left2`: `foo/bar baz qux/quux.pdf` -> `ux`.
 - upper: Uppercase folder name. **Example**: `foo Bar.BAZ.pdf` -> `FOO BAR.BAZ`.
 
 ### `${prompt}`
@@ -219,10 +219,10 @@ Random value.
 
 **Format**:
 
-- `Dn`: `n` random digits. `n` is a number (`1` if omitted).
-- `Ln`: `n` random letters. `n` is a number (`1` if omitted).
-- `DLn`: `n` random digits or letters. `n` is a number (`1` if omitted).
-- `${uuid}`: Random UUID.
+- D`n`: `n` random digits. `n` is a number (`1` if omitted).
+- L`n`: `n` random letters. `n` is a number (`1` if omitted).
+- DL`n`: `n` random digits or letters. `n` is a number (`1` if omitted).
+- uuid: Random UUID.
 
 ## Custom tokens
 

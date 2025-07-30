@@ -36,6 +36,19 @@ const TRAILING_DOTS_AND_SPACES_REG_EXP = /[. ]+$/;
 export const INVALID_FILENAME_PATH_CHARS_REG_EXP = /[\\/:*?"<>|]/;
 export const SUBSTITUTION_TOKEN_REG_EXP = /\${(?<Token>.+?)(?::(?<Format>.+?))?}/g;
 
+interface SubstitutionsContract {
+  app: App;
+  fillTemplate(template: string): Promise<string>;
+  generatedAttachmentFileName: string;
+  generatedAttachmentFilePath: string;
+  noteFileName: string;
+  noteFilePath: string;
+  noteFolderName: string;
+  noteFolderPath: string;
+  originalAttachmentFileExtension: string;
+  originalAttachmentFileName: string;
+}
+
 interface SubstitutionsOptions {
   app: App;
   attachmentFileSizeInBytes?: number;
@@ -162,24 +175,23 @@ function getFrontmatterValue(app: App, filePath: string, key: string): string {
   return String(value);
 }
 
-export class Substitutions {
+export class Substitutions implements SubstitutionsContract {
   private static readonly formatters = new Map<string, Formatter>();
   static {
     this.registerCustomFormatters('');
   }
 
+  public readonly app: App;
+
+  public readonly generatedAttachmentFileName: string;
+  public readonly generatedAttachmentFilePath: string;
+  public readonly noteFileName: string;
+  public readonly noteFilePath: string;
+  public readonly noteFolderName: string;
   public readonly noteFolderPath: string;
-
-  private readonly app: App;
-
+  public readonly originalAttachmentFileExtension: string;
+  public readonly originalAttachmentFileName: string;
   private attachmentFileSizeInBytes: number;
-  private readonly generatedAttachmentFileName: string;
-  private readonly generatedAttachmentFilePath: string;
-  private readonly noteFileName: string;
-  private readonly noteFilePath: string;
-  private readonly noteFolderName: string;
-  private readonly originalAttachmentFileExtension: string;
-  private readonly originalAttachmentFileName: string;
 
   public constructor(options: SubstitutionsOptions) {
     this.app = options.app;

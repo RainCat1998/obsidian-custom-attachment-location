@@ -105,9 +105,9 @@ Size of the attachment file.
 
 **Format**:
 
-- B`n` (default): size in bytes rounded to `n` decimal points. `n` is a number (`0` if omitted).
-- KB`n`: size in kilobytes rounded to `n` decimal points. `n` is a number (`0` if omitted).
-- MB`n`: size in megabytes rounded to `n` decimal points. `n` is a number (`0` if omitted).
+- `B`**`n`** (default): size in bytes rounded to `n` decimal points. `n` is a number (`0` if omitted).
+- `KB`**`n`**: size in kilobytes rounded to `n` decimal points. `n` is a number (`0` if omitted).
+- `MB`**`n`**: size in megabytes rounded to `n` decimal points. `n` is a number (`0` if omitted).
 
 ### `${date}`
 
@@ -128,11 +128,11 @@ The generated file name of the attachment (available only inside [Markdown URL f
 **Format**:
 
 - (default): Unchanged file name. **Example**: `foo/bar/baz qux quux.pdf` -> `baz qux quux`.
-- left`n`: Left `n` characters of the file name. **Example** `left2`: `foo/bar/baz qux quux.pdf` -> `ba`.
-- lower: Lowercase file name. **Example**: `foo/bar/Baz QUX quux.pdf` -> `baz qux quux`.
-- right`n`: Right `n` characters of the file name. **Example** `right2`: `foo/bar/baz qux quux.pdf` -> `ux`.
-- slug: Slugified file name. **Example**: `foo/bar/baz qux quux.pdf` -> `baz-qux-quux`.
-- upper: Uppercase file name. **Example**: `foo/bar/Baz QUX quux.pdf` -> `BAZ QUX QUUX`.
+- `left`**`n`**: Left `n` characters of the file name. **Example** `left2`: `foo/bar/baz qux quux.pdf` -> `ba`.
+- `lower`: Lowercase file name. **Example**: `foo/bar/Baz QUX quux.pdf` -> `baz qux quux`.
+- `right`**`n`**: Right `n` characters of the file name. **Example** `right2`: `foo/bar/baz qux quux.pdf` -> `ux`.
+- `slug`: Slugified file name. **Example**: `foo/bar/baz qux quux.pdf` -> `baz-qux-quux`.
+- `upper`: Uppercase file name. **Example**: `foo/bar/Baz QUX quux.pdf` -> `BAZ QUX QUUX`.
 
 ### `${generatedAttachmentFilePath}`
 
@@ -159,11 +159,11 @@ Current note file name.
 **Format**:
 
 - (default): Unchanged file name. **Example**: `foo/bar/baz qux quux.md` -> `baz qux quux`.
-- left`n`: Left `n` characters of the file name. **Example** `left2`: `foo/bar/baz qux quux.md` -> `ba`.
-- lower: Lowercase file name. **Example**: `foo/bar/Baz QUX quux.md` -> `baz qux quux`.
-- right`n`: Right `n` characters of the file name. **Example** `right2`: `foo/bar/baz qux quux.md` -> `ux`.
-- slug: Slugified file name. **Example**: `foo/bar/baz qux quux.md` -> `baz-qux-quux`.
-- upper: Uppercase file name. **Example**: `foo/bar/Baz QUX quux.md` -> `BAZ QUX QUUX`.
+- `left`**`n`**: Left `n` characters of the file name. **Example** `left2`: `foo/bar/baz qux quux.md` -> `ba`.
+- `lower`: Lowercase file name. **Example**: `foo/bar/Baz QUX quux.md` -> `baz qux quux`.
+- `right`**`n`**: Right `n` characters of the file name. **Example** `right2`: `foo/bar/baz qux quux.md` -> `ux`.
+- `slug`: Slugified file name. **Example**: `foo/bar/baz qux quux.md` -> `baz-qux-quux`.
+- `upper`: Uppercase file name. **Example**: `foo/bar/Baz QUX quux.md` -> `BAZ QUX QUUX`.
 
 ### `${noteFilePath}`
 
@@ -178,18 +178,18 @@ Current note's folder name.
 **Format**:
 
 - (default): Unchanged folder name. **Example**: `foo/bar baz qux/quux.md` -> `bar baz qux`.
-- left`n`: Left `n` characters of the folder name. **Example** `left2`: `foo/bar baz qux/quux.md` -> `ba`.
-- lower: Lowercase folder name. **Example**: `foo/Bar BAZ qux/quux.md` -> `bar baz qux`.
-- right`n`: Right `n` characters of the folder name. **Example** `right2`: `foo/bar baz qux/quux.md` -> `ux`.
-- slug: Slugified folder name. **Example**: `foo/bar baz qux/quux.md` -> `bar-baz-qux`.
-- upper: Uppercase folder name. **Example**: `foo/Bar BAZ qux/quux.md` -> `BAR BAZ QUX`.
+- `left`**`n`**: Left `n` characters of the folder name. **Example** `left2`: `foo/bar baz qux/quux.md` -> `ba`.
+- `lower`: Lowercase folder name. **Example**: `foo/Bar BAZ qux/quux.md` -> `bar baz qux`.
+- `right`**`n`**: Right `n` characters of the folder name. **Example** `right2`: `foo/bar baz qux/quux.md` -> `ux`.
+- `slug`: Slugified folder name. **Example**: `foo/bar baz qux/quux.md` -> `bar-baz-qux`.
+- `upper`: Uppercase folder name. **Example**: `foo/Bar BAZ qux/quux.md` -> `BAR BAZ QUX`.
 
-- indexFromEnd`n`: 0-based index from the end of the folder tree. **Example** `indexFromEnd1`: `foo/bar/baz/qux/quux.md` -> `baz`.
-- indexFromStart`n`: 0-based index from the start of the folder tree. **Example** `indexFromStart1`: `foo/bar/baz/qux/quux.md` -> `bar`.
+- `indexFromEnd`**`n`**: 0-based index from the end of the folder tree. **Example** `indexFromEnd1`: `foo/bar/baz/qux/quux.md` -> `baz`.
+- `indexFromStart`**`n`**: 0-based index from the start of the folder tree. **Example** `indexFromStart1`: `foo/bar/baz/qux/quux.md` -> `bar`.
 
 You can combine both kind of format formats, having `indexFrom...` first:
 
-- indexFromEnd`n`,left`m`.**Example** `indexFromEnd1,left2`: `foo/bar/baz/qux/quux.md` -> `ba` (first two characters of `baz`).
+- `indexFromEnd`**`n`**`,left`**`m`**. **Example**: `indexFromEnd1,left2`: `foo/bar/baz/qux/quux.md` -> `ba` (first two characters of `baz`).
 
 ### `${noteFolderPath}`
 
@@ -210,11 +210,11 @@ File name of the original attachment file.
 **Format**:
 
 - (default): File name as is. **Example**: `foo bar.baz.pdf` -> `foo bar.baz`.
-- left`n`: Left `n` characters of the file name. **Example** `left2`: `foo/bar baz qux/quux.pdf` -> `ba`.
-- lower: Lowercase folder name. **Example**: `foo Bar.BAZ.pdf` -> `foo bar.baz`.
-- right`n`: Right `n` characters of the folder name. **Example** `left2`: `foo/bar baz qux/quux.pdf` -> `ux`.
-- slug: Slugified file name. **Example**: `foo bar.baz.pdf` -> `foo-bar-baz`.
-- upper: Uppercase folder name. **Example**: `foo Bar.BAZ.pdf` -> `FOO BAR.BAZ`.
+- `left`**`n`**: Left `n` characters of the file name. **Example** `left2`: `foo/bar baz qux/quux.pdf` -> `ba`.
+- `lower`: Lowercase folder name. **Example**: `foo Bar.BAZ.pdf` -> `foo bar.baz`.
+- `right`**`n`**: Right `n` characters of the folder name. **Example** `left2`: `foo/bar baz qux/quux.pdf` -> `ux`.
+- `slug`: Slugified file name. **Example**: `foo bar.baz.pdf` -> `foo-bar-baz`.
+- `upper`: Uppercase folder name. **Example**: `foo Bar.BAZ.pdf` -> `FOO BAR.BAZ`.
 
 ### `${prompt}`
 
@@ -226,10 +226,10 @@ Random value.
 
 **Format**:
 
-- D`n`: `n` random digits. `n` is a number (`1` if omitted).
-- L`n`: `n` random letters. `n` is a number (`1` if omitted).
-- DL`n`: `n` random digits or letters. `n` is a number (`1` if omitted).
-- uuid: Random UUID.
+- `D`**`n`**: `n` random digits. `n` is a number (`1` if omitted).
+- `L`**`n`**: `n` random letters. `n` is a number (`1` if omitted).
+- `DL`**`n`**: `n` random digits or letters. `n` is a number (`1` if omitted).
+- `uuid`: Random UUID.
 
 ## Custom tokens
 

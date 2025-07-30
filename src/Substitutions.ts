@@ -130,24 +130,31 @@ function formatFolderName(folderPath: string, format: string): string {
   const folderParts = folderPath.split('/');
   let folderPartIndex = folderParts.length - 1;
 
-  const commaIndex = format.indexOf(',');
-  if (commaIndex !== -1) {
-    const indexFormat = format.slice(0, commaIndex);
-    const indexFormatWithParameter = parseFormatWithParameter(indexFormat);
-    switch (indexFormatWithParameter.base) {
-      case 'indexFromEnd':
-        folderPartIndex = folderParts.length - 1 - (indexFormatWithParameter.parameter ?? 0);
-        break;
-      case 'indexFromStart':
-        folderPartIndex = indexFormatWithParameter.parameter ?? 0;
-        break;
-      default:
-        throw new Error(`Invalid index format: ${indexFormat}`);
-    }
+  let commaIndex = format.indexOf(',');
+  const NOT_FOUND_INDEX = -1;
+  if (commaIndex === NOT_FOUND_INDEX) {
+    commaIndex = format.length;
+  }
+  const format1 = format.slice(0, commaIndex);
+  const format2 = format.slice(commaIndex + 1);
+
+  const format1WithParameter = parseFormatWithParameter(format1);
+  switch (format1WithParameter.base) {
+    case 'indexFromEnd':
+      folderPartIndex = folderParts.length - 1 - (format1WithParameter.parameter ?? 0);
+      break;
+    case 'indexFromStart':
+      folderPartIndex = format1WithParameter.parameter ?? 0;
+      break;
+    default:
+      if (format2) {
+        throw new Error(`Invalid format: ${format1}`);
+      }
+      return formatFileName(folderParts[folderPartIndex] ?? '', format1);
   }
 
   const folderName = folderParts[folderPartIndex] ?? '';
-  return formatFileName(folderName, format.slice(commaIndex + 1));
+  return formatFileName(folderName, format2);
 }
 
 function generateRandomValue(format: string): string {
@@ -303,7 +310,7 @@ export class Substitutions implements SubstitutionsContract {
       defaultValue: this.originalAttachmentFileName,
       // eslint-disable-next-line no-template-curly-in-string
       title: 'Provide a value for ${prompt} template',
-      valueValidator: (value) => validateFileName(value, false)
+      valueValidator: (value) => validateFileName(this.app, value, false)
     });
     if (promptResult === null) {
       throw new Error('Prompt cancelled');
@@ -312,12 +319,11 @@ export class Substitutions implements SubstitutionsContract {
   }
 }
 
-export function validateFileName(fileName: string, areTokensAllowed = true): string {
+export async function validateFileName(app: App, fileName: string, areTokensAllowed = true): Promise<string> {
   if (areTokensAllowed) {
-    fileName = removeTokenFormatting(fileName);
-    const unknownToken = validateTokens(fileName);
-    if (unknownToken) {
-      return `Unknown token: ${unknownToken}`;
+    const validationMessage = await validateTokens(app, fileName);
+    if (validationMessage) {
+      return validationMessage;
     }
   } else {
     const match = fileName.match(SUBSTITUTION_TOKEN_REG_EXP);
@@ -325,6 +331,8 @@ export function validateFileName(fileName: string, areTokensAllowed = true): str
       return 'Tokens are not allowed in file name';
     }
   }
+
+  fileName = removeTokenFormatting(fileName);
 
   if (fileName === '.' || fileName === '..') {
     return '';
@@ -349,10 +357,9 @@ export function validateFileName(fileName: string, areTokensAllowed = true): str
   return '';
 }
 
-export function validatePath(path: string, areTokensAllowed = true): string {
+export async function validatePath(app: App, path: string, areTokensAllowed = true): Promise<string> {
   if (areTokensAllowed) {
-    path = removeTokenFormatting(path);
-    const unknownToken = validateTokens(path);
+    const unknownToken = await validateTokens(app, path);
     if (unknownToken) {
       return `Unknown token: ${unknownToken}`;
     }
@@ -363,6 +370,8 @@ export function validatePath(path: string, areTokensAllowed = true): string {
     }
   }
 
+  path = removeTokenFormatting(path);
+
   path = trimStart(path, '/');
   path = trimEnd(path, '/');
 
@@ -372,7 +381,7 @@ export function validatePath(path: string, areTokensAllowed = true): string {
 
   const parts = path.split('/');
   for (const part of parts) {
-    const partValidationError = validateFileName(part);
+    const partValidationError = await validateFileName(app, part);
 
     if (partValidationError) {
       return partValidationError;
@@ -412,12 +421,28 @@ function slugifyEx(str: string): string {
   });
 }
 
-function validateTokens(str: string): null | string {
+async function validateTokens(app: App, str: string): Promise<null | string> {
+  const FAKE_SUBSTITUTION = new Substitutions({
+    app,
+    noteFilePath: ''
+  });
+
   const matches = str.matchAll(SUBSTITUTION_TOKEN_REG_EXP);
   for (const match of matches) {
-    const token = match[1] ?? '';
+    const token = match.groups?.['Token'] ?? '';
     if (!Substitutions.isRegisteredToken(token)) {
-      return token;
+      return `Unknown token: ${token}`;
+    }
+    const format = match.groups?.['Format'] ?? '';
+    if (format) {
+      const singleFormats = format.split(',');
+      for (const singleFormat of singleFormats) {
+        try {
+          await FAKE_SUBSTITUTION.fillTemplate(`\${${token}:${singleFormat}}`);
+        } catch {
+          return `Token ${token} is used with unknown format: ${singleFormat}`;
+        }
+      }
     }
   }
   return null;

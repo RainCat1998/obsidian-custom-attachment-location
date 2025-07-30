@@ -1,5 +1,12 @@
 # CHANGELOG
 
+## 8.6.0
+
+- Validate formats
+- Allow multi-format for syntax highlighting
+- Add indexFromStart/indexFromEnd
+- Update libs
+
 ## 8.5.2
 
 - Update libs

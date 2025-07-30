@@ -126,6 +126,30 @@ function formatFileSize(sizeInBytes: number, format: string): string {
   }
 }
 
+function formatFolderName(folderPath: string, format: string): string {
+  const folderParts = folderPath.split('/');
+  let folderPartIndex = folderParts.length - 1;
+
+  const commaIndex = format.indexOf(',');
+  if (commaIndex !== -1) {
+    const indexFormat = format.slice(0, commaIndex);
+    const indexFormatWithParameter = parseFormatWithParameter(indexFormat);
+    switch (indexFormatWithParameter.base) {
+      case 'indexFromEnd':
+        folderPartIndex = folderParts.length - 1 - (indexFormatWithParameter.parameter ?? 0);
+        break;
+      case 'indexFromStart':
+        folderPartIndex = indexFormatWithParameter.parameter ?? 0;
+        break;
+      default:
+        throw new Error(`Invalid index format: ${indexFormat}`);
+    }
+  }
+
+  const folderName = folderParts[folderPartIndex] ?? '';
+  return formatFileName(folderName, format.slice(commaIndex + 1));
+}
+
 function generateRandomValue(format: string): string {
   if (format === 'uuid') {
     return crypto.randomUUID();
@@ -230,7 +254,7 @@ export class Substitutions implements SubstitutionsContract {
 
     this.registerFormatter('noteFileName', (substitutions, format) => formatFileName(substitutions.noteFileName, format));
     this.registerFormatter('noteFilePath', (substitutions) => substitutions.noteFilePath);
-    this.registerFormatter('noteFolderName', (substitutions, format) => formatFileName(substitutions.noteFolderName, format));
+    this.registerFormatter('noteFolderName', (substitutions, format) => formatFolderName(substitutions.noteFolderPath, format));
     this.registerFormatter('noteFolderPath', (substitutions) => substitutions.noteFolderPath);
 
     this.registerFormatter('frontmatter', (substitutions, key) => getFrontmatterValue(substitutions.app, substitutions.noteFilePath, key));

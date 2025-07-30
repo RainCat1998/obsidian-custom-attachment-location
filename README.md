@@ -184,6 +184,13 @@ Current note's folder name.
 - slug: Slugified folder name. **Example**: `foo/bar baz qux/quux.md` -> `bar-baz-qux`.
 - upper: Uppercase folder name. **Example**: `foo/Bar BAZ qux/quux.md` -> `BAR BAZ QUX`.
 
+- indexFromEnd`n`: 0-based index from the end of the folder tree. **Example** `indexFromEnd1`: `foo/bar/baz/qux/quux.md` -> `baz`.
+- indexFromStart`n`: 0-based index from the start of the folder tree. **Example** `indexFromStart1`: `foo/bar/baz/qux/quux.md` -> `bar`.
+
+You can combine both kind of format formats, having `indexFrom...` first:
+
+- indexFromEnd`n`,left`m`.**Example** `indexFromEnd1,left2`: `foo/bar/baz/qux/quux.md` -> `ba` (first two characters of `baz`).
+
 ### `${noteFolderPath}`
 
 Current note's folder full path.

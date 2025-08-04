@@ -7,7 +7,11 @@ import type {
   GetAvailablePathForAttachmentsExtendedFn
 } from 'obsidian-dev-utils/obsidian/AttachmentPath';
 import type { RenameDeleteHandlerSettings } from 'obsidian-dev-utils/obsidian/RenameDeleteHandler';
-import type { ConfigItem } from 'obsidian-typings/implementations';
+import type {
+  ConfigItem,
+  SharedFile,
+  ShareReceiver
+} from 'obsidian-typings/implementations';
 
 import { webUtils } from 'electron';
 import moment from 'moment';
@@ -20,6 +24,7 @@ import {
 } from 'obsidian';
 import { convertAsyncToSync } from 'obsidian-dev-utils/Async';
 import { blobToJpegArrayBuffer } from 'obsidian-dev-utils/Blob';
+import { getPrototypeOf } from 'obsidian-dev-utils/ObjectUtils';
 import { getAvailablePathForAttachments } from 'obsidian-dev-utils/obsidian/AttachmentPath';
 import { getAbstractFileOrNull } from 'obsidian-dev-utils/obsidian/FileSystem';
 import {
@@ -77,6 +82,8 @@ interface FileEx {
   path: string;
 }
 
+type ImportFilesFn = ShareReceiver['importFiles'];
+
 export class Plugin extends PluginBase<PluginTypes> {
   private currentAttachmentFolderPath: null | string = null;
   private getAvailablePathForAttachmentsOriginal: GetAvailablePathForAttachmentsFn | null = null;
@@ -124,6 +131,14 @@ export class Plugin extends PluginBase<PluginTypes> {
       generateMarkdownLink: (next: GenerateMarkdownLinkFn): GenerateMarkdownLinkFn => {
         return (file: TFile, sourcePath: string, subpath?: string, alias?: string): string => {
           return this.generateMarkdownLink(next, file, sourcePath, subpath, alias);
+        };
+      }
+    });
+
+    registerPatch(this, getPrototypeOf(this.app.shareReceiver), {
+      importFiles: (next: ImportFilesFn): ImportFilesFn => {
+        return (files: SharedFile[]): Promise<void> => {
+          return this.importFiles(next, files);
         };
       }
     });
@@ -328,6 +343,24 @@ export class Plugin extends PluginBase<PluginTypes> {
 
   private async handleRename(): Promise<void> {
     await this.handleFileOpen(this.app.workspace.getActiveFile());
+  }
+
+  private async importFiles(next: ImportFilesFn, files: SharedFile[]): Promise<void> {
+    for (const file of files) {
+      const fileUri = window.Capacitor.convertFileSrc(file.uri);
+      const response = await fetch(fileUri);
+      const bytes = await response.bytes();
+      const substitutions = new Substitutions({
+        app: this.app,
+        attachmentFileSizeInBytes: bytes.length,
+        noteFilePath: this.app.workspace.getActiveFile()?.path ?? '',
+        originalAttachmentFileName: file.name
+      });
+      const attachmentFileName = await substitutions.fillTemplate(this.settings.generatedAttachmentFileName);
+      file.name = makeFileName(attachmentFileName, substitutions.originalAttachmentFileExtension);
+    }
+
+    return next.call(this.app.shareReceiver, files);
   }
 
   private async saveAttachment(

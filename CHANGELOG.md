@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## 8.7.0
+
+- Rename share files (#181)
+- Update libs
+
 ## 8.6.0
 
 - Validate formats

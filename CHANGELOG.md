@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 8.8.2
+
+- Don't use new API (#181)
+
 ## 8.8.1
 
 - Prevent infinite loop in prompt

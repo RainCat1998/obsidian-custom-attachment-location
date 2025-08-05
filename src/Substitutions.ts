@@ -321,6 +321,7 @@ export class Substitutions implements SubstitutionsContract {
   }
 
   private async getHeading(format: string): Promise<string> {
+    format ||= 'any';
     if (!(HEADING_LEVELS as readonly string[]).includes(format)) {
       throw new Error(`Invalid heading level: ${format}`);
     }

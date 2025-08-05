@@ -7,6 +7,7 @@ import type { Promisable } from 'type-fest';
 import moment from 'moment';
 import { getNestedPropertyValue } from 'obsidian-dev-utils/ObjectUtils';
 import { getFileOrNull } from 'obsidian-dev-utils/obsidian/FileSystem';
+import { getCacheSafe } from 'obsidian-dev-utils/obsidian/MetadataCache';
 import { prompt } from 'obsidian-dev-utils/obsidian/Modals/Prompt';
 import {
   basename,
@@ -25,11 +26,13 @@ import slugify_ from 'slugify';
 const slugify = ('default' in slugify_ ? slugify_.default : slugify_) as unknown as typeof slugify_.default;
 
 type Formatter = (substitutions: Substitutions, format: string) => Promisable<unknown>;
-
 interface FormatWithParameter {
   base: string;
   parameter: number | undefined;
 }
+
+const HEADING_LEVELS = ['1', '2', '3', '4', '5', '6', 'any'] as const;
+type HeadingLevel = (typeof HEADING_LEVELS)[number];
 
 const MORE_THAN_TWO_DOTS_REG_EXP = /^\.{3,}$/;
 const TRAILING_DOTS_AND_SPACES_REG_EXP = /[. ]+$/;
@@ -223,6 +226,8 @@ export class Substitutions implements SubstitutionsContract {
   public readonly originalAttachmentFileExtension: string;
   public readonly originalAttachmentFileName: string;
   private attachmentFileSizeInBytes: number;
+  private readonly cursorLine: null | number;
+  private headingsInfo: Map<HeadingLevel, string> | null = null;
 
   public constructor(options: SubstitutionsOptions) {
     this.app = options.app;
@@ -241,6 +246,15 @@ export class Substitutions implements SubstitutionsContract {
 
     this.generatedAttachmentFileName = options.generatedAttachmentFileName ?? '';
     this.generatedAttachmentFilePath = options.generatedAttachmentFilePath ?? '';
+
+    this.cursorLine = null;
+
+    if (this.app.workspace.activeEditor?.file?.path === this.noteFilePath) {
+      const cursor = this.app.workspace.activeEditor.editor?.getCursor();
+      if (cursor) {
+        this.cursorLine = cursor.line;
+      }
+    }
   }
 
   public static isRegisteredToken(token: string): boolean {
@@ -278,6 +292,8 @@ export class Substitutions implements SubstitutionsContract {
     this.registerFormatter('generatedAttachmentFileName', (substitutions, format) => formatFileName(substitutions.generatedAttachmentFileName, format));
     this.registerFormatter('generatedAttachmentFilePath', (substitutions) => substitutions.generatedAttachmentFilePath);
 
+    this.registerFormatter('heading', async (substitutions, format) => substitutions.getHeading(format));
+
     const customFormatters = getCustomTokenFormatters(customTokensStr) ?? new Map<string, Formatter>();
     for (const [token, formatter] of customFormatters.entries()) {
       this.registerFormatter(token, formatter);
@@ -302,6 +318,54 @@ export class Substitutions implements SubstitutionsContract {
         throw new Error(`Error formatting token \${${token}}`, { cause: e });
       }
     });
+  }
+
+  private async getHeading(format: string): Promise<string> {
+    if (!(HEADING_LEVELS as readonly string[]).includes(format)) {
+      throw new Error(`Invalid heading level: ${format}`);
+    }
+
+    const headingsInfo = await this.initHeadings();
+    return headingsInfo.get(format as HeadingLevel) ?? '';
+  }
+
+  private async initHeadings(): Promise<Map<HeadingLevel, string>> {
+    if (this.headingsInfo) {
+      return this.headingsInfo;
+    }
+
+    this.headingsInfo = new Map<HeadingLevel, string>();
+
+    if (!this.cursorLine) {
+      return this.headingsInfo;
+    }
+
+    const cache = await getCacheSafe(this.app, this.noteFilePath);
+    if (!cache?.headings) {
+      return this.headingsInfo;
+    }
+
+    const lastLines = new Map<HeadingLevel, number>();
+
+    for (const heading of cache.headings) {
+      if (heading.position.start.line > this.cursorLine) {
+        continue;
+      }
+
+      const headingLevel = String(heading.level) as HeadingLevel;
+
+      const lastLine = lastLines.get(headingLevel) ?? -1;
+      if (heading.position.start.line > lastLine) {
+        this.headingsInfo.set(headingLevel, heading.heading);
+        lastLines.set(headingLevel, heading.position.start.line);
+        if (heading.position.start.line > (lastLines.get('any') ?? -1)) {
+          lastLines.set('any', heading.position.start.line);
+          this.headingsInfo.set('any', heading.heading);
+        }
+      }
+    }
+
+    return this.headingsInfo;
   }
 
   private async prompt(): Promise<string> {

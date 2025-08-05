@@ -140,6 +140,20 @@ The generated file path of the attachment (available only inside [Markdown URL f
 
 **Example**: `foo/bar/baz.pdf` -> `foo/bar/baz.pdf`.
 
+### `${heading}`
+
+The heading above the cursor in the note editor where the attachment is inserted.
+
+**Format**:
+
+- `1`: Heading of the nearest `# Heading`.
+- `2`: Heading of the nearest `## Heading`.
+- `3`: Heading of the nearest `### Heading`.
+- `4`: Heading of the nearest `#### Heading`.
+- `5`: Heading of the nearest `##### Heading`.
+- `6`: Heading of the nearest `###### Heading`.
+- `any`: Heading of the nearest any level `#...# Heading`.
+
 ### `${noteFileCreationDate}`
 
 Note file creation date/time.

@@ -476,7 +476,7 @@ function parseFormatWithParameter(format: string): FormatWithParameter {
 }
 
 function removeTokenFormatting(str: string): string {
-  return replaceAll(str, SUBSTITUTION_TOKEN_REG_EXP, (_, token) => `\${${token}}`);
+  return replaceAll(str, SUBSTITUTION_TOKEN_REG_EXP, (_, token, format) => `_${token}_${format}_`);
 }
 
 function slugifyEx(str: string): string {
@@ -498,14 +498,12 @@ async function validateTokens(app: App, str: string): Promise<null | string> {
       return `Unknown token: ${token}`;
     }
     const format = match.groups?.['Format'] ?? '';
-    if (format) {
-      const singleFormats = format.split(',');
-      for (const singleFormat of singleFormats) {
-        try {
-          await FAKE_SUBSTITUTION.fillTemplate(`\${${token}:${singleFormat}}`);
-        } catch {
-          return `Token ${token} is used with unknown format: ${singleFormat}`;
-        }
+    const singleFormats = format.split(',');
+    for (const singleFormat of singleFormats) {
+      try {
+        await FAKE_SUBSTITUTION.fillTemplate(`\${${token}:${singleFormat}}`);
+      } catch {
+        return `Token ${token} is used with unknown format '${singleFormat}'.`;
       }
     }
   }

@@ -37,7 +37,7 @@ type HeadingLevel = (typeof HEADING_LEVELS)[number];
 const MORE_THAN_TWO_DOTS_REG_EXP = /^\.{3,}$/;
 const TRAILING_DOTS_AND_SPACES_REG_EXP = /[. ]+$/;
 export const INVALID_FILENAME_PATH_CHARS_REG_EXP = /[\\/:*?"<>|]/;
-export const SUBSTITUTION_TOKEN_REG_EXP = /\${(?<Token>.+?)(?::(?<Format>.+?))?}/g;
+export const SUBSTITUTION_TOKEN_REG_EXP = /\${(?<Token>.+?)(?::(?<Format>.*?))?}/g;
 
 interface SubstitutionsContract {
   app: App;

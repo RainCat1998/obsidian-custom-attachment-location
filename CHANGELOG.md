@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 8.8.1
+
+- Prevent infinite loop in prompt
+
 ## 8.8.0
 
 - Custom token from heading where the attachment is (#183)

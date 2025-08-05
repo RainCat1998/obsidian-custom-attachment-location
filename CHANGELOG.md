@@ -1,5 +1,13 @@
 # CHANGELOG
 
+## 8.8.0
+
+- Custom token from heading where the attachment is (#183)
+- Trim end whitespaces
+- Clean validation
+- Improve validation
+- Add heading variables
+
 ## 8.7.0
 
 - Rename share files (#181)

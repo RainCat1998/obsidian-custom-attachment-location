@@ -35,7 +35,7 @@ const HEADING_LEVELS = ['1', '2', '3', '4', '5', '6', 'any'] as const;
 type HeadingLevel = (typeof HEADING_LEVELS)[number];
 
 const MORE_THAN_TWO_DOTS_REG_EXP = /^\.{3,}$/;
-const TRAILING_DOTS_AND_SPACES_REG_EXP = /[. ]+$/;
+const TRAILING_DOTS_REG_EXP = /\.+$/;
 export const INVALID_FILENAME_PATH_CHARS_REG_EXP = /[\\/:*?"<>|]/;
 export const SUBSTITUTION_TOKEN_REG_EXP = /\${(?<Token>.+?)(?::(?<Format>.*?))?}/g;
 
@@ -375,7 +375,7 @@ export class Substitutions implements SubstitutionsContract {
       defaultValue: this.originalAttachmentFileName,
       // eslint-disable-next-line no-template-curly-in-string
       title: 'Provide a value for ${prompt} template',
-      valueValidator: (value) => validateFileName(this.app, value, false)
+      valueValidator: (value) => validateFileName(this.app, value, false, true)
     });
     if (promptResult === null) {
       throw new Error('Prompt cancelled');
@@ -384,39 +384,39 @@ export class Substitutions implements SubstitutionsContract {
   }
 }
 
-export async function validateFileName(app: App, fileName: string, areTokensAllowed = true): Promise<string> {
+export async function validateFileName(app: App, fileName: string, areTokensAllowed = true, shouldFailOnTokens = false): Promise<string> {
   if (areTokensAllowed) {
     const validationMessage = await validateTokens(app, fileName);
     if (validationMessage) {
       return validationMessage;
     }
-  } else {
+  } else if (shouldFailOnTokens) {
     const match = fileName.match(SUBSTITUTION_TOKEN_REG_EXP);
     if (match) {
       return 'Tokens are not allowed in file name';
     }
   }
 
-  fileName = removeTokenFormatting(fileName);
+  const cleanFileName = removeTokenFormatting(fileName);
 
-  if (fileName === '.' || fileName === '..') {
+  if (cleanFileName === '.' || cleanFileName === '..') {
     return '';
   }
 
-  if (!fileName) {
+  if (!cleanFileName) {
     return 'File name is empty';
   }
 
-  if (INVALID_FILENAME_PATH_CHARS_REG_EXP.test(fileName)) {
+  if (INVALID_FILENAME_PATH_CHARS_REG_EXP.test(cleanFileName)) {
     return `File name "${fileName}" contains invalid symbols`;
   }
 
-  if (MORE_THAN_TWO_DOTS_REG_EXP.test(fileName)) {
+  if (MORE_THAN_TWO_DOTS_REG_EXP.test(cleanFileName)) {
     return `File name "${fileName}" contains more than two dots`;
   }
 
-  if (TRAILING_DOTS_AND_SPACES_REG_EXP.test(fileName)) {
-    return `File name "${fileName}" contains trailing dots or spaces`;
+  if (TRAILING_DOTS_REG_EXP.test(cleanFileName)) {
+    return `File name "${fileName}" contains trailing dots`;
   }
 
   return '';
@@ -435,8 +435,6 @@ export async function validatePath(app: App, path: string, areTokensAllowed = tr
     }
   }
 
-  path = removeTokenFormatting(path);
-
   path = trimStart(path, '/');
   path = trimEnd(path, '/');
 
@@ -446,7 +444,7 @@ export async function validatePath(app: App, path: string, areTokensAllowed = tr
 
   const parts = path.split('/');
   for (const part of parts) {
-    const partValidationError = await validateFileName(app, part);
+    const partValidationError = await validateFileName(app, part, false, false);
 
     if (partValidationError) {
       return partValidationError;

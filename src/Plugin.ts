@@ -349,10 +349,10 @@ export class Plugin extends PluginBase<PluginTypes> {
     for (const file of files) {
       const fileUri = window.Capacitor.convertFileSrc(file.uri);
       const response = await fetch(fileUri);
-      const bytes = await response.bytes();
+      const arrayBuffer = await response.arrayBuffer();
       const substitutions = new Substitutions({
         app: this.app,
-        attachmentFileSizeInBytes: bytes.length,
+        attachmentFileSizeInBytes: arrayBuffer.byteLength,
         noteFilePath: this.app.workspace.getActiveFile()?.path ?? '',
         originalAttachmentFileName: file.name
       });

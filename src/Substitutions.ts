@@ -25,6 +25,8 @@ import slugify_ from 'slugify';
 
 const slugify = ('default' in slugify_ ? slugify_.default : slugify_) as unknown as typeof slugify_.default;
 
+const VALIDATION_PATH = '__VALIDATION__';
+
 type Formatter = (substitutions: Substitutions, format: string) => Promisable<unknown>;
 interface FormatWithParameter {
   base: string;
@@ -370,6 +372,10 @@ export class Substitutions implements SubstitutionsContract {
   }
 
   private async prompt(): Promise<string> {
+    if (this.noteFilePath === VALIDATION_PATH) {
+      return '';
+    }
+
     const promptResult = await prompt({
       app: this.app,
       defaultValue: this.originalAttachmentFileName,
@@ -487,7 +493,7 @@ function slugifyEx(str: string): string {
 async function validateTokens(app: App, str: string): Promise<null | string> {
   const FAKE_SUBSTITUTION = new Substitutions({
     app,
-    noteFilePath: ''
+    noteFilePath: VALIDATION_PATH
   });
 
   const matches = str.matchAll(SUBSTITUTION_TOKEN_REG_EXP);

@@ -1,3 +1,6 @@
+import type { BindOptionsExtended } from 'obsidian-dev-utils/obsidian/Plugin/PluginSettingsTabBase';
+import type { ConditionalKeys } from 'type-fest';
+
 import { normalizePath } from 'obsidian';
 import {
   getEnumKey,
@@ -8,6 +11,7 @@ import { PluginSettingsTabBase } from 'obsidian-dev-utils/obsidian/Plugin/Plugin
 import { EmptyAttachmentFolderBehavior } from 'obsidian-dev-utils/obsidian/RenameDeleteHandler';
 import { SettingEx } from 'obsidian-dev-utils/obsidian/SettingEx';
 
+import type { PluginSettings } from './PluginSettings.ts';
 import type { PluginTypes } from './PluginTypes.ts';
 
 import {
@@ -22,6 +26,15 @@ export class PluginSettingsTab extends PluginSettingsTabBase<PluginTypes> {
   public override display(): void {
     super.display();
     this.containerEl.empty();
+
+    const bindOptionsWithTrim: BindOptionsExtended<PluginSettings, string, ConditionalKeys<PluginSettings, string>> = {
+      componentToPluginSettingsValueConverter(uiValue: string): string {
+        return normalizePath(uiValue.trimEnd());
+      },
+      pluginSettingsToComponentValueConverter(pluginSettingsValue: string): string {
+        return pluginSettingsValue.trimEnd();
+      }
+    };
 
     new SettingEx(this.containerEl)
       .setName('Location for new attachments')
@@ -42,14 +55,7 @@ export class PluginSettingsTab extends PluginSettingsTabBase<PluginTypes> {
       .addCodeHighlighter((codeHighlighter) => {
         codeHighlighter.setLanguage(TOKENIZED_STRING_LANGUAGE);
         codeHighlighter.inputEl.addClass('tokenized-string-setting-control');
-        this.bind(codeHighlighter, 'attachmentFolderPath', {
-          componentToPluginSettingsValueConverter(uiValue: string): string {
-            return normalizePath(uiValue);
-          },
-          pluginSettingsToComponentValueConverter(pluginSettingsValue: string): string {
-            return pluginSettingsValue;
-          }
-        });
+        this.bind(codeHighlighter, 'attachmentFolderPath', bindOptionsWithTrim);
       });
 
     new SettingEx(this.containerEl)
@@ -61,7 +67,7 @@ export class PluginSettingsTab extends PluginSettingsTabBase<PluginTypes> {
       .addCodeHighlighter((codeHighlighter) => {
         codeHighlighter.setLanguage(TOKENIZED_STRING_LANGUAGE);
         codeHighlighter.inputEl.addClass('tokenized-string-setting-control');
-        this.bind(codeHighlighter, 'generatedAttachmentFileName');
+        this.bind(codeHighlighter, 'generatedAttachmentFileName', bindOptionsWithTrim);
       });
 
     new SettingEx(this.containerEl)
@@ -77,7 +83,7 @@ export class PluginSettingsTab extends PluginSettingsTabBase<PluginTypes> {
       .addCodeHighlighter((codeHighlighter) => {
         codeHighlighter.setLanguage(TOKENIZED_STRING_LANGUAGE);
         codeHighlighter.inputEl.addClass('tokenized-string-setting-control');
-        this.bind(codeHighlighter, 'markdownUrlFormat');
+        this.bind(codeHighlighter, 'markdownUrlFormat', bindOptionsWithTrim);
       });
 
     new SettingEx(this.containerEl)

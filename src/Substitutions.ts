@@ -73,6 +73,7 @@ interface SubstitutionsOptions {
 interface ValidateFileNameOptions {
   app: App;
   fileName: string;
+  isEmptyAllowed: boolean;
   tokenValidationMode: TokenValidationMode;
 }
 
@@ -404,6 +405,7 @@ export class Substitutions implements SubstitutionsContract {
         validateFileName({
           app: this.app,
           fileName: value,
+          isEmptyAllowed: true,
           tokenValidationMode: TokenValidationMode.Error
         })
     });
@@ -443,7 +445,7 @@ export async function validateFileName(options: ValidateFileNameOptions): Promis
   }
 
   if (!cleanFileName) {
-    return 'File name is empty';
+    return options.isEmptyAllowed ? '' : 'File name is empty';
   }
 
   if (INVALID_FILENAME_PATH_CHARS_REG_EXP.test(cleanFileName)) {
@@ -486,6 +488,7 @@ export async function validatePath(options: ValidatePathOptions): Promise<string
     const partValidationError = await validateFileName({
       app: options.app,
       fileName: part,
+      isEmptyAllowed: true,
       tokenValidationMode: TokenValidationMode.Skip
     });
 

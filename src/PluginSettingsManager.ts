@@ -129,6 +129,7 @@ export class PluginSettingsManager extends PluginSettingsManagerBase<PluginTypes
       validateFileName({
         app: this.app,
         fileName: value,
+        isEmptyAllowed: false,
         tokenValidationMode: TokenValidationMode.Validate
       }));
     this.registerValidator('specialCharacters', (value): MaybeReturn<string> => {
@@ -147,6 +148,7 @@ export class PluginSettingsManager extends PluginSettingsManagerBase<PluginTypes
       return await validateFileName({
         app: this.app,
         fileName: `foo${value}1`,
+        isEmptyAllowed: false,
         tokenValidationMode: TokenValidationMode.Error
       });
     });

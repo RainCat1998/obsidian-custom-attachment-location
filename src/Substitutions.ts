@@ -42,6 +42,12 @@ const TRAILING_DOTS_REG_EXP = /\.+$/;
 export const INVALID_FILENAME_PATH_CHARS_REG_EXP = /[\\/:*?"<>|]/;
 export const SUBSTITUTION_TOKEN_REG_EXP = /\${(?<Token>.+?)(?::(?<Format>.*?))?}/g;
 
+export enum TokenValidationMode {
+  Error = 'Error',
+  Skip = 'Skip',
+  Validate = 'Validate'
+}
+
 interface SubstitutionsContract {
   app: App;
   fillTemplate(template: string): Promise<string>;
@@ -66,9 +72,8 @@ interface SubstitutionsOptions {
 
 interface ValidateFileNameOptions {
   app: App;
-  areTokensAllowed: boolean;
   fileName: string;
-  shouldFailOnTokens: boolean;
+  tokenValidationMode: TokenValidationMode;
 }
 
 interface ValidatePathOptions {
@@ -398,9 +403,8 @@ export class Substitutions implements SubstitutionsContract {
       valueValidator: (value) =>
         validateFileName({
           app: this.app,
-          areTokensAllowed: false,
           fileName: value,
-          shouldFailOnTokens: true
+          tokenValidationMode: TokenValidationMode.Error
         })
     });
     if (promptResult === null) {
@@ -411,16 +415,25 @@ export class Substitutions implements SubstitutionsContract {
 }
 
 export async function validateFileName(options: ValidateFileNameOptions): Promise<string> {
-  if (options.areTokensAllowed) {
-    const validationMessage = await validateTokens(options.app, options.fileName);
-    if (validationMessage) {
-      return validationMessage;
+  switch (options.tokenValidationMode) {
+    case TokenValidationMode.Error: {
+      const match = options.fileName.match(SUBSTITUTION_TOKEN_REG_EXP);
+      if (match) {
+        return 'Tokens are not allowed in file name';
+      }
+      break;
     }
-  } else if (options.shouldFailOnTokens) {
-    const match = options.fileName.match(SUBSTITUTION_TOKEN_REG_EXP);
-    if (match) {
-      return 'Tokens are not allowed in file name';
+    case TokenValidationMode.Skip:
+      break;
+    case TokenValidationMode.Validate: {
+      const validationMessage = await validateTokens(options.app, options.fileName);
+      if (validationMessage) {
+        return validationMessage;
+      }
+      break;
     }
+    default:
+      throw new Error(`Invalid token validation mode: ${options.tokenValidationMode as string}`);
   }
 
   const cleanFileName = removeTokens(options.fileName);
@@ -472,9 +485,8 @@ export async function validatePath(options: ValidatePathOptions): Promise<string
   for (const part of pathParts) {
     const partValidationError = await validateFileName({
       app: options.app,
-      areTokensAllowed: false,
       fileName: part,
-      shouldFailOnTokens: false
+      tokenValidationMode: TokenValidationMode.Skip
     });
 
     if (partValidationError) {

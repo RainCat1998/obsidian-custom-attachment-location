@@ -14,6 +14,7 @@ import {
 import {
   getCustomTokenFormatters,
   INVALID_FILENAME_PATH_CHARS_REG_EXP,
+  TokenValidationMode,
   validateFileName,
   validatePath
 } from './Substitutions.ts';
@@ -127,9 +128,8 @@ export class PluginSettingsManager extends PluginSettingsManagerBase<PluginTypes
     this.registerValidator('generatedAttachmentFileName', (value) =>
       validateFileName({
         app: this.app,
-        areTokensAllowed: true,
         fileName: value,
-        shouldFailOnTokens: false
+        tokenValidationMode: TokenValidationMode.Validate
       }));
     this.registerValidator('specialCharacters', (value): MaybeReturn<string> => {
       if (value.includes('/')) {
@@ -146,9 +146,8 @@ export class PluginSettingsManager extends PluginSettingsManagerBase<PluginTypes
     this.registerValidator('duplicateNameSeparator', async (value): Promise<MaybeReturn<string>> => {
       return await validateFileName({
         app: this.app,
-        areTokensAllowed: false,
         fileName: `foo${value}1`,
-        shouldFailOnTokens: true
+        tokenValidationMode: TokenValidationMode.Error
       });
     });
 

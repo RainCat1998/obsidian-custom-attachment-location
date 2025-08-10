@@ -234,6 +234,15 @@ File name of the original attachment file.
 
 The value asked from the user prompt.
 
+**Format**:
+
+- (default): Unchanged value entered by user. **Example**: `foo bar` -> `foo bar`.
+- `left`**`n`**: Left `n` characters of the value entered by user. **Example** `left2`: `foo bar` -> `fo`.
+- `lower`: Lowercased value entered by user. **Example**: `foo Bar` -> `foo bar`.
+- `right`**`n`**: Right `n` characters of the value entered by user. **Example** `right2`: `foo bar` -> `ar`.
+- `slug`: Slugified value entered by user. **Example**: `foo bar.baz` -> `foo-bar-baz`.
+- `upper`: Uppercased value entered by user **Example**: `foo Bar` -> `FOO BAR`.
+
 ### `${random}`
 
 Random value.

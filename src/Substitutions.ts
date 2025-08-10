@@ -112,27 +112,6 @@ function formatFileDate(app: App, noteFilePath: string, format: string, getTimes
   return moment(getTimestamp(noteFile)).format(format);
 }
 
-function formatFileName(fileName: string, format: string): string {
-  const { base, parameter } = parseFormatWithParameter(format);
-
-  switch (base) {
-    case '':
-      return fileName;
-    case 'left':
-      return fileName.slice(0, parameter ?? 1);
-    case 'lower':
-      return fileName.toLowerCase();
-    case 'right':
-      return fileName.slice(-(parameter ?? 1));
-    case 'slug':
-      return slugifyEx(fileName);
-    case 'upper':
-      return fileName.toUpperCase();
-    default:
-      throw new Error(`Invalid file name format: ${format}`);
-  }
-}
-
 function formatFileSize(sizeInBytes: number, format: string): string {
   const BYTES_IN_KB = 1024;
   const BYTES_IN_MB = BYTES_IN_KB * BYTES_IN_KB;
@@ -176,11 +155,32 @@ function formatFolderName(folderPath: string, format: string): string {
       if (format2) {
         throw new Error(`Invalid format: ${format1}`);
       }
-      return formatFileName(folderParts[folderPartIndex] ?? '', format1);
+      return formatString(folderParts[folderPartIndex] ?? '', format1);
   }
 
   const folderName = folderParts[folderPartIndex] ?? '';
-  return formatFileName(folderName, format2);
+  return formatString(folderName, format2);
+}
+
+function formatString(str: string, format: string): string {
+  const { base, parameter } = parseFormatWithParameter(format);
+
+  switch (base) {
+    case '':
+      return str;
+    case 'left':
+      return str.slice(0, parameter ?? 1);
+    case 'lower':
+      return str.toLowerCase();
+    case 'right':
+      return str.slice(-(parameter ?? 1));
+    case 'slug':
+      return slugifyEx(str);
+    case 'upper':
+      return str.toUpperCase();
+    default:
+      throw new Error(`Invalid file name format: ${format}`);
+  }
 }
 
 function generateRandomValue(format: string): string {
@@ -296,7 +296,7 @@ export class Substitutions implements SubstitutionsContract {
       (substitutions, format) => formatFileDate(substitutions.app, substitutions.noteFilePath, format, (file) => file.stat.mtime)
     );
 
-    this.registerFormatter('noteFileName', (substitutions, format) => formatFileName(substitutions.noteFileName, format));
+    this.registerFormatter('noteFileName', (substitutions, format) => formatString(substitutions.noteFileName, format));
     this.registerFormatter('noteFilePath', (substitutions) => substitutions.noteFilePath);
     this.registerFormatter('noteFolderName', (substitutions, format) => formatFolderName(substitutions.noteFolderPath, format));
     this.registerFormatter('noteFolderPath', (substitutions) => substitutions.noteFolderPath);
@@ -304,15 +304,15 @@ export class Substitutions implements SubstitutionsContract {
     this.registerFormatter('frontmatter', (substitutions, key) => getFrontmatterValue(substitutions.app, substitutions.noteFilePath, key));
 
     this.registerFormatter('originalAttachmentFileExtension', (substitutions) => substitutions.originalAttachmentFileExtension);
-    this.registerFormatter('originalAttachmentFileName', (substitutions, format) => formatFileName(substitutions.originalAttachmentFileName, format));
+    this.registerFormatter('originalAttachmentFileName', (substitutions, format) => formatString(substitutions.originalAttachmentFileName, format));
 
-    this.registerFormatter('prompt', (substitutions) => substitutions.prompt());
+    this.registerFormatter('prompt', (substitutions, format) => substitutions.prompt(format));
 
     this.registerFormatter('random', (_substitutions, format) => generateRandomValue(format));
 
     this.registerFormatter('attachmentFileSize', (substitutions, format) => formatFileSize(substitutions.attachmentFileContent?.byteLength ?? 0, format));
 
-    this.registerFormatter('generatedAttachmentFileName', (substitutions, format) => formatFileName(substitutions.generatedAttachmentFileName, format));
+    this.registerFormatter('generatedAttachmentFileName', (substitutions, format) => formatString(substitutions.generatedAttachmentFileName, format));
     this.registerFormatter('generatedAttachmentFilePath', (substitutions) => substitutions.generatedAttachmentFilePath);
 
     this.registerFormatter('heading', async (substitutions, format) => substitutions.getHeading(format));
@@ -392,7 +392,10 @@ export class Substitutions implements SubstitutionsContract {
     return this.headingsInfo;
   }
 
-  private async prompt(): Promise<string> {
+  private async prompt(format: string): Promise<string> {
+    // Validate format
+    formatString('', format);
+
     if (this.noteFilePath === VALIDATION_PATH) {
       return '';
     }
@@ -414,7 +417,7 @@ export class Substitutions implements SubstitutionsContract {
     if (promptResult === null) {
       throw new Error('Prompt cancelled');
     }
-    return promptResult;
+    return formatString(promptResult, format);
   }
 }
 

@@ -39,7 +39,6 @@ export class PluginSettings {
   public shouldDeleteOrphanAttachments = false;
   public shouldRenameAttachmentFiles = false;
   public shouldRenameAttachmentFolder = true;
-  public shouldRenameAttachmentsToLowerCase = false;
   public shouldRenameCollectedAttachments = false;
   public specialCharacters = '#^[]|*\\<>:?';
   public specialCharactersReplacement = '-';

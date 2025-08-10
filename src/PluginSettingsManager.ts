@@ -1,5 +1,8 @@
 import type { MaybeReturn } from 'obsidian-dev-utils/Type';
 
+import { invokeAsyncSafely } from 'obsidian-dev-utils/Async';
+import { appendCodeBlock } from 'obsidian-dev-utils/HTMLElement';
+import { alert } from 'obsidian-dev-utils/obsidian/Modals/Alert';
 import { PluginSettingsManagerBase } from 'obsidian-dev-utils/obsidian/Plugin/PluginSettingsManagerBase';
 import { EmptyAttachmentFolderBehavior } from 'obsidian-dev-utils/obsidian/RenameDeleteHandler';
 import { isValidRegExp } from 'obsidian-dev-utils/RegExp';
@@ -38,6 +41,7 @@ class LegacySettings {
   public replaceWhitespace = false;
   public shouldDuplicateCollectedAttachments = false;
   public shouldKeepEmptyAttachmentFolders = false;
+  public shouldRenameAttachmentsToLowerCase = false;
   public toLowerCase = false;
   public whitespaceReplacement = '';
 }
@@ -86,8 +90,22 @@ export class PluginSettingsManager extends PluginSettingsManagerBase<PluginTypes
         legacySettings.shouldRenameCollectedAttachments = legacySettings.renameCollectedFiles;
       }
 
-      if (legacySettings.toLowerCase !== undefined) {
-        legacySettings.shouldRenameAttachmentsToLowerCase = legacySettings.toLowerCase;
+      if (legacySettings.toLowerCase || legacySettings.shouldRenameAttachmentsToLowerCase) {
+        invokeAsyncSafely(async () => {
+          await alert({
+            app: this.app,
+            message: createFragment((f) => {
+              f.appendText('In plugin version 9.0.0, the "Rename attachments to lower case" setting is deprecated. Use ');
+              appendCodeBlock(f, 'lower');
+              f.appendText(' format instead. See ');
+              f.createEl('a', {
+                href: 'https://github.com/RainCat1998/obsidian-custom-attachment-location?tab=readme-ov-file#tokens',
+                text: 'documentation.'
+              });
+              f.appendText(' for more information.');
+            })
+          });
+        });
       }
 
       if (legacySettings.convertImagesToJpeg !== undefined) {

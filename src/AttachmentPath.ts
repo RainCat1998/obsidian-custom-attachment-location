@@ -66,10 +66,6 @@ async function resolvePathTemplate(plugin: Plugin, template: string, substitutio
     throw new Error(`Resolved path ${resolvedPath} is invalid: ${validationError}`);
   }
 
-  if (plugin.settings.shouldRenameAttachmentsToLowerCase) {
-    resolvedPath = resolvedPath.toLowerCase();
-  }
-
   resolvedPath = replaceSpecialCharacters(plugin, resolvedPath);
   if (resolvedPath.startsWith('./') || resolvedPath.startsWith('../')) {
     resolvedPath = join(substitutions.noteFolderPath, resolvedPath);

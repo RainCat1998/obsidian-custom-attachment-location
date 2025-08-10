@@ -164,13 +164,6 @@ export class PluginSettingsTab extends PluginSettingsTabBase<PluginTypes> {
       });
 
     new SettingEx(this.containerEl)
-      .setName('Should rename attachments to lowercase')
-      .setDesc('Automatically set all characters in folder name and pasted image name to be lowercase.')
-      .addToggle((toggle) => {
-        this.bind(toggle, 'shouldRenameAttachmentsToLowerCase');
-      });
-
-    new SettingEx(this.containerEl)
       .setName('Should convert pasted images to JPEG')
       .setDesc('Paste images from clipboard converting them to JPEG.')
       .addToggle((toggle) => {

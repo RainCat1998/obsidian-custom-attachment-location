@@ -64,6 +64,19 @@ interface SubstitutionsOptions {
   originalAttachmentFileName?: string;
 }
 
+interface ValidateFileNameOptions {
+  app: App;
+  areTokensAllowed: boolean;
+  fileName: string;
+  shouldFailOnTokens: boolean;
+}
+
+interface ValidatePathOptions {
+  app: App;
+  areTokensAllowed: boolean;
+  path: string;
+}
+
 export function getCustomTokenFormatters(customTokensStr: string): Map<string, Formatter> | null {
   const formatters = new Map<string, Formatter>();
   try {
@@ -382,7 +395,13 @@ export class Substitutions implements SubstitutionsContract {
       attachmentFileContent: this.attachmentFileContent,
       originalAttachmentFileExtension: this.originalAttachmentFileExtension,
       originalAttachmentFileName: this.originalAttachmentFileName,
-      valueValidator: (value) => validateFileName(this.app, value, false, true)
+      valueValidator: (value) =>
+        validateFileName({
+          app: this.app,
+          areTokensAllowed: false,
+          fileName: value,
+          shouldFailOnTokens: true
+        })
     });
     if (promptResult === null) {
       throw new Error('Prompt cancelled');
@@ -391,20 +410,20 @@ export class Substitutions implements SubstitutionsContract {
   }
 }
 
-export async function validateFileName(app: App, fileName: string, areTokensAllowed = true, shouldFailOnTokens = false): Promise<string> {
-  if (areTokensAllowed) {
-    const validationMessage = await validateTokens(app, fileName);
+export async function validateFileName(options: ValidateFileNameOptions): Promise<string> {
+  if (options.areTokensAllowed) {
+    const validationMessage = await validateTokens(options.app, options.fileName);
     if (validationMessage) {
       return validationMessage;
     }
-  } else if (shouldFailOnTokens) {
-    const match = fileName.match(SUBSTITUTION_TOKEN_REG_EXP);
+  } else if (options.shouldFailOnTokens) {
+    const match = options.fileName.match(SUBSTITUTION_TOKEN_REG_EXP);
     if (match) {
       return 'Tokens are not allowed in file name';
     }
   }
 
-  const cleanFileName = removeTokenFormatting(fileName);
+  const cleanFileName = removeTokens(options.fileName);
 
   if (cleanFileName === '.' || cleanFileName === '..') {
     return '';
@@ -415,43 +434,48 @@ export async function validateFileName(app: App, fileName: string, areTokensAllo
   }
 
   if (INVALID_FILENAME_PATH_CHARS_REG_EXP.test(cleanFileName)) {
-    return `File name "${fileName}" contains invalid symbols`;
+    return `File name "${options.fileName}" contains invalid symbols`;
   }
 
   if (MORE_THAN_TWO_DOTS_REG_EXP.test(cleanFileName)) {
-    return `File name "${fileName}" contains more than two dots`;
+    return `File name "${options.fileName}" contains more than two dots`;
   }
 
   if (TRAILING_DOTS_REG_EXP.test(cleanFileName)) {
-    return `File name "${fileName}" contains trailing dots`;
+    return `File name "${options.fileName}" contains trailing dots`;
   }
 
   return '';
 }
 
-export async function validatePath(app: App, path: string, areTokensAllowed = true): Promise<string> {
-  if (areTokensAllowed) {
-    const unknownToken = await validateTokens(app, path);
+export async function validatePath(options: ValidatePathOptions): Promise<string> {
+  if (options.areTokensAllowed) {
+    const unknownToken = await validateTokens(options.app, options.path);
     if (unknownToken) {
       return `Unknown token: ${unknownToken}`;
     }
   } else {
-    const match = path.match(SUBSTITUTION_TOKEN_REG_EXP);
+    const match = options.path.match(SUBSTITUTION_TOKEN_REG_EXP);
     if (match) {
       return 'Tokens are not allowed in path';
     }
   }
 
-  path = trimStart(path, '/');
+  let path = trimStart(options.path, '/');
   path = trimEnd(path, '/');
 
   if (path === '') {
     return '';
   }
 
-  const parts = path.split('/');
-  for (const part of parts) {
-    const partValidationError = await validateFileName(app, part, false, false);
+  const pathParts = path.split('/');
+  for (const part of pathParts) {
+    const partValidationError = await validateFileName({
+      app: options.app,
+      areTokensAllowed: false,
+      fileName: part,
+      shouldFailOnTokens: false
+    });
 
     if (partValidationError) {
       return partValidationError;
@@ -481,7 +505,7 @@ function parseFormatWithParameter(format: string): FormatWithParameter {
   };
 }
 
-function removeTokenFormatting(str: string): string {
+function removeTokens(str: string): string {
   return replaceAll(str, SUBSTITUTION_TOKEN_REG_EXP, (_, token, format) => `_${token}_${format}_`);
 }
 

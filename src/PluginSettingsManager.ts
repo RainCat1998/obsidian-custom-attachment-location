@@ -118,8 +118,19 @@ export class PluginSettingsManager extends PluginSettingsManagerBase<PluginTypes
   }
 
   protected override registerValidators(): void {
-    this.registerValidator('attachmentFolderPath', async (value) => await validatePath(this.app, value));
-    this.registerValidator('generatedAttachmentFileName', (value) => validateFileName(this.app, value));
+    this.registerValidator('attachmentFolderPath', async (value) =>
+      await validatePath({
+        app: this.app,
+        areTokensAllowed: true,
+        path: value
+      }));
+    this.registerValidator('generatedAttachmentFileName', (value) =>
+      validateFileName({
+        app: this.app,
+        areTokensAllowed: true,
+        fileName: value,
+        shouldFailOnTokens: false
+      }));
     this.registerValidator('specialCharacters', (value): MaybeReturn<string> => {
       if (value.includes('/')) {
         return 'Special characters must not contain /';
@@ -133,7 +144,12 @@ export class PluginSettingsManager extends PluginSettingsManagerBase<PluginTypes
     });
 
     this.registerValidator('duplicateNameSeparator', async (value): Promise<MaybeReturn<string>> => {
-      return await validateFileName(this.app, `foo${value}1`, false);
+      return await validateFileName({
+        app: this.app,
+        areTokensAllowed: false,
+        fileName: `foo${value}1`,
+        shouldFailOnTokens: true
+      });
     });
 
     this.registerValidator('includePaths', (value): MaybeReturn<string> => {

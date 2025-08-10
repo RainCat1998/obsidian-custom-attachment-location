@@ -44,7 +44,11 @@ async function getAttachmentFolderPath(plugin: Plugin, substitutions: Substituti
 
 async function resolvePathTemplate(plugin: Plugin, template: string, substitutions: Substitutions): Promise<string> {
   let resolvedPath = await substitutions.fillTemplate(template);
-  const validationError = await validatePath(plugin.app, resolvedPath, false);
+  const validationError = await validatePath({
+    app: plugin.app,
+    areTokensAllowed: false,
+    path: resolvedPath
+  });
   if (validationError) {
     throw new Error(`Resolved path ${resolvedPath} is invalid: ${validationError}`);
   }

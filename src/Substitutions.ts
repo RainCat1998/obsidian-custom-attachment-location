@@ -72,6 +72,7 @@ interface SubstitutionsOptions {
 
 interface ValidateFileNameOptions {
   app: App;
+  areSingleDotsAllowed: boolean;
   fileName: string;
   isEmptyAllowed: boolean;
   tokenValidationMode: TokenValidationMode;
@@ -404,6 +405,7 @@ export class Substitutions implements SubstitutionsContract {
       valueValidator: (value) =>
         validateFileName({
           app: this.app,
+          areSingleDotsAllowed: false,
           fileName: value,
           isEmptyAllowed: true,
           tokenValidationMode: TokenValidationMode.Error
@@ -441,7 +443,7 @@ export async function validateFileName(options: ValidateFileNameOptions): Promis
   const cleanFileName = removeTokens(options.fileName);
 
   if (cleanFileName === '.' || cleanFileName === '..') {
-    return '';
+    return options.areSingleDotsAllowed ? '' : 'Single dots are not allowed in file name';
   }
 
   if (!cleanFileName) {
@@ -487,6 +489,7 @@ export async function validatePath(options: ValidatePathOptions): Promise<string
   for (const part of pathParts) {
     const partValidationError = await validateFileName({
       app: options.app,
+      areSingleDotsAllowed: true,
       fileName: part,
       isEmptyAllowed: true,
       tokenValidationMode: TokenValidationMode.Skip

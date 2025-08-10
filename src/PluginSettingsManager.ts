@@ -128,6 +128,7 @@ export class PluginSettingsManager extends PluginSettingsManagerBase<PluginTypes
     this.registerValidator('generatedAttachmentFileName', (value) =>
       validateFileName({
         app: this.app,
+        areSingleDotsAllowed: false,
         fileName: value,
         isEmptyAllowed: false,
         tokenValidationMode: TokenValidationMode.Validate
@@ -147,6 +148,7 @@ export class PluginSettingsManager extends PluginSettingsManagerBase<PluginTypes
     this.registerValidator('duplicateNameSeparator', async (value): Promise<MaybeReturn<string>> => {
       return await validateFileName({
         app: this.app,
+        areSingleDotsAllowed: false,
         fileName: `foo${value}1`,
         isEmptyAllowed: false,
         tokenValidationMode: TokenValidationMode.Error

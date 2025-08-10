@@ -356,7 +356,7 @@ export class Plugin extends PluginBase<PluginTypes> {
         noteFilePath: this.app.workspace.getActiveFile()?.path ?? '',
         originalAttachmentFileName: file.name
       });
-      const attachmentFileName = await substitutions.fillTemplate(this.settings.generatedAttachmentFileName);
+      const attachmentFileName = await getGeneratedAttachmentFileName(this, substitutions);
       file.name = makeFileName(attachmentFileName, substitutions.originalAttachmentFileExtension);
     }
 

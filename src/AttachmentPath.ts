@@ -5,6 +5,8 @@ import type { Plugin } from './Plugin.ts';
 
 import {
   Substitutions,
+  TokenValidationMode,
+  validateFileName,
   validatePath
 } from './Substitutions.ts';
 
@@ -26,7 +28,18 @@ export async function getAttachmentFolderFullPathForPath(
 }
 
 export async function getGeneratedAttachmentFileName(plugin: Plugin, substitutions: Substitutions): Promise<string> {
-  return await resolvePathTemplate(plugin, plugin.settings.generatedAttachmentFileName, substitutions);
+  const fileName = await resolvePathTemplate(plugin, plugin.settings.generatedAttachmentFileName, substitutions);
+  const validationMessage = await validateFileName({
+    app: plugin.app,
+    areSingleDotsAllowed: true,
+    fileName,
+    isEmptyAllowed: false,
+    tokenValidationMode: TokenValidationMode.Skip
+  });
+  if (validationMessage) {
+    throw new Error(`Generated attachment file name ${fileName} is invalid: ${validationMessage}`);
+  }
+  return fileName;
 }
 
 export function replaceSpecialCharacters(plugin: Plugin, str: string): string {

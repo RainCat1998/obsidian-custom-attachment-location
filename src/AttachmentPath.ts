@@ -25,7 +25,7 @@ export async function getAttachmentFolderFullPathForPath(
   );
 }
 
-export async function getPastedFileName(plugin: Plugin, substitutions: Substitutions): Promise<string> {
+export async function getGeneratedAttachmentFileName(plugin: Plugin, substitutions: Substitutions): Promise<string> {
   return await resolvePathTemplate(plugin, plugin.settings.generatedAttachmentFileName, substitutions);
 }
 

@@ -59,7 +59,7 @@ import {
 } from './AttachmentCollector.ts';
 import {
   getAttachmentFolderFullPathForPath,
-  getPastedFileName
+  getGeneratedAttachmentFileName
 } from './AttachmentPath.ts';
 import { AttachmentRenameMode } from './PluginSettings.ts';
 import { PluginSettingsManager } from './PluginSettingsManager.ts';
@@ -408,7 +408,7 @@ export class Plugin extends PluginBase<PluginTypes> {
     }
 
     if (shouldRename) {
-      attachmentFileName = await getPastedFileName(
+      attachmentFileName = await getGeneratedAttachmentFileName(
         this,
         new Substitutions({
           app: this.app,

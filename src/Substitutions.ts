@@ -546,7 +546,7 @@ async function validateTokens(app: App, str: string): Promise<null | string> {
   for (const match of matches) {
     const token = match.groups?.['Token'] ?? '';
     if (!Substitutions.isRegisteredToken(token)) {
-      return `Unknown token: ${token}`;
+      return `Unknown token '${token}'.`;
     }
     const format = match.groups?.['Format'] ?? '';
     const singleFormats = format.split(',');
@@ -554,7 +554,7 @@ async function validateTokens(app: App, str: string): Promise<null | string> {
       try {
         await FAKE_SUBSTITUTION.fillTemplate(`\${${token}:${singleFormat}}`);
       } catch {
-        return `Token ${token} is used with unknown format '${singleFormat}'.`;
+        return `Token '${token}' is used with unknown format '${singleFormat}'.`;
       }
     }
   }

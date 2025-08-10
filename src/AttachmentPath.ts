@@ -1,4 +1,7 @@
-import { normalizePath } from 'obsidian';
+import {
+  normalizePath,
+  Notice
+} from 'obsidian';
 import { join } from 'obsidian-dev-utils/Path';
 
 import type { Plugin } from './Plugin.ts';
@@ -28,16 +31,19 @@ export async function getAttachmentFolderFullPathForPath(
 }
 
 export async function getGeneratedAttachmentFileName(plugin: Plugin, substitutions: Substitutions): Promise<string> {
-  const fileName = await resolvePathTemplate(plugin, plugin.settings.generatedAttachmentFileName, substitutions);
+  const fileName = await resolvePathTemplate(plugin, plugin.settings.generatedAttachmentFileName, substitutions, true);
   const validationMessage = await validateFileName({
     app: plugin.app,
-    areSingleDotsAllowed: true,
+    areSingleDotsAllowed: false,
     fileName,
     isEmptyAllowed: false,
-    tokenValidationMode: TokenValidationMode.Skip
+    tokenValidationMode: TokenValidationMode.Error
   });
   if (validationMessage) {
-    throw new Error(`Generated attachment file name ${fileName} is invalid: ${validationMessage}`);
+    const errorMessage = `Generated attachment file name "${fileName}" is invalid.\n${validationMessage}\nCheck your 'Generated attachment file name' setting.`;
+    new Notice(errorMessage);
+    console.error(errorMessage, substitutions);
+    throw new Error(errorMessage);
   }
   return fileName;
 }
@@ -52,10 +58,10 @@ export function replaceSpecialCharacters(plugin: Plugin, str: string): string {
 }
 
 async function getAttachmentFolderPath(plugin: Plugin, substitutions: Substitutions): Promise<string> {
-  return await resolvePathTemplate(plugin, plugin.settings.attachmentFolderPath, substitutions);
+  return await resolvePathTemplate(plugin, plugin.settings.attachmentFolderPath, substitutions, false);
 }
 
-async function resolvePathTemplate(plugin: Plugin, template: string, substitutions: Substitutions): Promise<string> {
+async function resolvePathTemplate(plugin: Plugin, template: string, substitutions: Substitutions, isFileNamePart: boolean): Promise<string> {
   let resolvedPath = await substitutions.fillTemplate(template);
   const validationError = await validatePath({
     app: plugin.app,
@@ -67,10 +73,14 @@ async function resolvePathTemplate(plugin: Plugin, template: string, substitutio
   }
 
   resolvedPath = replaceSpecialCharacters(plugin, resolvedPath);
-  if (resolvedPath.startsWith('./') || resolvedPath.startsWith('../')) {
-    resolvedPath = join(substitutions.noteFolderPath, resolvedPath);
+
+  if (!isFileNamePart) {
+    if (resolvedPath.startsWith('./') || resolvedPath.startsWith('../')) {
+      resolvedPath = join(substitutions.noteFolderPath, resolvedPath);
+    }
+
+    resolvedPath = normalizePath(resolvedPath);
   }
 
-  resolvedPath = normalizePath(resolvedPath);
   return resolvedPath;
 }

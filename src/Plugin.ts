@@ -266,7 +266,7 @@ export class Plugin extends PluginBase<PluginTypes> {
     attachmentExtension: string,
     noteFile: null | TFile,
     skipMissingAttachmentFolderCreation: boolean | undefined,
-    attachmentFileSizeInBytes?: number
+    attachmentFileContent?: ArrayBuffer
   ): Promise<string> {
     if (noteFile && this.settings.isPathIgnored(noteFile.path) && this.getAvailablePathForAttachmentsOriginal) {
       return this.getAvailablePathForAttachmentsOriginal(attachmentFileName, attachmentExtension, noteFile);
@@ -280,7 +280,7 @@ export class Plugin extends PluginBase<PluginTypes> {
         this,
         noteFile.path,
         makeFileName(attachmentFileName, attachmentExtension),
-        attachmentFileSizeInBytes
+        attachmentFileContent
       );
       attachmentPath = this.app.vault.getAvailablePath(join(attachmentFolderFullPath, attachmentFileName), attachmentExtension);
     }
@@ -349,10 +349,10 @@ export class Plugin extends PluginBase<PluginTypes> {
     for (const file of files) {
       const fileUri = window.Capacitor.convertFileSrc(file.uri);
       const response = await fetch(fileUri);
-      const arrayBuffer = await response.arrayBuffer();
+      const attachmentFileContent = await response.arrayBuffer();
       const substitutions = new Substitutions({
         app: this.app,
-        attachmentFileSizeInBytes: arrayBuffer.byteLength,
+        attachmentFileContent,
         noteFilePath: this.app.workspace.getActiveFile()?.path ?? '',
         originalAttachmentFileName: file.name
       });
@@ -366,11 +366,11 @@ export class Plugin extends PluginBase<PluginTypes> {
   private async saveAttachment(
     attachmentFileName: string,
     attachmentFileExtension: string,
-    attachmentFileData: ArrayBuffer
+    attachmentFileContent: ArrayBuffer
   ): Promise<TFile> {
     const activeNoteFile = this.app.workspace.getActiveFile();
     if (!activeNoteFile || this.settings.isPathIgnored(activeNoteFile.path)) {
-      return await this.saveAttachmentCore(attachmentFileName, attachmentFileExtension, attachmentFileData);
+      return await this.saveAttachmentCore(attachmentFileName, attachmentFileExtension, attachmentFileContent);
     }
 
     let isPastedImage = false;
@@ -389,7 +389,7 @@ export class Plugin extends PluginBase<PluginTypes> {
 
     if (isPastedImage && attachmentFileExtension === 'png' && this.settings.shouldConvertPastedImagesToJpeg) {
       attachmentFileExtension = 'jpg';
-      attachmentFileData = await blobToJpegArrayBuffer(new Blob([attachmentFileData], { type: 'image/png' }), this.settings.jpegQuality);
+      attachmentFileContent = await blobToJpegArrayBuffer(new Blob([attachmentFileContent], { type: 'image/png' }), this.settings.jpegQuality);
     }
 
     let shouldRename = false;
@@ -412,18 +412,18 @@ export class Plugin extends PluginBase<PluginTypes> {
         this,
         new Substitutions({
           app: this.app,
-          attachmentFileSizeInBytes: attachmentFileData.byteLength,
+          attachmentFileContent,
           noteFilePath: activeNoteFile.path,
           originalAttachmentFileName: makeFileName(attachmentFileName, attachmentFileExtension)
         })
       );
     }
 
-    const attachmentFile = await this.saveAttachmentCore(attachmentFileName, attachmentFileExtension, attachmentFileData);
+    const attachmentFile = await this.saveAttachmentCore(attachmentFileName, attachmentFileExtension, attachmentFileContent);
     if (this.settings.markdownUrlFormat) {
       const markdownUrl = await new Substitutions({
         app: this.app,
-        attachmentFileSizeInBytes: attachmentFileData.byteLength,
+        attachmentFileContent,
         generatedAttachmentFileName: attachmentFile.name,
         generatedAttachmentFilePath: attachmentFile.path,
         noteFilePath: activeNoteFile.path,
@@ -439,7 +439,7 @@ export class Plugin extends PluginBase<PluginTypes> {
   private async saveAttachmentCore(
     attachmentFileName: string,
     attachmentFileExtension: string,
-    attachmentFileData: ArrayBuffer
+    attachmentFileContent: ArrayBuffer
   ): Promise<TFile> {
     const noteFile = this.app.workspace.getActiveFile();
     const attachmentPath = await this.getAvailablePathForAttachments(
@@ -447,8 +447,8 @@ export class Plugin extends PluginBase<PluginTypes> {
       attachmentFileExtension,
       noteFile,
       false,
-      attachmentFileData.byteLength
+      attachmentFileContent
     );
-    return await this.app.vault.createBinary(attachmentPath, attachmentFileData);
+    return await this.app.vault.createBinary(attachmentPath, attachmentFileContent);
   }
 }

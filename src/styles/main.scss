@@ -12,4 +12,14 @@
     height: 18em;
     width: 36em;
   }
+
+  &.prompt-modal {
+    .cancel-button {
+      margin-right: 10px;
+    }
+  }
+
+  &.preview-modal .preview-container {
+    overflow: auto;
+  }
 }

@@ -8,7 +8,6 @@ import moment from 'moment';
 import { getNestedPropertyValue } from 'obsidian-dev-utils/ObjectUtils';
 import { getFileOrNull } from 'obsidian-dev-utils/obsidian/FileSystem';
 import { getCacheSafe } from 'obsidian-dev-utils/obsidian/MetadataCache';
-import { prompt } from 'obsidian-dev-utils/obsidian/Modals/Prompt';
 import {
   basename,
   dirname,
@@ -22,6 +21,8 @@ import {
 } from 'obsidian-dev-utils/String';
 // eslint-disable-next-line import-x/no-rename-default
 import slugify_ from 'slugify';
+
+import { promptWithPreview } from './PromptWithPreviewModal.ts';
 
 const slugify = ('default' in slugify_ ? slugify_.default : slugify_) as unknown as typeof slugify_.default;
 
@@ -56,7 +57,7 @@ interface SubstitutionsContract {
 
 interface SubstitutionsOptions {
   app: App;
-  attachmentFileSizeInBytes?: number;
+  attachmentFileContent?: ArrayBuffer | undefined;
   generatedAttachmentFileName?: string;
   generatedAttachmentFilePath?: string;
   noteFilePath: string;
@@ -227,7 +228,7 @@ export class Substitutions implements SubstitutionsContract {
   public readonly noteFolderPath: string;
   public readonly originalAttachmentFileExtension: string;
   public readonly originalAttachmentFileName: string;
-  private attachmentFileSizeInBytes: number;
+  private readonly attachmentFileContent: ArrayBuffer | undefined;
   private readonly cursorLine: null | number;
   private headingsInfo: Map<HeadingLevel, string> | null = null;
 
@@ -244,7 +245,7 @@ export class Substitutions implements SubstitutionsContract {
     this.originalAttachmentFileName = basename(originalAttachmentFileName, originalAttachmentFileExtension);
     this.originalAttachmentFileExtension = originalAttachmentFileExtension.slice(1);
 
-    this.attachmentFileSizeInBytes = options.attachmentFileSizeInBytes ?? 0;
+    this.attachmentFileContent = options.attachmentFileContent;
 
     this.generatedAttachmentFileName = options.generatedAttachmentFileName ?? '';
     this.generatedAttachmentFilePath = options.generatedAttachmentFilePath ?? '';
@@ -289,7 +290,7 @@ export class Substitutions implements SubstitutionsContract {
 
     this.registerFormatter('random', (_substitutions, format) => generateRandomValue(format));
 
-    this.registerFormatter('attachmentFileSize', (substitutions, format) => formatFileSize(substitutions.attachmentFileSizeInBytes, format));
+    this.registerFormatter('attachmentFileSize', (substitutions, format) => formatFileSize(substitutions.attachmentFileContent?.byteLength ?? 0, format));
 
     this.registerFormatter('generatedAttachmentFileName', (substitutions, format) => formatFileName(substitutions.generatedAttachmentFileName, format));
     this.registerFormatter('generatedAttachmentFilePath', (substitutions) => substitutions.generatedAttachmentFilePath);
@@ -376,11 +377,11 @@ export class Substitutions implements SubstitutionsContract {
       return '';
     }
 
-    const promptResult = await prompt({
+    const promptResult = await promptWithPreview({
       app: this.app,
-      defaultValue: this.originalAttachmentFileName,
-      // eslint-disable-next-line no-template-curly-in-string
-      title: 'Provide a value for ${prompt} template',
+      attachmentFileContent: this.attachmentFileContent,
+      originalAttachmentFileExtension: this.originalAttachmentFileExtension,
+      originalAttachmentFileName: this.originalAttachmentFileName,
       valueValidator: (value) => validateFileName(this.app, value, false, true)
     });
     if (promptResult === null) {

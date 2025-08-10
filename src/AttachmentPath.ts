@@ -12,13 +12,13 @@ export async function getAttachmentFolderFullPathForPath(
   plugin: Plugin,
   notePath: string,
   attachmentFileName: string,
-  attachmentFileSizeInBytes?: number
+  attachmentFileContent?: ArrayBuffer
 ): Promise<string> {
   return await getAttachmentFolderPath(
     plugin,
     new Substitutions({
       app: plugin.app,
-      attachmentFileSizeInBytes: attachmentFileSizeInBytes ?? 0,
+      attachmentFileContent,
       noteFilePath: notePath,
       originalAttachmentFileName: attachmentFileName
     })

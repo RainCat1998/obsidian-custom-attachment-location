@@ -234,6 +234,8 @@ File name of the original attachment file.
 
 The value asked from the user prompt.
 
+Also in the prompt modal, you can preview the file, if it is supported by Obsidian (image, video, pdf).
+
 **Format**:
 
 - (default): Unchanged value entered by user. **Example**: `foo bar` -> `foo bar`.

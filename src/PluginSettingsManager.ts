@@ -230,13 +230,8 @@ ${commentOut(legacySettings.customTokensStr)}
   }
 
   private customTokensValidatorImpl(customTokensStr: string): void {
-    const formatters = parseCustomTokens(customTokensStr);
-    this.lastCustomTokenValidatorResult = formatters === null ? 'Invalid custom tokens code' : undefined;
-    if (this.shouldDebounceCustomTokensValidation) {
-      this.editAndSave((setting) => {
-        setting.customTokensStr = customTokensStr;
-      });
-    }
+    const customTokens = parseCustomTokens(customTokensStr);
+    this.lastCustomTokenValidatorResult = customTokens === null ? 'Invalid custom tokens code' : undefined;
   }
 
   private replaceLegacyTokens(str: string | undefined): string {

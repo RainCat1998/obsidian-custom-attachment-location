@@ -5,7 +5,10 @@ import {
   debounce,
   normalizePath
 } from 'obsidian';
-import { convertAsyncToSync } from 'obsidian-dev-utils/Async';
+import {
+  convertAsyncToSync,
+  invokeAsyncSafely
+} from 'obsidian-dev-utils/Async';
 import {
   getEnumKey,
   getEnumValue
@@ -346,18 +349,11 @@ export class PluginSettingsTab extends PluginSettingsTabBase<PluginTypes> {
       });
 
     const REGISTER_CUSTOM_TOKENS_DEBOUNCE_IN_MILLISECONDS = 2000;
-    const registerCustomTokensDebounced = debounce((customTokensStr: string, oldCustomTokensStr: string, inputEl: HTMLTextAreaElement) => {
-      if (customTokensStr === oldCustomTokensStr) {
-        return;
-      }
-
-      inputEl.trigger('input');
-
-      if (this.plugin.settingsManager.settingsWrapper.validationMessages.customTokensStr) {
-        return;
-      }
-
-      Substitutions.registerCustomTokens(customTokensStr);
+    const registerCustomTokensDebounced = debounce((customTokensStr: string) => {
+      invokeAsyncSafely(async () => {
+        Substitutions.registerCustomTokens(customTokensStr);
+        await this.revalidate();
+      });
     }, REGISTER_CUSTOM_TOKENS_DEBOUNCE_IN_MILLISECONDS);
 
     new SettingEx(this.containerEl)
@@ -375,8 +371,8 @@ export class PluginSettingsTab extends PluginSettingsTabBase<PluginTypes> {
         codeHighlighter.setLanguage('javascript');
         codeHighlighter.inputEl.addClass('custom-tokens-setting-control');
         this.bind(codeHighlighter, 'customTokensStr', {
-          onChanged: (newValue, oldValue) => {
-            registerCustomTokensDebounced(newValue, oldValue, codeHighlighter.inputEl);
+          onChanged: (newValue) => {
+            registerCustomTokensDebounced(newValue);
           }
         });
         codeHighlighter.setPlaceholder(SAMPLE_CUSTOM_TOKENS);

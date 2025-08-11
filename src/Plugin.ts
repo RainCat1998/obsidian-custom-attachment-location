@@ -41,6 +41,7 @@ import {
 } from 'obsidian-dev-utils/obsidian/RenameDeleteHandler';
 import { createFolderSafe } from 'obsidian-dev-utils/obsidian/Vault';
 import {
+  extname,
   join,
   makeFileName
 } from 'obsidian-dev-utils/Path';
@@ -337,7 +338,8 @@ export class Plugin extends PluginBase<PluginTypes> {
         originalAttachmentFileName: file.name
       });
       const attachmentFileName = await getGeneratedAttachmentFileName(this, substitutions);
-      file.name = makeFileName(attachmentFileName, substitutions.originalAttachmentFileExtension);
+      const ext = extname(file.name).slice(1);
+      file.name = makeFileName(attachmentFileName, ext);
     }
 
     return next.call(this.app.shareReceiver, files);

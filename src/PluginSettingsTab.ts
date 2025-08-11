@@ -345,7 +345,7 @@ export class PluginSettingsTab extends PluginSettingsTabBase<PluginTypes> {
         this.bind(multipleText, 'excludePathsFromAttachmentCollecting');
       });
 
-    const REGISTER_CUSTOM_TOKENS_DEBOUNCE_IN_MILLISECONDS = 5000;
+    const REGISTER_CUSTOM_TOKENS_DEBOUNCE_IN_MILLISECONDS = 2000;
     const registerCustomTokensDebounced = debounce((customTokensStr: string, inputEl: HTMLInputElement) => {
       inputEl.trigger('input');
 

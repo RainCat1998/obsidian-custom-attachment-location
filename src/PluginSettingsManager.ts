@@ -24,7 +24,7 @@ import {
   validatePath
 } from './Substitutions.ts';
 
-const CUSTOM_TOKENS_VALIDATOR_DEBOUNCE_IN_MILLISECONDS = 5000;
+const CUSTOM_TOKENS_VALIDATOR_DEBOUNCE_IN_MILLISECONDS = 2000;
 
 class LegacySettings {
   public autoRenameFiles = false;

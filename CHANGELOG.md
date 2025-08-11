@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## 9.0.4
+
+- Revalidate tokens after debouncing
+- Update libs
+
 ## 9.0.3
 
 - Prevent infinite update loop

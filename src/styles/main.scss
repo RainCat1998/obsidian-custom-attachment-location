@@ -22,4 +22,8 @@
   &.preview-modal .preview-container {
     overflow: auto;
   }
+
+  .highlighted-token {
+    color: var(--text-accent);
+  }
 }

@@ -86,13 +86,15 @@ class PromptWithPreviewModal extends Modal {
   }
 
   public override onOpen(): void {
-    const highlightedTemplate = insertAt(
-      this.options.ctx.fullTemplate,
-      `==> ${this.options.ctx.tokenWithFormat} <==`,
-      this.options.ctx.tokenStartOffset,
-      this.options.ctx.tokenEndOffset
-    );
-    const title = `Provide a value for the following token: ${highlightedTemplate}`;
+    const title = createFragment((f) => {
+      f.appendText('Provide a value for the prompt token:');
+      f.createEl('br');
+      f.appendText(this.options.ctx.fullTemplate.slice(0, this.options.ctx.tokenStartOffset));
+      f.createSpan({
+        cls: 'highlighted-token',
+        text: this.options.ctx.tokenWithFormat });
+      f.appendText(this.options.ctx.fullTemplate.slice(this.options.ctx.tokenEndOffset));
+    });
 
     super.onOpen();
 

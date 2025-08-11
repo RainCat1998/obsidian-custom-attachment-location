@@ -346,7 +346,7 @@ export class PluginSettingsTab extends PluginSettingsTabBase<PluginTypes> {
       });
 
     const REGISTER_CUSTOM_TOKENS_DEBOUNCE_IN_MILLISECONDS = 2000;
-    const registerCustomTokensDebounced = debounce((customTokensStr: string, inputEl: HTMLInputElement) => {
+    const registerCustomTokensDebounced = debounce((customTokensStr: string, inputEl: HTMLTextAreaElement) => {
       inputEl.trigger('input');
 
       if (this.plugin.settingsManager.settingsWrapper.validationMessages.customTokensStr) {

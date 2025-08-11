@@ -13,7 +13,6 @@ import {
 } from 'obsidian-dev-utils/Async';
 import { CssClass } from 'obsidian-dev-utils/CssClass';
 import { addPluginCssClasses } from 'obsidian-dev-utils/obsidian/Plugin/PluginContext';
-import { insertAt } from 'obsidian-dev-utils/String';
 
 import type { TokenEvaluatorContext } from './TokenEvaluatorContext.ts';
 
@@ -109,7 +108,7 @@ class PromptWithPreviewModal extends Modal {
     };
 
     textComponent.setValue(this.value);
-    textComponent.setPlaceholder(title);
+    textComponent.setPlaceholder('Provide a value for the prompt token');
     inputEl.addClass(CssClass.TextBox);
     textComponent.onChange((newValue) => {
       this.value = newValue;

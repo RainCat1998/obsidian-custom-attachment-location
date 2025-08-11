@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## 9.0.3
+
+- Prevent infinite update loop
+- Revalidate settings after registering tokens
+
 ## 9.0.2
 
 - Register custom tokens on startup (#187)

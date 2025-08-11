@@ -281,7 +281,7 @@ registerCustomToken('baz', async (ctx) => {
 
 Then you can use the defined `${foo}`, `${bar:xyzzy}` tokens in the [Location for New Attachments](#location-for-new-attachments), [Generated attachment file name](#generated-attachment-file-name) and [Markdown URL format](#markdown-url-format) settings.
 
-[See](./src/TokenEvaluatorContext.ts) for the full specification of the `ctx` argument
+See [spec](./src/TokenEvaluatorContext.ts) of the `ctx` argument.
 
 ## Changelog
 

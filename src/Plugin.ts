@@ -100,6 +100,7 @@ export class Plugin extends PluginBase<PluginTypes> {
   protected override async onLayoutReady(): Promise<void> {
     await super.onLayoutReady();
     Substitutions.registerCustomTokens(this.settings.customTokensStr);
+    await this.settingsManager.loadFromFile(false);
 
     registerPatch(this, this.app.vault, {
       getAvailablePath: (): GetAvailablePathFn => this.getAvailablePath.bind(this),

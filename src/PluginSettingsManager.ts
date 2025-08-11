@@ -93,6 +93,7 @@ export class PluginSettingsManager extends PluginSettingsManagerBase<PluginTypes
 
       if (legacySettings.toLowerCase || legacySettings.shouldRenameAttachmentsToLowerCase) {
         invokeAsyncSafely(async () => {
+          await this.plugin.waitForLifecycleEvent('layoutReady');
           await alert({
             app: this.app,
             message: createFragment((f) => {
@@ -116,6 +117,7 @@ export class PluginSettingsManager extends PluginSettingsManagerBase<PluginTypes
 ${commentOut(legacySettings.customTokensStr)}
 `;
         invokeAsyncSafely(async () => {
+          await this.plugin.waitForLifecycleEvent('layoutReady');
           await alert({
             app: this.app,
             message: createFragment((f) => {

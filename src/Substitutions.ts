@@ -370,7 +370,8 @@ export class Substitutions {
         originalAttachmentFileName: this.originalAttachmentFileName,
         token,
         tokenEndOffset: args.offset + args.substring.length,
-        tokenStartOffset: args.offset
+        tokenStartOffset: args.offset,
+        tokenWithFormat: args.substring
       };
 
       try {

@@ -89,4 +89,9 @@ export interface TokenEvaluatorContext {
    * The start offset of the token with the full template.
    */
   tokenStartOffset: number;
+
+  /**
+   * The token with the format.
+   */
+  tokenWithFormat: string;
 }

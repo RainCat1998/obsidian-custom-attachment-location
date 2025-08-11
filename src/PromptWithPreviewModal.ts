@@ -13,6 +13,7 @@ import {
 } from 'obsidian-dev-utils/Async';
 import { CssClass } from 'obsidian-dev-utils/CssClass';
 import { addPluginCssClasses } from 'obsidian-dev-utils/obsidian/Plugin/PluginContext';
+import { insertAt } from 'obsidian-dev-utils/String';
 
 import type { TokenEvaluatorContext } from './TokenEvaluatorContext.ts';
 
@@ -85,12 +86,17 @@ class PromptWithPreviewModal extends Modal {
   }
 
   public override onOpen(): void {
-    // eslint-disable-next-line no-template-curly-in-string
-    const TITLE = 'Provide a value for ${prompt} template';
+    const highlightedTemplate = insertAt(
+      this.options.ctx.fullTemplate,
+      `==> ${this.options.ctx.tokenWithFormat} <==`,
+      this.options.ctx.tokenStartOffset,
+      this.options.ctx.tokenEndOffset
+    );
+    const title = `Provide a value for the following token: ${highlightedTemplate}`;
 
     super.onOpen();
 
-    this.titleEl.setText(TITLE);
+    this.titleEl.setText(title);
     const textComponent = new TextComponent(this.contentEl);
     const inputEl = textComponent.inputEl;
 
@@ -101,7 +107,7 @@ class PromptWithPreviewModal extends Modal {
     };
 
     textComponent.setValue(this.value);
-    textComponent.setPlaceholder(TITLE);
+    textComponent.setPlaceholder(title);
     inputEl.addClass(CssClass.TextBox);
     textComponent.onChange((newValue) => {
       this.value = newValue;

@@ -1,7 +1,6 @@
 import { EmptyAttachmentFolderBehavior } from 'obsidian-dev-utils/obsidian/RenameDeleteHandler';
 import { escapeRegExp } from 'obsidian-dev-utils/RegExp';
 
-import { Substitutions } from './Substitutions.ts';
 export const SAMPLE_CUSTOM_TOKENS = `registerCustomToken('foo', (ctx) => {
   return ctx.noteFileName + ctx.app.appId + ctx.format;
 });
@@ -63,7 +62,6 @@ export class PluginSettings {
 
   public set customTokensStr(value: string) {
     this._customTokensStr = value;
-    Substitutions.registerCustomFormatters(this._customTokensStr);
   }
 
   public get excludePaths(): string[] {

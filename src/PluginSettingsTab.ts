@@ -1,12 +1,17 @@
 import type { BindOptionsExtended } from 'obsidian-dev-utils/obsidian/Plugin/PluginSettingsTabBase';
 import type { ConditionalKeys } from 'type-fest';
 
-import { normalizePath } from 'obsidian';
+import {
+  debounce,
+  normalizePath
+} from 'obsidian';
+import { convertAsyncToSync } from 'obsidian-dev-utils/Async';
 import {
   getEnumKey,
   getEnumValue
 } from 'obsidian-dev-utils/Enum';
 import { appendCodeBlock } from 'obsidian-dev-utils/HTMLElement';
+import { confirm } from 'obsidian-dev-utils/obsidian/Modals/Confirm';
 import { PluginSettingsTabBase } from 'obsidian-dev-utils/obsidian/Plugin/PluginSettingsTabBase';
 import { EmptyAttachmentFolderBehavior } from 'obsidian-dev-utils/obsidian/RenameDeleteHandler';
 import { SettingEx } from 'obsidian-dev-utils/obsidian/SettingEx';
@@ -20,8 +25,7 @@ import {
   SAMPLE_CUSTOM_TOKENS
 } from './PluginSettings.ts';
 import { TOKENIZED_STRING_LANGUAGE } from './PrismComponent.ts';
-import { convertAsyncToSync, invokeAsyncSafely } from 'obsidian-dev-utils/Async';
-import { confirm } from 'obsidian-dev-utils/obsidian/Modals/Confirm';
+import { Substitutions } from './Substitutions.ts';
 
 const VISIBLE_WHITESPACE_CHARACTER = '␣';
 
@@ -341,6 +345,11 @@ export class PluginSettingsTab extends PluginSettingsTabBase<PluginTypes> {
         this.bind(multipleText, 'excludePathsFromAttachmentCollecting');
       });
 
+    const REGISTER_CUSTOM_TOKENS_DEBOUNCE_IN_MILLISECONDS = 5000;
+    const registerCustomTokensDebounced = debounce((customTokensStr: string) => {
+      Substitutions.registerCustomTokens(customTokensStr);
+    }, REGISTER_CUSTOM_TOKENS_DEBOUNCE_IN_MILLISECONDS);
+
     new SettingEx(this.containerEl)
       .setName('Custom tokens')
       .setDesc(createFragment((f) => {
@@ -355,7 +364,11 @@ export class PluginSettingsTab extends PluginSettingsTabBase<PluginTypes> {
       .addCodeHighlighter((codeHighlighter) => {
         codeHighlighter.setLanguage('javascript');
         codeHighlighter.inputEl.addClass('custom-tokens-setting-control');
-        this.bind(codeHighlighter, 'customTokensStr');
+        this.bind(codeHighlighter, 'customTokensStr', {
+          onChanged: (newValue) => {
+            registerCustomTokensDebounced(newValue);
+          }
+        });
         codeHighlighter.setPlaceholder(SAMPLE_CUSTOM_TOKENS);
       });
 
@@ -368,11 +381,13 @@ export class PluginSettingsTab extends PluginSettingsTabBase<PluginTypes> {
             return;
           }
 
-          if (this.plugin.settings.customTokensStr !== '' && !await confirm({
-            app: this.plugin.app,
-            message: 'Are you sure you want to reset the custom tokens to the sample custom tokens? Your changes will be lost.',
-            title: 'Reset to sample custom tokens'
-          })) {
+          if (
+            this.plugin.settings.customTokensStr !== '' && !await confirm({
+              app: this.plugin.app,
+              message: 'Are you sure you want to reset the custom tokens to the sample custom tokens? Your changes will be lost.',
+              title: 'Reset to sample custom tokens'
+            })
+          ) {
             return;
           }
 

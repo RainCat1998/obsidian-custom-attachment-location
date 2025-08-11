@@ -114,7 +114,7 @@ export class PluginSettingsManager extends PluginSettingsManagerBase<PluginTypes
 // Refer to the documentation (https://github.com/RainCat1998/obsidian-custom-attachment-location?tab=readme-ov-file#custom-tokens) for more information.
 
 ${commentOut(legacySettings.customTokensStr)}
-`
+`;
         invokeAsyncSafely(async () => {
           await alert({
             app: this.app,
@@ -244,6 +244,10 @@ function addDateTimeFormat(str: string, dateTimeFormat: string): string {
   return str.replaceAll('${date}', `\${date:${dateTimeFormat}}`);
 }
 
+function commentOut(str: string): string {
+  return str.replaceAll(/^/gm, '// ');
+}
+
 function customTokensValidator(value: string): MaybeReturn<string> {
   const formatters = parseCustomTokens(value);
   if (formatters === null) {
@@ -260,8 +264,4 @@ function pathsValidator(paths: string[]): MaybeReturn<string> {
       }
     }
   }
-}
-
-function commentOut(str: string): string {
-  return str.replaceAll(/^/gm, '// ');
 }

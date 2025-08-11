@@ -81,12 +81,12 @@ export interface TokenEvaluatorContext {
   token: string;
 
   /**
-   * The end offset of the token with the full template.
+   * The end offset of the token within the full template.
    */
   tokenEndOffset: number;
 
   /**
-   * The start offset of the token with the full template.
+   * The start offset of the token within the full template.
    */
   tokenStartOffset: number;
 

@@ -346,7 +346,11 @@ export class PluginSettingsTab extends PluginSettingsTabBase<PluginTypes> {
       });
 
     const REGISTER_CUSTOM_TOKENS_DEBOUNCE_IN_MILLISECONDS = 2000;
-    const registerCustomTokensDebounced = debounce((customTokensStr: string, inputEl: HTMLTextAreaElement) => {
+    const registerCustomTokensDebounced = debounce((customTokensStr: string, oldCustomTokensStr: string, inputEl: HTMLTextAreaElement) => {
+      if (customTokensStr === oldCustomTokensStr) {
+        return;
+      }
+
       inputEl.trigger('input');
 
       if (this.plugin.settingsManager.settingsWrapper.validationMessages.customTokensStr) {
@@ -371,8 +375,8 @@ export class PluginSettingsTab extends PluginSettingsTabBase<PluginTypes> {
         codeHighlighter.setLanguage('javascript');
         codeHighlighter.inputEl.addClass('custom-tokens-setting-control');
         this.bind(codeHighlighter, 'customTokensStr', {
-          onChanged: (newValue) => {
-            registerCustomTokensDebounced(newValue, codeHighlighter.inputEl);
+          onChanged: (newValue, oldValue) => {
+            registerCustomTokensDebounced(newValue, oldValue, codeHighlighter.inputEl);
           }
         });
         codeHighlighter.setPlaceholder(SAMPLE_CUSTOM_TOKENS);

@@ -351,15 +351,19 @@ export class PluginSettingsTab extends PluginSettingsTabBase<PluginTypes> {
         codeHighlighter.setLanguage('javascript');
         codeHighlighter.inputEl.addClass('custom-tokens-setting-control');
         this.bind(codeHighlighter, 'customTokensStr');
-        codeHighlighter.setPlaceholder(`exports.myCustomToken1 = (substitutions, format) => {
-  return substitutions.fileName + substitutions.app.appId + format;
-};
+        codeHighlighter.setPlaceholder(`registerCustomToken('foo', (ctx) => {
+  return ctx.noteFileName + ctx.app.appId + ctx.format;
+});
 
-exports.myCustomToken2 = async (substitutions, format) => {
-  return await Promise.resolve(
-    substitutions.fileName + substitutions.app.appId + format
-  );
-};`);
+registerCustomToken('bar', async (ctx) => {
+  await sleep(100);
+  return ctx.noteFileName + ctx.app.appId + ctx.format;
+});
+
+registerCustomToken('baz', async (ctx) => {
+  return ctx.noteFileName + await ctx.fillTemplate('corge \${grault} garply \${waldo:fred} plugh');
+});
+`);
       });
 
     new SettingEx(this.containerEl)

@@ -263,31 +263,23 @@ The custom tokens are defined as a functions, both sync and async are supported.
 Example:
 
 ```javascript
-exports.myCustomToken1 = (substitutions, format) => {
-  return substitutions.noteFileName + substitutions.app.appId + format;
-};
+registerCustomToken('foo', (ctx) => {
+  return ctx.noteFileName + ctx.app.appId + ctx.format;
+});
 
-exports.myCustomToken2 = async (substitutions, format) => {
-  return await Promise.resolve(
-    substitutions.noteFileName + substitutions.app.appId + format
-  );
-};
+registerCustomToken('bar', async (ctx) => {
+  await sleep(100);
+  return ctx.noteFileName + ctx.app.appId + ctx.format;
+});
+
+registerCustomToken('baz', async (ctx) => {
+  return ctx.noteFileName + await ctx.fillTemplate('corge ${grault} garply ${waldo:fred} plugh');
+});
 ```
 
-Then you can use the defined `${myCustomToken1}`, `${myCustomToken2:format}` tokens in the [Location for New Attachments](#location-for-new-attachments), [Generated attachment file name](#generated-attachment-file-name) and [Markdown URL format](#markdown-url-format) settings.
+Then you can use the defined `${foo}`, `${bar:xyzzy}` tokens in the [Location for New Attachments](#location-for-new-attachments), [Generated attachment file name](#generated-attachment-file-name) and [Markdown URL format](#markdown-url-format) settings.
 
-- `substitutions`: is an object with the following properties:
-  - `app`: Obsidian app object.
-  - `generatedAttachmentFileName`: The generated file name of the attachment (available only inside [Markdown URL format](#markdown-url-format) setting).
-  - `generatedAttachmentFilePath`: The generated file path of the attachment (available only inside [Markdown URL format](#markdown-url-format) setting).
-  - `noteFileName`: The file name of the current note.
-  - `noteFilePath`: The full path to the current note.
-  - `noteFolderName`: The name of the folder containing the current note.
-  - `noteFolderPath`: The full path to the folder containing the current note.
-  - `originalAttachmentFileExtension`: Extension of the original attachment file.
-  - `originalAttachmentFileName`: File name of the original attachment file.
-  - `fillTemplate(template)`: Function to fill the template with the given format. E.g., `substitutions.fillTemplate('${date:YYYY-MM-DD}')`.
-- `format`: optional format string.
+[See](./src/TokenEvaluatorContext.ts) for the full specification of the `ctx` argument
 
 ## Changelog
 

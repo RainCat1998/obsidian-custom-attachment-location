@@ -43,7 +43,7 @@ export class PluginSettings {
   public specialCharacters = '#^[]|*\\<>:?';
   public specialCharactersReplacement = '-';
   public treatAsAttachmentExtensions: readonly string[] = ['.excalidraw.md'];
-  public warningVersion = '0.0.0';
+  public warningVersion = '';
   public get customTokensStr(): string {
     return this._customTokensStr;
   }

@@ -33,7 +33,6 @@ import {
   testAngleBrackets,
   testWikilink
 } from 'obsidian-dev-utils/obsidian/Link';
-import { alert } from 'obsidian-dev-utils/obsidian/Modals/Alert';
 import { registerPatch } from 'obsidian-dev-utils/obsidian/MonkeyAround';
 import { PluginBase } from 'obsidian-dev-utils/obsidian/Plugin/PluginBase';
 import {
@@ -46,7 +45,6 @@ import {
   makeFileName
 } from 'obsidian-dev-utils/Path';
 import { parentFolderPath } from 'obsidian-typings/implementations';
-import { compare } from 'semver';
 
 import type { PluginTypes } from './PluginTypes.ts';
 
@@ -142,24 +140,6 @@ export class Plugin extends PluginBase<PluginTypes> {
         };
       }
     });
-
-    if (compare(this.settings.warningVersion, '8.1.0') < 0) {
-      await alert({
-        app: this.app,
-        message: createFragment((f) => {
-          f.appendText('In plugin version 8.1.0, some token names changed. Please update your tokens accordingly. Refer to the ');
-          f.createEl('a', {
-            href: 'https://github.com/RainCat1998/obsidian-custom-attachment-location?tab=readme-ov-file#tokens',
-            text: 'documentation'
-          });
-          f.appendText(' for more information.');
-        })
-      });
-
-      await this.settingsManager.editAndSave((settings) => {
-        settings.warningVersion = this.manifest.version;
-      });
-    }
   }
 
   protected override async onloadImpl(): Promise<void> {

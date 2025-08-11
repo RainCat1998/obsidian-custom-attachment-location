@@ -7,6 +7,7 @@ import { PluginSettingsManagerBase } from 'obsidian-dev-utils/obsidian/Plugin/Pl
 import { EmptyAttachmentFolderBehavior } from 'obsidian-dev-utils/obsidian/RenameDeleteHandler';
 import { isValidRegExp } from 'obsidian-dev-utils/RegExp';
 import { replaceAll } from 'obsidian-dev-utils/String';
+import { compare } from 'semver';
 
 import type { PluginTypes } from './PluginTypes.ts';
 
@@ -108,6 +109,22 @@ export class PluginSettingsManager extends PluginSettingsManagerBase<PluginTypes
         });
       }
 
+      if (legacySettings.customTokensStr && legacySettings.warningVersion && compare(legacySettings.warningVersion, '9.0.0') < 0) {
+        invokeAsyncSafely(async () => {
+          await alert({
+            app: this.app,
+            message: createFragment((f) => {
+              f.appendText('In plugin version 9.0.0, the format of custom token registration changed. Please update your tokens accordingly. Refer to the ');
+              f.createEl('a', {
+                href: 'https://github.com/RainCat1998/obsidian-custom-attachment-location?tab=readme-ov-file#custom-tokens',
+                text: 'documentation'
+              });
+              f.appendText(' for more information.');
+            })
+          });
+        });
+      }
+
       if (legacySettings.convertImagesToJpeg !== undefined) {
         legacySettings.shouldConvertPastedImagesToJpeg = legacySettings.convertImagesToJpeg;
       }
@@ -133,6 +150,8 @@ export class PluginSettingsManager extends PluginSettingsManagerBase<PluginTypes
           ? CollectAttachmentUsedByMultipleNotesMode.Copy
           : CollectAttachmentUsedByMultipleNotesMode.Skip;
       }
+
+      legacySettings.warningVersion = this.plugin.manifest.version;
     });
   }
 

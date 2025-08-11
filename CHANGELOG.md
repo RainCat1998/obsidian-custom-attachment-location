@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## 9.0.1
+
+- Don't timeout on collecting in prompt mode
+- Prevent image/video overflow
+
 ## 9.0.0
 
 - Highlight token

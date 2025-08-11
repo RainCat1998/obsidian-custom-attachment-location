@@ -346,7 +346,13 @@ export class PluginSettingsTab extends PluginSettingsTabBase<PluginTypes> {
       });
 
     const REGISTER_CUSTOM_TOKENS_DEBOUNCE_IN_MILLISECONDS = 5000;
-    const registerCustomTokensDebounced = debounce((customTokensStr: string) => {
+    const registerCustomTokensDebounced = debounce((customTokensStr: string, inputEl: HTMLInputElement) => {
+      inputEl.trigger('input');
+
+      if (this.plugin.settingsManager.settingsWrapper.validationMessages.customTokensStr) {
+        return;
+      }
+
       Substitutions.registerCustomTokens(customTokensStr);
     }, REGISTER_CUSTOM_TOKENS_DEBOUNCE_IN_MILLISECONDS);
 
@@ -366,11 +372,12 @@ export class PluginSettingsTab extends PluginSettingsTabBase<PluginTypes> {
         codeHighlighter.inputEl.addClass('custom-tokens-setting-control');
         this.bind(codeHighlighter, 'customTokensStr', {
           onChanged: (newValue) => {
-            registerCustomTokensDebounced(newValue);
+            registerCustomTokensDebounced(newValue, codeHighlighter.inputEl);
           }
         });
         codeHighlighter.setPlaceholder(SAMPLE_CUSTOM_TOKENS);
       });
+    this.plugin.settingsManager.shouldDebounceCustomTokensValidation = true;
 
     new SettingEx(this.containerEl)
       .addButton((button) => {
@@ -422,6 +429,11 @@ export class PluginSettingsTab extends PluginSettingsTabBase<PluginTypes> {
       .addMultipleText((multipleText) => {
         this.bind(multipleText, 'treatAsAttachmentExtensions');
       });
+  }
+
+  public override hide(): void {
+    super.hide();
+    this.plugin.settingsManager.shouldDebounceCustomTokensValidation = false;
   }
 }
 

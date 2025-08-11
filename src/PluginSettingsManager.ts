@@ -1,5 +1,6 @@
 import type { MaybeReturn } from 'obsidian-dev-utils/Type';
 
+import { debounce } from 'obsidian';
 import { invokeAsyncSafely } from 'obsidian-dev-utils/Async';
 import { appendCodeBlock } from 'obsidian-dev-utils/HTMLElement';
 import { alert } from 'obsidian-dev-utils/obsidian/Modals/Alert';
@@ -22,6 +23,8 @@ import {
   validateFileName,
   validatePath
 } from './Substitutions.ts';
+
+const CUSTOM_TOKENS_VALIDATOR_DEBOUNCE_IN_MILLISECONDS = 5000;
 
 class LegacySettings {
   public autoRenameFiles = false;
@@ -48,6 +51,10 @@ class LegacySettings {
 }
 
 export class PluginSettingsManager extends PluginSettingsManagerBase<PluginTypes> {
+  public shouldDebounceCustomTokensValidation = false;
+  private customTokensValidatorDebounced = debounce(this.customTokensValidatorImpl.bind(this), CUSTOM_TOKENS_VALIDATOR_DEBOUNCE_IN_MILLISECONDS);
+  private lastCustomTokenValidatorResult: string | undefined = undefined;
+
   protected override createDefaultSettings(): PluginSettings {
     return new PluginSettings();
   }
@@ -208,8 +215,28 @@ ${commentOut(legacySettings.customTokensStr)}
     });
 
     this.registerValidator('customTokensStr', (value): MaybeReturn<string> => {
-      customTokensValidator(value);
+      return this.customTokensValidator(value);
     });
+  }
+
+  private customTokensValidator(customTokensStr: string): MaybeReturn<string> {
+    if (this.shouldDebounceCustomTokensValidation) {
+      this.customTokensValidatorDebounced(customTokensStr);
+    } else {
+      this.customTokensValidatorImpl(customTokensStr);
+    }
+
+    return this.lastCustomTokenValidatorResult ?? undefined;
+  }
+
+  private customTokensValidatorImpl(customTokensStr: string): void {
+    const formatters = parseCustomTokens(customTokensStr);
+    this.lastCustomTokenValidatorResult = formatters === null ? 'Invalid custom tokens code' : undefined;
+    if (this.shouldDebounceCustomTokensValidation) {
+      this.editAndSave((setting) => {
+        setting.customTokensStr = customTokensStr;
+      });
+    }
   }
 
   private replaceLegacyTokens(str: string | undefined): string {
@@ -248,13 +275,6 @@ function addDateTimeFormat(str: string, dateTimeFormat: string): string {
 
 function commentOut(str: string): string {
   return str.replaceAll(/^/gm, '// ');
-}
-
-function customTokensValidator(value: string): MaybeReturn<string> {
-  const formatters = parseCustomTokens(value);
-  if (formatters === null) {
-    return 'Invalid custom tokens code';
-  }
 }
 
 function pathsValidator(paths: string[]): MaybeReturn<string> {

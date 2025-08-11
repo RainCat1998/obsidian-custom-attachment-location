@@ -6,6 +6,7 @@ import type {
 } from 'obsidian';
 import type { FileChange } from 'obsidian-dev-utils/obsidian/FileChange';
 import type { PathOrAbstractFile } from 'obsidian-dev-utils/obsidian/FileSystem';
+import type { ProcessOptions } from 'obsidian-dev-utils/obsidian/Vault';
 import type { CanvasData } from 'obsidian/canvas.d.ts';
 
 import {
@@ -17,7 +18,10 @@ import {
 import { INFINITE_TIMEOUT } from 'obsidian-dev-utils/Async';
 import { throwExpression } from 'obsidian-dev-utils/Error';
 import { appendCodeBlock } from 'obsidian-dev-utils/HTMLElement';
-import { toJson } from 'obsidian-dev-utils/ObjectUtils';
+import {
+  normalizeOptionalProperties,
+  toJson
+} from 'obsidian-dev-utils/ObjectUtils';
 import { applyFileChanges } from 'obsidian-dev-utils/obsidian/FileChange';
 import {
   getPath,
@@ -59,7 +63,10 @@ import {
 } from './AttachmentPath.ts';
 import { selectMode } from './CollectAttachmentUsedByMultipleNotesModal.ts';
 import { CollectAttachmentUsedByMultipleNotesMode } from './PluginSettings.ts';
-import { Substitutions } from './Substitutions.ts';
+import {
+  hasPromptToken,
+  Substitutions
+} from './Substitutions.ts';
 
 interface AttachmentMoveResult {
   newAttachmentPath: string;
@@ -208,11 +215,9 @@ export async function collectAttachments(
 
       return changes;
     },
-    plugin.settings.collectAttachmentUsedByMultipleNotesMode === CollectAttachmentUsedByMultipleNotesMode.Prompt
-      ? {
-        timeoutInMilliseconds: INFINITE_TIMEOUT
-      }
-      : undefined
+    normalizeOptionalProperties<Partial<ProcessOptions>>({
+      timeoutInMilliseconds: getTimeoutInMilliseconds(plugin)
+    })
   );
 
   if (isCanvas) {
@@ -242,7 +247,11 @@ export function collectAttachmentsCurrentFolder(plugin: Plugin, checking: boolea
   }
 
   if (!checking) {
-    addToQueue(plugin.app, () => collectAttachmentsInFolder(plugin, note?.parent ?? throwExpression(new Error('Parent folder not found'))));
+    addToQueue(
+      plugin.app,
+      () => collectAttachmentsInFolder(plugin, note?.parent ?? throwExpression(new Error('Parent folder not found'))),
+      getTimeoutInMilliseconds(plugin)
+    );
   }
 
   return true;
@@ -261,14 +270,14 @@ export function collectAttachmentsCurrentNote(plugin: Plugin, checking: boolean)
       return true;
     }
 
-    addToQueue(plugin.app, () => collectAttachments(plugin, note, {}));
+    addToQueue(plugin.app, () => collectAttachments(plugin, note, {}), getTimeoutInMilliseconds(plugin));
   }
 
   return true;
 }
 
 export function collectAttachmentsEntireVault(plugin: Plugin): void {
-  addToQueue(plugin.app, () => collectAttachmentsInFolder(plugin, plugin.app.vault.getRoot()));
+  addToQueue(plugin.app, () => collectAttachmentsInFolder(plugin, plugin.app.vault.getRoot()), getTimeoutInMilliseconds(plugin));
 }
 
 export async function collectAttachmentsInFolder(plugin: Plugin, folder: TFolder): Promise<void> {
@@ -343,6 +352,14 @@ async function getCanvasLinks(app: App, canvasFile: TFile): Promise<ReferenceCac
       start: { col: 0, line: 0, loc: 0, offset: 0 }
     }
   }));
+}
+
+function getTimeoutInMilliseconds(plugin: Plugin): number | undefined {
+  return plugin.settings.collectAttachmentUsedByMultipleNotesMode === CollectAttachmentUsedByMultipleNotesMode.Prompt
+      || hasPromptToken(plugin.settings.attachmentFolderPath)
+      || hasPromptToken(plugin.settings.generatedAttachmentFileName)
+    ? INFINITE_TIMEOUT
+    : undefined;
 }
 
 async function prepareAttachmentToMove(

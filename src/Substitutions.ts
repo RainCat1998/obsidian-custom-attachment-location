@@ -39,6 +39,11 @@ interface FormatWithParameter {
   parameter: number | undefined;
 }
 
+interface Token {
+  format: string;
+  token: string;
+}
+
 type TokenEvaluator = (ctx: TokenEvaluatorContext, substitutions: Substitutions) => Promisable<string>;
 
 const HEADING_LEVELS = ['1', '2', '3', '4', '5', '6', 'any'] as const;
@@ -47,7 +52,7 @@ type HeadingLevel = (typeof HEADING_LEVELS)[number];
 const MORE_THAN_TWO_DOTS_REG_EXP = /^\.{3,}$/;
 const TRAILING_DOTS_REG_EXP = /\.+$/;
 export const INVALID_FILENAME_PATH_CHARS_REG_EXP = /[\\/:*?"<>|]/;
-export const SUBSTITUTION_TOKEN_REG_EXP = /\${(?<Token>.+?)(?::(?<Format>.*?))?}/g;
+const SUBSTITUTION_TOKEN_REG_EXP = /\${(?<Token>.+?)(?::(?<Format>.*?))?}/g;
 
 export enum TokenValidationMode {
   Error = 'Error',
@@ -443,6 +448,10 @@ export class Substitutions {
   }
 }
 
+export function hasPromptToken(str: string): boolean {
+  return extractTokens(str).some((token) => token.token === 'prompt');
+}
+
 export async function validateFileName(options: ValidateFileNameOptions): Promise<string> {
   switch (options.tokenValidationMode) {
     case TokenValidationMode.Error: {
@@ -528,6 +537,14 @@ export async function validatePath(options: ValidatePathOptions): Promise<string
   return '';
 }
 
+function extractTokens(str: string): Token[] {
+  const matches = str.matchAll(SUBSTITUTION_TOKEN_REG_EXP);
+  return Array.from(matches).map((match) => ({
+    format: match.groups?.['Format'] ?? '',
+    token: match.groups?.['Token'] ?? ''
+  }));
+}
+
 function generateRandomSymbol(symbols: string): string {
   return symbols[Math.floor(Math.random() * symbols.length)] ?? '';
 }
@@ -564,19 +581,17 @@ async function validateTokens(app: App, str: string): Promise<null | string> {
     noteFilePath: VALIDATION_PATH
   });
 
-  const matches = str.matchAll(SUBSTITUTION_TOKEN_REG_EXP);
-  for (const match of matches) {
-    const token = match.groups?.['Token'] ?? '';
-    if (!Substitutions.isRegisteredToken(token)) {
-      return `Unknown token '${token}'.`;
+  const tokens = extractTokens(str);
+  for (const token of tokens) {
+    if (!Substitutions.isRegisteredToken(token.token)) {
+      return `Unknown token '${token.token}'.`;
     }
-    const format = match.groups?.['Format'] ?? '';
-    const singleFormats = format.split(',');
+    const singleFormats = token.format.split(',');
     for (const singleFormat of singleFormats) {
       try {
-        await FAKE_SUBSTITUTION.fillTemplate(`\${${token}:${singleFormat}}`);
+        await FAKE_SUBSTITUTION.fillTemplate(`\${${token.token}:${singleFormat}}`);
       } catch {
-        return `Token '${token}' is used with unknown format '${singleFormat}'.`;
+        return `Token '${token.token}' is used with unknown format '${singleFormat}'.`;
       }
     }
   }

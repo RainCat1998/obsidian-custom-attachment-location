@@ -6,7 +6,7 @@ import type { Promisable } from 'type-fest';
 
 import moment from 'moment';
 import { printError } from 'obsidian-dev-utils/Error';
-import { getNestedPropertyValue } from 'obsidian-dev-utils/ObjectUtils';
+import { extractDefaultExportInterop, getNestedPropertyValue } from 'obsidian-dev-utils/ObjectUtils';
 import { getFileOrNull } from 'obsidian-dev-utils/obsidian/FileSystem';
 import { getCacheSafe } from 'obsidian-dev-utils/obsidian/MetadataCache';
 import {
@@ -27,7 +27,7 @@ import type { TokenEvaluatorContext } from './TokenEvaluatorContext.ts';
 
 import { promptWithPreview } from './PromptWithPreviewModal.ts';
 
-const slugify = ('default' in slugify_ ? slugify_.default : slugify_) as unknown as typeof slugify_.default;
+const slugify = extractDefaultExportInterop(slugify_);
 
 const VALIDATION_PATH = '__VALIDATION__';
 

@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 9.0.2
+
+- Register custom tokens on startup (#187)
+
 ## 9.0.1
 
 - Don't timeout on collecting in prompt mode

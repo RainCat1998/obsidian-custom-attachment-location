@@ -23,16 +23,19 @@ import {
 import slugify_ from 'slugify';
 
 import { promptWithPreview } from './PromptWithPreviewModal.ts';
+import type { TokenEvaluatorContext } from './TokenEvaluatorContext.ts';
+import { printError } from 'obsidian-dev-utils/Error';
 
 const slugify = ('default' in slugify_ ? slugify_.default : slugify_) as unknown as typeof slugify_.default;
 
 const VALIDATION_PATH = '__VALIDATION__';
 
-type Formatter = (substitutions: Substitutions, format: string) => Promisable<unknown>;
 interface FormatWithParameter {
   base: string;
   parameter: number | undefined;
 }
+
+type TokenEvaluator = (ctx: TokenEvaluatorContext, substitutions: Substitutions) => Promisable<string>;
 
 const HEADING_LEVELS = ['1', '2', '3', '4', '5', '6', 'any'] as const;
 type HeadingLevel = (typeof HEADING_LEVELS)[number];
@@ -48,18 +51,9 @@ export enum TokenValidationMode {
   Validate = 'Validate'
 }
 
-interface SubstitutionsContract {
-  app: App;
-  fillTemplate(template: string): Promise<string>;
-  generatedAttachmentFileName: string;
-  generatedAttachmentFilePath: string;
-  noteFileName: string;
-  noteFilePath: string;
-  noteFolderName: string;
-  noteFolderPath: string;
-  originalAttachmentFileExtension: string;
-  originalAttachmentFileName: string;
-}
+type RegisterCustomTokenFn = (token: string, evaluator: TokenEvaluator) => void;
+
+type RegisterCustomTokensWrapperFn = (registerCustomToken: RegisterCustomTokenFn) => void;
 
 interface SubstitutionsOptions {
   app: App;
@@ -77,26 +71,27 @@ interface ValidateFileNameOptions {
   isEmptyAllowed: boolean;
   tokenValidationMode: TokenValidationMode;
 }
-
 interface ValidatePathOptions {
   app: App;
   areTokensAllowed: boolean;
   path: string;
 }
 
-export function getCustomTokenFormatters(customTokensStr: string): Map<string, Formatter> | null {
-  const formatters = new Map<string, Formatter>();
+export function parseCustomTokens(customTokensStr: string): Map<string, TokenEvaluator> | null {
+  const evaluators = new Map<string, TokenEvaluator>();
   try {
     // eslint-disable-next-line @typescript-eslint/no-implied-eval, no-new-func
-    const customTokenInitFn = new Function('exports', customTokensStr) as (exports: object) => void;
-    const exports = {};
-    customTokenInitFn(exports);
-    for (const [token, formatter] of Object.entries(exports)) {
-      formatters.set(token, formatter as Formatter);
-    }
-    return formatters;
+    const registerCustomTokensWrapperFn = new Function('registerCustomToken', customTokensStr) as RegisterCustomTokensWrapperFn;
+
+    registerCustomTokensWrapperFn(registerCustomToken);
+    return evaluators;
   } catch (e) {
-    throw new Error('Error initializing custom token formatters', { cause: e });
+    printError(new Error('Error registering custom tokens', { cause: e }));
+    return null;
+  }
+
+  function registerCustomToken(token: string, evaluator: TokenEvaluator): void {
+    evaluators.set(token, evaluator);
   }
 }
 
@@ -232,25 +227,24 @@ function getFrontmatterValue(app: App, filePath: string, key: string): string {
   return String(value);
 }
 
-export class Substitutions implements SubstitutionsContract {
-  private static readonly formatters = new Map<string, Formatter>();
+export class Substitutions {
+  private static readonly evaluators = new Map<string, TokenEvaluator>();
   static {
-    this.registerCustomFormatters('');
+    this.registerCustomTokens('');
   }
 
-  public readonly app: App;
-
-  public readonly generatedAttachmentFileName: string;
-  public readonly generatedAttachmentFilePath: string;
-  public readonly noteFileName: string;
-  public readonly noteFilePath: string;
-  public readonly noteFolderName: string;
   public readonly noteFolderPath: string;
-  public readonly originalAttachmentFileExtension: string;
-  public readonly originalAttachmentFileName: string;
+  private readonly app: App;
   private readonly attachmentFileContent: ArrayBuffer | undefined;
   private readonly cursorLine: null | number;
+  private readonly generatedAttachmentFileName: string;
+  private readonly generatedAttachmentFilePath: string;
   private headingsInfo: Map<HeadingLevel, string> | null = null;
+  private readonly noteFileName: string;
+  private readonly noteFilePath: string;
+  private readonly noteFolderName: string;
+  private readonly originalAttachmentFileExtension: string;
+  private readonly originalAttachmentFileName: string;
 
   public constructor(options: SubstitutionsOptions) {
     this.app = options.app;
@@ -281,62 +275,88 @@ export class Substitutions implements SubstitutionsContract {
   }
 
   public static isRegisteredToken(token: string): boolean {
-    return Substitutions.formatters.has(token.toLowerCase());
+    return Substitutions.evaluators.has(token.toLowerCase());
   }
 
-  public static registerCustomFormatters(customTokensStr: string): void {
-    this.formatters.clear();
-    this.registerFormatter('date', (_substitutions, format) => formatDate(format));
-    this.registerFormatter(
+  public static registerCustomTokens(customTokensStr: string): void {
+    this.evaluators.clear();
+    this.registerToken('date', (ctx) => formatDate(ctx.format));
+    this.registerToken(
       'noteFileCreationDate',
-      (substitutions, format) => formatFileDate(substitutions.app, substitutions.noteFilePath, format, (file) => file.stat.ctime)
+      (ctx) => formatFileDate(ctx.app, ctx.noteFilePath, ctx.format, (file) => file.stat.ctime)
     );
-    this.registerFormatter(
+    this.registerToken(
       'noteFileModificationDate',
-      (substitutions, format) => formatFileDate(substitutions.app, substitutions.noteFilePath, format, (file) => file.stat.mtime)
+      (ctx) => formatFileDate(ctx.app, ctx.noteFilePath, ctx.format, (file) => file.stat.mtime)
     );
 
-    this.registerFormatter('noteFileName', (substitutions, format) => formatString(substitutions.noteFileName, format));
-    this.registerFormatter('noteFilePath', (substitutions) => substitutions.noteFilePath);
-    this.registerFormatter('noteFolderName', (substitutions, format) => formatFolderName(substitutions.noteFolderPath, format));
-    this.registerFormatter('noteFolderPath', (substitutions) => substitutions.noteFolderPath);
+    this.registerToken('noteFileName', (ctx) => formatString(ctx.noteFileName, ctx.format));
+    this.registerToken('noteFilePath', (ctx) => ctx.noteFilePath);
+    this.registerToken('noteFolderName', (ctx) => formatFolderName(ctx.noteFolderPath, ctx.format));
+    this.registerToken('noteFolderPath', (ctx) => ctx.noteFolderPath);
 
-    this.registerFormatter('frontmatter', (substitutions, key) => getFrontmatterValue(substitutions.app, substitutions.noteFilePath, key));
+    this.registerToken('frontmatter', (ctx) => getFrontmatterValue(ctx.app, ctx.noteFilePath, ctx.format));
 
-    this.registerFormatter('originalAttachmentFileExtension', (substitutions) => substitutions.originalAttachmentFileExtension);
-    this.registerFormatter('originalAttachmentFileName', (substitutions, format) => formatString(substitutions.originalAttachmentFileName, format));
+    this.registerToken('originalAttachmentFileExtension', (ctx) => ctx.originalAttachmentFileExtension);
+    this.registerToken('originalAttachmentFileName', (ctx) => formatString(ctx.originalAttachmentFileName, ctx.format));
 
-    this.registerFormatter('prompt', (substitutions, format) => substitutions.prompt(format));
+    this.registerToken('prompt', (ctx, substitutions) => substitutions.prompt(ctx.format, ctx.fullTemplate));
 
-    this.registerFormatter('random', (_substitutions, format) => generateRandomValue(format));
+    this.registerToken('random', (ctx) => generateRandomValue(ctx.format));
 
-    this.registerFormatter('attachmentFileSize', (substitutions, format) => formatFileSize(substitutions.attachmentFileContent?.byteLength ?? 0, format));
+    this.registerToken('attachmentFileSize', (ctx) => formatFileSize(ctx.attachmentFileContent?.byteLength ?? 0, ctx.format));
 
-    this.registerFormatter('generatedAttachmentFileName', (substitutions, format) => formatString(substitutions.generatedAttachmentFileName, format));
-    this.registerFormatter('generatedAttachmentFilePath', (substitutions) => substitutions.generatedAttachmentFilePath);
+    this.registerToken('generatedAttachmentFileName', (ctx) => formatString(ctx.generatedAttachmentFileName, ctx.format));
+    this.registerToken('generatedAttachmentFilePath', (ctx) => ctx.generatedAttachmentFilePath);
 
-    this.registerFormatter('heading', async (substitutions, format) => substitutions.getHeading(format));
+    this.registerToken('heading', async (ctx, substitutions) => substitutions.getHeading(ctx.format));
 
-    const customFormatters = getCustomTokenFormatters(customTokensStr) ?? new Map<string, Formatter>();
-    for (const [token, formatter] of customFormatters.entries()) {
-      this.registerFormatter(token, formatter);
+    const customTokens = parseCustomTokens(customTokensStr) ?? new Map<string, TokenEvaluator>();
+    for (const [token, evaluator] of customTokens.entries()) {
+      this.registerToken(token, evaluator);
     }
   }
 
-  private static registerFormatter(token: string, formatter: Formatter): void {
-    this.formatters.set(token.toLowerCase(), formatter);
+  private static registerToken(token: string, evaluator: TokenEvaluator): void {
+    this.evaluators.set(token.toLowerCase(), evaluator);
   }
 
   public async fillTemplate(template: string): Promise<string> {
-    return await replaceAllAsync(template, SUBSTITUTION_TOKEN_REG_EXP, async (_, token, format) => {
-      const formatter = Substitutions.formatters.get(token.toLowerCase());
-      if (!formatter) {
-        throw new Error(`Invalid token: ${token}`);
+    return await replaceAllAsync(template, SUBSTITUTION_TOKEN_REG_EXP, async (args, token, format) => {
+      const evaluator = Substitutions.evaluators.get(token.toLowerCase());
+      if (!evaluator) {
+        throw new Error(`Unknown token '${token}'.`);
       }
 
+      const ctx: TokenEvaluatorContext = {
+        app: this.app,
+        attachmentFileContent: this.attachmentFileContent,
+        fillTemplate: this.fillTemplate.bind(this),
+        format,
+        fullTemplate: template,
+        generatedAttachmentFileName: this.generatedAttachmentFileName,
+        generatedAttachmentFilePath: this.generatedAttachmentFilePath,
+        noteFileName: this.noteFileName,
+        noteFilePath: this.noteFilePath,
+        noteFolderName: this.noteFolderName,
+        noteFolderPath: this.noteFolderPath,
+        originalAttachmentFileExtension: this.originalAttachmentFileExtension,
+        originalAttachmentFileName: this.originalAttachmentFileName,
+        token,
+        tokenEndOffset: args.offset + args.substring.length,
+        tokenStartOffset: args.offset
+      };
+
       try {
-        // eslint-disable-next-line @typescript-eslint/no-base-to-string
-        return String(await formatter(this, format) ?? '');
+        const result = await evaluator(ctx, this);
+        if (typeof result !== 'string') {
+          console.error('Token returned non-string value.', {
+            ctx,
+            result
+          });
+          throw new Error('Token returned non-string value');
+        }
+        return result;
       } catch (e) {
         throw new Error(`Error formatting token \${${token}}`, { cause: e });
       }
@@ -392,7 +412,7 @@ export class Substitutions implements SubstitutionsContract {
     return this.headingsInfo;
   }
 
-  private async prompt(format: string): Promise<string> {
+  private async prompt(format: string, template: string): Promise<string> {
     // Validate format
     formatString('', format);
 
@@ -405,10 +425,11 @@ export class Substitutions implements SubstitutionsContract {
       attachmentFileContent: this.attachmentFileContent,
       originalAttachmentFileExtension: this.originalAttachmentFileExtension,
       originalAttachmentFileName: this.originalAttachmentFileName,
+      template,
       valueValidator: (value) =>
         validateFileName({
           app: this.app,
-          areSingleDotsAllowed: false,
+          areSingleDotsAllowed: true,
           fileName: value,
           isEmptyAllowed: true,
           tokenValidationMode: TokenValidationMode.Error

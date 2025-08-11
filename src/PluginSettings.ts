@@ -2,6 +2,19 @@ import { EmptyAttachmentFolderBehavior } from 'obsidian-dev-utils/obsidian/Renam
 import { escapeRegExp } from 'obsidian-dev-utils/RegExp';
 
 import { Substitutions } from './Substitutions.ts';
+export const SAMPLE_CUSTOM_TOKENS = `registerCustomToken('foo', (ctx) => {
+  return ctx.noteFileName + ctx.app.appId + ctx.format;
+});
+
+registerCustomToken('bar', async (ctx) => {
+  await sleep(100);
+  return ctx.noteFileName + ctx.app.appId + ctx.format;
+});
+
+registerCustomToken('baz', async (ctx) => {
+  return ctx.noteFileName + await ctx.fillTemplate('corge \${grault} garply \${waldo:fred} plugh');
+});
+`;
 
 const ALWAYS_MATCH_REG_EXP = /(?:)/;
 const NEVER_MATCH_REG_EXP = /$./;

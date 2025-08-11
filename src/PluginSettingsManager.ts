@@ -16,8 +16,8 @@ import {
   PluginSettings
 } from './PluginSettings.ts';
 import {
-  getCustomTokenFormatters,
   INVALID_FILENAME_PATH_CHARS_REG_EXP,
+  parseCustomTokens,
   TokenValidationMode,
   validateFileName,
   validatePath
@@ -110,6 +110,11 @@ export class PluginSettingsManager extends PluginSettingsManagerBase<PluginTypes
       }
 
       if (legacySettings.customTokensStr && legacySettings.warningVersion && compare(legacySettings.warningVersion, '9.0.0') < 0) {
+        legacySettings.customTokensStr = `// Custom tokens were commented out as they have to be updated to the new format introduced in plugin version 9.0.0.
+// Refer to the documentation (https://github.com/RainCat1998/obsidian-custom-attachment-location?tab=readme-ov-file#custom-tokens) for more information.
+
+${commentOut(legacySettings.customTokensStr)}
+`
         invokeAsyncSafely(async () => {
           await alert({
             app: this.app,
@@ -240,7 +245,7 @@ function addDateTimeFormat(str: string, dateTimeFormat: string): string {
 }
 
 function customTokensValidator(value: string): MaybeReturn<string> {
-  const formatters = getCustomTokenFormatters(value);
+  const formatters = parseCustomTokens(value);
   if (formatters === null) {
     return 'Invalid custom tokens code';
   }
@@ -255,4 +260,8 @@ function pathsValidator(paths: string[]): MaybeReturn<string> {
       }
     }
   }
+}
+
+function commentOut(str: string): string {
+  return str.replaceAll(/^/gm, '// ');
 }

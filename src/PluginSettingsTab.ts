@@ -16,9 +16,12 @@ import type { PluginTypes } from './PluginTypes.ts';
 
 import {
   AttachmentRenameMode,
-  CollectAttachmentUsedByMultipleNotesMode
+  CollectAttachmentUsedByMultipleNotesMode,
+  SAMPLE_CUSTOM_TOKENS
 } from './PluginSettings.ts';
 import { TOKENIZED_STRING_LANGUAGE } from './PrismComponent.ts';
+import { convertAsyncToSync, invokeAsyncSafely } from 'obsidian-dev-utils/Async';
+import { confirm } from 'obsidian-dev-utils/obsidian/Modals/Confirm';
 
 const VISIBLE_WHITESPACE_CHARACTER = '␣';
 
@@ -346,24 +349,38 @@ export class PluginSettingsTab extends PluginSettingsTabBase<PluginTypes> {
         f.appendText('See ');
         f.createEl('a', { href: 'https://github.com/RainCat1998/obsidian-custom-attachment-location?tab=readme-ov-file#custom-tokens', text: 'documentation' });
         f.appendText(' for more information.');
+        f.createEl('br');
+        f.appendText('⚠️ Custom tokens can be an arbitrary JavaScript code. If poorly written, it can cause the data loss. Use it at your own risk.');
       }))
       .addCodeHighlighter((codeHighlighter) => {
         codeHighlighter.setLanguage('javascript');
         codeHighlighter.inputEl.addClass('custom-tokens-setting-control');
         this.bind(codeHighlighter, 'customTokensStr');
-        codeHighlighter.setPlaceholder(`registerCustomToken('foo', (ctx) => {
-  return ctx.noteFileName + ctx.app.appId + ctx.format;
-});
+        codeHighlighter.setPlaceholder(SAMPLE_CUSTOM_TOKENS);
+      });
 
-registerCustomToken('bar', async (ctx) => {
-  await sleep(100);
-  return ctx.noteFileName + ctx.app.appId + ctx.format;
-});
+    new SettingEx(this.containerEl)
+      .addButton((button) => {
+        button.setButtonText('Reset to sample custom tokens');
+        button.setWarning();
+        button.onClick(convertAsyncToSync(async () => {
+          if (this.plugin.settings.customTokensStr === SAMPLE_CUSTOM_TOKENS) {
+            return;
+          }
 
-registerCustomToken('baz', async (ctx) => {
-  return ctx.noteFileName + await ctx.fillTemplate('corge \${grault} garply \${waldo:fred} plugh');
-});
-`);
+          if (this.plugin.settings.customTokensStr !== '' && !await confirm({
+            app: this.plugin.app,
+            message: 'Are you sure you want to reset the custom tokens to the sample custom tokens? Your changes will be lost.',
+            title: 'Reset to sample custom tokens'
+          })) {
+            return;
+          }
+
+          await this.plugin.settingsManager.editAndSave((setting) => {
+            setting.customTokensStr = SAMPLE_CUSTOM_TOKENS;
+          });
+          this.display();
+        }));
       });
 
     new SettingEx(this.containerEl)

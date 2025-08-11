@@ -1,7 +1,4 @@
-import type {
-  App,
-  TFile
-} from 'obsidian';
+import type { TFile } from 'obsidian';
 import type { PromiseResolve } from 'obsidian-dev-utils/Async';
 import type { EmbedComponent } from 'obsidian-typings';
 
@@ -17,11 +14,10 @@ import {
 import { CssClass } from 'obsidian-dev-utils/CssClass';
 import { addPluginCssClasses } from 'obsidian-dev-utils/obsidian/Plugin/PluginContext';
 
+import type { TokenEvaluatorContext } from './TokenEvaluatorContext.ts';
+
 interface PromptWithPreviewModalOptions {
-  app: App;
-  attachmentFileContent: ArrayBuffer | undefined;
-  originalAttachmentFileExtension: string;
-  originalAttachmentFileName: string;
+  ctx: TokenEvaluatorContext;
   valueValidator: (value: string) => Promise<null | string>;
 }
 
@@ -30,7 +26,7 @@ class PreviewModal extends Modal {
   private tempFile!: TFile;
 
   public constructor(private readonly options: PromptWithPreviewModalOptions) {
-    super(options.app);
+    super(options.ctx.app);
     addPluginCssClasses(this.containerEl, 'preview-modal');
   }
 
@@ -48,18 +44,18 @@ class PreviewModal extends Modal {
   }
 
   private async onOpenAsync(): Promise<void> {
-    const embeddableCreator = this.app.embedRegistry.embedByExtension[this.options.originalAttachmentFileExtension];
+    const embeddableCreator = this.app.embedRegistry.embedByExtension[this.options.ctx.originalAttachmentFileExtension];
 
-    if (!embeddableCreator || !this.options.attachmentFileContent) {
+    if (!embeddableCreator || !this.options.ctx.attachmentFileContent) {
       return;
     }
 
-    const fullFileName = `${this.options.originalAttachmentFileName}.${this.options.originalAttachmentFileExtension}`;
+    const fullFileName = `${this.options.ctx.originalAttachmentFileName}.${this.options.ctx.originalAttachmentFileExtension}`;
 
     this.titleEl.setText(`Preview attachment file '${fullFileName}'`);
 
     const tempPath = `__temp${String(Date.now())}__${fullFileName}`;
-    this.tempFile = await this.app.vault.createBinary(tempPath, this.options.attachmentFileContent);
+    this.tempFile = await this.app.vault.createBinary(tempPath, this.options.ctx.attachmentFileContent);
 
     const previewContainer = this.contentEl.createDiv('preview-container');
 
@@ -78,9 +74,9 @@ class PromptWithPreviewModal extends Modal {
   private value: string;
 
   public constructor(private readonly options: PromptWithPreviewModalOptions, private readonly resolve: PromiseResolve<null | string>) {
-    super(options.app);
+    super(options.ctx.app);
     addPluginCssClasses(this.containerEl, CssClass.PromptModal);
-    this.value = options.originalAttachmentFileName;
+    this.value = options.ctx.originalAttachmentFileName;
   }
 
   public override onClose(): void {
@@ -136,9 +132,9 @@ class PromptWithPreviewModal extends Modal {
     previewButton.setButtonText('Preview attachment file');
     previewButton.onClick(this.preview.bind(this));
 
-    const embeddableCreator = this.app.embedRegistry.embedByExtension[this.options.originalAttachmentFileExtension];
+    const embeddableCreator = this.app.embedRegistry.embedByExtension[this.options.ctx.originalAttachmentFileExtension];
 
-    if (!this.options.attachmentFileContent || !embeddableCreator) {
+    if (!this.options.ctx.attachmentFileContent || !embeddableCreator) {
       previewButton.setDisabled(true);
     }
   }

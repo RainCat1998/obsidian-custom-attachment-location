@@ -228,6 +228,31 @@ function getFrontmatterValue(app: App, filePath: string, key: string): string {
   return String(value);
 }
 
+async function prompt(ctx: TokenEvaluatorContext): Promise<string> {
+  // Validate format
+  formatString('', ctx.format);
+
+  if (ctx.noteFilePath === VALIDATION_PATH) {
+    return '';
+  }
+
+  const promptResult = await promptWithPreview({
+    ctx,
+    valueValidator: (value) =>
+      validateFileName({
+        app: ctx.app,
+        areSingleDotsAllowed: true,
+        fileName: value,
+        isEmptyAllowed: true,
+        tokenValidationMode: TokenValidationMode.Error
+      })
+  });
+  if (promptResult === null) {
+    throw new Error('Prompt cancelled');
+  }
+  return formatString(promptResult, ctx.format);
+}
+
 export class Substitutions {
   private static readonly evaluators = new Map<string, TokenEvaluator>();
   static {
@@ -301,7 +326,7 @@ export class Substitutions {
     this.registerToken('originalAttachmentFileExtension', (ctx) => ctx.originalAttachmentFileExtension);
     this.registerToken('originalAttachmentFileName', (ctx) => formatString(ctx.originalAttachmentFileName, ctx.format));
 
-    this.registerToken('prompt', (ctx, substitutions) => substitutions.prompt(ctx.format, ctx.fullTemplate));
+    this.registerToken('prompt', (ctx) => prompt(ctx));
 
     this.registerToken('random', (ctx) => generateRandomValue(ctx.format));
 
@@ -411,35 +436,6 @@ export class Substitutions {
     }
 
     return this.headingsInfo;
-  }
-
-  private async prompt(format: string, template: string): Promise<string> {
-    // Validate format
-    formatString('', format);
-
-    if (this.noteFilePath === VALIDATION_PATH) {
-      return '';
-    }
-
-    const promptResult = await promptWithPreview({
-      app: this.app,
-      attachmentFileContent: this.attachmentFileContent,
-      originalAttachmentFileExtension: this.originalAttachmentFileExtension,
-      originalAttachmentFileName: this.originalAttachmentFileName,
-      template,
-      valueValidator: (value) =>
-        validateFileName({
-          app: this.app,
-          areSingleDotsAllowed: true,
-          fileName: value,
-          isEmptyAllowed: true,
-          tokenValidationMode: TokenValidationMode.Error
-        })
-    });
-    if (promptResult === null) {
-      throw new Error('Prompt cancelled');
-    }
-    return formatString(promptResult, format);
   }
 }
 

@@ -6,7 +6,10 @@ import type { Promisable } from 'type-fest';
 
 import moment from 'moment';
 import { printError } from 'obsidian-dev-utils/Error';
-import { extractDefaultExportInterop, getNestedPropertyValue } from 'obsidian-dev-utils/ObjectUtils';
+import {
+  extractDefaultExportInterop,
+  getNestedPropertyValue
+} from 'obsidian-dev-utils/ObjectUtils';
 import { getFileOrNull } from 'obsidian-dev-utils/obsidian/FileSystem';
 import { getCacheSafe } from 'obsidian-dev-utils/obsidian/MetadataCache';
 import {

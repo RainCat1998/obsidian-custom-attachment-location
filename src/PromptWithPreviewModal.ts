@@ -89,9 +89,7 @@ class PromptWithPreviewModal extends Modal {
       f.appendText('Provide a value for the prompt token:');
       f.createEl('br');
       f.appendText(this.options.ctx.fullTemplate.slice(0, this.options.ctx.tokenStartOffset));
-      f.createSpan({
-        cls: 'highlighted-token',
-        text: this.options.ctx.tokenWithFormat });
+      f.createSpan({ cls: 'highlighted-token', text: this.options.ctx.tokenWithFormat });
       f.appendText(this.options.ctx.fullTemplate.slice(this.options.ctx.tokenEndOffset));
     });
 

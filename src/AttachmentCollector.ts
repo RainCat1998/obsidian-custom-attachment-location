@@ -15,6 +15,7 @@ import {
   setIcon,
   Vault
 } from 'obsidian';
+import { abortSignalAny } from 'obsidian-dev-utils/AbortController';
 import { INFINITE_TIMEOUT } from 'obsidian-dev-utils/Async';
 import { throwExpression } from 'obsidian-dev-utils/Error';
 import { appendCodeBlock } from 'obsidian-dev-utils/HTMLElement';
@@ -313,7 +314,7 @@ export async function collectAttachmentsInFolder(plugin: Plugin, folder: TFolder
   const abortController = new AbortController();
 
   await loop({
-    abortSignal: AbortSignal.any([plugin.abortSignal, abortController.signal]),
+    abortSignal: abortSignalAny([plugin.abortSignal, abortController.signal]),
     buildNoticeMessage: (noteFile, iterationStr) => `Collecting attachments ${iterationStr} - ${noteFile.path}`,
     items: noteFiles,
     processItem: async (noteFile) => {

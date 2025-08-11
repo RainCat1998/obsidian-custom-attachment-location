@@ -1,5 +1,14 @@
 # CHANGELOG
 
+## 9.0.0
+
+- Highlight token
+- Improve validation message
+- Add formats for prompt
+- Deprecate shouldRenameAttachmentsToLowerCase
+- Add preview (#184)
+- Update libs
+
 ## 8.8.2
 
 - Don't use new API (#181)

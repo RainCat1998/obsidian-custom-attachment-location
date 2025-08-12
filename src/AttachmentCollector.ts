@@ -21,6 +21,7 @@ import { throwExpression } from 'obsidian-dev-utils/Error';
 import { appendCodeBlock } from 'obsidian-dev-utils/HTMLElement';
 import {
   normalizeOptionalProperties,
+  removeUndefinedProperties,
   toJson
 } from 'obsidian-dev-utils/ObjectUtils';
 import { applyFileChanges } from 'obsidian-dev-utils/obsidian/FileChange';
@@ -216,9 +217,9 @@ export async function collectAttachments(
 
       return changes;
     },
-    normalizeOptionalProperties<Partial<ProcessOptions>>({
+    removeUndefinedProperties(normalizeOptionalProperties<Partial<ProcessOptions>>({
       timeoutInMilliseconds: getTimeoutInMilliseconds(plugin)
-    })
+    }))
   );
 
   if (isCanvas) {

@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## 9.0.5
+
+- removeUndefinedProperties (#186, #188)
+- Refactor abortSignal  (#186, #188)
+- Update libs
+
 ## 9.0.4
 
 - Revalidate tokens after debouncing

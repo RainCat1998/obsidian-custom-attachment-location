@@ -356,13 +356,16 @@ export class Substitutions {
   }
 
   public async fillTemplate(template: string): Promise<string> {
-    return await replaceAllAsync(template, SUBSTITUTION_TOKEN_REG_EXP, async (args, token, format) => {
+    return await replaceAllAsync(template, SUBSTITUTION_TOKEN_REG_EXP, async (abortSignal, args, token, format) => {
+      abortSignal.throwIfAborted();
+
       const evaluator = Substitutions.evaluators.get(token.toLowerCase());
       if (!evaluator) {
         throw new Error(`Unknown token '${token}'.`);
       }
 
       const ctx: TokenEvaluatorContext = {
+        abortSignal,
         app: this.app,
         attachmentFileContent: this.attachmentFileContent,
         fillTemplate: this.fillTemplate.bind(this),
@@ -384,6 +387,8 @@ export class Substitutions {
 
       try {
         const result = await evaluator(ctx, this);
+        abortSignal.throwIfAborted();
+
         if (typeof result !== 'string') {
           console.error('Token returned non-string value.', {
             ctx,

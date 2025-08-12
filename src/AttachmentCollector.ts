@@ -222,7 +222,8 @@ export async function collectAttachments(
   );
 
   if (isCanvas) {
-    await process(app, note, (content) => {
+    await process(app, note, (abortSignal, content) => {
+      abortSignal.throwIfAborted();
       const canvasData = JSON.parse(content) as CanvasData;
       for (const node of canvasData.nodes) {
         if (node.type !== 'file') {

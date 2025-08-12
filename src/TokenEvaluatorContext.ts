@@ -5,6 +5,11 @@ import type { App } from 'obsidian';
  */
 export interface TokenEvaluatorContext {
   /**
+   * The abort signal to control the execution of the function.
+   */
+  abortSignal: AbortSignal;
+
+  /**
    * The Obsidian app instance.
    */
   app: App;

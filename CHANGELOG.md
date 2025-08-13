@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## 9.0.8
+
+- getOsUnsafePathCharsRegExp
+- Update libs
+
 ## 9.0.7
 
 - Use platform-specific getInvalidFileNamePathCharsRegExp (#189)

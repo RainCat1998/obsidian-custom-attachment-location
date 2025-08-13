@@ -306,7 +306,7 @@ export class Plugin extends PluginBase<PluginTypes> {
     menu.addItem((item) => {
       item.setTitle('Collect attachments in folder')
         .setIcon('download')
-        .onClick(() => collectAttachmentsInFolder(this, file));
+        .onClick(() => collectAttachmentsInFolder(this, file, this.abortSignal));
     });
   }
 

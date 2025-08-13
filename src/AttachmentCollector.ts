@@ -83,8 +83,10 @@ interface CollectAttachmentContext {
 export async function collectAttachments(
   plugin: Plugin,
   note: TFile,
-  ctx: CollectAttachmentContext
+  ctx: CollectAttachmentContext,
+  abortSignal: AbortSignal
 ): Promise<void> {
+  abortSignal.throwIfAborted();
   const app = plugin.app;
 
   if (ctx.isAborted) {
@@ -99,18 +101,21 @@ export async function collectAttachments(
   await applyFileChanges(
     app,
     note,
-    async () => {
+    async (abortSignal2) => {
+      abortSignal2.throwIfAborted();
       if (ctx.isAborted) {
         return [];
       }
 
       const cache = await getCacheSafe(app, note);
+      abortSignal2.throwIfAborted();
 
       if (!cache) {
         return [];
       }
 
       const links = isCanvas ? await getCanvasLinks(app, note) : getAllLinks(cache);
+      abortSignal2.throwIfAborted();
       const changes: FileChange[] = [];
 
       for (const link of links) {
@@ -120,6 +125,7 @@ export async function collectAttachments(
         }
 
         const attachmentMoveResult = await prepareAttachmentToMove(plugin, link, note.path, note.path);
+        abortSignal2.throwIfAborted();
         if (!attachmentMoveResult) {
           continue;
         }
@@ -130,6 +136,7 @@ export async function collectAttachments(
         }
 
         const backlinks = await getBacklinksForFileSafe(app, attachmentMoveResult.oldAttachmentPath);
+        abortSignal2.throwIfAborted();
         if (backlinks.keys().length > 1) {
           const backlinksSorted = backlinks.keys().sort((a, b) => a.localeCompare(b));
           const backlinksStr = backlinksSorted.map((backlink) => `- ${backlink}`).join('\n');
@@ -137,6 +144,7 @@ export async function collectAttachments(
           async function applyCollectAttachmentUsedByMultipleNotesMode(
             collectAttachmentUsedByMultipleNotesMode: CollectAttachmentUsedByMultipleNotesMode
           ): Promise<boolean> {
+            abortSignal2.throwIfAborted();
             if (!attachmentMoveResult) {
               return false;
             }
@@ -155,6 +163,7 @@ export async function collectAttachments(
                 break;
               case CollectAttachmentUsedByMultipleNotesMode.Move:
                 await moveAttachment();
+                abortSignal2.throwIfAborted();
                 break;
               case CollectAttachmentUsedByMultipleNotesMode.Prompt: {
                 const { mode, shouldUseSameActionForOtherProblematicAttachments } = await selectMode(
@@ -184,19 +193,24 @@ export async function collectAttachments(
               ctx.collectAttachmentUsedByMultipleNotesMode ?? plugin.settings.collectAttachmentUsedByMultipleNotesMode
             )
           ) {
+            abortSignal2.throwIfAborted();
             continue;
           }
         } else {
+          abortSignal2.throwIfAborted();
           await moveAttachment();
+          abortSignal2.throwIfAborted();
         }
 
         async function moveAttachment(): Promise<void> {
+          abortSignal2.throwIfAborted();
           if (!attachmentMoveResult) {
             return;
           }
 
           // eslint-disable-next-line require-atomic-updates
           attachmentMoveResult.newAttachmentPath = await renameSafe(app, attachmentMoveResult.oldAttachmentPath, attachmentMoveResult.newAttachmentPath);
+          abortSignal2.throwIfAborted();
           await deleteEmptyFolderHierarchy(app, dirname(attachmentMoveResult.oldAttachmentPath));
         }
 
@@ -223,8 +237,8 @@ export async function collectAttachments(
   );
 
   if (isCanvas) {
-    await process(app, note, (abortSignal, content) => {
-      abortSignal.throwIfAborted();
+    await process(app, note, (abortSignal2, content) => {
+      abortSignal2.throwIfAborted();
       const canvasData = JSON.parse(content) as CanvasData;
       for (const node of canvasData.nodes) {
         if (node.type !== 'file') {
@@ -252,7 +266,8 @@ export function collectAttachmentsCurrentFolder(plugin: Plugin, checking: boolea
   if (!checking) {
     addToQueue(
       plugin.app,
-      () => collectAttachmentsInFolder(plugin, note?.parent ?? throwExpression(new Error('Parent folder not found'))),
+      (abortSignal) => collectAttachmentsInFolder(plugin, note?.parent ?? throwExpression(new Error('Parent folder not found')), abortSignal),
+      plugin.abortSignal,
       getTimeoutInMilliseconds(plugin)
     );
   }
@@ -273,17 +288,23 @@ export function collectAttachmentsCurrentNote(plugin: Plugin, checking: boolean)
       return true;
     }
 
-    addToQueue(plugin.app, () => collectAttachments(plugin, note, {}), getTimeoutInMilliseconds(plugin));
+    addToQueue(plugin.app, (abortSignal) => collectAttachments(plugin, note, {}, abortSignal), plugin.abortSignal, getTimeoutInMilliseconds(plugin));
   }
 
   return true;
 }
 
 export function collectAttachmentsEntireVault(plugin: Plugin): void {
-  addToQueue(plugin.app, () => collectAttachmentsInFolder(plugin, plugin.app.vault.getRoot()), getTimeoutInMilliseconds(plugin));
+  addToQueue(
+    plugin.app,
+    (abortSignal) => collectAttachmentsInFolder(plugin, plugin.app.vault.getRoot(), abortSignal),
+    plugin.abortSignal,
+    getTimeoutInMilliseconds(plugin)
+  );
 }
 
-export async function collectAttachmentsInFolder(plugin: Plugin, folder: TFolder): Promise<void> {
+export async function collectAttachmentsInFolder(plugin: Plugin, folder: TFolder, abortSignal: AbortSignal): Promise<void> {
+  abortSignal.throwIfAborted();
   if (
     !await confirm({
       app: plugin.app,
@@ -300,6 +321,7 @@ export async function collectAttachmentsInFolder(plugin: Plugin, folder: TFolder
       })
     })
   ) {
+    abortSignal.throwIfAborted();
     return;
   }
   plugin.consoleDebug(`Collect attachments in folder: ${folder.path}`);
@@ -315,16 +337,20 @@ export async function collectAttachmentsInFolder(plugin: Plugin, folder: TFolder
   const ctx: CollectAttachmentContext = {};
   const abortController = new AbortController();
 
+  const combinedAbortSignal = abortSignalAny([abortController.signal, plugin.abortSignal]);
+
   await loop({
-    abortSignal: abortSignalAny([plugin.abortSignal, abortController.signal]),
+    abortSignal: combinedAbortSignal,
     buildNoticeMessage: (noteFile, iterationStr) => `Collecting attachments ${iterationStr} - ${noteFile.path}`,
     items: noteFiles,
     processItem: async (noteFile) => {
+      combinedAbortSignal.throwIfAborted();
       if (plugin.settings.isPathIgnored(noteFile.path)) {
         console.warn(`Cannot collect attachments in the note as note path is ignored: ${noteFile.path}.`);
         return;
       }
-      await collectAttachments(plugin, noteFile, ctx);
+      await collectAttachments(plugin, noteFile, ctx, combinedAbortSignal);
+      combinedAbortSignal.throwIfAborted();
       if (ctx.isAborted) {
         abortController.abort();
       }

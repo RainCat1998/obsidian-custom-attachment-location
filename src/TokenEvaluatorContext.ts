@@ -72,6 +72,8 @@ export interface TokenEvaluatorContext {
 
   /**
    * The Obsidian API.
+   *
+   * {@link https://github.com/obsidianmd/obsidian-api/blob/master/obsidian.d.ts}
    */
   obsidian: typeof import('obsidian');
 

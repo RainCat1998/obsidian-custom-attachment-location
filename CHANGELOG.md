@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## 9.0.7
+
+- Use platform-specific getInvalidFileNamePathCharsRegExp (#189)
+- More abort signals
+- Update libs
+
 ## 9.0.6
 
 - Update libs

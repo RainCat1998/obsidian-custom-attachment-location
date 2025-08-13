@@ -12,7 +12,7 @@ import {
 } from 'obsidian-dev-utils/ObjectUtils';
 import { getFileOrNull } from 'obsidian-dev-utils/obsidian/FileSystem';
 import { getCacheSafe } from 'obsidian-dev-utils/obsidian/MetadataCache';
-import { getInvalidFileNamePathCharsRegExp } from 'obsidian-dev-utils/obsidian/Validation';
+import { getOsUnsafePathCharsRegExp } from 'obsidian-dev-utils/obsidian/Validation';
 import {
   basename,
   dirname,
@@ -489,7 +489,7 @@ export async function validateFileName(options: ValidateFileNameOptions): Promis
     return options.isEmptyAllowed ? '' : 'File name is empty';
   }
 
-  if (getInvalidFileNamePathCharsRegExp().test(cleanFileName)) {
+  if (getOsUnsafePathCharsRegExp().test(cleanFileName)) {
     return `File name "${options.fileName}" contains invalid symbols`;
   }
 

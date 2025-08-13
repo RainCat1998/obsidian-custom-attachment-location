@@ -6,6 +6,7 @@ import { appendCodeBlock } from 'obsidian-dev-utils/HTMLElement';
 import { alert } from 'obsidian-dev-utils/obsidian/Modals/Alert';
 import { PluginSettingsManagerBase } from 'obsidian-dev-utils/obsidian/Plugin/PluginSettingsManagerBase';
 import { EmptyAttachmentFolderBehavior } from 'obsidian-dev-utils/obsidian/RenameDeleteHandler';
+import { getInvalidFileNamePathCharsRegExp } from 'obsidian-dev-utils/obsidian/Validation';
 import { isValidRegExp } from 'obsidian-dev-utils/RegExp';
 import { replaceAll } from 'obsidian-dev-utils/String';
 import { compare } from 'semver';
@@ -17,7 +18,6 @@ import {
   PluginSettings
 } from './PluginSettings.ts';
 import {
-  INVALID_FILENAME_PATH_CHARS_REG_EXP,
   parseCustomTokens,
   TokenValidationMode,
   validateFileName,
@@ -191,7 +191,7 @@ ${commentOut(legacySettings.customTokensStr)}
     });
 
     this.registerValidator('specialCharactersReplacement', (value): MaybeReturn<string> => {
-      if (INVALID_FILENAME_PATH_CHARS_REG_EXP.exec(value)) {
+      if (getInvalidFileNamePathCharsRegExp().exec(value)) {
         return 'Special character replacement must not contain invalid file name path characters.';
       }
     });

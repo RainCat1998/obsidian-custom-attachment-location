@@ -12,6 +12,7 @@ import {
 } from 'obsidian-dev-utils/ObjectUtils';
 import { getFileOrNull } from 'obsidian-dev-utils/obsidian/FileSystem';
 import { getCacheSafe } from 'obsidian-dev-utils/obsidian/MetadataCache';
+import { getInvalidFileNamePathCharsRegExp } from 'obsidian-dev-utils/obsidian/Validation';
 import {
   basename,
   dirname,
@@ -51,7 +52,6 @@ type HeadingLevel = (typeof HEADING_LEVELS)[number];
 
 const MORE_THAN_TWO_DOTS_REG_EXP = /^\.{3,}$/;
 const TRAILING_DOTS_REG_EXP = /\.+$/;
-export const INVALID_FILENAME_PATH_CHARS_REG_EXP = /[\\/:*?"<>|]/;
 const SUBSTITUTION_TOKEN_REG_EXP = /\${(?<Token>.+?)(?::(?<Format>.*?))?}/g;
 
 export enum TokenValidationMode {
@@ -489,7 +489,7 @@ export async function validateFileName(options: ValidateFileNameOptions): Promis
     return options.isEmptyAllowed ? '' : 'File name is empty';
   }
 
-  if (INVALID_FILENAME_PATH_CHARS_REG_EXP.test(cleanFileName)) {
+  if (getInvalidFileNamePathCharsRegExp().test(cleanFileName)) {
     return `File name "${options.fileName}" contains invalid symbols`;
   }
 

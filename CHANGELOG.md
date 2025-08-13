@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 9.1.0
+
+- Add obsidian to context
+
 ## 9.0.8
 
 - getOsUnsafePathCharsRegExp

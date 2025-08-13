@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 9.0.6
+
+- Update libs
+
 ## 9.0.5
 
 - removeUndefinedProperties (#186, #188)

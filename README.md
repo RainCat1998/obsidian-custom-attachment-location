@@ -260,7 +260,7 @@ Random value.
 
 You can define custom tokens in the `Custom tokens` setting.
 
-The custom tokens are defined as a functions, both sync and async are supported.
+The custom tokens are defined as functions, both sync and async are supported.
 
 Example:
 

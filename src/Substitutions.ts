@@ -5,6 +5,8 @@ import type {
 import type { Promisable } from 'type-fest';
 
 import moment from 'moment';
+// eslint-disable-next-line import-x/no-namespace
+import * as obsidian from 'obsidian';
 import { printError } from 'obsidian-dev-utils/Error';
 import {
   extractDefaultExportInterop,
@@ -377,6 +379,7 @@ export class Substitutions {
         noteFilePath: this.noteFilePath,
         noteFolderName: this.noteFolderName,
         noteFolderPath: this.noteFolderPath,
+        obsidian,
         originalAttachmentFileExtension: this.originalAttachmentFileExtension,
         originalAttachmentFileName: this.originalAttachmentFileName,
         token,

@@ -266,12 +266,12 @@ Example:
 
 ```javascript
 registerCustomToken('foo', (ctx) => {
-  return ctx.noteFileName + ctx.app.appId + ctx.format;
+  return ctx.noteFileName + ctx.app.appId + ctx.format + ctx.obsidian.apiVersion;
 });
 
 registerCustomToken('bar', async (ctx) => {
   await sleep(100);
-  return ctx.noteFileName + ctx.app.appId + ctx.format;
+  return ctx.noteFileName + ctx.app.appId + ctx.format + ctx.obsidian.apiVersion;
 });
 
 registerCustomToken('baz', async (ctx) => {

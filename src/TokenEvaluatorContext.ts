@@ -71,6 +71,11 @@ export interface TokenEvaluatorContext {
   noteFolderPath: string;
 
   /**
+   * The Obsidian API.
+   */
+  obsidian: typeof import('obsidian');
+
+  /**
    * The extension of the original attachment file.
    */
   originalAttachmentFileExtension: string;

@@ -2,12 +2,12 @@ import { EmptyAttachmentFolderBehavior } from 'obsidian-dev-utils/obsidian/Renam
 import { escapeRegExp } from 'obsidian-dev-utils/RegExp';
 
 export const SAMPLE_CUSTOM_TOKENS = `registerCustomToken('foo', (ctx) => {
-  return ctx.noteFileName + ctx.app.appId + ctx.format;
+  return ctx.noteFileName + ctx.app.appId + ctx.format + ctx.obsidian.apiVersion;
 });
 
 registerCustomToken('bar', async (ctx) => {
   await sleep(100);
-  return ctx.noteFileName + ctx.app.appId + ctx.format;
+  return ctx.noteFileName + ctx.app.appId + ctx.format + ctx.obsidian.apiVersion;
 });
 
 registerCustomToken('baz', async (ctx) => {

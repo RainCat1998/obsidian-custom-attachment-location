@@ -31,7 +31,7 @@ Format for the URL that will be inserted into Markdown.
 
 > [!WARNING]
 >
-> This setting is needed for very specific use cases. For majority of users, it should stay blank.
+> This setting is needed for very specific [use cases](https://github.com/RainCat1998/obsidian-custom-attachment-location/pull/152). For majority of users, it should stay blank.
 >
 > - If set, all links to attachments will be created as markdown links, even if Obsidian settings are configured to use `[[Wikilinks]]`.
 > - If set to `${generatedAttachmentFilePath}`, it does not make sense, leave blank instead.

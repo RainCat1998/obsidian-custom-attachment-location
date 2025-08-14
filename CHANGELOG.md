@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## 9.2.0
+
+- Add warning with link
+- Add warning to README
+
 ## 9.1.0
 
 - Add obsidian to context

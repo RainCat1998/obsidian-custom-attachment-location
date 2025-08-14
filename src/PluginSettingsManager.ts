@@ -165,6 +165,29 @@ ${commentOut(legacySettings.customTokensStr)}
           : CollectAttachmentUsedByMultipleNotesMode.Skip;
       }
 
+      if (
+        legacySettings.warningVersion && compare(legacySettings.warningVersion, '9.2.0') < 0
+        // eslint-disable-next-line no-template-curly-in-string
+        && (legacySettings.markdownUrlFormat === '${generatedAttachmentFilePath}' || legacySettings.markdownUrlFormat === '${noteFilePath}')
+      ) {
+        invokeAsyncSafely(async () => {
+          await this.plugin.waitForLifecycleEvent('layoutReady');
+          await alert({
+            app: this.app,
+            message: createFragment((f) => {
+              f.appendText('You have potentially incorrect value set for the ');
+              appendCodeBlock(f, 'Markdown URL format');
+              f.appendText(' setting. Please refer to the ');
+              f.createEl('a', {
+                href: 'https://github.com/RainCat1998/obsidian-custom-attachment-location?tab=readme-ov-file#markdown-url-format',
+                text: 'documentation'
+              });
+              f.appendText(' for more information. This message will not be shown again.');
+            })
+          });
+        });
+      }
+
       legacySettings.warningVersion = this.plugin.manifest.version;
     });
   }

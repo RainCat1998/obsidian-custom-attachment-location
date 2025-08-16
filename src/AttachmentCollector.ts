@@ -16,7 +16,7 @@ import {
   Vault
 } from 'obsidian';
 import { abortSignalAny } from 'obsidian-dev-utils/AbortController';
-import { INFINITE_TIMEOUT } from 'obsidian-dev-utils/Async';
+import { INFINITE_TIMEOUT } from 'obsidian-dev-utils/AbortController';
 import { throwExpression } from 'obsidian-dev-utils/Error';
 import { appendCodeBlock } from 'obsidian-dev-utils/HTMLElement';
 import {

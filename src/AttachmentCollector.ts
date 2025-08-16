@@ -15,8 +15,10 @@ import {
   setIcon,
   Vault
 } from 'obsidian';
-import { abortSignalAny } from 'obsidian-dev-utils/AbortController';
-import { INFINITE_TIMEOUT } from 'obsidian-dev-utils/AbortController';
+import {
+  abortSignalAny,
+  INFINITE_TIMEOUT
+} from 'obsidian-dev-utils/AbortController';
 import { throwExpression } from 'obsidian-dev-utils/Error';
 import { appendCodeBlock } from 'obsidian-dev-utils/HTMLElement';
 import {
@@ -385,8 +387,8 @@ async function getCanvasLinks(app: App, canvasFile: TFile): Promise<ReferenceCac
 
 function getTimeoutInMilliseconds(plugin: Plugin): number | undefined {
   return plugin.settings.collectAttachmentUsedByMultipleNotesMode === CollectAttachmentUsedByMultipleNotesMode.Prompt
-      || hasPromptToken(plugin.settings.attachmentFolderPath)
-      || hasPromptToken(plugin.settings.generatedAttachmentFileName)
+    || hasPromptToken(plugin.settings.attachmentFolderPath)
+    || hasPromptToken(plugin.settings.generatedAttachmentFileName)
     ? INFINITE_TIMEOUT
     : undefined;
 }

@@ -1,5 +1,13 @@
 # CHANGELOG
 
+## 9.2.1
+
+- Update libs
+- Update libs
+- Update libs
+- Rephrase
+- Add link to use cases
+
 ## 9.2.0
 
 - Add warning with link

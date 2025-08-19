@@ -21,23 +21,25 @@
   "author": "RainCat1998",
   "license": "MIT",
   "devDependencies": {
-    "@tsconfig/strictest": "^2.0.5",
-    "@types/node": "^24.3.0",
-    "@types/semver": "^7.7.0",
-    "electron": "^37.3.0",
-    "jiti": "^2.5.1",
-    "moment": "^2.30.1",
-    "obsidian": "^1.8.7",
-    "obsidian-dev-utils": "^33.0.0",
-    "obsidian-typings": "^3.16.5",
-    "semver": "^7.7.2",
-    "slugify": "^1.6.6",
-    "tsx": "^4.20.4",
-    "type-fest": "^4.41.0",
-    "typescript": "^5.9.2"
+    "@tsconfig/strictest": "latest",
+    "@types/node": "latest",
+    "@types/semver": "latest",
+    "electron": "latest",
+    "jiti": "latest",
+    "moment": "latest",
+    "obsidian": "latest",
+    "obsidian-dev-utils": "latest",
+    "obsidian-typings": "obsidian-public-latest",
+    "semver": "latest",
+    "slugify": "latest",
+    "tsx": "latest",
+    "type-fest": "latest",
+    "typescript": "latest"
   },
   "overrides": {
-    "@antfu/utils": "9.2.0"
+    "@antfu/utils": "9.2.0",
+    "boolean": "npm:dry-uninstall",
+    "dompurify": "3.0.1"
   },
   "type": "module"
 }

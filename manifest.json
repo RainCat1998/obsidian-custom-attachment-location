@@ -1,8 +1,8 @@
 {
   "id": "obsidian-custom-attachment-location",
   "name": "Custom Attachment Location",
-  "version": "9.2.1",
-  "minAppVersion": "1.8.10",
+  "version": "9.2.2",
+  "minAppVersion": "1.9.10",
   "description": "Customize attachment location with variables(${noteFileName}, ${date:format}, etc) like typora.",
   "author": "RainCat1998",
   "authorUrl": "https://github.com/RainCat1998/",

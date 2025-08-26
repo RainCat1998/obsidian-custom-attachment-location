@@ -253,7 +253,8 @@ export class Plugin extends PluginBase<PluginTypes> {
     noteFile: null | TFile,
     skipMissingAttachmentFolderCreation: boolean | undefined,
     attachmentFileContent?: ArrayBuffer,
-    skipGeneratedAttachmentFileName?: boolean
+    shouldSkipDuplicateCheck?: boolean,
+    shouldSkipGeneratedAttachmentFileName?: boolean
   ): Promise<string> {
     if (noteFile && this.settings.isPathIgnored(noteFile.path) && this.getAvailablePathForAttachmentsOriginal) {
       return this.getAvailablePathForAttachmentsOriginal(attachmentFileBaseName, attachmentFileExtension, noteFile);
@@ -261,7 +262,14 @@ export class Plugin extends PluginBase<PluginTypes> {
 
     let attachmentPath: string;
     if (!noteFile || !isNoteEx(this, noteFile)) {
-      attachmentPath = await getAvailablePathForAttachments(this.app, attachmentFileBaseName, attachmentFileExtension, noteFile, true);
+      attachmentPath = await getAvailablePathForAttachments(
+        this.app,
+        attachmentFileBaseName,
+        attachmentFileExtension,
+        noteFile,
+        true,
+        shouldSkipDuplicateCheck ?? false
+      );
     } else {
       const attachmentFileName = makeFileName(attachmentFileBaseName, attachmentFileExtension);
       const attachmentFolderFullPath = await getAttachmentFolderFullPathForPath(
@@ -270,7 +278,7 @@ export class Plugin extends PluginBase<PluginTypes> {
         attachmentFileName,
         attachmentFileContent
       );
-      const generatedAttachmentFileName = skipGeneratedAttachmentFileName
+      const generatedAttachmentFileName = shouldSkipGeneratedAttachmentFileName
         ? attachmentFileName
         : await getGeneratedAttachmentFileName(
           this,
@@ -282,9 +290,13 @@ export class Plugin extends PluginBase<PluginTypes> {
           })
         );
       const generatedAttachmentFileNamePath = join(attachmentFolderFullPath, generatedAttachmentFileName);
-      const dir = dirname(generatedAttachmentFileNamePath);
-      const generatedAttachmentFileNameBaseName = basename(generatedAttachmentFileNamePath, attachmentFileExtension ? `.${attachmentFileExtension}` : '');
-      attachmentPath = this.app.vault.getAvailablePath(join(dir, generatedAttachmentFileNameBaseName), attachmentFileExtension);
+      if (shouldSkipDuplicateCheck) {
+        attachmentPath = generatedAttachmentFileNamePath;
+      } else {
+        const dir = dirname(generatedAttachmentFileNamePath);
+        const generatedAttachmentFileNameBaseName = basename(generatedAttachmentFileNamePath, attachmentFileExtension ? `.${attachmentFileExtension}` : '');
+        attachmentPath = this.app.vault.getAvailablePath(join(dir, generatedAttachmentFileNameBaseName), attachmentFileExtension);
+      }
     }
 
     if (!skipMissingAttachmentFolderCreation) {
@@ -451,6 +463,7 @@ export class Plugin extends PluginBase<PluginTypes> {
       noteFile,
       false,
       attachmentFileContent,
+      false,
       true
     );
     return await this.app.vault.createBinary(attachmentPath, attachmentFileContent);

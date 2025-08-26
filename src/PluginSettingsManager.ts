@@ -45,7 +45,7 @@ class LegacySettings {
   public replaceWhitespace = false;
   public shouldDuplicateCollectedAttachments = false;
   public shouldKeepEmptyAttachmentFolders = false;
-  public shouldRenameAttachmentFolder = true;
+  public shouldRenameAttachments = true;
   public shouldRenameAttachmentsToLowerCase = false;
   public toLowerCase = false;
   public whitespaceReplacement = '';
@@ -80,15 +80,15 @@ export class PluginSettingsManager extends PluginSettingsManagerBase<PluginTypes
       }
 
       if (legacySettings.autoRenameFiles !== undefined) {
-        legacySettings.shouldRenameAttachments = legacySettings.autoRenameFiles;
-      }
-
-      if (legacySettings.shouldRenameAttachmentFolder !== undefined) {
-        legacySettings.shouldRenameAttachments = legacySettings.shouldRenameAttachmentFolder;
+        legacySettings.shouldRenameAttachmentFiles = legacySettings.autoRenameFiles;
       }
 
       if (legacySettings.autoRenameFolder !== undefined) {
-        legacySettings.shouldRenameAttachments = legacySettings.autoRenameFolder;
+        legacySettings.shouldRenameAttachmentFolder = legacySettings.autoRenameFolder;
+      }
+
+      if (legacySettings.shouldRenameAttachments !== undefined) {
+        legacySettings.shouldRenameAttachmentFolder = legacySettings.shouldRenameAttachments;
       }
 
       if (legacySettings.deleteOrphanAttachments !== undefined) {

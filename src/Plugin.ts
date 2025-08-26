@@ -158,7 +158,8 @@ export class Plugin extends PluginBase<PluginTypes> {
         isPathIgnored: (path) => this.settings.isPathIgnored(path),
         shouldHandleDeletions: this.settings.shouldDeleteOrphanAttachments,
         shouldHandleRenames: true,
-        shouldRenameAttachments: this.settings.shouldRenameAttachments,
+        shouldRenameAttachmentFiles: this.settings.shouldRenameAttachmentFiles,
+        shouldRenameAttachmentFolder: this.settings.shouldRenameAttachmentFolder,
         shouldUpdateFileNameAliases: true
       };
       return settings;

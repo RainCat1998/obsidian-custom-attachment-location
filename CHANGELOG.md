@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 9.5.0
+
+- Restore shouldRenameAttachmentFiles
+
 ## 9.4.0
 
 - Add shouldSkipDuplicateCheck

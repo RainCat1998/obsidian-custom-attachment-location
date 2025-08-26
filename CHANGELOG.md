@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## 9.4.0
+
+- Add shouldSkipDuplicateCheck
+- Update libs
+
 ## 9.3.0
 
 - Generate name in getAvailablePathForAttachments

@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## 9.3.0
+
+- Generate name in getAvailablePathForAttachments
+- Move shouldRenameAttachments
+- Update libs
+
 ## 9.2.2
 
 - Update libs

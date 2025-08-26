@@ -119,27 +119,10 @@ export class PluginSettingsTab extends PluginSettingsTabBase<PluginTypes> {
       });
 
     new SettingEx(this.containerEl)
-      .setName('Should rename attachment folder')
-      .setDesc(createFragment((f) => {
-        f.appendText('When renaming md files, automatically rename attachment folder if folder name contains ');
-        // eslint-disable-next-line no-template-curly-in-string
-        appendCodeBlock(f, '${noteFileName}');
-        f.appendText('.');
-      }))
+      .setName('Should rename attachments')
+      .setDesc('Whether to rename attachments when a note is renamed.')
       .addToggle((toggle) => {
-        this.bind(toggle, 'shouldRenameAttachmentFolder');
-      });
-
-    new SettingEx(this.containerEl)
-      .setName('Should rename attachment files')
-      .setDesc(createFragment((f) => {
-        f.appendText('When renaming md files, automatically rename attachment files if file name contains ');
-        // eslint-disable-next-line no-template-curly-in-string
-        appendCodeBlock(f, '${noteFileName}');
-        f.appendText('.');
-      }))
-      .addToggle((toggle) => {
-        this.bind(toggle, 'shouldRenameAttachmentFiles');
+        this.bind(toggle, 'shouldRenameAttachments');
       });
 
     new SettingEx(this.containerEl)

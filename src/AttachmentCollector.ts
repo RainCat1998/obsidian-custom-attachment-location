@@ -52,9 +52,7 @@ import {
 } from 'obsidian-dev-utils/obsidian/Vault';
 import { deleteEmptyFolderHierarchy } from 'obsidian-dev-utils/obsidian/VaultEx';
 import {
-  basename,
   dirname,
-  extname,
   join,
   makeFileName
 } from 'obsidian-dev-utils/Path';
@@ -339,7 +337,7 @@ export async function collectAttachmentsInFolder(plugin: Plugin, folder: TFolder
   const ctx: CollectAttachmentContext = {};
   const abortController = new AbortController();
 
-  const combinedAbortSignal = abortSignalAny([abortController.signal, plugin.abortSignal]);
+  const combinedAbortSignal = abortSignalAny(abortController.signal, plugin.abortSignal);
 
   await loop({
     abortSignal: combinedAbortSignal,
@@ -415,9 +413,6 @@ async function prepareAttachmentToMove(
   const oldAttachmentPath = oldAttachmentFile.path;
   const oldAttachmentName = oldAttachmentFile.name;
 
-  const oldNoteBaseName = basename(oldNotePath, extname(oldNotePath));
-  const newNoteBaseName = basename(newNotePath, extname(newNotePath));
-
   let newAttachmentName: string;
 
   if (plugin.settings.shouldRenameCollectedAttachments) {
@@ -433,8 +428,6 @@ async function prepareAttachmentToMove(
       ),
       oldAttachmentFile.extension
     );
-  } else if (plugin.settings.shouldRenameAttachmentFiles) {
-    newAttachmentName = oldAttachmentName.replaceAll(oldNoteBaseName, newNoteBaseName);
   } else {
     newAttachmentName = oldAttachmentName;
   }

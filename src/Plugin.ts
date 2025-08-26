@@ -30,6 +30,7 @@ import { getAbstractFileOrNull } from 'obsidian-dev-utils/obsidian/FileSystem';
 import {
   encodeUrl,
   generateMarkdownLink,
+  LinkStyle,
   testAngleBrackets,
   testWikilink
 } from 'obsidian-dev-utils/obsidian/Link';
@@ -155,8 +156,7 @@ export class Plugin extends PluginBase<PluginTypes> {
         isPathIgnored: (path) => this.settings.isPathIgnored(path),
         shouldHandleDeletions: this.settings.shouldDeleteOrphanAttachments,
         shouldHandleRenames: true,
-        shouldRenameAttachmentFiles: this.settings.shouldRenameAttachmentFiles,
-        shouldRenameAttachmentFolder: this.settings.shouldRenameAttachmentFolder,
+        shouldRenameAttachments: this.settings.shouldRenameAttachments,
         shouldUpdateFileNameAliases: true
       };
       return settings;
@@ -213,7 +213,7 @@ export class Plugin extends PluginBase<PluginTypes> {
     if (testWikilink(defaultLink)) {
       defaultLink = generateMarkdownLink({
         app: this.app,
-        isWikilink: false,
+        linkStyle: LinkStyle.Markdown,
         originalLink: defaultLink,
         sourcePathOrFile: sourcePath,
         targetPathOrFile: file

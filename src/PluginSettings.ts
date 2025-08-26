@@ -49,8 +49,7 @@ export class PluginSettings {
 
   public shouldConvertPastedImagesToJpeg = false;
   public shouldDeleteOrphanAttachments = false;
-  public shouldRenameAttachmentFiles = false;
-  public shouldRenameAttachmentFolder = true;
+  public shouldRenameAttachments = true;
   public shouldRenameCollectedAttachments = false;
   public specialCharacters = '#^[]|*\\<>:?';
   public specialCharactersReplacement = '-';

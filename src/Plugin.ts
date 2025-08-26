@@ -42,6 +42,8 @@ import {
 } from 'obsidian-dev-utils/obsidian/RenameDeleteHandler';
 import { createFolderSafe } from 'obsidian-dev-utils/obsidian/Vault';
 import {
+  basename,
+  dirname,
   extname,
   join,
   makeFileName
@@ -246,27 +248,40 @@ export class Plugin extends PluginBase<PluginTypes> {
   }
 
   private async getAvailablePathForAttachments(
-    attachmentFileName: string,
-    attachmentExtension: string,
+    attachmentFileBaseName: string,
+    attachmentFileExtension: string,
     noteFile: null | TFile,
     skipMissingAttachmentFolderCreation: boolean | undefined,
     attachmentFileContent?: ArrayBuffer
   ): Promise<string> {
     if (noteFile && this.settings.isPathIgnored(noteFile.path) && this.getAvailablePathForAttachmentsOriginal) {
-      return this.getAvailablePathForAttachmentsOriginal(attachmentFileName, attachmentExtension, noteFile);
+      return this.getAvailablePathForAttachmentsOriginal(attachmentFileBaseName, attachmentFileExtension, noteFile);
     }
 
     let attachmentPath: string;
     if (!noteFile || !isNoteEx(this, noteFile)) {
-      attachmentPath = await getAvailablePathForAttachments(this.app, attachmentFileName, attachmentExtension, noteFile, true);
+      attachmentPath = await getAvailablePathForAttachments(this.app, attachmentFileBaseName, attachmentFileExtension, noteFile, true);
     } else {
+      const attachmentFileName = makeFileName(attachmentFileBaseName, attachmentFileExtension);
       const attachmentFolderFullPath = await getAttachmentFolderFullPathForPath(
         this,
         noteFile.path,
-        makeFileName(attachmentFileName, attachmentExtension),
+        attachmentFileName,
         attachmentFileContent
       );
-      attachmentPath = this.app.vault.getAvailablePath(join(attachmentFolderFullPath, attachmentFileName), attachmentExtension);
+      const generatedAttachmentFileName = await getGeneratedAttachmentFileName(
+        this,
+        new Substitutions({
+          app: this.app,
+          attachmentFileContent,
+          noteFilePath: noteFile.path,
+          originalAttachmentFileName: attachmentFileName
+        })
+      );
+      const generatedAttachmentFileNamePath = join(attachmentFolderFullPath, generatedAttachmentFileName);
+      const dir = dirname(generatedAttachmentFileNamePath);
+      const generatedAttachmentFileNameBaseName = basename(generatedAttachmentFileNamePath, attachmentFileExtension ? `.${attachmentFileExtension}` : '');
+      attachmentPath = this.app.vault.getAvailablePath(join(dir, generatedAttachmentFileNameBaseName), attachmentFileExtension);
     }
 
     if (!skipMissingAttachmentFolderCreation) {

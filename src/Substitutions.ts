@@ -12,6 +12,7 @@ import {
   extractDefaultExportInterop,
   getNestedPropertyValue
 } from 'obsidian-dev-utils/ObjectUtils';
+import { DUMMY_PATH } from 'obsidian-dev-utils/obsidian/AttachmentPath';
 import { getFileOrNull } from 'obsidian-dev-utils/obsidian/FileSystem';
 import { getCacheSafe } from 'obsidian-dev-utils/obsidian/MetadataCache';
 import { getOsUnsafePathCharsRegExp } from 'obsidian-dev-utils/obsidian/Validation';
@@ -34,8 +35,6 @@ import type { TokenEvaluatorContext } from './TokenEvaluatorContext.ts';
 import { promptWithPreview } from './PromptWithPreviewModal.ts';
 
 const slugify = extractDefaultExportInterop(slugify_);
-
-const VALIDATION_PATH = '__VALIDATION__';
 
 interface FormatWithParameter {
   base: string;
@@ -242,8 +241,8 @@ async function prompt(ctx: TokenEvaluatorContext): Promise<string> {
   // Validate format
   formatString('', ctx.format);
 
-  if (ctx.noteFilePath === VALIDATION_PATH) {
-    return '';
+  if (ctx.originalAttachmentFileName === DUMMY_PATH) {
+    return DUMMY_PATH;
   }
 
   const promptResult = await promptWithPreview({
@@ -586,7 +585,8 @@ function slugifyEx(str: string): string {
 async function validateTokens(app: App, str: string): Promise<null | string> {
   const FAKE_SUBSTITUTION = new Substitutions({
     app,
-    noteFilePath: VALIDATION_PATH
+    noteFilePath: DUMMY_PATH,
+    originalAttachmentFileName: DUMMY_PATH
   });
 
   const tokens = extractTokens(str);

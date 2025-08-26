@@ -252,7 +252,8 @@ export class Plugin extends PluginBase<PluginTypes> {
     attachmentFileExtension: string,
     noteFile: null | TFile,
     skipMissingAttachmentFolderCreation: boolean | undefined,
-    attachmentFileContent?: ArrayBuffer
+    attachmentFileContent?: ArrayBuffer,
+    skipGeneratedAttachmentFileName?: boolean
   ): Promise<string> {
     if (noteFile && this.settings.isPathIgnored(noteFile.path) && this.getAvailablePathForAttachmentsOriginal) {
       return this.getAvailablePathForAttachmentsOriginal(attachmentFileBaseName, attachmentFileExtension, noteFile);
@@ -269,15 +270,17 @@ export class Plugin extends PluginBase<PluginTypes> {
         attachmentFileName,
         attachmentFileContent
       );
-      const generatedAttachmentFileName = await getGeneratedAttachmentFileName(
-        this,
-        new Substitutions({
-          app: this.app,
-          attachmentFileContent,
-          noteFilePath: noteFile.path,
-          originalAttachmentFileName: attachmentFileName
-        })
-      );
+      const generatedAttachmentFileName = skipGeneratedAttachmentFileName
+        ? attachmentFileName
+        : await getGeneratedAttachmentFileName(
+          this,
+          new Substitutions({
+            app: this.app,
+            attachmentFileContent,
+            noteFilePath: noteFile.path,
+            originalAttachmentFileName: attachmentFileName
+          })
+        );
       const generatedAttachmentFileNamePath = join(attachmentFolderFullPath, generatedAttachmentFileName);
       const dir = dirname(generatedAttachmentFileNamePath);
       const generatedAttachmentFileNameBaseName = basename(generatedAttachmentFileNamePath, attachmentFileExtension ? `.${attachmentFileExtension}` : '');
@@ -447,7 +450,8 @@ export class Plugin extends PluginBase<PluginTypes> {
       attachmentFileExtension,
       noteFile,
       false,
-      attachmentFileContent
+      attachmentFileContent,
+      true
     );
     return await this.app.vault.createBinary(attachmentPath, attachmentFileContent);
   }

@@ -236,7 +236,7 @@ export class Plugin extends PluginBase<PluginTypes> {
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     while (true) {
       const path = makeFileName(
-        suffixNum === 0 ? attachmentFileName : `${attachmentFileName}${this.settings.duplicateNameSeparator}${suffixNum.toString()}`,
+        suffixNum === 0 ? attachmentFileName : `${attachmentFileName}${this.settings.duplicateNameSeparator}${String(suffixNum)}`,
         attachmentExtension
       );
 

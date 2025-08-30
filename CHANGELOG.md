@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 9.7.0
+
+- Allow generated file names with slash (#195)
+
 ## 9.6.0
 
 - Insert shared text into cursor position (#196)

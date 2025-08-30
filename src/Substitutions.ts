@@ -1,5 +1,6 @@
 import type {
   App,
+  Stat,
   TFile
 } from 'obsidian';
 import type { Promisable } from 'type-fest';
@@ -68,6 +69,7 @@ type RegisterCustomTokensWrapperFn = (registerCustomToken: RegisterCustomTokenFn
 interface SubstitutionsOptions {
   app: App;
   attachmentFileContent?: ArrayBuffer | undefined;
+  attachmentFileStat?: Stat | undefined;
   generatedAttachmentFileName?: string;
   generatedAttachmentFilePath?: string;
   noteFilePath: string;
@@ -269,6 +271,7 @@ export class Substitutions {
   public readonly noteFolderPath: string;
   private readonly app: App;
   private readonly attachmentFileContent: ArrayBuffer | undefined;
+  private readonly attachmentFileStat: Stat | undefined;
   private readonly cursorLine: null | number;
   private readonly generatedAttachmentFileName: string;
   private readonly generatedAttachmentFilePath: string;
@@ -293,6 +296,7 @@ export class Substitutions {
     this.originalAttachmentFileExtension = originalAttachmentFileExtension.slice(1);
 
     this.attachmentFileContent = options.attachmentFileContent;
+    this.attachmentFileStat = options.attachmentFileStat;
 
     this.generatedAttachmentFileName = options.generatedAttachmentFileName ?? '';
     this.generatedAttachmentFilePath = options.generatedAttachmentFilePath ?? '';
@@ -321,6 +325,14 @@ export class Substitutions {
     this.registerToken(
       'noteFileModificationDate',
       (ctx) => formatFileDate(ctx.app, ctx.noteFilePath, ctx.format, (file) => file.stat.mtime)
+    );
+    this.registerToken(
+      'originalAttachmentFileCreationDate',
+      (ctx) => ctx.attachmentFileStat?.ctime ? moment(ctx.attachmentFileStat.ctime).format(ctx.format) : ''
+    );
+    this.registerToken(
+      'originalAttachmentFileModificationDate',
+      (ctx) => ctx.attachmentFileStat?.mtime ? moment(ctx.attachmentFileStat.mtime).format(ctx.format) : ''
     );
 
     this.registerToken('noteFileName', (ctx) => formatString(ctx.noteFileName, ctx.format));
@@ -367,6 +379,7 @@ export class Substitutions {
         abortSignal,
         app: this.app,
         attachmentFileContent: this.attachmentFileContent,
+        attachmentFileStat: this.attachmentFileStat,
         fillTemplate: this.fillTemplate.bind(this),
         format,
         fullTemplate: template,

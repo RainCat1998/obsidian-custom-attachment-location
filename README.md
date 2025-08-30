@@ -238,6 +238,18 @@ File name of the original attachment file.
 - `slug`: Slugified file name. **Example**: `foo bar.baz.pdf` -> `foo-bar-baz`.
 - `upper`: Uppercase folder name. **Example**: `foo Bar.BAZ.pdf` -> `FOO BAR.BAZ`.
 
+### `${originalAttachmentFileCreationDate}`
+
+Original attachment file creation date/time.
+
+**Format**: [Moment.js formatting][Moment.js formatting].
+
+### `${originalAttachmentFileModificationDate}`
+
+Original attachment file modification date/time.
+
+**Format**: [Moment.js formatting][Moment.js formatting].
+
 ### `${prompt}`
 
 The value asked from the user prompt.

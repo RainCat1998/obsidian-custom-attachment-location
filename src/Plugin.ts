@@ -1,6 +1,7 @@
 import type {
   App,
-  FileManager
+  FileManager,
+  Stat
 } from 'obsidian';
 import type {
   ExtendedWrapper,
@@ -16,6 +17,7 @@ import type {
 import { webUtils } from 'electron';
 import moment from 'moment';
 import {
+  FileSystemAdapter,
   MarkdownView,
   Menu,
   MenuItem,
@@ -84,13 +86,15 @@ const PASTED_IMAGE_DATE_FORMAT = 'YYYYMMDDHHmmss';
 const THRESHOLD_IN_SECONDS = 10;
 const IMPORT_FILES_PREFIX = '__IMPORT_FILES__';
 
+type ArrayBufferFn = File['arrayBuffer'];
+
 interface FileEx {
   path: string;
 }
-
 type ImportFilesFn = ShareReceiver['importFiles'];
 
 export class Plugin extends PluginBase<PluginTypes> {
+  private readonly arrayBufferFileStatMap = new WeakMap<ArrayBuffer, Stat>();
   private currentAttachmentFolderPath: null | string = null;
   private getAvailablePathForAttachmentsOriginal: GetAvailablePathForAttachmentsFn | null = null;
   private lastOpenFilePath: null | string = null;
@@ -151,6 +155,8 @@ export class Plugin extends PluginBase<PluginTypes> {
         };
       }
     });
+
+    this.registerPopupDocumentDomEvent('change', this.handleInputFileChange.bind(this), { capture: true });
   }
 
   protected override async onloadImpl(): Promise<void> {
@@ -205,6 +211,23 @@ export class Plugin extends PluginBase<PluginTypes> {
 
     this.registerEvent(this.app.workspace.on('receive-text-menu', this.handleReceiveTextMenu.bind(this)));
     this.registerEvent(this.app.workspace.on('receive-files-menu', this.handleReceiveFilesMenu.bind(this)));
+  }
+
+  private async fileArrayBuffer(next: ArrayBufferFn, file: File): Promise<ArrayBuffer> {
+    const arrayBuffer = await next.call(file);
+    if (this.app.vault.adapter instanceof FileSystemAdapter) {
+      const path = webUtils.getPathForFile(file);
+      if (path) {
+        const stats = await this.app.vault.adapter.fsPromises.stat(path);
+        this.arrayBufferFileStatMap.set(arrayBuffer, {
+          ctime: stats.ctimeMs,
+          mtime: stats.mtimeMs,
+          size: stats.size,
+          type: 'file'
+        });
+      }
+    }
+    return arrayBuffer;
   }
 
   private generateMarkdownLink(next: GenerateMarkdownLinkFn, file: TFile, sourcePath: string, subpath?: string, alias?: string): string {
@@ -367,6 +390,27 @@ export class Plugin extends PluginBase<PluginTypes> {
     this.currentAttachmentFolderPath = await getAttachmentFolderFullPathForPath(this, file.path, 'dummy.pdf');
   }
 
+  private handleInputFileChange(evt: Event): void {
+    if (!(evt.target instanceof HTMLInputElement)) {
+      return;
+    }
+
+    if (evt.target.type !== 'file') {
+      return;
+    }
+
+    const that = this;
+    for (const file of evt.target.files ?? []) {
+      registerPatch(this, file, {
+        arrayBuffer: (next: ArrayBufferFn): ArrayBufferFn => {
+          return function arrayBufferPatched(this: File): Promise<ArrayBuffer> {
+            return that.fileArrayBuffer(next, this);
+          };
+        }
+      });
+    }
+  }
+
   private handleReceiveFilesMenu(menu: Menu, attachmentFiles: TFile[]): void {
     this.handleReceiveMenuItemClick(menu, (noteFile) => {
       const linkTexts = attachmentFiles.map((attachmentFile) => this.app.fileManager.generateMarkdownLink(attachmentFile, noteFile.path));
@@ -469,6 +513,7 @@ export class Plugin extends PluginBase<PluginTypes> {
         new Substitutions({
           app: this.app,
           attachmentFileContent,
+          attachmentFileStat: this.arrayBufferFileStatMap.get(attachmentFileContent),
           noteFilePath: activeNoteFile.path,
           originalAttachmentFileName: makeFileName(attachmentFileName, attachmentFileExtension)
         })

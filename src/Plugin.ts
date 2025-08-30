@@ -16,7 +16,9 @@ import type {
 import { webUtils } from 'electron';
 import moment from 'moment';
 import {
+  MarkdownView,
   Menu,
+  MenuItem,
   TAbstractFile,
   TFile,
   TFolder,
@@ -198,6 +200,9 @@ export class Plugin extends PluginBase<PluginTypes> {
 
     this.registerEvent(this.app.workspace.on('file-open', convertAsyncToSync(this.handleFileOpen.bind(this))));
     this.registerEvent(this.app.vault.on('rename', convertAsyncToSync(this.handleRename.bind(this))));
+
+    this.registerEvent(this.app.workspace.on('receive-text-menu', this.handleReceiveTextMenu.bind(this)));
+    this.registerEvent(this.app.workspace.on('receive-files-menu', this.handleReceiveFilesMenu.bind(this)));
   }
 
   private generateMarkdownLink(next: GenerateMarkdownLinkFn, file: TFile, sourcePath: string, subpath?: string, alias?: string): string {
@@ -354,6 +359,35 @@ export class Plugin extends PluginBase<PluginTypes> {
 
     this.lastOpenFilePath = file.path;
     this.currentAttachmentFolderPath = await getAttachmentFolderFullPathForPath(this, file.path, 'dummy.pdf');
+  }
+
+  private handleReceiveFilesMenu(menu: Menu, attachmentFiles: TFile[]): void {
+    this.handleReceiveMenuItemClick(menu, (noteFile) => {
+      const linkTexts = attachmentFiles.map((attachmentFile) => this.app.fileManager.generateMarkdownLink(attachmentFile, noteFile.path));
+      return ['', ...linkTexts, ''].join('\n');
+    });
+  }
+
+  private handleReceiveMenuItemClick(menu: Menu, prepareTextFn: (noteFile: TFile) => string): void {
+    const app = this.app;
+    const menuItem = menu.items.find((item) => item instanceof MenuItem && !!item.iconEl.querySelector('.lucide-file')) as MenuItem | undefined;
+    if (menuItem) {
+      menuItem.callback = callback;
+    }
+
+    function callback(): void {
+      const markdownView = app.workspace.getActiveViewOfType(MarkdownView);
+      if (!markdownView?.file) {
+        return;
+      }
+
+      const text = prepareTextFn(markdownView.file);
+      markdownView.editor.replaceSelection(text);
+    }
+  }
+
+  private handleReceiveTextMenu(menu: Menu, text: string): void {
+    this.handleReceiveMenuItemClick(menu, () => text);
   }
 
   private async handleRename(): Promise<void> {

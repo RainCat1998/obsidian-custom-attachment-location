@@ -18,24 +18,30 @@ export class PrismComponent extends Component {
       expression: {
         greedy: true,
         inside: {
-          format: {
+          /* eslint-disable perfectionist/sort-objects */
+          prefix: {
+            alias: 'regex',
+            pattern: /\${/
+          },
+          token: {
             alias: 'number',
-            pattern: /[a-zA-Z0-9_]+/
+            pattern: /^[a-zA-Z0-9_,]+/
           },
           formatDelimiter: {
             alias: 'regex',
             pattern: /:/
           },
-          prefix: {
-            alias: 'regex',
-            pattern: /[${}]/
-          },
-          token: {
+          format: {
             alias: 'string',
-            pattern: /^[a-zA-Z0-9_,]+/
-          }
+            pattern: /[a-zA-Z0-9_,-]+/
+          },
+          suffix: {
+            alias: 'regex',
+            pattern: /}/
+          },
+          /* eslint-enable perfectionist/sort-objects */
         },
-        pattern: /\${[a-zA-Z0-9_]+(?::[a-zA-Z0-9_,]*)?}/
+        pattern: /\${.+?}/
       },
       important: {
         pattern: /^\./

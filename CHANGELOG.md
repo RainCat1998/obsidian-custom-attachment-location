@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 9.7.1
+
+- Prevent double prompt (#196)
+
 ## 9.7.0
 
 - Allow generated file names with slash (#195)

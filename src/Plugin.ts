@@ -50,6 +50,7 @@ import {
   join,
   makeFileName
 } from 'obsidian-dev-utils/Path';
+import { trimStart } from 'obsidian-dev-utils/String';
 import { parentFolderPath } from 'obsidian-typings/implementations';
 
 import type { PluginTypes } from './PluginTypes.ts';
@@ -81,6 +82,7 @@ type SaveAttachmentFn = App['saveAttachment'];
 const PASTED_IMAGE_NAME_REG_EXP = /Pasted image (?<Timestamp>\d{14})/;
 const PASTED_IMAGE_DATE_FORMAT = 'YYYYMMDDHHmmss';
 const THRESHOLD_IN_SECONDS = 10;
+const IMPORT_FILES_PREFIX = '__IMPORT_FILES__';
 
 interface FileEx {
   path: string;
@@ -262,6 +264,10 @@ export class Plugin extends PluginBase<PluginTypes> {
     shouldSkipDuplicateCheck?: boolean,
     shouldSkipGeneratedAttachmentFileName?: boolean
   ): Promise<string> {
+    if (attachmentFileBaseName.startsWith(IMPORT_FILES_PREFIX)) {
+      attachmentFileBaseName = trimStart(attachmentFileBaseName, IMPORT_FILES_PREFIX);
+      shouldSkipGeneratedAttachmentFileName = true;
+    }
     if (noteFile && this.settings.isPathIgnored(noteFile.path) && this.getAvailablePathForAttachmentsOriginal) {
       return this.getAvailablePathForAttachmentsOriginal(attachmentFileBaseName, attachmentFileExtension, noteFile);
     }
@@ -407,7 +413,7 @@ export class Plugin extends PluginBase<PluginTypes> {
       });
       const attachmentFileName = await getGeneratedAttachmentFileName(this, substitutions);
       const ext = extname(file.name).slice(1);
-      file.name = makeFileName(attachmentFileName, ext);
+      file.name = IMPORT_FILES_PREFIX + makeFileName(attachmentFileName, ext);
     }
 
     return next.call(this.app.shareReceiver, files);

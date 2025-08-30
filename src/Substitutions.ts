@@ -248,12 +248,10 @@ async function prompt(ctx: TokenEvaluatorContext): Promise<string> {
   const promptResult = await promptWithPreview({
     ctx,
     valueValidator: (value) =>
-      validateFileName({
+      validatePath({
         app: ctx.app,
-        areSingleDotsAllowed: true,
-        fileName: value,
-        isEmptyAllowed: true,
-        tokenValidationMode: TokenValidationMode.Error
+        areTokensAllowed: false,
+        path: value
       })
   });
   if (promptResult === null) {

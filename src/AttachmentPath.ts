@@ -31,21 +31,30 @@ export async function getAttachmentFolderFullPathForPath(
 }
 
 export async function getGeneratedAttachmentFileName(plugin: Plugin, substitutions: Substitutions): Promise<string> {
-  const fileName = await resolvePathTemplate(plugin, plugin.settings.generatedAttachmentFileName, substitutions, true);
-  const validationMessage = await validateFileName({
+  const path = await resolvePathTemplate(plugin, plugin.settings.generatedAttachmentFileName, substitutions, true);
+  let validationMessage = await validatePath({
     app: plugin.app,
-    areSingleDotsAllowed: false,
-    fileName,
-    isEmptyAllowed: false,
-    tokenValidationMode: TokenValidationMode.Error
+    areTokensAllowed: false,
+    path
   });
+  if (!validationMessage) {
+    const parts = path.split('/');
+    const fileName = parts.at(-1) ?? '';
+    validationMessage = await validateFileName({
+      app: plugin.app,
+      areSingleDotsAllowed: false,
+      fileName,
+      isEmptyAllowed: false,
+      tokenValidationMode: TokenValidationMode.Error
+    });
+  }
   if (validationMessage) {
-    const errorMessage = `Generated attachment file name "${fileName}" is invalid.\n${validationMessage}\nCheck your 'Generated attachment file name' setting.`;
+    const errorMessage = `Generated attachment file name "${path}" is invalid.\n${validationMessage}\nCheck your 'Generated attachment file name' setting.`;
     new Notice(errorMessage);
     console.error(errorMessage, substitutions);
     throw new Error(errorMessage);
   }
-  return fileName;
+  return path;
 }
 
 export function replaceSpecialCharacters(plugin: Plugin, str: string): string {

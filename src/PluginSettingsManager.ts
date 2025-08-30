@@ -204,13 +204,11 @@ ${commentOut(legacySettings.customTokensStr)}
         areTokensAllowed: true,
         path: value
       }));
-    this.registerValidator('generatedAttachmentFileName', (value) =>
-      validateFileName({
+    this.registerValidator('generatedAttachmentFileName', async (value) =>
+      await validatePath({
         app: this.app,
-        areSingleDotsAllowed: false,
-        fileName: value,
-        isEmptyAllowed: false,
-        tokenValidationMode: TokenValidationMode.Validate
+        areTokensAllowed: true,
+        path: value
       }));
     this.registerValidator('specialCharacters', (value): MaybeReturn<string> => {
       if (value.includes('/')) {

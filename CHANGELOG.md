@@ -1,8 +1,12 @@
 # CHANGELOG
 
+## 9.6.0
+
+- Insert shared text into cursor position (#196)
+
 ## 9.5.1
 
-- Update libs
+- Minor changes
 
 ## 9.5.0
 
@@ -11,23 +15,20 @@
 ## 9.4.0
 
 - Add shouldSkipDuplicateCheck
-- Update libs
 
 ## 9.3.0
 
 - Generate name in getAvailablePathForAttachments
 - Move shouldRenameAttachments
-- Update libs
 
 ## 9.2.2
 
-- Update libs
+- Minor changes
 
 ## 9.2.1
 
 - Rephrase
 - Add link to use cases
-- Update libs
 
 ## 9.2.0
 
@@ -41,28 +42,24 @@
 ## 9.0.8
 
 - getOsUnsafePathCharsRegExp
-- Update libs
 
 ## 9.0.7
 
 - Use platform-specific getInvalidFileNamePathCharsRegExp (#189)
 - More abort signals
-- Update libs
 
 ## 9.0.6
 
-- Update libs
+- Minor changes
 
 ## 9.0.5
 
 - removeUndefinedProperties (#186, #188)
 - Refactor abortSignal  (#186, #188)
-- Update libs
 
 ## 9.0.4
 
 - Revalidate tokens after debouncing
-- Update libs
 
 ## 9.0.3
 
@@ -85,7 +82,6 @@
 - Add formats for prompt
 - Deprecate shouldRenameAttachmentsToLowerCase
 - Add preview (#184)
-- Update libs
 
 ## 8.8.2
 
@@ -106,44 +102,39 @@
 ## 8.7.0
 
 - Rename share files (#181)
-- Update libs
 
 ## 8.6.0
 
 - Validate formats
 - Allow multi-format for syntax highlighting
 - Add indexFromStart/indexFromEnd
-- Update libs
 
 ## 8.5.2
 
-- Update libs
+- Minor changes
 
 ## 8.5.1
 
-- Update libs
+- Minor changes
 
 ## 8.5.0
 
 - Add choice for CollectAttachmentUsedByMultipleNotesMode
 - Reformat settings tab
-- Update libs
 
 ## 8.4.2
 
 - Add base examples
 - Add more logging
-- Update libs
 
 ## 8.4.1
 
-- Update libs
+- Minor changes
 
 ## 8.4.0
 
 - generatedAttachmentFileName/generatedAttachmentFilePath
 - Fix outdated descriptions
-- Update libs
 
 ## 8.3.1
 
@@ -152,7 +143,6 @@
 ## 8.3.0
 
 - Add left/right formatting (fixes #174)
-- Update libs
 
 ## 8.2.2
 
@@ -194,7 +184,6 @@
 ## 7.10.0
 
 - Add toggle for avoiding attachment duplication during collection. #166 (by @Accelsnow)
-- Update libs
 
 ## 7.9.0
 
@@ -203,12 +192,10 @@
 ## 7.8.2
 
 - Ensure attachment folder is updated on rename
-- Update libs
 
 ## 7.8.1
 
 - Fix build
-- Update libs
 
 ## 7.8.0
 
@@ -216,24 +203,23 @@
 
 ## 7.7.6
 
-- Update libs
+- Minor changes
 
 ## 7.7.5
 
-- Update libs
+- Minor changes
 
 ## 7.7.4
 
-- Update libs
+- Minor changes
 
 ## 7.7.3
 
 - Properly handle sequential special characters
-- Update libs
 
 ## 7.7.2
 
-- Update libs
+- Minor changes
 
 ## 7.7.1
 
@@ -243,67 +229,61 @@
 
 - Modify url generation not faking the file instances
 - Add markdown URL format customization #152 (thanks to @Kamesuta)
-- Update libs
 
 ## 7.6.1
 
-- Update libs
+- Minor changes
 
 ## 7.6.0
 
 - Fix size
 - Add placeholder
 - Fix compilation
-- Update libs
 
 ## 7.5.0
 
 - Switch to EmptyAttachmentFolderBehavior
-- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/26.22.0
 
 ## 7.4.3
 
-- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/26.16.0
+- Minor changes
 
 ## 7.4.2
 
 - Improve performance
-- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/26.15.2
 
 ## 7.4.1
 
-- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/26.11.0
+- Minor changes
 
 ## 7.4.0
 
 - Add Treat as attachment extensions.
-- [FR #147 Support .md Attachments](https://github.com/RainCat1998/obsidian-custom-attachment-location/issues/147).
+- Support .md Attachments (#147)
 
 ## 7.3.0
 
 - Add settings code highlighting
-- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/26.7.0
 
 ## 7.2.6
 
-- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/26.1.2
+- Minor changes
 
 ## 7.2.5
 
 - Pass original file name with extension
-- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/26.1.0
 
 ## 7.2.4
 
-- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/24.1.1
+- Minor changes
 
 ## 7.2.3
 
-- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/24.1.0
+- Minor changes
 
 ## 7.2.2
 
-- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/24.0.1
+- Minor changes
 
 ## 7.2.1
 
@@ -312,7 +292,6 @@
 ## 7.2.0
 
 - Show progress bar
-- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/21.1.0
 
 ## 7.1.0
 
@@ -320,23 +299,23 @@
 
 ## 7.0.5
 
-- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/19.17.5
+- Minor changes
 
 ## 7.0.4
 
-- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/19.17.2
+- Minor changes
 
 ## 7.0.3
 
-- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/19.8.2
+- Minor changes
 
 ## 7.0.2
 
-- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/19.6.0
+- Minor changes
 
 ## 7.0.1
 
-- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/19.3.0
+- Minor changes
 
 ## 7.0.0
 
@@ -345,18 +324,16 @@
 
 ## 6.0.2
 
-- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/19.2.1
+- Minor changes
 
 ## 6.0.1
 
 - Update template
-- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/18.4.2
 
 ## 6.0.0
 
 - Refactor to support insert attachment
 - Rename settings
-- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/17.8.0
 
 ## 5.1.7
 
@@ -365,7 +342,6 @@
 ## 5.1.6
 
 - Lint
-- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/17.2.2
 
 ## 5.1.5
 
@@ -373,19 +349,19 @@
 
 ## 5.1.4
 
-- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/16.1.0
+- Minor changes
 
 ## 5.1.3
 
-- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/16.0.3
+- Minor changes
 
 ## 5.1.2
 
-- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/15.0.0
+- Minor changes
 
 ## 5.1.1
 
-- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/13.9.0
+- Minor changes
 
 ## 5.1.0
 
@@ -393,7 +369,6 @@
 
 ## 5.0.2
 
-- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/12.2.1
 - Validate separator
 
 ## 5.0.1
@@ -422,42 +397,39 @@
 
 - Enable custom whitespace replacement
 - Handle raw link
-- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/11.2.0
 
 ## 4.30.6
 
-- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/11.0.0
+- Minor changes
 
 ## 4.30.5
 
-- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/9.0.2
+- Minor changes
 
 ## 4.30.4
 
-- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/9.0.0
+- Minor changes
 
 ## 4.30.3
 
-- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/6.0.0
+- Minor changes
 
 ## 4.30.2
 
-- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/5.3.1
+- Minor changes
 
 ## 4.30.1
 
 - Refactor loop
-- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/5.3.0
 
 ## 4.30.0
 
 - Remove date selector
 - Refactor templating
-- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/4.19.0
 
 ## 4.29.1
 
-- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/4.14.0
+- Minor changes
 
 ## 4.29.0
 
@@ -466,26 +438,23 @@
 
 ## 4.28.5
 
-- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/4.13.3
+- Minor changes
 
 ## 4.28.4
 
 - Update libs - fixes mobile build
-- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/4.13.1
 
 ## 4.28.3
 
 - Avoid default exports
-- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/4.13.0
 
 ## 4.28.2
 
-- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/4.11.0
+- Minor changes
 
 ## 4.28.1
 
 - Check for missing webUtils (Electron < 29)
-- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/4.8.2
 
 ## 4.28.0
 
@@ -493,33 +462,31 @@
 
 ## 4.27.6
 
-- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/4.8.2
+- Minor changes
 
 ## 4.27.5
 
-- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/3.44.0
+- Minor changes
 
 ## 4.27.4
 
-- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/3.43.2
+- Minor changes
 
 ## 4.27.3
 
-- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/3.43.1
+- Minor changes
 
 ## 4.27.2
 
-- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/3.42.1
+- Minor changes
 
 ## 4.27.1
 
 - Refactor
-- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/3.42.0
 
 ## 4.27.0
 
 - Allow paste in link editing textbox
-- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/3.41.0
 
 ## 4.26.0
 
@@ -528,30 +495,26 @@
 ## 4.25.0
 
 - Add support for frontmatter links
-- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/3.40.0
 
 ## 4.24.0
 
 - Support multi-window
-- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/3.39.0
 
 ## 4.23.2
 
-- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/3.35.0
+- Minor changes
 
 ## 4.23.1
 
-- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/3.34.0
+- Minor changes
 
 ## 4.23.0
 
 - Refactor
-- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/3.33.0
 
 ## 4.22.1
 
 - Refactor
-- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/3.28.2
 
 ## 4.22.0
 
@@ -559,53 +522,43 @@
 - Fix relative path resolution
 - Handle duplicates
 - Fix stat for mobile
-- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/3.28.1
 
 ## 4.21.0
 
 - Fix race condition
-- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/3.26.1
 
 ## 4.20.0
 
 - Init all settings
-- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/3.20.0
 
 ## 4.19.0
 
 - Don't remove folders with hidden files
-- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/3.16.0
 
 ## 4.18.0
 
 - Add `Delete orphan attachments` setting
-- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/3.14.1
 
 ## 4.17.0
 
 - Remove to trash
-- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/3.13.0
 
 ## 4.16.0
 
 - Preserve angle brackets and leading dot
-- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/3.12.0
 
 ## 4.15.0
 
 - Reuse `RenameDeleteHandler`
 - Add optional `skipFolderCreation` to `getAvailablePathForAttachments`
-- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/3.10.0
 
 ## 4.14.0
 
 - Proper integration with Better Markdown Links
-- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/3.7.0
 
 ## 4.13.0
 
 - Handle special renames
-- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/3.4.1
 
 ## 4.12.2
 
@@ -631,34 +584,28 @@
 - Fix mobile loading
 - Fix backlinks race condition
 - Process attachments before note
-- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/3.2.0
 
 ## 4.9.4
 
 - Handle removed parent folder case
 - Rename attachments before changing links
-- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/2.26.2
 
 ## 4.9.3
 
 - Fix backlink check
 - Check for race conditions
-- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/2.25.2
 
 ## 4.9.2
 
 - Fix options merging
-- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/2.23.3
 
 ## 4.9.1
 
 - Fix related attachments notice
-- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/2.23.2
 
 ## 4.9.0
 
 - Don't create fake file.
-- https://github.com/mnaoumov/obsidian-dev-utils/releases/tag/2.23.1
 
 ## 4.8.0
 

@@ -240,13 +240,13 @@ File name of the original attachment file.
 
 ### `${originalAttachmentFileCreationDate}`
 
-Original attachment file creation date/time.
+Original attachment file creation date/time. Empty if unknown.
 
 **Format**: [Moment.js formatting][Moment.js formatting].
 
 ### `${originalAttachmentFileModificationDate}`
 
-Original attachment file modification date/time.
+Original attachment file modification date/time. Empty if unknown.
 
 **Format**: [Moment.js formatting][Moment.js formatting].
 

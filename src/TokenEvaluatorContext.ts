@@ -28,6 +28,8 @@ export interface TokenEvaluatorContext {
    * The stats of the attachment file.
    *
    * `undefined` if the attachment file stats is not known.
+   *
+   * @remark It may be initialized only partially. Uninitialized {@link Stat.ctime} and {@link Stat.mtime} will be `0`.
    */
   attachmentFileStat: Stat | undefined;
 

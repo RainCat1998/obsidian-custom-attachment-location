@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 9.8.0
+
+- originalAttachmentFileCreationDate / originalAttachmentFileModificationDate
+
 ## 9.7.1
 
 - Prevent double prompt (#196)

@@ -9,6 +9,10 @@ import type {
 } from 'obsidian-dev-utils/obsidian/AttachmentPath';
 import type { RenameDeleteHandlerSettings } from 'obsidian-dev-utils/obsidian/RenameDeleteHandler';
 import type {
+  ClipboardManager,
+  ImportedAttachment
+} from 'obsidian-typings';
+import type {
   ConfigItem,
   SharedFile,
   ShareReceiver
@@ -17,6 +21,7 @@ import type {
 import { webUtils } from 'electron';
 import moment from 'moment';
 import {
+  CapacitorAdapter,
   FileSystemAdapter,
   MarkdownView,
   Menu,
@@ -91,7 +96,9 @@ type ArrayBufferFn = File['arrayBuffer'];
 interface FileEx {
   path: string;
 }
+
 type ImportFilesFn = ShareReceiver['importFiles'];
+type InsertFilesFn = ClipboardManager['insertFiles'];
 
 export class Plugin extends PluginBase<PluginTypes> {
   private readonly arrayBufferFileStatMap = new WeakMap<ArrayBuffer, Stat>();
@@ -157,6 +164,23 @@ export class Plugin extends PluginBase<PluginTypes> {
     });
 
     this.registerPopupDocumentDomEvent('change', this.handleInputFileChange.bind(this), { capture: true });
+
+    const tempName = `__TEMP_${crypto.randomUUID()}.md`;
+    const tempFile = await this.app.vault.create(tempName, '');
+    const leaf = this.app.workspace.getLeaf();
+    await leaf.openFile(tempFile);
+    const markdownView = leaf.view as MarkdownView;
+    const that = this;
+    registerPatch(this, getPrototypeOf(markdownView.editMode.clipboardManager), {
+      insertFiles: (next: InsertFilesFn): InsertFilesFn => {
+        return function insertFilesPatched(this: ClipboardManager, importedAttachments: ImportedAttachment[]): Promise<void> {
+          return that.insertFiles(next, this, importedAttachments);
+        };
+      }
+    });
+    await markdownView.close();
+    leaf.detach();
+    await this.app.vault.delete(tempFile);
   }
 
   protected override async onloadImpl(): Promise<void> {
@@ -217,16 +241,17 @@ export class Plugin extends PluginBase<PluginTypes> {
     const arrayBuffer = await next.call(file);
     if (this.app.vault.adapter instanceof FileSystemAdapter) {
       const path = webUtils.getPathForFile(file);
-      if (path) {
-        const stats = await this.app.vault.adapter.fsPromises.stat(path);
-        this.arrayBufferFileStatMap.set(arrayBuffer, {
-          ctime: stats.ctimeMs,
-          mtime: stats.mtimeMs,
-          size: stats.size,
-          type: 'file'
-        });
+      if (await this.setFileStat(arrayBuffer, path)) {
+        return arrayBuffer;
       }
     }
+
+    this.arrayBufferFileStatMap.set(arrayBuffer, {
+      ctime: 0,
+      mtime: file.lastModified,
+      size: file.size,
+      type: 'file'
+    });
     return arrayBuffer;
   }
 
@@ -463,6 +488,14 @@ export class Plugin extends PluginBase<PluginTypes> {
     return next.call(this.app.shareReceiver, files);
   }
 
+  private async insertFiles(next: InsertFilesFn, clipboardManager: ClipboardManager, importedAttachments: ImportedAttachment[]): Promise<void> {
+    for (const importedAttachment of importedAttachments) {
+      const arrayBuffer = await importedAttachment.data;
+      await this.setFileStat(arrayBuffer, importedAttachment.filepath);
+    }
+    return next.call(clipboardManager, importedAttachments);
+  }
+
   private async saveAttachment(
     attachmentFileName: string,
     attachmentFileExtension: string,
@@ -553,5 +586,35 @@ export class Plugin extends PluginBase<PluginTypes> {
       true
     );
     return await this.app.vault.createBinary(attachmentPath, attachmentFileContent);
+  }
+
+  private async setFileStat(arrayBuffer: ArrayBuffer, filePath: string): Promise<boolean> {
+    if (!filePath) {
+      return false;
+    }
+
+    if (this.app.vault.adapter instanceof FileSystemAdapter) {
+      const stats = await this.app.vault.adapter.fsPromises.stat(filePath);
+      this.arrayBufferFileStatMap.set(arrayBuffer, {
+        ctime: stats.ctimeMs,
+        mtime: stats.mtimeMs,
+        size: stats.size,
+        type: 'file'
+      });
+      return true;
+    }
+
+    if (this.app.vault.adapter instanceof CapacitorAdapter) {
+      const stats = await this.app.vault.adapter.fs.stat(filePath);
+      this.arrayBufferFileStatMap.set(arrayBuffer, {
+        ctime: stats.ctime ?? 0,
+        mtime: stats.mtime ?? 0,
+        size: arrayBuffer.byteLength,
+        type: 'file'
+      });
+      return true;
+    }
+
+    return false;
   }
 }

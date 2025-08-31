@@ -38,7 +38,7 @@ export class PrismComponent extends Component {
           suffix: {
             alias: 'regex',
             pattern: /}/
-          },
+          }
           /* eslint-enable perfectionist/sort-objects */
         },
         pattern: /\${.+?}/

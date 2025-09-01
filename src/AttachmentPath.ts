@@ -1,3 +1,5 @@
+import type { FileStats } from 'obsidian';
+
 import {
   normalizePath,
   Notice
@@ -17,13 +19,15 @@ export async function getAttachmentFolderFullPathForPath(
   plugin: Plugin,
   notePath: string,
   attachmentFileName: string,
-  attachmentFileContent?: ArrayBuffer
+  attachmentFileContent?: ArrayBuffer,
+  attachmentFileStat?: FileStats
 ): Promise<string> {
   return await getAttachmentFolderPath(
     plugin,
     new Substitutions({
       app: plugin.app,
       attachmentFileContent,
+      attachmentFileStat,
       noteFilePath: notePath,
       originalAttachmentFileName: attachmentFileName
     })

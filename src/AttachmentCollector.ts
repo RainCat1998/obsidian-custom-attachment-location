@@ -415,13 +415,16 @@ async function prepareAttachmentToMove(
 
   let newAttachmentName: string;
 
+  const attachmentFileContent = await plugin.app.vault.readBinary(oldAttachmentFile);
+
   if (plugin.settings.shouldRenameCollectedAttachments) {
     newAttachmentName = makeFileName(
       await getGeneratedAttachmentFileName(
         plugin,
         new Substitutions({
           app: plugin.app,
-          attachmentFileContent: await plugin.app.vault.readBinary(oldAttachmentFile),
+          attachmentFileContent,
+          attachmentFileStat: oldAttachmentFile.stat,
           noteFilePath: newNotePath,
           originalAttachmentFileName: oldAttachmentFile.name
         })
@@ -432,7 +435,13 @@ async function prepareAttachmentToMove(
     newAttachmentName = oldAttachmentName;
   }
 
-  const newAttachmentFolderPath = await getAttachmentFolderFullPathForPath(plugin, newNotePath, newAttachmentName);
+  const newAttachmentFolderPath = await getAttachmentFolderFullPathForPath(
+    plugin,
+    newNotePath,
+    newAttachmentName,
+    attachmentFileContent,
+    oldAttachmentFile.stat
+  );
   const newAttachmentPath = join(newAttachmentFolderPath, newAttachmentName);
 
   if (oldAttachmentPath === newAttachmentPath) {

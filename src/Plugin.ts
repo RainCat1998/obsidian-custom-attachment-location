@@ -2,7 +2,7 @@ import type {
   App,
   DataWriteOptions,
   FileManager,
-  Stat
+  FileStats
 } from 'obsidian';
 import type {
   ExtendedWrapper,
@@ -39,7 +39,10 @@ import {
   normalizeOptionalProperties,
   removeUndefinedProperties
 } from 'obsidian-dev-utils/ObjectUtils';
-import { getAvailablePathForAttachments } from 'obsidian-dev-utils/obsidian/AttachmentPath';
+import {
+  DUMMY_PATH,
+  getAvailablePathForAttachments
+} from 'obsidian-dev-utils/obsidian/AttachmentPath';
 import { getAbstractFileOrNull } from 'obsidian-dev-utils/obsidian/FileSystem';
 import {
   encodeUrl,
@@ -106,7 +109,7 @@ type ImportFilesFn = ShareReceiver['importFiles'];
 type InsertFilesFn = ClipboardManager['insertFiles'];
 
 export class Plugin extends PluginBase<PluginTypes> {
-  private readonly arrayBufferFileStatMap = new WeakMap<ArrayBuffer, Stat>();
+  private readonly arrayBufferFileStatMap = new WeakMap<ArrayBuffer, FileStats>();
   private currentAttachmentFolderPath: null | string = null;
   private getAvailablePathForAttachmentsOriginal: GetAvailablePathForAttachmentsFn | null = null;
   private lastOpenFilePath: null | string = null;
@@ -254,8 +257,7 @@ export class Plugin extends PluginBase<PluginTypes> {
     this.arrayBufferFileStatMap.set(arrayBuffer, {
       ctime: 0,
       mtime: file.lastModified,
-      size: file.size,
-      type: 'file'
+      size: file.size
     });
     return arrayBuffer;
   }
@@ -315,7 +317,8 @@ export class Plugin extends PluginBase<PluginTypes> {
     skipMissingAttachmentFolderCreation: boolean | undefined,
     attachmentFileContent?: ArrayBuffer,
     shouldSkipDuplicateCheck?: boolean,
-    shouldSkipGeneratedAttachmentFileName?: boolean
+    shouldSkipGeneratedAttachmentFileName?: boolean,
+    attachmentFileStat?: FileStats
   ): Promise<string> {
     if (attachmentFileBaseName.startsWith(IMPORT_FILES_PREFIX)) {
       attachmentFileBaseName = trimStart(attachmentFileBaseName, IMPORT_FILES_PREFIX);
@@ -341,7 +344,8 @@ export class Plugin extends PluginBase<PluginTypes> {
         this,
         noteFile.path,
         attachmentFileName,
-        attachmentFileContent
+        attachmentFileContent,
+        attachmentFileStat
       );
       const generatedAttachmentFileName = shouldSkipGeneratedAttachmentFileName
         ? attachmentFileName
@@ -350,6 +354,7 @@ export class Plugin extends PluginBase<PluginTypes> {
           new Substitutions({
             app: this.app,
             attachmentFileContent,
+            attachmentFileStat,
             noteFilePath: noteFile.path,
             originalAttachmentFileName: attachmentFileName
           })
@@ -417,7 +422,7 @@ export class Plugin extends PluginBase<PluginTypes> {
     }
 
     this.lastOpenFilePath = file.path;
-    this.currentAttachmentFolderPath = await getAttachmentFolderFullPathForPath(this, file.path, 'dummy.pdf');
+    this.currentAttachmentFolderPath = await getAttachmentFolderFullPathForPath(this, file.path, DUMMY_PATH);
   }
 
   private handleInputFileChange(evt: Event): void {
@@ -563,6 +568,7 @@ export class Plugin extends PluginBase<PluginTypes> {
       const markdownUrl = await new Substitutions({
         app: this.app,
         attachmentFileContent,
+        attachmentFileStat: this.arrayBufferFileStatMap.get(attachmentFileContent),
         generatedAttachmentFileName: attachmentFile.name,
         generatedAttachmentFilePath: attachmentFile.path,
         noteFilePath: activeNoteFile.path,
@@ -581,6 +587,8 @@ export class Plugin extends PluginBase<PluginTypes> {
     attachmentFileContent: ArrayBuffer
   ): Promise<TFile> {
     const noteFile = this.app.workspace.getActiveFile();
+    const attachmentFileStat = this.arrayBufferFileStatMap.get(attachmentFileContent);
+
     const attachmentPath = await this.getAvailablePathForAttachments(
       attachmentFileName,
       attachmentFileExtension,
@@ -588,15 +596,15 @@ export class Plugin extends PluginBase<PluginTypes> {
       false,
       attachmentFileContent,
       false,
-      true
+      true,
+      attachmentFileStat
     );
-    const stat = this.arrayBufferFileStatMap.get(attachmentFileContent);
     return await this.app.vault.createBinary(
       attachmentPath,
       attachmentFileContent,
       removeUndefinedProperties(normalizeOptionalProperties<DataWriteOptions>({
-        ctime: stat?.ctime,
-        mtime: stat?.mtime
+        ctime: attachmentFileStat?.ctime,
+        mtime: attachmentFileStat?.mtime
       }))
     );
   }
@@ -611,8 +619,7 @@ export class Plugin extends PluginBase<PluginTypes> {
       this.arrayBufferFileStatMap.set(arrayBuffer, {
         ctime: stats.ctimeMs,
         mtime: stats.mtimeMs,
-        size: stats.size,
-        type: 'file'
+        size: stats.size
       });
       return true;
     }
@@ -622,8 +629,7 @@ export class Plugin extends PluginBase<PluginTypes> {
       this.arrayBufferFileStatMap.set(arrayBuffer, {
         ctime: stats.ctime ?? 0,
         mtime: stats.mtime ?? 0,
-        size: arrayBuffer.byteLength,
-        type: 'file'
+        size: arrayBuffer.byteLength
       });
       return true;
     }

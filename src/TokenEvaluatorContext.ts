@@ -1,6 +1,6 @@
 import type {
   App,
-  Stat
+  FileStats
 } from 'obsidian';
 
 /**
@@ -29,9 +29,9 @@ export interface TokenEvaluatorContext {
    *
    * `undefined` if the attachment file stats is not known.
    *
-   * @remark It may be initialized only partially. Uninitialized {@link Stat.ctime} and {@link Stat.mtime} will be `0`.
+   * @remark It may be initialized only partially. Uninitialized {@link FileStats.ctime} and {@link FileStats.mtime} will be `0`.
    */
-  attachmentFileStat: Stat | undefined;
+  attachmentFileStat: FileStats | undefined;
 
   /**
    * Fills a template with the current context.

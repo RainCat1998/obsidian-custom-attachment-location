@@ -1,6 +1,6 @@
 import type {
   App,
-  Stat,
+  FileStats,
   TFile
 } from 'obsidian';
 import type { Promisable } from 'type-fest';
@@ -69,7 +69,7 @@ type RegisterCustomTokensWrapperFn = (registerCustomToken: RegisterCustomTokenFn
 interface SubstitutionsOptions {
   app: App;
   attachmentFileContent?: ArrayBuffer | undefined;
-  attachmentFileStat?: Stat | undefined;
+  attachmentFileStat?: FileStats | undefined;
   generatedAttachmentFileName?: string;
   generatedAttachmentFilePath?: string;
   noteFilePath: string;
@@ -271,7 +271,7 @@ export class Substitutions {
   public readonly noteFolderPath: string;
   private readonly app: App;
   private readonly attachmentFileContent: ArrayBuffer | undefined;
-  private readonly attachmentFileStat: Stat | undefined;
+  private readonly attachmentFileStat: FileStats | undefined;
   private readonly cursorLine: null | number;
   private readonly generatedAttachmentFileName: string;
   private readonly generatedAttachmentFilePath: string;

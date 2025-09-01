@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 9.10.0
+
+- Add default=empty, default=now
+
 ## 9.9.1
 
 - Truncate time

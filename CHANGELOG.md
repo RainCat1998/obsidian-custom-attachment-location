@@ -2,7 +2,7 @@
 
 ## 9.9.1
 
-- Trunc time
+- Truncate time
 
 ## 9.9.0
 

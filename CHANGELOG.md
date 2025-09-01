@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 9.8.1
+
+- Minor changes
+
 ## 9.8.0
 
 - originalAttachmentFileCreationDate / originalAttachmentFileModificationDate

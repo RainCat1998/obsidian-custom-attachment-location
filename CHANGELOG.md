@@ -1,5 +1,12 @@
 # CHANGELOG
 
+## 9.9.0
+
+- Don't add extra new lines (#196)
+- Improve description
+- Pass content and stats to every substitutions
+- Copy original times when creating attachments
+
 ## 9.8.1
 
 - Minor changes

@@ -1,5 +1,6 @@
 import type {
   App,
+  DataWriteOptions,
   FileManager,
   Stat
 } from 'obsidian';
@@ -33,7 +34,11 @@ import {
 } from 'obsidian';
 import { convertAsyncToSync } from 'obsidian-dev-utils/Async';
 import { blobToJpegArrayBuffer } from 'obsidian-dev-utils/Blob';
-import { getPrototypeOf } from 'obsidian-dev-utils/ObjectUtils';
+import {
+  getPrototypeOf,
+  normalizeOptionalProperties,
+  removeUndefinedProperties
+} from 'obsidian-dev-utils/ObjectUtils';
 import { getAvailablePathForAttachments } from 'obsidian-dev-utils/obsidian/AttachmentPath';
 import { getAbstractFileOrNull } from 'obsidian-dev-utils/obsidian/FileSystem';
 import {
@@ -585,7 +590,15 @@ export class Plugin extends PluginBase<PluginTypes> {
       false,
       true
     );
-    return await this.app.vault.createBinary(attachmentPath, attachmentFileContent);
+    const stat = this.arrayBufferFileStatMap.get(attachmentFileContent);
+    return await this.app.vault.createBinary(
+      attachmentPath,
+      attachmentFileContent,
+      removeUndefinedProperties(normalizeOptionalProperties<DataWriteOptions>({
+        ctime: stat?.ctime,
+        mtime: stat?.mtime
+      }))
+    );
   }
 
   private async setFileStat(arrayBuffer: ArrayBuffer, filePath: string): Promise<boolean> {

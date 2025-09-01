@@ -175,7 +175,7 @@ export class Plugin extends PluginBase<PluginTypes> {
 
     const tempName = `__TEMP_${crypto.randomUUID()}.md`;
     const tempFile = await this.app.vault.create(tempName, '');
-    const leaf = this.app.workspace.getLeaf();
+    const leaf = this.app.workspace.getLeaf('tab');
     await leaf.openFile(tempFile);
     const markdownView = leaf.view as MarkdownView;
     const that = this;

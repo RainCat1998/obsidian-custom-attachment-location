@@ -120,14 +120,14 @@ export class PluginSettingsTab extends PluginSettingsTabBase<PluginTypes> {
 
     new SettingEx(this.containerEl)
       .setName('Should rename attachment folders')
-      .setDesc('Whether to rename attachment folders when a note is renamed.')
+      .setDesc('Whether to rename attachment folders when a note is renamed or moved.')
       .addToggle((toggle) => {
         this.bind(toggle, 'shouldRenameAttachmentFolder');
       });
 
     new SettingEx(this.containerEl)
       .setName('Should rename attachment files')
-      .setDesc('Whether to rename attachment files when a note is renamed.')
+      .setDesc('Whether to rename attachment files when a note is renamed or moved.')
       .addToggle((toggle) => {
         this.bind(toggle, 'shouldRenameAttachmentFiles');
       });

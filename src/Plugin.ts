@@ -603,8 +603,8 @@ export class Plugin extends PluginBase<PluginTypes> {
       attachmentPath,
       attachmentFileContent,
       removeUndefinedProperties(normalizeOptionalProperties<DataWriteOptions>({
-        ctime: attachmentFileStat?.ctime,
-        mtime: attachmentFileStat?.mtime
+        ctime: attachmentFileStat?.ctime ? Math.trunc(attachmentFileStat.ctime) : undefined,
+        mtime: attachmentFileStat?.mtime ? Math.trunc(attachmentFileStat.mtime) : undefined
       }))
     );
   }

@@ -449,7 +449,7 @@ export class Plugin extends PluginBase<PluginTypes> {
   private handleReceiveFilesMenu(menu: Menu, attachmentFiles: TFile[]): void {
     this.handleReceiveMenuItemClick(menu, (noteFile) => {
       const linkTexts = attachmentFiles.map((attachmentFile) => this.app.fileManager.generateMarkdownLink(attachmentFile, noteFile.path));
-      return ['', ...linkTexts, ''].join('\n');
+      return linkTexts.join('\n');
     });
   }
 

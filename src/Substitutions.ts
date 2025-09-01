@@ -107,6 +107,30 @@ export function parseCustomTokens(customTokensStr: string): Map<string, TokenEva
   }
 }
 
+function formatAttachmentFileDate(timestamp: number | undefined, format: string): string {
+  const DEFAULT_NOW_SUFFIX = ',default=now';
+  const DEFAULT_EMPTY_SUFFIX = ',default=empty';
+  let defaultBehavior: 'empty' | 'now' = 'empty';
+
+  if (format.endsWith(DEFAULT_NOW_SUFFIX)) {
+    format = trimEnd(format, DEFAULT_NOW_SUFFIX);
+    defaultBehavior = 'now';
+  } else if (format.endsWith(DEFAULT_EMPTY_SUFFIX)) {
+    format = trimEnd(format, DEFAULT_EMPTY_SUFFIX);
+    defaultBehavior = 'empty';
+  }
+
+  if (timestamp) {
+    return moment(timestamp).format(format);
+  }
+
+  if (defaultBehavior === 'now') {
+    return moment().format(format);
+  }
+
+  return '';
+}
+
 function formatDate(format: string): string {
   return moment().format(format);
 }
@@ -328,11 +352,11 @@ export class Substitutions {
     );
     this.registerToken(
       'originalAttachmentFileCreationDate',
-      (ctx) => ctx.attachmentFileStat?.ctime ? moment(ctx.attachmentFileStat.ctime).format(ctx.format) : ''
+      (ctx) => formatAttachmentFileDate(ctx.attachmentFileStat?.ctime, ctx.format)
     );
     this.registerToken(
       'originalAttachmentFileModificationDate',
-      (ctx) => ctx.attachmentFileStat?.mtime ? moment(ctx.attachmentFileStat.mtime).format(ctx.format) : ''
+      (ctx) => formatAttachmentFileDate(ctx.attachmentFileStat?.mtime, ctx.format)
     );
 
     this.registerToken('noteFileName', (ctx) => formatString(ctx.noteFileName, ctx.format));

@@ -242,13 +242,21 @@ File name of the original attachment file.
 
 Original attachment file creation date/time. Empty if unknown.
 
-**Format**: [Moment.js formatting][Moment.js formatting].
+**Format**:
+
+- [Moment.js formatting][Moment.js formatting]. **Example** `YYYY-MM-DD`: `2025-09-01`.
+- **`format,default=empty`** (same as above, but explicit): Use empty string if the original date was not available.
+- **`format,default=now`**: Use current time if the original date was not available.
 
 ### `${originalAttachmentFileModificationDate}`
 
 Original attachment file modification date/time. Empty if unknown.
 
-**Format**: [Moment.js formatting][Moment.js formatting].
+**Format**:
+
+- [Moment.js formatting][Moment.js formatting]. **Example** `YYYY-MM-DD`: `2025-09-01`.
+- **`format,default=empty`** (same as above, but explicit): Use empty string if the original date was not available.
+- **`format,default=now`**: Use current time if the original date was not available.
 
 ### `${prompt}`
 

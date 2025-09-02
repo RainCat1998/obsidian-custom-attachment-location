@@ -6,8 +6,8 @@ import type {
   WorkspaceLeaf
 } from 'obsidian';
 import type {
-  ExtendedWrapper,
-  GetAvailablePathForAttachmentsExtendedFn
+  GetAvailablePathForAttachmentsExtendedFnOptions,
+  GetAvailablePathForAttachmentsFnExtended
 } from 'obsidian-dev-utils/obsidian/AttachmentPath';
 import type { RenameDeleteHandlerSettings } from 'obsidian-dev-utils/obsidian/RenameDeleteHandler';
 import type {
@@ -44,7 +44,10 @@ import {
   DUMMY_PATH,
   getAvailablePathForAttachments
 } from 'obsidian-dev-utils/obsidian/AttachmentPath';
-import { getAbstractFileOrNull } from 'obsidian-dev-utils/obsidian/FileSystem';
+import {
+  getAbstractFileOrNull,
+  getFileOrNull
+} from 'obsidian-dev-utils/obsidian/FileSystem';
 import {
   encodeUrl,
   generateMarkdownLink,
@@ -83,7 +86,7 @@ import {
 } from './AttachmentCollector.ts';
 import {
   getAttachmentFolderFullPathForPath,
-  getGeneratedAttachmentFileName
+  getGeneratedAttachmentFileBaseName
 } from './AttachmentPath.ts';
 import { AttachmentRenameMode } from './PluginSettings.ts';
 import { PluginSettingsManager } from './PluginSettingsManager.ts';
@@ -135,12 +138,16 @@ export class Plugin extends PluginBase<PluginTypes> {
 
     registerPatch(this, this.app.vault, {
       getAvailablePath: (): GetAvailablePathFn => this.getAvailablePath.bind(this),
-      getAvailablePathForAttachments: (next: GetAvailablePathForAttachmentsFn): ExtendedWrapper & GetAvailablePathForAttachmentsExtendedFn => {
-        this.getAvailablePathForAttachmentsOriginal = next.bind(this.app.vault);
-        const extendedWrapper: ExtendedWrapper = {
-          isExtended: true as const
-        };
-        return Object.assign(this.getAvailablePathForAttachments.bind(this), extendedWrapper) as ExtendedWrapper & GetAvailablePathForAttachmentsExtendedFn;
+      getAvailablePathForAttachments: (next: GetAvailablePathForAttachmentsFn): GetAvailablePathForAttachmentsFnExtended => {
+        const that = this;
+
+        return Object.assign(nextCopy, {
+          extended: this.getAvailablePathForAttachments.bind(this)
+        }) as GetAvailablePathForAttachmentsFnExtended;
+
+        function nextCopy(filename: string, extension: string, file: null | TFile): Promise<string> {
+          return next.call(that.app.vault, filename, extension, file);
+        }
       },
       getConfig: (next: GetConfigFn): GetConfigFn => {
         return (name: ConfigItem): unknown => {
@@ -304,16 +311,32 @@ export class Plugin extends PluginBase<PluginTypes> {
     }
   }
 
-  private async getAvailablePathForAttachments(
-    attachmentFileBaseName: string,
-    attachmentFileExtension: string,
-    noteFile: null | TFile,
-    skipMissingAttachmentFolderCreation: boolean | undefined,
-    attachmentFileContent?: ArrayBuffer,
-    shouldSkipDuplicateCheck?: boolean,
-    shouldSkipGeneratedAttachmentFileName?: boolean,
-    attachmentFileStat?: FileStats
-  ): Promise<string> {
+  private async getAvailablePathForAttachments(options: GetAvailablePathForAttachmentsExtendedFnOptions): Promise<string> {
+    const {
+      attachmentFileExtension,
+      notePathOrFile,
+      shouldSkipDuplicateCheck,
+      shouldSkipMissingAttachmentFolderCreation
+    } = options;
+    let {
+      attachmentFileBaseName,
+      attachmentFileContent,
+      attachmentFileStat,
+      shouldSkipGeneratedAttachmentFileName
+    } = options;
+
+    if (attachmentFileBaseName === DUMMY_PATH) {
+      attachmentFileContent ??= new ArrayBuffer(0);
+      const now = Math.trunc(Date.now());
+      attachmentFileStat ??= {
+        ctime: now,
+        mtime: now,
+        size: 0
+      };
+    }
+
+    const noteFile = getFileOrNull(this.app, notePathOrFile);
+
     if (attachmentFileBaseName.startsWith(IMPORT_FILES_PREFIX)) {
       attachmentFileBaseName = trimStart(attachmentFileBaseName, IMPORT_FILES_PREFIX);
       shouldSkipGeneratedAttachmentFileName = true;
@@ -324,14 +347,14 @@ export class Plugin extends PluginBase<PluginTypes> {
 
     let attachmentPath: string;
     if (!noteFile || !isNoteEx(this, noteFile)) {
-      attachmentPath = await getAvailablePathForAttachments(
-        this.app,
+      attachmentPath = await getAvailablePathForAttachments({
+        app: this.app,
         attachmentFileBaseName,
         attachmentFileExtension,
-        noteFile,
-        true,
-        shouldSkipDuplicateCheck ?? false
-      );
+        notePathOrFile,
+        shouldSkipDuplicateCheck: shouldSkipDuplicateCheck ?? false,
+        shouldSkipMissingAttachmentFolderCreation: shouldSkipMissingAttachmentFolderCreation ?? true
+      });
     } else {
       const attachmentFileName = makeFileName(attachmentFileBaseName, attachmentFileExtension);
       const attachmentFolderFullPath = await getAttachmentFolderFullPathForPath(
@@ -341,9 +364,11 @@ export class Plugin extends PluginBase<PluginTypes> {
         attachmentFileContent,
         attachmentFileStat
       );
-      const generatedAttachmentFileName = shouldSkipGeneratedAttachmentFileName
-        ? attachmentFileName
-        : await getGeneratedAttachmentFileName(
+      let generatedAttachmentFileName: string;
+      if (shouldSkipGeneratedAttachmentFileName) {
+        generatedAttachmentFileName = attachmentFileName;
+      } else {
+        const generatedAttachmentFileBaseName = await getGeneratedAttachmentFileBaseName(
           this,
           new Substitutions({
             app: this.app,
@@ -353,6 +378,8 @@ export class Plugin extends PluginBase<PluginTypes> {
             originalAttachmentFileName: attachmentFileName
           })
         );
+        generatedAttachmentFileName = makeFileName(generatedAttachmentFileBaseName, attachmentFileExtension);
+      }
       const generatedAttachmentFileNamePath = join(attachmentFolderFullPath, generatedAttachmentFileName);
       if (shouldSkipDuplicateCheck) {
         attachmentPath = generatedAttachmentFileNamePath;
@@ -363,7 +390,7 @@ export class Plugin extends PluginBase<PluginTypes> {
       }
     }
 
-    if (!skipMissingAttachmentFolderCreation) {
+    if (!shouldSkipMissingAttachmentFolderCreation) {
       const folderPath = parentFolderPath(attachmentPath);
       if (!await this.app.vault.exists(folderPath)) {
         await createFolderSafe(this.app, folderPath);
@@ -513,9 +540,9 @@ export class Plugin extends PluginBase<PluginTypes> {
         noteFilePath: this.app.workspace.getActiveFile()?.path ?? '',
         originalAttachmentFileName: file.name
       });
-      const attachmentFileName = await getGeneratedAttachmentFileName(this, substitutions);
-      const ext = extname(file.name).slice(1);
-      file.name = IMPORT_FILES_PREFIX + makeFileName(attachmentFileName, ext);
+      const attachmentFileBaseName = await getGeneratedAttachmentFileBaseName(this, substitutions);
+      const attachmentFileExtension = extname(file.name).slice(1);
+      file.name = IMPORT_FILES_PREFIX + makeFileName(attachmentFileBaseName, attachmentFileExtension);
     }
 
     return next.call(this.app.shareReceiver, files);
@@ -530,17 +557,17 @@ export class Plugin extends PluginBase<PluginTypes> {
   }
 
   private async saveAttachment(
-    attachmentFileName: string,
+    attachmentFileBaseName: string,
     attachmentFileExtension: string,
     attachmentFileContent: ArrayBuffer
   ): Promise<TFile> {
     const activeNoteFile = this.app.workspace.getActiveFile();
     if (!activeNoteFile || this.settings.isPathIgnored(activeNoteFile.path)) {
-      return await this.saveAttachmentCore(attachmentFileName, attachmentFileExtension, attachmentFileContent);
+      return await this.saveAttachmentCore(attachmentFileBaseName, attachmentFileExtension, attachmentFileContent);
     }
 
     let isPastedImage = false;
-    const match = PASTED_IMAGE_NAME_REG_EXP.exec(attachmentFileName);
+    const match = PASTED_IMAGE_NAME_REG_EXP.exec(attachmentFileBaseName);
     if (match) {
       const timestampString = match.groups?.['Timestamp'];
       if (timestampString) {
@@ -574,19 +601,19 @@ export class Plugin extends PluginBase<PluginTypes> {
     }
 
     if (shouldRename) {
-      attachmentFileName = await getGeneratedAttachmentFileName(
+      attachmentFileBaseName = await getGeneratedAttachmentFileBaseName(
         this,
         new Substitutions({
           app: this.app,
           attachmentFileContent,
           attachmentFileStat: this.arrayBufferFileStatMap.get(attachmentFileContent),
           noteFilePath: activeNoteFile.path,
-          originalAttachmentFileName: makeFileName(attachmentFileName, attachmentFileExtension)
+          originalAttachmentFileName: makeFileName(attachmentFileBaseName, attachmentFileExtension)
         })
       );
     }
 
-    const attachmentFile = await this.saveAttachmentCore(attachmentFileName, attachmentFileExtension, attachmentFileContent);
+    const attachmentFile = await this.saveAttachmentCore(attachmentFileBaseName, attachmentFileExtension, attachmentFileContent);
     if (this.settings.markdownUrlFormat) {
       const markdownUrl = await new Substitutions({
         app: this.app,
@@ -595,7 +622,7 @@ export class Plugin extends PluginBase<PluginTypes> {
         generatedAttachmentFileName: attachmentFile.name,
         generatedAttachmentFilePath: attachmentFile.path,
         noteFilePath: activeNoteFile.path,
-        originalAttachmentFileName: makeFileName(attachmentFileName, attachmentFileExtension)
+        originalAttachmentFileName: makeFileName(attachmentFileBaseName, attachmentFileExtension)
       }).fillTemplate(this.settings.markdownUrlFormat);
       this.pathMarkdownUrlMap.set(attachmentFile.path, markdownUrl);
     } else {
@@ -605,23 +632,23 @@ export class Plugin extends PluginBase<PluginTypes> {
   }
 
   private async saveAttachmentCore(
-    attachmentFileName: string,
+    attachmentFileBaseName: string,
     attachmentFileExtension: string,
     attachmentFileContent: ArrayBuffer
   ): Promise<TFile> {
     const noteFile = this.app.workspace.getActiveFile();
     const attachmentFileStat = this.arrayBufferFileStatMap.get(attachmentFileContent);
 
-    const attachmentPath = await this.getAvailablePathForAttachments(
-      attachmentFileName,
-      attachmentFileExtension,
-      noteFile,
-      false,
+    const attachmentPath = await this.getAvailablePathForAttachments({
+      attachmentFileBaseName,
       attachmentFileContent,
-      false,
-      true,
-      attachmentFileStat
-    );
+      attachmentFileExtension,
+      attachmentFileStat,
+      notePathOrFile: noteFile,
+      shouldSkipDuplicateCheck: false,
+      shouldSkipGeneratedAttachmentFileName: true,
+      shouldSkipMissingAttachmentFolderCreation: false
+    });
     return await this.app.vault.createBinary(
       attachmentPath,
       attachmentFileContent,

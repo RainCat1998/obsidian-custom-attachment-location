@@ -34,7 +34,7 @@ export async function getAttachmentFolderFullPathForPath(
   );
 }
 
-export async function getGeneratedAttachmentFileName(plugin: Plugin, substitutions: Substitutions): Promise<string> {
+export async function getGeneratedAttachmentFileBaseName(plugin: Plugin, substitutions: Substitutions): Promise<string> {
   const path = await resolvePathTemplate(plugin, plugin.settings.generatedAttachmentFileName, substitutions, true);
   let validationMessage = await validatePath({
     app: plugin.app,

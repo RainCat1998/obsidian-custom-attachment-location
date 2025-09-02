@@ -61,7 +61,7 @@ import type { Plugin } from './Plugin.ts';
 
 import {
   getAttachmentFolderFullPathForPath,
-  getGeneratedAttachmentFileName
+  getGeneratedAttachmentFileBaseName
 } from './AttachmentPath.ts';
 import { selectMode } from './CollectAttachmentUsedByMultipleNotesModal.ts';
 import { CollectAttachmentUsedByMultipleNotesMode } from './PluginSettings.ts';
@@ -426,7 +426,7 @@ async function prepareAttachmentToMove(
 
   if (plugin.settings.shouldRenameCollectedAttachments) {
     newAttachmentName = makeFileName(
-      await getGeneratedAttachmentFileName(
+      await getGeneratedAttachmentFileBaseName(
         plugin,
         new Substitutions({
           app: plugin.app,

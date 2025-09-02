@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 9.10.3
+
+- Minor changes
+
 ## 9.10.2
 
 - Register patch without using temp files (#199)

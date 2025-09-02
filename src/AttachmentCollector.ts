@@ -101,14 +101,21 @@ export async function collectAttachments(
   await applyFileChanges(
     app,
     note,
-    async (abortSignal2) => {
+    async (abortSignal2, content) => {
       abortSignal2.throwIfAborted();
+      const cache = await getCacheSafe(app, note);
+      abortSignal2.throwIfAborted();
+
+      const cachedContent = await app.vault.cachedRead(note);
+      abortSignal2.throwIfAborted();
+
       if (ctx.isAborted) {
         return [];
       }
 
-      const cache = await getCacheSafe(app, note);
-      abortSignal2.throwIfAborted();
+      if (content !== cachedContent) {
+        return null;
+      }
 
       if (!cache) {
         return [];

@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## 9.10.5
+
+- Fix uninitialized stats on rename
+- Fix #202
+
 ## 9.10.4
 
 - More accurate file changes

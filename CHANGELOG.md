@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 9.10.2
+
+- Register patch without using temp files (#199)
+
 ## 9.10.1
 
 - Fix closing active note on load https://github.com/RainCat1998/obsidian-custom-attachment-location/issues/199#issuecomment-3241586013

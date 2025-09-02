@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 9.10.4
+
+- More accurate file changes
+
 ## 9.10.3
 
 - Minor changes

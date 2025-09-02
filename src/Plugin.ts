@@ -2,7 +2,8 @@ import type {
   App,
   DataWriteOptions,
   FileManager,
-  FileStats
+  FileStats,
+  WorkspaceLeaf
 } from 'obsidian';
 import type {
   ExtendedWrapper,
@@ -66,7 +67,10 @@ import {
   makeFileName
 } from 'obsidian-dev-utils/Path';
 import { trimStart } from 'obsidian-dev-utils/String';
-import { parentFolderPath } from 'obsidian-typings/implementations';
+import {
+  parentFolderPath,
+  ViewType
+} from 'obsidian-typings/implementations';
 
 import type { PluginTypes } from './PluginTypes.ts';
 
@@ -112,6 +116,7 @@ export class Plugin extends PluginBase<PluginTypes> {
   private readonly arrayBufferFileStatMap = new WeakMap<ArrayBuffer, FileStats>();
   private currentAttachmentFolderPath: null | string = null;
   private getAvailablePathForAttachmentsOriginal: GetAvailablePathForAttachmentsFn | null = null;
+  private isMarkdownViewPatched = false;
   private lastOpenFilePath: null | string = null;
   private readonly pathMarkdownUrlMap = new Map<string, string>();
 
@@ -173,22 +178,11 @@ export class Plugin extends PluginBase<PluginTypes> {
 
     this.registerPopupDocumentDomEvent('change', this.handleInputFileChange.bind(this), { capture: true });
 
-    const tempName = `__TEMP_${crypto.randomUUID()}.md`;
-    const tempFile = await this.app.vault.create(tempName, '');
-    const leaf = this.app.workspace.getLeaf('tab');
-    await leaf.openFile(tempFile);
-    const markdownView = leaf.view as MarkdownView;
-    const that = this;
-    registerPatch(this, getPrototypeOf(markdownView.editMode.clipboardManager), {
-      insertFiles: (next: InsertFilesFn): InsertFilesFn => {
-        return function insertFilesPatched(this: ClipboardManager, importedAttachments: ImportedAttachment[]): Promise<void> {
-          return that.insertFiles(next, this, importedAttachments);
-        };
-      }
-    });
-    await markdownView.close();
-    leaf.detach();
-    await this.app.vault.delete(tempFile);
+    await this.handleActiveLeafChange(this.app.workspace.getLeavesOfType(ViewType.Markdown)[0] ?? null);
+
+    if (!this.isMarkdownViewPatched) {
+      this.registerEvent(this.app.workspace.on('active-leaf-change', convertAsyncToSync(this.handleActiveLeafChange.bind(this))));
+    }
   }
 
   protected override async onloadImpl(): Promise<void> {
@@ -396,6 +390,35 @@ export class Plugin extends PluginBase<PluginTypes> {
       return fileEx.path;
     }
     return next(file);
+  }
+
+  private async handleActiveLeafChange(leaf: null | WorkspaceLeaf): Promise<void> {
+    if (this.isMarkdownViewPatched) {
+      return;
+    }
+
+    if (!leaf) {
+      return;
+    }
+
+    if (leaf.view.getViewType() !== ViewType.Markdown) {
+      return;
+    }
+
+    await leaf.loadIfDeferred();
+
+    const markdownView = leaf.view as MarkdownView;
+
+    const that = this;
+    registerPatch(this, getPrototypeOf(markdownView.editMode.clipboardManager), {
+      insertFiles: (next: InsertFilesFn): InsertFilesFn => {
+        return function insertFilesPatched(this: ClipboardManager, importedAttachments: ImportedAttachment[]): Promise<void> {
+          return that.insertFiles(next, this, importedAttachments);
+        };
+      }
+    });
+
+    this.isMarkdownViewPatched = true;
   }
 
   private handleFileMenu(menu: Menu, file: TAbstractFile): void {

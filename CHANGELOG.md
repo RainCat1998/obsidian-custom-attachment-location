@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 9.11.1
+
+- #206
+
 ## 9.11.0
 
 - Add timeout setting (#203)

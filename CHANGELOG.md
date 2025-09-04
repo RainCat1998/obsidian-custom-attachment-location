@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 9.11.0
+
+- Add timeout setting (#203)
+
 ## 9.10.6
 
 - Minor changes

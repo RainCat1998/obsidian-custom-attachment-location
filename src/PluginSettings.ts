@@ -1,3 +1,4 @@
+import { INFINITE_TIMEOUT } from 'obsidian-dev-utils/AbortController';
 import { EmptyAttachmentFolderBehavior } from 'obsidian-dev-utils/obsidian/RenameDeleteHandler';
 import { escapeRegExp } from 'obsidian-dev-utils/RegExp';
 
@@ -53,6 +54,8 @@ export class PluginSettings {
   public shouldRenameCollectedAttachments = false;
   public specialCharacters = '#^[]|*\\<>:?';
   public specialCharactersReplacement = '-';
+  // eslint-disable-next-line no-magic-numbers
+  public timeoutInSeconds = 5;
   public treatAsAttachmentExtensions: readonly string[] = ['.excalidraw.md'];
   public warningVersion = '';
   public get customTokensStr(): string {
@@ -107,6 +110,11 @@ export class PluginSettings {
   private _includePaths: string[] = [];
 
   private _includePathsRegExp = ALWAYS_MATCH_REG_EXP;
+
+  public getTimeoutInMilliseconds(): number {
+    const MILLISECONDS_PER_SECOND = 1000;
+    return this.timeoutInSeconds === 0 ? INFINITE_TIMEOUT : this.timeoutInSeconds * MILLISECONDS_PER_SECOND;
+  }
 
   public isExcludedFromAttachmentCollecting(path: string): boolean {
     return this._excludePathsFromAttachmentCollectingRegExp.test(path);

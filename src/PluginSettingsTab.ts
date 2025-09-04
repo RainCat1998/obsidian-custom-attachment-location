@@ -419,6 +419,20 @@ export class PluginSettingsTab extends PluginSettingsTabBase<PluginTypes> {
       .addMultipleText((multipleText) => {
         this.bind(multipleText, 'treatAsAttachmentExtensions');
       });
+
+    new SettingEx(this.containerEl)
+      .setName('Timeout in seconds')
+      .setDesc(createFragment((f) => {
+        f.appendText('The timeout in seconds for all operations.');
+        f.createEl('br');
+        f.appendText('If ');
+        appendCodeBlock(f, '0');
+        f.appendText(' is set, the operations execution timeout is disabled.');
+      }))
+      .addNumber((number) => {
+        number.setMin(0);
+        this.bind(number, 'timeoutInSeconds');
+      });
   }
 
   public override hide(): void {

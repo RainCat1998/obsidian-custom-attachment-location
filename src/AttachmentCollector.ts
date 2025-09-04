@@ -6,7 +6,6 @@ import type {
 } from 'obsidian';
 import type { FileChange } from 'obsidian-dev-utils/obsidian/FileChange';
 import type { PathOrAbstractFile } from 'obsidian-dev-utils/obsidian/FileSystem';
-import type { ProcessOptions } from 'obsidian-dev-utils/obsidian/Vault';
 import type { CanvasData } from 'obsidian/canvas.d.ts';
 
 import {
@@ -21,11 +20,7 @@ import {
 } from 'obsidian-dev-utils/AbortController';
 import { throwExpression } from 'obsidian-dev-utils/Error';
 import { appendCodeBlock } from 'obsidian-dev-utils/HTMLElement';
-import {
-  normalizeOptionalProperties,
-  removeUndefinedProperties,
-  toJson
-} from 'obsidian-dev-utils/ObjectUtils';
+import { toJson } from 'obsidian-dev-utils/ObjectUtils';
 import { applyFileChanges } from 'obsidian-dev-utils/obsidian/FileChange';
 import {
   getPath,
@@ -142,7 +137,9 @@ export async function collectAttachments(
           continue;
         }
 
-        const backlinks = await getBacklinksForFileSafe(app, attachmentMoveResult.oldAttachmentPath);
+        const backlinks = await getBacklinksForFileSafe(app, attachmentMoveResult.oldAttachmentPath, {
+          timeoutInMilliseconds: plugin.settings.getTimeoutInMilliseconds()
+        });
         abortSignal2.throwIfAborted();
         if (backlinks.keys().length > 1) {
           const backlinksSorted = backlinks.keys().sort((a, b) => a.localeCompare(b));
@@ -238,9 +235,9 @@ export async function collectAttachments(
 
       return changes;
     },
-    removeUndefinedProperties(normalizeOptionalProperties<Partial<ProcessOptions>>({
+    {
       timeoutInMilliseconds: getTimeoutInMilliseconds(plugin)
-    }))
+    }
   );
 
   if (isCanvas) {
@@ -258,6 +255,8 @@ export async function collectAttachments(
         node.file = newPath;
       }
       return toJson(canvasData);
+    }, {
+      timeoutInMilliseconds: plugin.settings.getTimeoutInMilliseconds()
     });
   }
 
@@ -390,12 +389,12 @@ async function getCanvasLinks(app: App, canvasFile: TFile): Promise<ReferenceCac
   }));
 }
 
-function getTimeoutInMilliseconds(plugin: Plugin): number | undefined {
+function getTimeoutInMilliseconds(plugin: Plugin): number {
   return plugin.settings.collectAttachmentUsedByMultipleNotesMode === CollectAttachmentUsedByMultipleNotesMode.Prompt
       || hasPromptToken(plugin.settings.attachmentFolderPath)
       || hasPromptToken(plugin.settings.generatedAttachmentFileName)
     ? INFINITE_TIMEOUT
-    : undefined;
+    : plugin.settings.getTimeoutInMilliseconds();
 }
 
 async function prepareAttachmentToMove(

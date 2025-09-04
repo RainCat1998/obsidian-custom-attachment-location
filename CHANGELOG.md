@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 9.10.6
+
+- Minor changes
+
 ## 9.10.5
 
 - Fix uninitialized stats on rename

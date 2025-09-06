@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 9.12.0
+
+- Fix paths with trailing spaces and dots (#204)
+
 ## 9.11.1
 
 - #206

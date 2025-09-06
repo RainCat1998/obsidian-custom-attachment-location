@@ -76,6 +76,8 @@ async function getAttachmentFolderPath(plugin: Plugin, substitutions: Substituti
 
 async function resolvePathTemplate(plugin: Plugin, template: string, substitutions: Substitutions, isFileNamePart: boolean): Promise<string> {
   let resolvedPath = await substitutions.fillTemplate(template);
+  const resolvedPathParts = resolvedPath.split('/').map((part) => part.replace(/[\s.]+$/, '') || part);
+  resolvedPath = resolvedPathParts.join('/');
   const validationError = await validatePath({
     app: plugin.app,
     areTokensAllowed: false,

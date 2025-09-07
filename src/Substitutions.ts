@@ -193,6 +193,37 @@ function formatFolderName(folderPath: string, format: string): string {
   return formatString(folderName, format2);
 }
 
+function formatFolderPath(folderPath: string, format: string): string {
+  const folderParts = folderPath.split('/');
+  let folderPartIndex = folderParts.length - 1;
+
+  let commaIndex = format.indexOf(',');
+  const NOT_FOUND_INDEX = -1;
+  if (commaIndex === NOT_FOUND_INDEX) {
+    commaIndex = format.length;
+  }
+  const format1 = format.slice(0, commaIndex);
+  const format2 = format.slice(commaIndex + 1);
+
+  const format1WithParameter = parseFormatWithParameter(format1);
+  switch (format1WithParameter.base) {
+    case 'indexFromEnd':
+      folderPartIndex = folderParts.length - 1 - (format1WithParameter.parameter ?? 0);
+      break;
+    case 'indexFromStart':
+      folderPartIndex = format1WithParameter.parameter ?? 0;
+      break;
+    default:
+      if (format2) {
+        throw new Error(`Invalid format: ${format1}`);
+      }
+      return formatString(folderParts.slice(folderPartIndex).join('/') ?? '', format1);
+  }
+
+  const folderDir = folderParts.slice(folderPartIndex).join('/') ?? '';
+  return formatString(folderDir, format2);
+}
+
 function formatString(str: string, format: string): string {
   const { base, parameter } = parseFormatWithParameter(format);
 
@@ -362,7 +393,7 @@ export class Substitutions {
     this.registerToken('noteFileName', (ctx) => formatString(ctx.noteFileName, ctx.format));
     this.registerToken('noteFilePath', (ctx) => ctx.noteFilePath);
     this.registerToken('noteFolderName', (ctx) => formatFolderName(ctx.noteFolderPath, ctx.format));
-    this.registerToken('noteFolderPath', (ctx) => ctx.noteFolderPath);
+    this.registerToken('noteFolderPath', (ctx) => formatFolderPath(ctx.noteFolderPath, ctx.format));
 
     this.registerToken('frontmatter', (ctx) => getFrontmatterValue(ctx.app, ctx.noteFilePath, ctx.format));
 

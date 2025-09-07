@@ -1,0 +1,12 @@
+/* Partial locale definition (you can omit some keys) */
+
+import type { Locale } from '../i18n.ts';
+
+export const yourLanguageLocale: Locale = {};
+
+/* Partial locale definition (you have to define all keys) */
+
+import type { FullLocale } from '../i18n.ts';
+
+export const yourLanguageLocale: FullLocale = {};
+

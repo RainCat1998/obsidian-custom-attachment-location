@@ -22,6 +22,7 @@ import { SettingEx } from 'obsidian-dev-utils/obsidian/SettingEx';
 import type { PluginSettings } from './PluginSettings.ts';
 import type { PluginTypes } from './PluginTypes.ts';
 
+import { t } from './i18n/i18n.ts';
 import {
   AttachmentRenameMode,
   CollectAttachmentUsedByMultipleNotesMode,
@@ -47,20 +48,30 @@ export class PluginSettingsTab extends PluginSettingsTabBase<PluginTypes> {
     };
 
     new SettingEx(this.containerEl)
-      .setName('Location for new attachments')
+      .setName(t(($) => $.pluginSettingsTab.locationForNewAttachments.name))
       .setDesc(createFragment((f) => {
-        f.appendText('Start with ');
+        f.appendText(t(($) => $.pluginSettingsTab.locationForNewAttachments.description.part1));
+        f.appendText(' ');
         appendCodeBlock(f, '.');
-        f.appendText(' to use relative path.');
+        f.appendText(' ');
+        f.appendText(t(($) => $.pluginSettingsTab.locationForNewAttachments.description.part2));
         f.createEl('br');
-        f.appendText('See available ');
-        f.createEl('a', { href: 'https://github.com/RainCat1998/obsidian-custom-attachment-location?tab=readme-ov-file#tokens', text: 'tokens' });
+        f.appendText(t(($) => $.pluginSettingsTab.locationForNewAttachments.description.part3));
+        f.appendText(' ');
+        f.createEl('a', {
+          href: 'https://github.com/RainCat1998/obsidian-custom-attachment-location?tab=readme-ov-file#tokens',
+          text: t(($) => $.pluginSettingsTab.locationForNewAttachments.description.part4)
+        });
         f.createEl('br');
-        f.appendText('Dot-folders like ');
+        f.appendText(t(($) => $.pluginSettingsTab.locationForNewAttachments.description.part5));
+        f.appendText(' ');
         appendCodeBlock(f, '.attachments');
-        f.appendText(' are not recommended, because Obsidian doesn\'t track them. You might need to use ');
+        f.appendText(' ');
+        f.appendText(t(($) => $.pluginSettingsTab.locationForNewAttachments.description.part6));
+        f.appendText(' ');
         f.createEl('a', { href: 'https://github.com/polyipseity/obsidian-show-hidden-files/', text: 'Show Hidden Files' });
-        f.appendText(' Plugin to manage them.');
+        f.appendText(' ');
+        f.appendText(t(($) => $.pluginSettingsTab.locationForNewAttachments.description.part7));
       }))
       .addCodeHighlighter((codeHighlighter) => {
         codeHighlighter.setLanguage(TOKENIZED_STRING_LANGUAGE);
@@ -69,10 +80,15 @@ export class PluginSettingsTab extends PluginSettingsTabBase<PluginTypes> {
       });
 
     new SettingEx(this.containerEl)
-      .setName('Generated attachment file name')
+      .setName(t(($) => $.pluginSettingsTab.generatedAttachmentFileName.name))
       .setDesc(createFragment((f) => {
-        f.appendText('See available ');
-        f.createEl('a', { href: 'https://github.com/RainCat1998/obsidian-custom-attachment-location?tab=readme-ov-file#tokens', text: 'tokens' });
+        f.appendText(t(($) => $.pluginSettingsTab.generatedAttachmentFileName.description.part1));
+        f.appendText(' ');
+        f.createEl('a', {
+          href: 'https://github.com/RainCat1998/obsidian-custom-attachment-location?tab=readme-ov-file#tokens',
+          text: t(($) => $.pluginSettingsTab.generatedAttachmentFileName.description.part2)
+        });
+        f.appendText('.');
       }))
       .addCodeHighlighter((codeHighlighter) => {
         codeHighlighter.setLanguage(TOKENIZED_STRING_LANGUAGE);
@@ -81,14 +97,19 @@ export class PluginSettingsTab extends PluginSettingsTabBase<PluginTypes> {
       });
 
     new SettingEx(this.containerEl)
-      .setName('Markdown URL format')
+      .setName(t(($) => $.pluginSettingsTab.markdownUrlFormat.name))
       .setDesc(createFragment((f) => {
-        f.appendText('Format for the URL that will be inserted into Markdown.');
+        f.appendText(t(($) => $.pluginSettingsTab.markdownUrlFormat.description.part1));
         f.createEl('br');
-        f.appendText('See available ');
-        f.createEl('a', { href: 'https://github.com/RainCat1998/obsidian-custom-attachment-location?tab=readme-ov-file#tokens', text: 'tokens' });
+        f.appendText(t(($) => $.pluginSettingsTab.markdownUrlFormat.description.part2));
+        f.appendText(' ');
+        f.createEl('a', {
+          href: 'https://github.com/RainCat1998/obsidian-custom-attachment-location?tab=readme-ov-file#tokens',
+          text: t(($) => $.pluginSettingsTab.markdownUrlFormat.description.part3)
+        });
+        f.appendText('.');
         f.createEl('br');
-        f.appendText('Leave blank to use the default format.');
+        f.appendText(t(($) => $.pluginSettingsTab.markdownUrlFormat.description.part4));
       }))
       .addCodeHighlighter((codeHighlighter) => {
         codeHighlighter.setLanguage(TOKENIZED_STRING_LANGUAGE);
@@ -97,21 +118,30 @@ export class PluginSettingsTab extends PluginSettingsTabBase<PluginTypes> {
       });
 
     new SettingEx(this.containerEl)
-      .setName('Attachment rename mode')
+      .setName(t(($) => $.pluginSettingsTab.attachmentRenameMode.name))
       .setDesc(createFragment((f) => {
-        f.appendText('When attaching files:');
+        f.appendText(t(($) => $.pluginSettingsTab.attachmentRenameMode.description.part1));
         f.createEl('br');
-        appendCodeBlock(f, 'None');
-        f.appendText(' - their names are preserved.');
+        appendCodeBlock(f, t(($) => $.pluginSettings.attachmentRenameMode.none.displayText));
+        f.appendText(' - ');
+        f.appendText(t(($) => $.pluginSettings.attachmentRenameMode.none.description));
         f.createEl('br');
-        appendCodeBlock(f, 'Only pasted images');
-        f.appendText(' - only pasted images are renamed.');
+        appendCodeBlock(f, t(($) => $.pluginSettings.attachmentRenameMode.onlyPastedImages.displayText));
+        f.appendText(' - ');
+        f.appendText(t(($) => $.pluginSettings.attachmentRenameMode.onlyPastedImages.description));
         f.createEl('br');
-        appendCodeBlock(f, 'All');
-        f.appendText(' - all files are renamed.');
+        appendCodeBlock(f, t(($) => $.pluginSettings.attachmentRenameMode.all.displayText));
+        f.appendText(' - ');
+        f.appendText(t(($) => $.pluginSettings.attachmentRenameMode.all.description));
       }))
       .addDropdown((dropdown) => {
-        dropdown.addOptions(AttachmentRenameMode);
+        dropdown.addOptions({
+          /* eslint-disable perfectionist/sort-objects */
+          [AttachmentRenameMode.None]: t(($) => $.pluginSettings.attachmentRenameMode.none.displayText),
+          [AttachmentRenameMode.OnlyPastedImages]: t(($) => $.pluginSettings.attachmentRenameMode.onlyPastedImages.displayText),
+          [AttachmentRenameMode.All]: t(($) => $.pluginSettings.attachmentRenameMode.all.displayText)
+          /* eslint-enable perfectionist/sort-objects */
+        });
         this.bind(dropdown, 'attachmentRenameMode', {
           componentToPluginSettingsValueConverter: (value) => getEnumValue(AttachmentRenameMode, value),
           pluginSettingsToComponentValueConverter: (value) => getEnumKey(AttachmentRenameMode, value)
@@ -119,25 +149,25 @@ export class PluginSettingsTab extends PluginSettingsTabBase<PluginTypes> {
       });
 
     new SettingEx(this.containerEl)
-      .setName('Should rename attachment folders')
-      .setDesc('Whether to rename attachment folders when a note is renamed or moved.')
+      .setName(t(($) => $.pluginSettingsTab.shouldRenameAttachmentFolders.name))
+      .setDesc(t(($) => $.pluginSettingsTab.shouldRenameAttachmentFolders.description))
       .addToggle((toggle) => {
         this.bind(toggle, 'shouldRenameAttachmentFolder');
       });
 
     new SettingEx(this.containerEl)
-      .setName('Should rename attachment files')
-      .setDesc('Whether to rename attachment files when a note is renamed or moved.')
+      .setName(t(($) => $.pluginSettingsTab.shouldRenameAttachmentFiles.name))
+      .setDesc(t(($) => $.pluginSettingsTab.shouldRenameAttachmentFiles.description))
       .addToggle((toggle) => {
         this.bind(toggle, 'shouldRenameAttachmentFiles');
       });
 
     new SettingEx(this.containerEl)
-      .setName('Special characters')
+      .setName(t(($) => $.pluginSettingsTab.specialCharacters.name))
       .setDesc(createFragment((f) => {
-        f.appendText('Special characters in attachment folder and file name to be replaced or removed.');
+        f.appendText(t(($) => $.pluginSettingsTab.specialCharacters.description.part1));
         f.createEl('br');
-        f.appendText('Leave blank to preserve special characters.');
+        f.appendText(t(($) => $.pluginSettingsTab.specialCharacters.description.part2));
       }))
       .addText((text) => {
         this.bind(text, 'specialCharacters', {
@@ -151,11 +181,11 @@ export class PluginSettingsTab extends PluginSettingsTabBase<PluginTypes> {
       });
 
     new SettingEx(this.containerEl)
-      .setName('Special characters replacement')
+      .setName(t(($) => $.pluginSettingsTab.specialCharactersReplacement.name))
       .setDesc(createFragment((f) => {
-        f.appendText('Replacement string for special characters in attachment folder and file name.');
+        f.appendText(t(($) => $.pluginSettingsTab.specialCharactersReplacement.description.part1));
         f.createEl('br');
-        f.appendText('Leave blank to remove special characters.');
+        f.appendText(t(($) => $.pluginSettingsTab.specialCharactersReplacement.description.part2));
       }))
       .addText((text) => {
         this.bind(text, 'specialCharactersReplacement', {
@@ -164,15 +194,15 @@ export class PluginSettingsTab extends PluginSettingsTabBase<PluginTypes> {
       });
 
     new SettingEx(this.containerEl)
-      .setName('Should convert pasted images to JPEG')
-      .setDesc('Paste images from clipboard converting them to JPEG.')
+      .setName(t(($) => $.pluginSettingsTab.shouldConvertPastedImagesToJpeg.name))
+      .setDesc(t(($) => $.pluginSettingsTab.shouldConvertPastedImagesToJpeg.description))
       .addToggle((toggle) => {
         this.bind(toggle, 'shouldConvertPastedImagesToJpeg');
       });
 
     new SettingEx(this.containerEl)
-      .setName('JPEG Quality')
-      .setDesc('The smaller the quality, the greater the compression ratio.')
+      .setName(t(($) => $.pluginSettingsTab.jpegQuality.name))
+      .setDesc(t(($) => $.pluginSettingsTab.jpegQuality.description))
       .addDropdown((dropDown) => {
         dropDown.addOptions(generateJpegQualityOptions());
         this.bind(dropDown, 'jpegQuality', {
@@ -182,46 +212,55 @@ export class PluginSettingsTab extends PluginSettingsTabBase<PluginTypes> {
       });
 
     new SettingEx(this.containerEl)
-      .setName('Should rename collected attachments')
+      .setName(t(($) => $.pluginSettingsTab.shouldRenameCollectedAttachments.name))
       .setDesc(createFragment((f) => {
-        f.appendText('If enabled, attachments processed via ');
-        appendCodeBlock(f, 'Collect attachments');
-        f.appendText(' commands will be renamed according to the ');
-        appendCodeBlock(f, 'Pasted File Name');
-        f.appendText(' setting.');
+        f.appendText(t(($) => $.pluginSettingsTab.shouldRenameCollectedAttachments.description.part1));
+        f.appendText(' ');
+        appendCodeBlock(f, t(($) => $.pluginSettingsTab.shouldRenameCollectedAttachments.description.part2));
+        f.appendText(' ');
+        f.appendText(t(($) => $.pluginSettingsTab.shouldRenameCollectedAttachments.description.part3));
+        f.appendText(' ');
+        appendCodeBlock(f, t(($) => $.pluginSettingsTab.generatedAttachmentFileName.name));
+        f.appendText(' ');
+        f.appendText(t(($) => $.pluginSettingsTab.shouldRenameCollectedAttachments.description.part4));
       }))
       .addToggle((toggle) => {
         this.bind(toggle, 'shouldRenameCollectedAttachments');
       });
 
     new SettingEx(this.containerEl)
-      .setName('Collect attachment used by multiple notes mode')
+      .setName(t(($) => $.pluginSettingsTab.collectAttachmentUsedByMultipleNotesMode.name))
       .setDesc(createFragment((f) => {
-        f.appendText('When the collected attachment is used by multiple notes:');
+        f.appendText(t(($) => $.pluginSettingsTab.collectAttachmentUsedByMultipleNotesMode.description.part1));
         f.createEl('br');
-        appendCodeBlock(f, 'Skip');
-        f.appendText(' - skip the attachment and proceed to the next one.');
+        appendCodeBlock(f, t(($) => $.pluginSettings.collectAttachmentUsedByMultipleNotesMode.skip.displayText));
+        f.appendText(' - ');
+        f.appendText(t(($) => $.pluginSettings.collectAttachmentUsedByMultipleNotesMode.skip.description));
         f.createEl('br');
-        appendCodeBlock(f, 'Move');
-        f.appendText(' - move the attachment to the new location.');
+        appendCodeBlock(f, t(($) => $.pluginSettings.collectAttachmentUsedByMultipleNotesMode.move.displayText));
+        f.appendText(' - ');
+        f.appendText(t(($) => $.pluginSettings.collectAttachmentUsedByMultipleNotesMode.move.description));
         f.createEl('br');
-        appendCodeBlock(f, 'Copy');
-        f.appendText(' - copy the attachment to the new location.');
+        appendCodeBlock(f, t(($) => $.pluginSettings.collectAttachmentUsedByMultipleNotesMode.copy.displayText));
+        f.appendText(' - ');
+        f.appendText(t(($) => $.pluginSettings.collectAttachmentUsedByMultipleNotesMode.copy.description));
         f.createEl('br');
-        appendCodeBlock(f, 'Cancel');
-        f.appendText(' - cancel the attachment collecting.');
+        appendCodeBlock(f, t(($) => $.pluginSettings.collectAttachmentUsedByMultipleNotesMode.cancel.displayText));
+        f.appendText(' - ');
+        f.appendText(t(($) => $.pluginSettings.collectAttachmentUsedByMultipleNotesMode.cancel.description));
         f.createEl('br');
-        appendCodeBlock(f, 'Prompt');
-        f.appendText(' - prompt the user to select the action.');
+        appendCodeBlock(f, t(($) => $.pluginSettings.collectAttachmentUsedByMultipleNotesMode.prompt.displayText));
+        f.appendText(' - ');
+        f.appendText(t(($) => $.pluginSettings.collectAttachmentUsedByMultipleNotesMode.prompt.description));
       }))
       .addDropdown((dropdown) => {
         dropdown.addOptions({
           /* eslint-disable perfectionist/sort-objects */
-          [CollectAttachmentUsedByMultipleNotesMode.Skip]: 'Skip',
-          [CollectAttachmentUsedByMultipleNotesMode.Move]: 'Move',
-          [CollectAttachmentUsedByMultipleNotesMode.Copy]: 'Copy',
-          [CollectAttachmentUsedByMultipleNotesMode.Cancel]: 'Cancel',
-          [CollectAttachmentUsedByMultipleNotesMode.Prompt]: 'Prompt'
+          [CollectAttachmentUsedByMultipleNotesMode.Skip]: t(($) => $.pluginSettings.collectAttachmentUsedByMultipleNotesMode.skip.displayText),
+          [CollectAttachmentUsedByMultipleNotesMode.Move]: t(($) => $.pluginSettings.collectAttachmentUsedByMultipleNotesMode.move.displayText),
+          [CollectAttachmentUsedByMultipleNotesMode.Copy]: t(($) => $.pluginSettings.collectAttachmentUsedByMultipleNotesMode.copy.displayText),
+          [CollectAttachmentUsedByMultipleNotesMode.Cancel]: t(($) => $.pluginSettings.collectAttachmentUsedByMultipleNotesMode.cancel.displayText),
+          [CollectAttachmentUsedByMultipleNotesMode.Prompt]: t(($) => $.pluginSettings.collectAttachmentUsedByMultipleNotesMode.prompt.displayText)
           /* eslint-enable perfectionist/sort-objects */
         });
         this.bind(dropdown, 'collectAttachmentUsedByMultipleNotesMode', {
@@ -231,17 +270,19 @@ export class PluginSettingsTab extends PluginSettingsTabBase<PluginTypes> {
       });
 
     new SettingEx(this.containerEl)
-      .setName('Duplicate name separator')
+      .setName(t(($) => $.pluginSettingsTab.duplicateNameSeparator.name))
       .setDesc(createFragment((f) => {
-        f.appendText('When you are pasting/dragging a file with the same name as an existing file, this separator will be added to the file name.');
+        f.appendText(t(($) => $.pluginSettingsTab.duplicateNameSeparator.description.part1));
         f.createEl('br');
-        f.appendText('E.g., when you are dragging file ');
+        f.appendText(t(($) => $.pluginSettingsTab.duplicateNameSeparator.description.part2));
+        f.appendText(' ');
         appendCodeBlock(f, 'existingFile.pdf');
-        f.appendText(', it will be renamed to ');
+        f.appendText(t(($) => $.pluginSettingsTab.duplicateNameSeparator.description.part3));
+        f.appendText(' ');
         appendCodeBlock(f, 'existingFile 1.pdf');
         f.appendText(', ');
         appendCodeBlock(f, 'existingFile 2.pdf');
-        f.appendText(', etc, getting the first name available.');
+        f.appendText(t(($) => $.pluginSettingsTab.duplicateNameSeparator.description.part4));
       }))
       .addText((text) => {
         this.bind(text, 'duplicateNameSeparator', {
@@ -254,25 +295,28 @@ export class PluginSettingsTab extends PluginSettingsTabBase<PluginTypes> {
       });
 
     new SettingEx(this.containerEl)
-      .setName('Empty attachment folder behavior')
+      .setName(t(($) => $.pluginSettingsTab.emptyAttachmentFolderBehavior.name))
       .setDesc(createFragment((f) => {
-        f.appendText('When the attachment folder becomes empty:');
+        f.appendText(t(($) => $.pluginSettingsTab.emptyAttachmentFolderBehavior.description.part1));
         f.createEl('br');
-        appendCodeBlock(f, 'Keep');
-        f.appendText(' - will keep the empty attachment folder.');
+        appendCodeBlock(f, t(($) => $.pluginSettings.emptyAttachmentFolderBehavior.keep.displayText));
+        f.appendText(' - ');
+        f.appendText(t(($) => $.pluginSettings.emptyAttachmentFolderBehavior.keep.description));
         f.createEl('br');
-        appendCodeBlock(f, 'Delete');
-        f.appendText(' - will delete the empty attachment folder.');
+        appendCodeBlock(f, t(($) => $.pluginSettings.emptyAttachmentFolderBehavior.delete.displayText));
+        f.appendText(' - ');
+        f.appendText(t(($) => $.pluginSettings.emptyAttachmentFolderBehavior.delete.description));
         f.createEl('br');
-        appendCodeBlock(f, 'Delete with empty parents');
-        f.appendText(' - will delete the empty attachment folder and its empty parent folders.');
+        appendCodeBlock(f, t(($) => $.pluginSettings.emptyAttachmentFolderBehavior.deleteWithEmptyParents.displayText));
+        f.appendText(' - ');
+        f.appendText(t(($) => $.pluginSettings.emptyAttachmentFolderBehavior.deleteWithEmptyParents.description));
       }))
       .addDropdown((dropdown) => {
         dropdown.addOptions({
           /* eslint-disable perfectionist/sort-objects */
-          [EmptyAttachmentFolderBehavior.Keep]: 'Keep',
-          [EmptyAttachmentFolderBehavior.Delete]: 'Delete',
-          [EmptyAttachmentFolderBehavior.DeleteWithEmptyParents]: 'Delete with empty parents'
+          [EmptyAttachmentFolderBehavior.Keep]: t(($) => $.pluginSettings.emptyAttachmentFolderBehavior.keep.displayText),
+          [EmptyAttachmentFolderBehavior.Delete]: t(($) => $.pluginSettings.emptyAttachmentFolderBehavior.delete.displayText),
+          [EmptyAttachmentFolderBehavior.DeleteWithEmptyParents]: t(($) => $.pluginSettings.emptyAttachmentFolderBehavior.deleteWithEmptyParents.displayText)
           /* eslint-enable perfectionist/sort-objects */
         });
         this.bind(dropdown, 'emptyAttachmentFolderBehavior', {
@@ -282,57 +326,65 @@ export class PluginSettingsTab extends PluginSettingsTabBase<PluginTypes> {
       });
 
     new SettingEx(this.containerEl)
-      .setName('Should delete orphan attachments')
-      .setDesc('If enabled, when the note is deleted, its orphan attachments are deleted as well.')
+      .setName(t(($) => $.pluginSettingsTab.shouldDeleteOrphanAttachments.name))
+      .setDesc(t(($) => $.pluginSettingsTab.shouldDeleteOrphanAttachments.description))
       .addToggle((toggle) => {
         this.bind(toggle, 'shouldDeleteOrphanAttachments');
       });
 
     new SettingEx(this.containerEl)
-      .setName('Include paths')
+      .setName(t(($) => $.pluginSettingsTab.includePaths.name))
       .setDesc(createFragment((f) => {
-        f.appendText('Include notes from the following paths.');
+        f.appendText(t(($) => $.pluginSettingsTab.includePaths.description.part1));
         f.createEl('br');
-        f.appendText('Insert each path on a new line.');
+        f.appendText(t(($) => $.pluginSettingsTab.includePaths.description.part2));
         f.createEl('br');
-        f.appendText('You can use path string or ');
-        appendCodeBlock(f, '/regular expression/.');
+        f.appendText(t(($) => $.pluginSettingsTab.includePaths.description.part3));
+        f.appendText(' ');
+        appendCodeBlock(f, '/regular expression/');
+        f.appendText('.');
         f.createEl('br');
-        f.appendText('If the setting is empty, all notes are included.');
+        f.appendText(t(($) => $.pluginSettingsTab.includePaths.description.part4));
       }))
       .addMultipleText((multipleText) => {
         this.bind(multipleText, 'includePaths');
       });
 
     new SettingEx(this.containerEl)
-      .setName('Exclude paths')
+      .setName(t(($) => $.pluginSettingsTab.excludePaths.name))
       .setDesc(createFragment((f) => {
-        f.appendText('Exclude notes from the following paths.');
+        f.appendText(t(($) => $.pluginSettingsTab.excludePaths.description.part1));
         f.createEl('br');
-        f.appendText('Insert each path on a new line.');
+        f.appendText(t(($) => $.pluginSettingsTab.excludePaths.description.part2));
         f.createEl('br');
-        f.appendText('You can use path string or ');
-        appendCodeBlock(f, '/regular expression/.');
+        f.appendText(t(($) => $.pluginSettingsTab.excludePaths.description.part3));
+        f.appendText(' ');
+        appendCodeBlock(f, '/regular expression/');
+        f.appendText('.');
         f.createEl('br');
-        f.appendText('If the setting is empty, no notes are excluded.');
+        f.appendText(t(($) => $.pluginSettingsTab.excludePaths.description.part4));
       }))
       .addMultipleText((multipleText) => {
         this.bind(multipleText, 'excludePaths');
       });
 
     new SettingEx(this.containerEl)
-      .setName('Exclude paths from attachment collecting')
+      .setName(t(($) => $.pluginSettingsTab.excludePathsFromAttachmentCollecting.name))
       .setDesc(createFragment((f) => {
-        f.appendText('Exclude attachments from the following paths when ');
-        appendCodeBlock(f, 'Collect attachments');
-        f.appendText(' command is executed.');
+        f.appendText(t(($) => $.pluginSettingsTab.excludePathsFromAttachmentCollecting.description.part1));
+        f.appendText(' ');
+        appendCodeBlock(f, t(($) => $.pluginSettingsTab.excludePathsFromAttachmentCollecting.description.part2));
+        f.appendText(' ');
+        f.appendText(t(($) => $.pluginSettingsTab.excludePathsFromAttachmentCollecting.description.part3));
         f.createEl('br');
-        f.appendText('Insert each path on a new line.');
+        f.appendText(t(($) => $.pluginSettingsTab.excludePathsFromAttachmentCollecting.description.part4));
         f.createEl('br');
-        f.appendText('You can use path string or ');
-        appendCodeBlock(f, '/regular expression/.');
+        f.appendText(t(($) => $.pluginSettingsTab.excludePathsFromAttachmentCollecting.description.part5));
+        f.appendText(' ');
+        appendCodeBlock(f, '/regular expression/');
+        f.appendText('.');
         f.createEl('br');
-        f.appendText('If the setting is empty, no paths are excluded from attachment collecting.');
+        f.appendText(t(($) => $.pluginSettingsTab.excludePathsFromAttachmentCollecting.description.part6));
       }))
       .addMultipleText((multipleText) => {
         this.bind(multipleText, 'excludePathsFromAttachmentCollecting');
@@ -347,15 +399,20 @@ export class PluginSettingsTab extends PluginSettingsTabBase<PluginTypes> {
     }, REGISTER_CUSTOM_TOKENS_DEBOUNCE_IN_MILLISECONDS);
 
     new SettingEx(this.containerEl)
-      .setName('Custom tokens')
+      .setName(t(($) => $.pluginSettingsTab.customTokens.name))
       .setDesc(createFragment((f) => {
-        f.appendText('Custom tokens to be used in the attachment folder path and pasted file name.');
+        f.appendText(t(($) => $.pluginSettingsTab.customTokens.description.part1));
         f.createEl('br');
-        f.appendText('See ');
-        f.createEl('a', { href: 'https://github.com/RainCat1998/obsidian-custom-attachment-location?tab=readme-ov-file#custom-tokens', text: 'documentation' });
-        f.appendText(' for more information.');
+        f.appendText(t(($) => $.pluginSettingsTab.customTokens.description.part2));
+        f.appendText(' ');
+        f.createEl('a', {
+          href: 'https://github.com/RainCat1998/obsidian-custom-attachment-location?tab=readme-ov-file#custom-tokens',
+          text: t(($) => $.pluginSettingsTab.customTokens.description.part3)
+        });
+        f.appendText(' ');
+        f.appendText(t(($) => $.pluginSettingsTab.customTokens.description.part4));
         f.createEl('br');
-        f.appendText('⚠️ Custom tokens can be an arbitrary JavaScript code. If poorly written, it can cause the data loss. Use it at your own risk.');
+        f.appendText(t(($) => $.pluginSettingsTab.customTokens.description.part5));
       }))
       .addCodeHighlighter((codeHighlighter) => {
         codeHighlighter.setLanguage('javascript');
@@ -371,7 +428,7 @@ export class PluginSettingsTab extends PluginSettingsTabBase<PluginTypes> {
 
     new SettingEx(this.containerEl)
       .addButton((button) => {
-        button.setButtonText('Reset to sample custom tokens');
+        button.setButtonText(t(($) => $.pluginSettingsTab.resetToSampleCustomTokens.title));
         button.setWarning();
         button.onClick(convertAsyncToSync(async () => {
           if (this.plugin.settings.customTokensStr === SAMPLE_CUSTOM_TOKENS) {
@@ -381,8 +438,10 @@ export class PluginSettingsTab extends PluginSettingsTabBase<PluginTypes> {
           if (
             this.plugin.settings.customTokensStr !== '' && !await confirm({
               app: this.plugin.app,
-              message: 'Are you sure you want to reset the custom tokens to the sample custom tokens? Your changes will be lost.',
-              title: 'Reset to sample custom tokens'
+              cancelButtonText: t(($) => $.buttons.cancel),
+              message: t(($) => $.pluginSettingsTab.resetToSampleCustomTokens.message),
+              okButtonText: t(($) => $.buttons.ok),
+              title: t(($) => $.pluginSettingsTab.resetToSampleCustomTokens.title)
             })
           ) {
             return;
@@ -396,38 +455,45 @@ export class PluginSettingsTab extends PluginSettingsTabBase<PluginTypes> {
       });
 
     new SettingEx(this.containerEl)
-      .setName('Treat as attachment extensions')
+      .setName(t(($) => $.pluginSettingsTab.treatAsAttachmentExtensions.name))
       .setDesc(createFragment((f) => {
-        f.appendText('Treat files with these extensions as attachments.');
+        f.appendText(t(($) => $.pluginSettingsTab.treatAsAttachmentExtensions.description.part1));
         f.createEl('br');
-        f.appendText('By default, ');
+        f.appendText(t(($) => $.pluginSettingsTab.treatAsAttachmentExtensions.description.part2));
+        f.appendText(' ');
         appendCodeBlock(f, '.md');
         f.appendText(', ');
         appendCodeBlock(f, '.canvas');
-        f.appendText(' and ');
+        f.appendText(' ');
+        f.appendText(t(($) => $.pluginSettingsTab.treatAsAttachmentExtensions.description.part3));
+        f.appendText(' ');
         appendCodeBlock(f, '.base');
-        f.appendText(' linked files are not treated as attachments and are not moved with the note.');
+        f.appendText(' ');
+        f.appendText(t(($) => $.pluginSettingsTab.treatAsAttachmentExtensions.description.part4));
         f.createEl('br');
-        f.appendText('You can add custom extensions, e.g. ');
+        f.appendText(t(($) => $.pluginSettingsTab.treatAsAttachmentExtensions.description.part5));
+        f.appendText(' ');
         appendCodeBlock(f, '.foo.md');
         f.appendText(', ');
         appendCodeBlock(f, '.bar.canvas');
         f.appendText(', ');
         appendCodeBlock(f, '.baz.base');
-        f.appendText(', to override this behavior.');
+        f.appendText(t(($) => $.pluginSettingsTab.treatAsAttachmentExtensions.description.part6));
       }))
       .addMultipleText((multipleText) => {
         this.bind(multipleText, 'treatAsAttachmentExtensions');
       });
 
     new SettingEx(this.containerEl)
-      .setName('Timeout in seconds')
+      .setName(t(($) => $.pluginSettingsTab.timeoutInSeconds.name))
       .setDesc(createFragment((f) => {
-        f.appendText('The timeout in seconds for all operations.');
+        f.appendText(t(($) => $.pluginSettingsTab.timeoutInSeconds.description.part1));
         f.createEl('br');
-        f.appendText('If ');
+        f.appendText(t(($) => $.pluginSettingsTab.timeoutInSeconds.description.part2));
+        f.appendText(' ');
         appendCodeBlock(f, '0');
-        f.appendText(' is set, the operations execution timeout is disabled.');
+        f.appendText(' ');
+        f.appendText(t(($) => $.pluginSettingsTab.timeoutInSeconds.description.part3));
       }))
       .addNumber((number) => {
         number.setMin(0);

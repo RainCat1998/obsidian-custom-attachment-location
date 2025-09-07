@@ -88,6 +88,10 @@ import {
   getAttachmentFolderFullPathForPath,
   getGeneratedAttachmentFileBaseName
 } from './AttachmentPath.ts';
+import {
+  initI18N,
+  t
+} from './i18n/i18n.ts';
 import { AttachmentRenameMode } from './PluginSettings.ts';
 import { PluginSettingsManager } from './PluginSettingsManager.ts';
 import { PluginSettingsTab } from './PluginSettingsTab.ts';
@@ -194,6 +198,9 @@ export class Plugin extends PluginBase<PluginTypes> {
 
   protected override async onloadImpl(): Promise<void> {
     await super.onloadImpl();
+
+    await initI18N();
+
     registerRenameDeleteHandlers(this, () => {
       const settings: Partial<RenameDeleteHandlerSettings> = {
         emptyAttachmentFolderBehavior: this.settings.emptyAttachmentFolderBehavior,
@@ -211,13 +218,13 @@ export class Plugin extends PluginBase<PluginTypes> {
     this.addCommand({
       checkCallback: (checking) => collectAttachmentsCurrentNote(this, checking),
       id: 'collect-attachments-current-note',
-      name: 'Collect attachments in current note'
+      name: t(($) => $.commands.collectAttachmentsCurrentNote)
     });
 
     this.addCommand({
       checkCallback: (checking) => collectAttachmentsCurrentFolder(this, checking),
       id: 'collect-attachments-current-folder',
-      name: 'Collect attachments in current folder'
+      name: t(($) => $.commands.collectAttachmentsCurrentFolder)
     });
 
     this.addCommand({
@@ -225,7 +232,7 @@ export class Plugin extends PluginBase<PluginTypes> {
         collectAttachmentsEntireVault(this);
       },
       id: 'collect-attachments-entire-vault',
-      name: 'Collect attachments in entire vault'
+      name: t(($) => $.commands.collectAttachmentsEntireVault)
     });
 
     this.registerEvent(this.app.workspace.on('file-menu', this.handleFileMenu.bind(this)));
@@ -454,7 +461,7 @@ export class Plugin extends PluginBase<PluginTypes> {
     }
 
     menu.addItem((item) => {
-      item.setTitle('Collect attachments in folder')
+      item.setTitle(t(($) => $.menuItems.collectAttachmentsInFolder))
         .setIcon('download')
         .onClick(() => collectAttachmentsInFolder(this, file, this.abortSignal));
     });

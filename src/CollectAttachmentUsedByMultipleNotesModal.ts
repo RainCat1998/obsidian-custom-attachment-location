@@ -7,6 +7,7 @@ import {
 } from 'obsidian';
 import { appendCodeBlock } from 'obsidian-dev-utils/HTMLElement';
 
+import { t } from './i18n/i18n.ts';
 import { CollectAttachmentUsedByMultipleNotesMode } from './PluginSettings.ts';
 
 interface CollectAttachmentUsedByMultipleNotesModalResult {
@@ -35,13 +36,15 @@ class CollectAttachmentUsedByMultipleNotesModal extends Modal {
   public override onOpen(): void {
     super.onOpen();
     new Setting(this.contentEl)
-      .setName('Collecting attachment used by multiple notes')
+      .setName(t(($) => $.collectAttachmentUsedByMultipleNotesModal.heading))
       .setHeading();
 
     this.contentEl.appendChild(createFragment((f) => {
-      f.appendText('Attachment ');
+      f.appendText(t(($) => $.collectAttachmentUsedByMultipleNotesModal.content.part1));
+      f.appendText(' ');
       appendCodeBlock(f, this.attachmentPath);
-      f.appendText(' is referenced by multiple notes.');
+      f.appendText(' ');
+      f.appendText(t(($) => $.collectAttachmentUsedByMultipleNotesModal.content.part2));
       f.createEl('ul', {}, (ul) => {
         for (const backlink of this.backlinks) {
           ul.createEl('li', {}, (li) => [
@@ -56,7 +59,7 @@ class CollectAttachmentUsedByMultipleNotesModal extends Modal {
     let shouldUseSameActionForOtherProblematicAttachments = false;
 
     new Setting(this.contentEl)
-      .setName('Should use the same action for other problematic attachments')
+      .setName(t(($) => $.collectAttachmentUsedByMultipleNotesModal.shouldUseSameActionForOtherProblematicAttachmentsToggle))
       .addToggle((toggle) => {
         toggle.setValue(false);
         toggle.onChange((value) => {
@@ -66,25 +69,25 @@ class CollectAttachmentUsedByMultipleNotesModal extends Modal {
 
     new Setting(this.contentEl)
       .addButton((button) => {
-        button.setButtonText('Skip');
+        button.setButtonText(t(($) => $.buttons.skip));
         button.onClick(() => {
           this.select(CollectAttachmentUsedByMultipleNotesMode.Skip, shouldUseSameActionForOtherProblematicAttachments);
         });
       })
       .addButton((button) => {
-        button.setButtonText('Move');
+        button.setButtonText(t(($) => $.buttons.move));
         button.onClick(() => {
           this.select(CollectAttachmentUsedByMultipleNotesMode.Move, shouldUseSameActionForOtherProblematicAttachments);
         });
       })
       .addButton((button) => {
-        button.setButtonText('Copy');
+        button.setButtonText(t(($) => $.buttons.copy));
         button.onClick(() => {
           this.select(CollectAttachmentUsedByMultipleNotesMode.Copy, shouldUseSameActionForOtherProblematicAttachments);
         });
       })
       .addButton((button) => {
-        button.setButtonText('Cancel');
+        button.setButtonText(t(($) => $.buttons.cancel));
         button.onClick(() => {
           this.select(CollectAttachmentUsedByMultipleNotesMode.Cancel, shouldUseSameActionForOtherProblematicAttachments);
         });

@@ -59,6 +59,7 @@ import {
   getGeneratedAttachmentFileBaseName
 } from './AttachmentPath.ts';
 import { selectMode } from './CollectAttachmentUsedByMultipleNotesModal.ts';
+import { t } from './i18n/i18n.ts';
 import { CollectAttachmentUsedByMultipleNotesMode } from './PluginSettings.ts';
 import {
   hasPromptToken,
@@ -88,7 +89,7 @@ export async function collectAttachments(
     return;
   }
 
-  const notice = new Notice(`Collecting attachments for ${note.path}`);
+  const notice = new Notice(t(($) => $.notice.collectingAttachments, { noteFilePath: note.path }));
 
   const attachmentsMap = new Map<string, string>();
   const isCanvas = isCanvasFile(app, note);
@@ -158,7 +159,7 @@ export async function collectAttachments(
                 console.error(
                   `Cancelling collecting attachments, as attachment ${attachmentMoveResult.oldAttachmentPath} is referenced by multiple notes.\n${backlinksStr}`
                 );
-                new Notice('Collecting attachments cancelled. See console for details.');
+                new Notice(t(($) => $.notice.collectingAttachmentsCancelled));
                 ctx.isAborted = true;
                 return false;
               case CollectAttachmentUsedByMultipleNotesMode.Copy:
@@ -289,7 +290,7 @@ export function collectAttachmentsCurrentNote(plugin: Plugin, checking: boolean)
 
   if (!checking) {
     if (plugin.settings.isPathIgnored(note.path)) {
-      new Notice('Note path is ignored');
+      new Notice(t(($) => $.notice.notePathIsIgnored));
       console.warn(`Cannot collect attachments in the note as note path is ignored: ${note.path}.`);
       return true;
     }
@@ -314,16 +315,21 @@ export async function collectAttachmentsInFolder(plugin: Plugin, folder: TFolder
   if (
     !await confirm({
       app: plugin.app,
+      cancelButtonText: t(($) => $.buttons.cancel),
       message: createFragment((f) => {
-        f.appendText('Do you want to collect attachments for all notes in folder: ');
+        f.appendText(t(($) => $.attachmentCollector.confirm.part1));
+        f.appendText(' ');
         appendCodeBlock(f, folder.path);
-        f.appendText(' and all its subfolders?');
+        f.appendText(' ');
+        f.appendText(t(($) => $.attachmentCollector.confirm.part2));
         f.createEl('br');
-        f.appendText('This operation cannot be undone.');
+        f.appendText(t(($) => $.attachmentCollector.confirm.part3));
       }),
+      okButtonText: t(($) => $.buttons.ok),
       title: createFragment((f) => {
         setIcon(f.createSpan(), 'lucide-alert-triangle');
-        f.appendText(' Collect attachments in folder');
+        f.appendText(' ');
+        f.appendText(t(($) => $.menuItems.collectAttachmentsInFolder));
       })
     })
   ) {
@@ -347,7 +353,7 @@ export async function collectAttachmentsInFolder(plugin: Plugin, folder: TFolder
 
   await loop({
     abortSignal: combinedAbortSignal,
-    buildNoticeMessage: (noteFile, iterationStr) => `Collecting attachments ${iterationStr} - ${noteFile.path}`,
+    buildNoticeMessage: (noteFile, iterationStr) => t(($) => $.attachmentCollector.progressBar.message, { iterationStr, noteFilePath: noteFile.path }),
     items: noteFiles,
     processItem: async (noteFile) => {
       combinedAbortSignal.throwIfAborted();
@@ -361,7 +367,7 @@ export async function collectAttachmentsInFolder(plugin: Plugin, folder: TFolder
         abortController.abort();
       }
     },
-    progressBarTitle: 'Custom Attachment Location: Collecting attachments...',
+    progressBarTitle: `${plugin.manifest.name}: ${t(($) => $.attachmentCollector.progressBar.title)}`,
     shouldContinueOnError: true,
     shouldShowProgressBar: true
   });

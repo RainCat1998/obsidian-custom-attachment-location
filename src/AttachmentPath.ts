@@ -4,10 +4,12 @@ import {
   normalizePath,
   Notice
 } from 'obsidian';
+import { appendCodeBlock } from 'obsidian-dev-utils/HTMLElement';
 import { join } from 'obsidian-dev-utils/Path';
 
 import type { Plugin } from './Plugin.ts';
 
+import { t } from './i18n/i18n.ts';
 import {
   Substitutions,
   TokenValidationMode,
@@ -44,6 +46,7 @@ export async function getGeneratedAttachmentFileBaseName(plugin: Plugin, substit
   if (!validationMessage) {
     const parts = path.split('/');
     const fileName = parts.at(-1) ?? '';
+    // eslint-disable-next-line require-atomic-updates
     validationMessage = await validateFileName({
       app: plugin.app,
       areSingleDotsAllowed: false,
@@ -53,8 +56,14 @@ export async function getGeneratedAttachmentFileBaseName(plugin: Plugin, substit
     });
   }
   if (validationMessage) {
+    new Notice(createFragment((f) => {
+      f.appendText(t(($) => $.notice.generatedAttachmentFileNameIsInvalid.part1, { path, validationMessage }));
+      f.appendText(' ');
+      appendCodeBlock(f, t(($) => $.pluginSettingsTab.generatedAttachmentFileName.name));
+      f.appendText(' ');
+      f.appendText(t(($) => $.notice.generatedAttachmentFileNameIsInvalid.part2));
+    }));
     const errorMessage = `Generated attachment file name "${path}" is invalid.\n${validationMessage}\nCheck your 'Generated attachment file name' setting.`;
-    new Notice(errorMessage);
     console.error(errorMessage, substitutions);
     throw new Error(errorMessage);
   }

@@ -13,6 +13,7 @@ import { compare } from 'semver';
 
 import type { PluginTypes } from './PluginTypes.ts';
 
+import { t } from './i18n/i18n.ts';
 import {
   CollectAttachmentUsedByMultipleNotesMode,
   PluginSettings
@@ -109,22 +110,29 @@ export class PluginSettingsManager extends PluginSettingsManagerBase<PluginTypes
           await alert({
             app: this.app,
             message: createFragment((f) => {
-              f.appendText('In plugin version 9.0.0, the "Rename attachments to lower case" setting is deprecated. Use ');
+              f.appendText(t(($) => $.pluginSettingsManager.legacyRenameAttachmentsToLowerCase.part1));
+              f.appendText(' ');
+              appendCodeBlock(f, t(($) => $.pluginSettingsTab.renameAttachmentsToLowerCase));
+              f.appendText(' ');
+              f.appendText(t(($) => $.pluginSettingsManager.legacyRenameAttachmentsToLowerCase.part2));
+              f.appendText(' ');
               appendCodeBlock(f, 'lower');
-              f.appendText(' format instead. See ');
+              f.appendText(' ');
+              f.appendText(t(($) => $.pluginSettingsManager.legacyRenameAttachmentsToLowerCase.part3));
+              f.appendText(' ');
               f.createEl('a', {
                 href: 'https://github.com/RainCat1998/obsidian-custom-attachment-location?tab=readme-ov-file#tokens',
-                text: 'documentation.'
+                text: t(($) => $.pluginSettingsManager.legacyRenameAttachmentsToLowerCase.part4)
               });
-              f.appendText(' for more information.');
+              f.appendText(' ');
+              f.appendText(t(($) => $.pluginSettingsManager.legacyRenameAttachmentsToLowerCase.part5));
             })
           });
         });
       }
 
       if (legacySettings.customTokensStr && legacySettings.warningVersion && compare(legacySettings.warningVersion, '9.0.0') < 0) {
-        legacySettings.customTokensStr = `// Custom tokens were commented out as they have to be updated to the new format introduced in plugin version 9.0.0.
-// Refer to the documentation (https://github.com/RainCat1998/obsidian-custom-attachment-location?tab=readme-ov-file#custom-tokens) for more information.
+        legacySettings.customTokensStr = `${t(($) => $.pluginSettingsManager.customToken.codeComment)}
 
 ${commentOut(legacySettings.customTokensStr)}
 `;
@@ -133,12 +141,13 @@ ${commentOut(legacySettings.customTokensStr)}
           await alert({
             app: this.app,
             message: createFragment((f) => {
-              f.appendText('In plugin version 9.0.0, the format of custom token registration changed. Please update your tokens accordingly. Refer to the ');
+              f.appendText(t(($) => $.pluginSettingsManager.customToken.deprecated.part1));
               f.createEl('a', {
                 href: 'https://github.com/RainCat1998/obsidian-custom-attachment-location?tab=readme-ov-file#custom-tokens',
-                text: 'documentation'
+                text: t(($) => $.pluginSettingsManager.customToken.deprecated.part2)
               });
-              f.appendText(' for more information.');
+              f.appendText(' ');
+              f.appendText(t(($) => $.pluginSettingsManager.customToken.deprecated.part3));
             })
           });
         });
@@ -180,14 +189,17 @@ ${commentOut(legacySettings.customTokensStr)}
           await alert({
             app: this.app,
             message: createFragment((f) => {
-              f.appendText('You have potentially incorrect value set for the ');
+              f.appendText(t(($) => $.pluginSettingsManager.markdownUrlFormat.deprecated.part1));
               appendCodeBlock(f, 'Markdown URL format');
-              f.appendText(' setting. Please refer to the ');
+              f.appendText(t(($) => $.pluginSettingsManager.markdownUrlFormat.deprecated.part2));
               f.createEl('a', {
                 href: 'https://github.com/RainCat1998/obsidian-custom-attachment-location?tab=readme-ov-file#markdown-url-format',
-                text: 'documentation'
+                text: t(($) => $.pluginSettingsManager.markdownUrlFormat.deprecated.part3)
               });
-              f.appendText(' for more information. This message will not be shown again.');
+              f.appendText(' ');
+              f.appendText(t(($) => $.pluginSettingsManager.markdownUrlFormat.deprecated.part4));
+              f.appendText(' ');
+              f.appendText(t(($) => $.pluginSettingsManager.markdownUrlFormat.deprecated.part5));
             })
           });
         });
@@ -212,13 +224,13 @@ ${commentOut(legacySettings.customTokensStr)}
       }));
     this.registerValidator('specialCharacters', (value): MaybeReturn<string> => {
       if (value.includes('/')) {
-        return 'Special characters must not contain /';
+        return t(($) => $.pluginSettingsManager.validation.specialCharactersMustNotContainSlash);
       }
     });
 
     this.registerValidator('specialCharactersReplacement', (value): MaybeReturn<string> => {
       if (getOsUnsafePathCharsRegExp().exec(value)) {
-        return 'Special character replacement must not contain invalid file name path characters.';
+        return t(($) => $.pluginSettingsManager.validation.specialCharactersReplacementMustNotContainInvalidFileNamePathCharacters);
       }
     });
 
@@ -257,7 +269,7 @@ ${commentOut(legacySettings.customTokensStr)}
 
   private customTokensValidatorImpl(customTokensStr: string): void {
     const customTokens = parseCustomTokens(customTokensStr);
-    this.lastCustomTokenValidatorResult = customTokens === null ? 'Invalid custom tokens code' : undefined;
+    this.lastCustomTokenValidatorResult = customTokens === null ? t(($) => $.pluginSettingsManager.validation.invalidCustomTokensCode) : undefined;
   }
 
   private replaceLegacyTokens(str: string | undefined): string {
@@ -303,7 +315,7 @@ function pathsValidator(paths: string[]): MaybeReturn<string> {
     if (path.startsWith('/') && path.endsWith('/')) {
       const regExp = path.slice(1, -1);
       if (!isValidRegExp(regExp)) {
-        return `Invalid regular expression ${path}`;
+        return t(($) => $.pluginSettingsManager.validation.invalidRegularExpression, { regExp: path });
       }
     }
   }

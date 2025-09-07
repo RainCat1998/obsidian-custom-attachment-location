@@ -217,7 +217,21 @@ You can combine both kind of format formats, having `indexFrom...` first:
 
 Current note's folder full path.
 
-**Example**: `foo/bar/baz.md` -> `foo/bar`.
+**Format**:
+
+- (default): Unchanged folder name. **Example**: `foo/bar/baz qux/quux.md` -> `foo/bar/baz qux`.
+- `left`**`n`**: Left `n` characters of the folder name. **Example** `left2`: `foo/bar/baz qux/quux.md` -> `fo`.
+- `lower`: Lowercase folder name. **Example**: `foo/Bar/BAZ qux/quux.md` -> `foo/bar/baz qux`.
+- `right`**`n`**: Right `n` characters of the folder name. **Example** `right2`: `foo/bar/baz qux/quux.md` -> `ux`.
+- `slug`: Slugified folder name. **Example**: `foo/bar/baz qux/quux.md` -> `foo/bar/baz-qux`.
+- `upper`: Uppercase folder name. **Example**: `foo/Bar/BAZ qux/quux.md` -> `FOO/BAR/BAZ QUX`.
+
+- `indexFromEnd`**`n`**: 0-based index from the end of the folder tree. **Example** `indexFromEnd1`: `foo/bar/baz/qux/quux.md` -> `baz/qux`.
+- `indexFromStart`**`n`**: 0-based index from the start of the folder tree. **Example** `indexFromStart1`: `foo/bar/baz/qux/quux.md` -> `bar/baz/qux`.
+
+You can combine both kind of format formats, having `indexFrom...` first:
+
+- `indexFromEnd`**`n`**`,right`**`m`**. **Example**: `indexFromEnd1,right2`: `foo/bar/baz/qux/quux.md` -> `ux` (last two characters of `baz/qux`).
 
 ### `${originalAttachmentFileExtension}`
 

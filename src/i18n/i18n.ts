@@ -3,7 +3,10 @@ import type {
   SelectorOptions,
   TFunction
 } from 'i18next';
-import type { ReadonlyDeep } from 'type-fest';
+import type {
+  LiteralToPrimitiveDeep,
+  ReadonlyDeep
+} from 'type-fest';
 
 import {
   init,
@@ -19,8 +22,9 @@ import {
 } from './locales/localeMap.ts';
 
 export const DEFAULT_NS = 'translation';
-export type Locale = typeof defaultLocale;
-export type LocaleMap = Record<string, Partial<Locale>>;
+export type DefaultLocale = typeof defaultLocale;
+export type Locale = Partial<LiteralToPrimitiveDeep<DefaultLocale>>;
+export type LocaleMap = Record<string, Locale>;
 
 let isInitialized = false;
 

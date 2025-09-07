@@ -1,6 +1,6 @@
 import type {
   DEFAULT_NS,
-  Locale
+  DefaultLocale
 } from './i18n.ts';
 
 declare module 'i18next' {
@@ -8,7 +8,7 @@ declare module 'i18next' {
     defaultNS: typeof DEFAULT_NS;
     enableSelector: true;
     resources: {
-      [DEFAULT_NS]: Locale;
+      [DEFAULT_NS]: DefaultLocale;
     };
   }
 }

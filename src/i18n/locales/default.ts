@@ -297,5 +297,6 @@ export const defaultLocale = {
       title: 'Preview attachment file \'{{fullFileName}}\''
     },
     title: 'Provide a value for the prompt token'
-  }
+  },
+  regularExpression: '/regular expression/'
 } as const;

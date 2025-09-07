@@ -341,7 +341,7 @@ export class PluginSettingsTab extends PluginSettingsTabBase<PluginTypes> {
         f.createEl('br');
         f.appendText(t(($) => $.pluginSettingsTab.includePaths.description.part3));
         f.appendText(' ');
-        appendCodeBlock(f, '/regular expression/');
+        appendCodeBlock(f, t(($) => $.regularExpression));
         f.appendText('.');
         f.createEl('br');
         f.appendText(t(($) => $.pluginSettingsTab.includePaths.description.part4));
@@ -359,7 +359,7 @@ export class PluginSettingsTab extends PluginSettingsTabBase<PluginTypes> {
         f.createEl('br');
         f.appendText(t(($) => $.pluginSettingsTab.excludePaths.description.part3));
         f.appendText(' ');
-        appendCodeBlock(f, '/regular expression/');
+        appendCodeBlock(f, t(($) => $.regularExpression));
         f.appendText('.');
         f.createEl('br');
         f.appendText(t(($) => $.pluginSettingsTab.excludePaths.description.part4));
@@ -381,7 +381,7 @@ export class PluginSettingsTab extends PluginSettingsTabBase<PluginTypes> {
         f.createEl('br');
         f.appendText(t(($) => $.pluginSettingsTab.excludePathsFromAttachmentCollecting.description.part5));
         f.appendText(' ');
-        appendCodeBlock(f, '/regular expression/');
+        appendCodeBlock(f, t(($) => $.regularExpression));
         f.appendText('.');
         f.createEl('br');
         f.appendText(t(($) => $.pluginSettingsTab.excludePathsFromAttachmentCollecting.description.part6));

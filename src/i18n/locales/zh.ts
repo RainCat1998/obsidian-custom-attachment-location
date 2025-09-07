@@ -298,5 +298,6 @@ export const zhLocale: Locale = {
       title: '预览附件文件 \'{{fullFileName}}\''
     },
     title: '为提示令牌提供一个值'
-  }
+  },
+  regularExpression: '/正则表达式/'
 };

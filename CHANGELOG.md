@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 9.13.0
+
+- Add Chinese translation (#201)
+
 ## 9.12.0
 
 - Fix paths with trailing spaces and dots (#204)

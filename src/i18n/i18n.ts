@@ -5,6 +5,7 @@ import type {
 } from 'i18next';
 import type {
   LiteralToPrimitiveDeep,
+  PartialDeep,
   ReadonlyDeep
 } from 'type-fest';
 
@@ -23,7 +24,8 @@ import {
 
 export const DEFAULT_NS = 'translation';
 export type DefaultLocale = typeof defaultLocale;
-export type Locale = Partial<LiteralToPrimitiveDeep<DefaultLocale>>;
+export type FullLocale = LiteralToPrimitiveDeep<DefaultLocale>;
+export type Locale = PartialDeep<FullLocale>;
 export type LocaleMap = Record<string, Locale>;
 
 let isInitialized = false;

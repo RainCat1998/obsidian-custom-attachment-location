@@ -135,6 +135,10 @@ export class Plugin extends PluginBase<PluginTypes> {
     return new PluginSettingsTab(this);
   }
 
+  protected override handleAsyncError(): void {
+    this.showNotice(t(($) => $.notice.unhandledError));
+  }
+
   protected override async onLayoutReady(): Promise<void> {
     await super.onLayoutReady();
     Substitutions.registerCustomTokens(this.settings.customTokensStr);

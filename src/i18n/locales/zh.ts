@@ -43,7 +43,8 @@ export const zhLocale: Locale = {
       part1: '生成的附件文件名 \'{{path}}\' 无效。\n{{validationMessage}}\n请检查',
       part2: '设置。'
     },
-    notePathIsIgnored: '笔记路径已被忽略'
+    notePathIsIgnored: '笔记路径已被忽略',
+    unhandledError: '未处理的错误发生。请检查控制台以获取更多信息。'
   },
   pluginSettings: {
     attachmentRenameMode: {

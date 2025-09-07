@@ -41,7 +41,8 @@ export const defaultLocale = {
       part1: 'Generated attachment file name \'{{path}}\' is invalid.\n{{validationMessage}}\nCheck your',
       part2: 'setting.'
     },
-    notePathIsIgnored: 'Note path is ignored'
+    notePathIsIgnored: 'Note path is ignored',
+    unhandledError: 'An unhandled error occurred. Please check the console for more information.'
   },
   pluginSettings: {
     attachmentRenameMode: {

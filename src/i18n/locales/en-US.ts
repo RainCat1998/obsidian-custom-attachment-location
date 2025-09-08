@@ -1,5 +1,5 @@
-import type { FullLocale } from '../i18n.ts';
+import type { FullTranslations } from '../i18n.ts';
 
-import { defaultLocale } from './default.ts';
+import { defaultTranslations } from './default.ts';
 
-export const enUS: FullLocale = defaultLocale;
+export const enUS: FullTranslations = defaultTranslations;

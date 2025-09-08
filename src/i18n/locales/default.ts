@@ -1,4 +1,4 @@
-export const defaultLocale = {
+export const defaultTranslations = {
   attachmentCollector: {
     confirm: {
       part1: 'Do you want to collect attachments for all notes in folder:',

@@ -15,18 +15,18 @@ import {
 } from 'i18next';
 import { getLanguage } from 'obsidian';
 
-import type { defaultLocale } from './locales/default.ts';
+import type { defaultTranslations } from './locales/default.ts';
 
 import {
   DEFAULT_LANGUAGE,
-  localeMap
-} from './locales/localeMap.ts';
+  translationsMap
+} from './locales/translationsMap.ts';
 
 export const DEFAULT_NS = 'translation';
-export type DefaultLocale = typeof defaultLocale;
-export type FullLocale = LiteralToPrimitiveDeep<DefaultLocale>;
-export type Locale = PartialDeep<FullLocale>;
-export type LocaleMap = Record<string, Locale>;
+export type DefaultTranslations = typeof defaultTranslations;
+export type FullTranslations = LiteralToPrimitiveDeep<DefaultTranslations>;
+export type Translations = PartialDeep<FullTranslations>;
+export type TranslationsMap = Record<string, Translations>;
 
 let isInitialized = false;
 
@@ -39,10 +39,10 @@ export async function initI18N(): Promise<void> {
     fallbackLng: DEFAULT_LANGUAGE,
     lng: getLanguage(),
     resources: Object.fromEntries(
-      Object.entries(localeMap).map(([language, locale]) => [
+      Object.entries(translationsMap).map(([language, translations]) => [
         language,
         {
-          [DEFAULT_NS]: locale
+          [DEFAULT_NS]: translations
         }
       ])
     ),
@@ -55,7 +55,7 @@ export async function initI18N(): Promise<void> {
 }
 
 export function tImpl(
-  selector: SelectorFn<ReadonlyDeep<Locale>, string, SelectorOptions<[typeof DEFAULT_NS]>>,
+  selector: SelectorFn<ReadonlyDeep<Translations>, string, SelectorOptions<[typeof DEFAULT_NS]>>,
   options?: SelectorOptions<[typeof DEFAULT_NS]>
 ): string {
   if (!isInitialized) {

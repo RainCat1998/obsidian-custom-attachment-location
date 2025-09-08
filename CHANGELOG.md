@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 9.13.2
+
+- Rename back
+
 ## 9.13.1
 
 - Localize unhandledError

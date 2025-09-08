@@ -1,6 +1,6 @@
 import type { Locale } from '../i18n.ts';
 
-export const zhLocale: Locale = {
+export const zhCN: Locale = {
   attachmentCollector: {
     confirm: {
       part1: '是否要为文件夹中的所有笔记收集附件：',

@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 9.13.3
+
+- Reuse base i18n
+
 ## 9.13.2
 
 - Rename back

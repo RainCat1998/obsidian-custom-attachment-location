@@ -1,3 +1,5 @@
+import type { DefaultTranslationsBase } from 'obsidian-dev-utils/obsidian/i18n/DefaultTranslationsBase';
+
 export const defaultTranslations = {
   attachmentCollector: {
     confirm: {
@@ -11,10 +13,8 @@ export const defaultTranslations = {
     }
   },
   buttons: {
-    cancel: 'Cancel',
     copy: 'Copy',
     move: 'Move',
-    ok: 'OK',
     previewAttachmentFile: 'Preview attachment file',
     skip: 'Skip'
   },
@@ -41,8 +41,21 @@ export const defaultTranslations = {
       part1: 'Generated attachment file name \'{{path}}\' is invalid.\n{{validationMessage}}\nCheck your',
       part2: 'setting.'
     },
-    notePathIsIgnored: 'Note path is ignored',
-    unhandledError: 'An unhandled error occurred. Please check the console for more information.'
+    notePathIsIgnored: 'Note path is ignored'
+  },
+  obsidianDevUtils: {
+    buttons: {
+      cancel: 'Cancel',
+      ok: 'OK'
+    },
+    dataview: {
+      itemsPerPage: 'Items per page:',
+      jumpToPage: 'Jump to page:'
+    },
+    notices: {
+      attachmentIsStillUsed: 'Attachment {{attachmentPath}} is still used by other notes. It will not be deleted.',
+      unhandledError: 'An unhandled error occurred. Please check the console for more information.'
+    }
   },
   pluginSettings: {
     attachmentRenameMode: {
@@ -300,4 +313,4 @@ export const defaultTranslations = {
     title: 'Provide a value for the prompt token'
   },
   regularExpression: '/regular expression/'
-} as const;
+} as const satisfies DefaultTranslationsBase;

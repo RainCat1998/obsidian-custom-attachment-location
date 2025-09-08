@@ -6,8 +6,8 @@ import {
   Setting
 } from 'obsidian';
 import { appendCodeBlock } from 'obsidian-dev-utils/HTMLElement';
+import { t } from 'obsidian-dev-utils/obsidian/i18n/i18n';
 
-import { t } from './i18n/i18n.ts';
 import { CollectAttachmentUsedByMultipleNotesMode } from './PluginSettings.ts';
 
 interface CollectAttachmentUsedByMultipleNotesModalResult {
@@ -87,7 +87,7 @@ class CollectAttachmentUsedByMultipleNotesModal extends Modal {
         });
       })
       .addButton((button) => {
-        button.setButtonText(t(($) => $.buttons.cancel));
+        button.setButtonText(t(($) => $.obsidianDevUtils.buttons.cancel));
         button.onClick(() => {
           this.select(CollectAttachmentUsedByMultipleNotesMode.Cancel, shouldUseSameActionForOtherProblematicAttachments);
         });

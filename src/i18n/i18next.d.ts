@@ -1,14 +1,9 @@
-import type {
-  DEFAULT_NS,
-  DefaultTranslations
-} from './i18n.ts';
+import type { CustomTypeOptionsBase } from 'obsidian-dev-utils/obsidian/i18n/CustomTypeOptionsBase';
+
+import type { PluginTypes } from '../PluginTypes.ts';
 
 declare module 'i18next' {
-  interface CustomTypeOptions {
-    defaultNS: typeof DEFAULT_NS;
-    enableSelector: true;
-    resources: {
-      [DEFAULT_NS]: DefaultTranslations;
-    };
+  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
+  interface CustomTypeOptions extends CustomTypeOptionsBase<PluginTypes> {
   }
 }

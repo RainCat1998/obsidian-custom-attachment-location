@@ -12,11 +12,10 @@ import {
   invokeAsyncSafely
 } from 'obsidian-dev-utils/Async';
 import { CssClass } from 'obsidian-dev-utils/CssClass';
+import { t } from 'obsidian-dev-utils/obsidian/i18n/i18n';
 import { addPluginCssClasses } from 'obsidian-dev-utils/obsidian/Plugin/PluginContext';
 
 import type { TokenEvaluatorContext } from './TokenEvaluatorContext.ts';
-
-import { t } from './i18n/i18n.ts';
 
 interface PromptWithPreviewModalOptions {
   ctx: TokenEvaluatorContext;
@@ -124,14 +123,14 @@ class PromptWithPreviewModal extends Modal {
     inputEl.addEventListener('focus', convertAsyncToSync(validate));
     invokeAsyncSafely(validate);
     const okButton = new ButtonComponent(this.contentEl);
-    okButton.setButtonText(t(($) => $.buttons.ok));
+    okButton.setButtonText(t(($) => $.obsidianDevUtils.buttons.ok));
     okButton.setCta();
     okButton.onClick((event) => {
       this.handleOk(event, textComponent);
     });
     okButton.setClass(CssClass.OkButton);
     const cancelButton = new ButtonComponent(this.contentEl);
-    cancelButton.setButtonText(t(($) => $.buttons.cancel));
+    cancelButton.setButtonText(t(($) => $.obsidianDevUtils.buttons.cancel));
     cancelButton.onClick(this.close.bind(this));
     cancelButton.setClass(CssClass.CancelButton);
 

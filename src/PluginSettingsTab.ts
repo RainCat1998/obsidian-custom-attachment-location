@@ -14,6 +14,7 @@ import {
   getEnumValue
 } from 'obsidian-dev-utils/Enum';
 import { appendCodeBlock } from 'obsidian-dev-utils/HTMLElement';
+import { t } from 'obsidian-dev-utils/obsidian/i18n/i18n';
 import { confirm } from 'obsidian-dev-utils/obsidian/Modals/Confirm';
 import { PluginSettingsTabBase } from 'obsidian-dev-utils/obsidian/Plugin/PluginSettingsTabBase';
 import { EmptyAttachmentFolderBehavior } from 'obsidian-dev-utils/obsidian/RenameDeleteHandler';
@@ -22,7 +23,6 @@ import { SettingEx } from 'obsidian-dev-utils/obsidian/SettingEx';
 import type { PluginSettings } from './PluginSettings.ts';
 import type { PluginTypes } from './PluginTypes.ts';
 
-import { t } from './i18n/i18n.ts';
 import {
   AttachmentRenameMode,
   CollectAttachmentUsedByMultipleNotesMode,
@@ -438,9 +438,9 @@ export class PluginSettingsTab extends PluginSettingsTabBase<PluginTypes> {
           if (
             this.plugin.settings.customTokensStr !== '' && !await confirm({
               app: this.plugin.app,
-              cancelButtonText: t(($) => $.buttons.cancel),
+              cancelButtonText: t(($) => $.obsidianDevUtils.buttons.cancel),
               message: t(($) => $.pluginSettingsTab.resetToSampleCustomTokens.message),
-              okButtonText: t(($) => $.buttons.ok),
+              okButtonText: t(($) => $.obsidianDevUtils.buttons.ok),
               title: t(($) => $.pluginSettingsTab.resetToSampleCustomTokens.title)
             })
           ) {

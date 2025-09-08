@@ -27,6 +27,7 @@ import {
   isCanvasFile,
   isNote
 } from 'obsidian-dev-utils/obsidian/FileSystem';
+import { t } from 'obsidian-dev-utils/obsidian/i18n/i18n';
 import {
   extractLinkFile,
   updateLink
@@ -59,7 +60,6 @@ import {
   getGeneratedAttachmentFileBaseName
 } from './AttachmentPath.ts';
 import { selectMode } from './CollectAttachmentUsedByMultipleNotesModal.ts';
-import { t } from './i18n/i18n.ts';
 import { CollectAttachmentUsedByMultipleNotesMode } from './PluginSettings.ts';
 import {
   hasPromptToken,
@@ -315,7 +315,7 @@ export async function collectAttachmentsInFolder(plugin: Plugin, folder: TFolder
   if (
     !await confirm({
       app: plugin.app,
-      cancelButtonText: t(($) => $.buttons.cancel),
+      cancelButtonText: t(($) => $.obsidianDevUtils.buttons.cancel),
       message: createFragment((f) => {
         f.appendText(t(($) => $.attachmentCollector.confirm.part1));
         f.appendText(' ');
@@ -325,7 +325,7 @@ export async function collectAttachmentsInFolder(plugin: Plugin, folder: TFolder
         f.createEl('br');
         f.appendText(t(($) => $.attachmentCollector.confirm.part3));
       }),
-      okButtonText: t(($) => $.buttons.ok),
+      okButtonText: t(($) => $.obsidianDevUtils.buttons.ok),
       title: createFragment((f) => {
         setIcon(f.createSpan(), 'lucide-alert-triangle');
         f.appendText(' ');

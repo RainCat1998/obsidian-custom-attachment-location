@@ -5,11 +5,11 @@ import {
   Notice
 } from 'obsidian';
 import { appendCodeBlock } from 'obsidian-dev-utils/HTMLElement';
+import { t } from 'obsidian-dev-utils/obsidian/i18n/i18n';
 import { join } from 'obsidian-dev-utils/Path';
 
 import type { Plugin } from './Plugin.ts';
 
-import { t } from './i18n/i18n.ts';
 import {
   Substitutions,
   TokenValidationMode,

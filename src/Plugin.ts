@@ -9,6 +9,7 @@ import type {
   GetAvailablePathForAttachmentsExtendedFnOptions,
   GetAvailablePathForAttachmentsFnExtended
 } from 'obsidian-dev-utils/obsidian/AttachmentPath';
+import type { TranslationsMap } from 'obsidian-dev-utils/obsidian/i18n/i18n';
 import type { RenameDeleteHandlerSettings } from 'obsidian-dev-utils/obsidian/RenameDeleteHandler';
 import type {
   ClipboardManager,
@@ -48,6 +49,7 @@ import {
   getAbstractFileOrNull,
   getFileOrNull
 } from 'obsidian-dev-utils/obsidian/FileSystem';
+import { t } from 'obsidian-dev-utils/obsidian/i18n/i18n';
 import {
   encodeUrl,
   generateMarkdownLink,
@@ -88,10 +90,7 @@ import {
   getAttachmentFolderFullPathForPath,
   getGeneratedAttachmentFileBaseName
 } from './AttachmentPath.ts';
-import {
-  initI18N,
-  t
-} from './i18n/i18n.ts';
+import { translationsMap } from './i18n/locales/translationsMap.ts';
 import { AttachmentRenameMode } from './PluginSettings.ts';
 import { PluginSettingsManager } from './PluginSettingsManager.ts';
 import { PluginSettingsTab } from './PluginSettingsTab.ts';
@@ -135,8 +134,8 @@ export class Plugin extends PluginBase<PluginTypes> {
     return new PluginSettingsTab(this);
   }
 
-  protected override handleAsyncError(): void {
-    this.showNotice(t(($) => $.notice.unhandledError));
+  protected override createTranslationsMap(): TranslationsMap<PluginTypes> {
+    return translationsMap;
   }
 
   protected override async onLayoutReady(): Promise<void> {
@@ -202,8 +201,6 @@ export class Plugin extends PluginBase<PluginTypes> {
 
   protected override async onloadImpl(): Promise<void> {
     await super.onloadImpl();
-
-    await initI18N();
 
     registerRenameDeleteHandlers(this, () => {
       const settings: Partial<RenameDeleteHandlerSettings> = {

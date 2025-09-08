@@ -1,6 +1,8 @@
-import type { Translations } from '../i18n.ts';
+import type { Translations } from 'obsidian-dev-utils/obsidian/i18n/i18n';
 
-export const zh: Translations = {
+import type { PluginTypes } from '../../PluginTypes.ts';
+
+export const zh: Translations<PluginTypes> = {
   attachmentCollector: {
     confirm: {
       part1: '是否要为文件夹中的所有笔记收集附件：',
@@ -13,10 +15,8 @@ export const zh: Translations = {
     }
   },
   buttons: {
-    cancel: '取消',
     copy: '复制',
     move: '移动',
-    ok: '确定',
     previewAttachmentFile: '预览附件文件',
     skip: '跳过'
   },
@@ -43,8 +43,21 @@ export const zh: Translations = {
       part1: '生成的附件文件名 \'{{path}}\' 无效。\n{{validationMessage}}\n请检查',
       part2: '设置。'
     },
-    notePathIsIgnored: '笔记路径已被忽略',
-    unhandledError: '未处理的错误发生。请检查控制台以获取更多信息。'
+    notePathIsIgnored: '笔记路径已被忽略'
+  },
+  obsidianDevUtils: {
+    buttons: {
+      cancel: '取消',
+      ok: '确定'
+    },
+    dataview: {
+      itemsPerPage: '每页项数:',
+      jumpToPage: '跳转至页数:'
+    },
+    notices: {
+      attachmentIsStillUsed: '附件 {{attachmentPath}} 仍然被其他笔记使用。它不会被删除。',
+      unhandledError: '未处理的错误发生。请检查控制台以获取更多信息。'
+    }
   },
   pluginSettings: {
     attachmentRenameMode: {

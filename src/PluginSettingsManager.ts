@@ -3,6 +3,7 @@ import type { MaybeReturn } from 'obsidian-dev-utils/Type';
 import { debounce } from 'obsidian';
 import { invokeAsyncSafely } from 'obsidian-dev-utils/Async';
 import { appendCodeBlock } from 'obsidian-dev-utils/HTMLElement';
+import { t } from 'obsidian-dev-utils/obsidian/i18n/i18n';
 import { alert } from 'obsidian-dev-utils/obsidian/Modals/Alert';
 import { PluginSettingsManagerBase } from 'obsidian-dev-utils/obsidian/Plugin/PluginSettingsManagerBase';
 import { EmptyAttachmentFolderBehavior } from 'obsidian-dev-utils/obsidian/RenameDeleteHandler';
@@ -13,7 +14,6 @@ import { compare } from 'semver';
 
 import type { PluginTypes } from './PluginTypes.ts';
 
-import { t } from './i18n/i18n.ts';
 import {
   CollectAttachmentUsedByMultipleNotesMode,
   PluginSettings

@@ -1,6 +1,6 @@
 import type { Translations } from '../i18n.ts';
 
-export const zhCN: Translations = {
+export const zh: Translations = {
   attachmentCollector: {
     confirm: {
       part1: '是否要为文件夹中的所有笔记收集附件：',

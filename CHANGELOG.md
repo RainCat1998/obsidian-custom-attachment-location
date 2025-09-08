@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 9.13.1
+
+- Localize unhandledError
+
 ## 9.13.0
 
 - Add Chinese translation (#201)

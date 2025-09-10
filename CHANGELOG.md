@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 9.13.4
+
+- Minor changes
+
 ## 9.13.3
 
 - Reuse base i18n

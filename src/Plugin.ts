@@ -345,6 +345,7 @@ export class Plugin extends PluginBase<PluginTypes> {
     }
 
     const noteFile = getFileOrNull(this.app, notePathOrFile);
+    const noteFilePath = notePathOrFile ? getPath(this.app, notePathOrFile) : undefined;
     const oldNoteFilePath = options.oldNotePathOrFile ? getPath(this.app, options.oldNotePathOrFile) : undefined;
 
     if (attachmentFileBaseName.startsWith(IMPORT_FILES_PREFIX)) {
@@ -356,7 +357,7 @@ export class Plugin extends PluginBase<PluginTypes> {
     }
 
     let attachmentPath: string;
-    if (!noteFile || !isNoteEx(this, noteFile)) {
+    if (!noteFilePath || !isNoteEx(this, noteFilePath)) {
       attachmentPath = await getAvailablePathForAttachments({
         app: this.app,
         attachmentFileBaseName,
@@ -370,7 +371,7 @@ export class Plugin extends PluginBase<PluginTypes> {
       const attachmentFolderFullPath = await getAttachmentFolderFullPathForPath(
         this,
         options.context as string as ActionContext,
-        noteFile.path,
+        noteFilePath,
         attachmentFileName,
         oldNoteFilePath,
         attachmentFileContent,
@@ -387,7 +388,7 @@ export class Plugin extends PluginBase<PluginTypes> {
             app: this.app,
             attachmentFileContent,
             attachmentFileStat,
-            noteFilePath: noteFile.path,
+            noteFilePath,
             oldNoteFilePath,
             originalAttachmentFileName: attachmentFileName
           })

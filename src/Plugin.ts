@@ -6,6 +6,7 @@ import type {
   WorkspaceLeaf
 } from 'obsidian';
 import type {
+  AttachmentPathContext,
   GetAvailablePathForAttachmentsExtendedFnOptions,
   GetAvailablePathForAttachmentsFnExtended
 } from 'obsidian-dev-utils/obsidian/AttachmentPath';
@@ -96,27 +97,26 @@ import { PluginSettingsManager } from './PluginSettingsManager.ts';
 import { PluginSettingsTab } from './PluginSettingsTab.ts';
 import { PrismComponent } from './PrismComponent.ts';
 import { Substitutions } from './Substitutions.ts';
+import { ActionContext } from './TokenEvaluatorContext.ts';
 
+type ArrayBufferFn = File['arrayBuffer'];
+interface FileEx {
+  path: string;
+}
 type GenerateMarkdownLinkFn = FileManager['generateMarkdownLink'];
 type GetAvailablePathFn = Vault['getAvailablePath'];
 type GetAvailablePathForAttachmentsFn = Vault['getAvailablePathForAttachments'];
 type GetConfigFn = Vault['getConfig'];
 type GetPathForFileFn = typeof webUtils['getPathForFile'];
+type ImportFilesFn = ShareReceiver['importFiles'];
+type InsertFilesFn = ClipboardManager['insertFiles'];
+
 type SaveAttachmentFn = App['saveAttachment'];
 
 const PASTED_IMAGE_NAME_REG_EXP = /Pasted image (?<Timestamp>\d{14})/;
 const PASTED_IMAGE_DATE_FORMAT = 'YYYYMMDDHHmmss';
 const THRESHOLD_IN_SECONDS = 10;
 const IMPORT_FILES_PREFIX = '__IMPORT_FILES__';
-
-type ArrayBufferFn = File['arrayBuffer'];
-
-interface FileEx {
-  path: string;
-}
-
-type ImportFilesFn = ShareReceiver['importFiles'];
-type InsertFilesFn = ClipboardManager['insertFiles'];
 
 export class Plugin extends PluginBase<PluginTypes> {
   private readonly arrayBufferFileStatMap = new WeakMap<ArrayBuffer, FileStats>();
@@ -367,6 +367,7 @@ export class Plugin extends PluginBase<PluginTypes> {
       const attachmentFileName = makeFileName(attachmentFileBaseName, attachmentFileExtension);
       const attachmentFolderFullPath = await getAttachmentFolderFullPathForPath(
         this,
+        options.context as string as ActionContext,
         noteFile.path,
         attachmentFileName,
         attachmentFileContent,
@@ -379,6 +380,7 @@ export class Plugin extends PluginBase<PluginTypes> {
         const generatedAttachmentFileBaseName = await getGeneratedAttachmentFileBaseName(
           this,
           new Substitutions({
+            actionContext: options.context as string as ActionContext,
             app: this.app,
             attachmentFileContent,
             attachmentFileStat,
@@ -480,7 +482,7 @@ export class Plugin extends PluginBase<PluginTypes> {
     }
 
     this.lastOpenFilePath = file.path;
-    this.currentAttachmentFolderPath = await getAttachmentFolderFullPathForPath(this, file.path, DUMMY_PATH);
+    this.currentAttachmentFolderPath = await getAttachmentFolderFullPathForPath(this, ActionContext.OpenFile, file.path, DUMMY_PATH);
   }
 
   private handleInputFileChange(evt: Event): void {
@@ -543,6 +545,7 @@ export class Plugin extends PluginBase<PluginTypes> {
       const response = await fetch(fileUri);
       const attachmentFileContent = await response.arrayBuffer();
       const substitutions = new Substitutions({
+        actionContext: ActionContext.ImportFiles,
         app: this.app,
         attachmentFileContent,
         noteFilePath: this.app.workspace.getActiveFile()?.path ?? '',
@@ -612,6 +615,7 @@ export class Plugin extends PluginBase<PluginTypes> {
       attachmentFileBaseName = await getGeneratedAttachmentFileBaseName(
         this,
         new Substitutions({
+          actionContext: ActionContext.SaveAttachment,
           app: this.app,
           attachmentFileContent,
           attachmentFileStat: this.arrayBufferFileStatMap.get(attachmentFileContent),
@@ -624,6 +628,7 @@ export class Plugin extends PluginBase<PluginTypes> {
     const attachmentFile = await this.saveAttachmentCore(attachmentFileBaseName, attachmentFileExtension, attachmentFileContent);
     if (this.settings.markdownUrlFormat) {
       const markdownUrl = await new Substitutions({
+        actionContext: ActionContext.SaveAttachment,
         app: this.app,
         attachmentFileContent,
         attachmentFileStat: this.arrayBufferFileStatMap.get(attachmentFileContent),
@@ -652,6 +657,7 @@ export class Plugin extends PluginBase<PluginTypes> {
       attachmentFileContent,
       attachmentFileExtension,
       attachmentFileStat,
+      context: ActionContext.SaveAttachment as string as AttachmentPathContext,
       notePathOrFile: noteFile,
       shouldSkipDuplicateCheck: false,
       shouldSkipGeneratedAttachmentFileName: true,

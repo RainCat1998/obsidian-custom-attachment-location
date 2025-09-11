@@ -16,9 +16,11 @@ import {
   validateFileName,
   validatePath
 } from './Substitutions.ts';
+import { ActionContext } from './TokenEvaluatorContext.ts';
 
 export async function getAttachmentFolderFullPathForPath(
   plugin: Plugin,
+  actionContext: ActionContext,
   notePath: string,
   attachmentFileName: string,
   attachmentFileContent?: ArrayBuffer,
@@ -27,6 +29,7 @@ export async function getAttachmentFolderFullPathForPath(
   return await getAttachmentFolderPath(
     plugin,
     new Substitutions({
+      actionContext,
       app: plugin.app,
       attachmentFileContent,
       attachmentFileStat,

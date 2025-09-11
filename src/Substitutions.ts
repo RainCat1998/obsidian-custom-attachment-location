@@ -34,6 +34,7 @@ import slugify_ from 'slugify';
 import type { TokenEvaluatorContext } from './TokenEvaluatorContext.ts';
 
 import { promptWithPreview } from './PromptWithPreviewModal.ts';
+import { ActionContext } from './TokenEvaluatorContext.ts';
 
 const slugify = extractDefaultExportInterop(slugify_);
 
@@ -67,6 +68,7 @@ type RegisterCustomTokenFn = (token: string, evaluator: TokenEvaluator) => void;
 type RegisterCustomTokensWrapperFn = (registerCustomToken: RegisterCustomTokenFn) => void;
 
 interface SubstitutionsOptions {
+  actionContext: ActionContext;
   app: App;
   attachmentFileContent?: ArrayBuffer | undefined;
   attachmentFileStat?: FileStats | undefined;
@@ -267,7 +269,7 @@ async function prompt(ctx: TokenEvaluatorContext): Promise<string> {
   // Validate format
   formatString('', ctx.format);
 
-  if (ctx.originalAttachmentFileName === DUMMY_PATH) {
+  if (ctx.actionContext === ActionContext.ValidateTokens) {
     return DUMMY_PATH;
   }
 
@@ -293,6 +295,8 @@ export class Substitutions {
   }
 
   public readonly noteFolderPath: string;
+
+  private readonly actionContext: ActionContext;
   private readonly app: App;
   private readonly attachmentFileContent: ArrayBuffer | undefined;
   private readonly attachmentFileStat: FileStats | undefined;
@@ -308,7 +312,7 @@ export class Substitutions {
 
   public constructor(options: SubstitutionsOptions) {
     this.app = options.app;
-
+    this.actionContext = options.actionContext;
     this.noteFilePath = options.noteFilePath;
     this.noteFileName = basename(this.noteFilePath, extname(this.noteFilePath));
     this.noteFolderName = basename(dirname(this.noteFilePath));
@@ -401,6 +405,7 @@ export class Substitutions {
 
       const ctx: TokenEvaluatorContext = {
         abortSignal,
+        actionContext: this.actionContext,
         app: this.app,
         attachmentFileContent: this.attachmentFileContent,
         attachmentFileStat: this.attachmentFileStat,
@@ -619,6 +624,7 @@ function slugifyEx(str: string): string {
 
 async function validateTokens(app: App, str: string): Promise<null | string> {
   const FAKE_SUBSTITUTION = new Substitutions({
+    actionContext: ActionContext.ValidateTokens,
     app,
     noteFilePath: DUMMY_PATH,
     originalAttachmentFileName: DUMMY_PATH

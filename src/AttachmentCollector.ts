@@ -65,6 +65,7 @@ import {
   hasPromptToken,
   Substitutions
 } from './Substitutions.ts';
+import { ActionContext } from './TokenEvaluatorContext.ts';
 
 interface AttachmentMoveResult {
   newAttachmentPath: string;
@@ -434,6 +435,7 @@ async function prepareAttachmentToMove(
       await getGeneratedAttachmentFileBaseName(
         plugin,
         new Substitutions({
+          actionContext: ActionContext.CollectAttachments,
           app: plugin.app,
           attachmentFileContent,
           attachmentFileStat: oldAttachmentFile.stat,
@@ -449,6 +451,7 @@ async function prepareAttachmentToMove(
 
   const newAttachmentFolderPath = await getAttachmentFolderFullPathForPath(
     plugin,
+    ActionContext.CollectAttachments,
     newNotePath,
     newAttachmentName,
     attachmentFileContent,

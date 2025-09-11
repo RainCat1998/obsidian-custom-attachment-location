@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 9.15.1
+
+- Fix root folder
+
 ## 9.15.0
 
 - Add oldNoteFile* tokens

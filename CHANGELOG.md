@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 9.15.0
+
+- Add oldNoteFile* tokens
+
 ## 9.14.0
 
 - Pass ActionContext

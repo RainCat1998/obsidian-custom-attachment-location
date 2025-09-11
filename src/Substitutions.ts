@@ -75,6 +75,7 @@ interface SubstitutionsOptions {
   generatedAttachmentFileName?: string;
   generatedAttachmentFilePath?: string;
   noteFilePath: string;
+  oldNoteFilePath?: string | undefined;
   originalAttachmentFileName?: string;
 }
 
@@ -307,16 +308,26 @@ export class Substitutions {
   private readonly noteFileName: string;
   private readonly noteFilePath: string;
   private readonly noteFolderName: string;
+  private readonly oldNoteFileName: string;
+  private readonly oldNoteFilePath: string;
+  private readonly oldNoteFolderName: string;
+  private readonly oldNoteFolderPath: string;
   private readonly originalAttachmentFileExtension: string;
   private readonly originalAttachmentFileName: string;
 
   public constructor(options: SubstitutionsOptions) {
     this.app = options.app;
     this.actionContext = options.actionContext;
+
     this.noteFilePath = options.noteFilePath;
     this.noteFileName = basename(this.noteFilePath, extname(this.noteFilePath));
     this.noteFolderName = basename(dirname(this.noteFilePath));
     this.noteFolderPath = dirname(this.noteFilePath);
+
+    this.oldNoteFilePath = options.oldNoteFilePath ?? '';
+    this.oldNoteFileName = basename(this.oldNoteFilePath, extname(this.oldNoteFilePath));
+    this.oldNoteFolderName = basename(dirname(this.oldNoteFilePath));
+    this.oldNoteFolderPath = dirname(this.oldNoteFilePath);
 
     const originalAttachmentFileName = options.originalAttachmentFileName ?? '';
     const originalAttachmentFileExtension = extname(originalAttachmentFileName);
@@ -419,6 +430,10 @@ export class Substitutions {
         noteFolderName: this.noteFolderName,
         noteFolderPath: this.noteFolderPath,
         obsidian,
+        oldNoteFileName: this.oldNoteFileName,
+        oldNoteFilePath: this.oldNoteFilePath,
+        oldNoteFolderName: this.oldNoteFolderName,
+        oldNoteFolderPath: this.oldNoteFolderPath,
         originalAttachmentFileExtension: this.originalAttachmentFileExtension,
         originalAttachmentFileName: this.originalAttachmentFileName,
         token,

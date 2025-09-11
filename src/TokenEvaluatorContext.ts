@@ -140,6 +140,26 @@ export interface TokenEvaluatorContext {
   obsidian: typeof import('obsidian');
 
   /**
+   * A name of the old note file.
+   */
+  oldNoteFileName: string;
+
+  /**
+   * A path of the old note file.
+   */
+  oldNoteFilePath: string;
+
+  /**
+   * A name of the old note folder.
+   */
+  oldNoteFolderName: string;
+
+  /**
+   * A path of the old note folder.
+   */
+  oldNoteFolderPath: string;
+
+  /**
    * An extension of the original attachment file.
    */
   originalAttachmentFileExtension: string;

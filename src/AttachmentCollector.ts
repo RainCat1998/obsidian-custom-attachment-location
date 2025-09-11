@@ -454,6 +454,7 @@ async function prepareAttachmentToMove(
     ActionContext.CollectAttachments,
     newNotePath,
     newAttachmentName,
+    undefined,
     attachmentFileContent,
     oldAttachmentFile.stat
   );

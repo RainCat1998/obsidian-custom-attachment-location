@@ -23,6 +23,7 @@ export async function getAttachmentFolderFullPathForPath(
   actionContext: ActionContext,
   notePath: string,
   attachmentFileName: string,
+  oldNoteFilePath?: string,
   attachmentFileContent?: ArrayBuffer,
   attachmentFileStat?: FileStats
 ): Promise<string> {
@@ -34,6 +35,7 @@ export async function getAttachmentFolderFullPathForPath(
       attachmentFileContent,
       attachmentFileStat,
       noteFilePath: notePath,
+      oldNoteFilePath,
       originalAttachmentFileName: attachmentFileName
     })
   );

@@ -48,7 +48,8 @@ import {
 } from 'obsidian-dev-utils/obsidian/AttachmentPath';
 import {
   getAbstractFileOrNull,
-  getFileOrNull
+  getFileOrNull,
+  getPath
 } from 'obsidian-dev-utils/obsidian/FileSystem';
 import { t } from 'obsidian-dev-utils/obsidian/i18n/i18n';
 import {
@@ -344,6 +345,7 @@ export class Plugin extends PluginBase<PluginTypes> {
     }
 
     const noteFile = getFileOrNull(this.app, notePathOrFile);
+    const oldNoteFilePath = options.oldNotePathOrFile ? getPath(this.app, options.oldNotePathOrFile) : undefined;
 
     if (attachmentFileBaseName.startsWith(IMPORT_FILES_PREFIX)) {
       attachmentFileBaseName = trimStart(attachmentFileBaseName, IMPORT_FILES_PREFIX);
@@ -370,6 +372,7 @@ export class Plugin extends PluginBase<PluginTypes> {
         options.context as string as ActionContext,
         noteFile.path,
         attachmentFileName,
+        oldNoteFilePath,
         attachmentFileContent,
         attachmentFileStat
       );
@@ -385,6 +388,7 @@ export class Plugin extends PluginBase<PluginTypes> {
             attachmentFileContent,
             attachmentFileStat,
             noteFilePath: noteFile.path,
+            oldNoteFilePath,
             originalAttachmentFileName: attachmentFileName
           })
         );

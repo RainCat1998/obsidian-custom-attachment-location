@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 9.15.2
+
+- Additional check for dummy path (#210)
+
 ## 9.15.1
 
 - Fix root folder

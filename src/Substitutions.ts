@@ -270,7 +270,7 @@ async function prompt(ctx: TokenEvaluatorContext): Promise<string> {
   // Validate format
   formatString('', ctx.format);
 
-  if (ctx.actionContext === ActionContext.ValidateTokens) {
+  if (ctx.actionContext === ActionContext.ValidateTokens || ctx.originalAttachmentFileName === DUMMY_PATH) {
     return DUMMY_PATH;
   }
 

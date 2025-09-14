@@ -23,6 +23,7 @@ import { appendCodeBlock } from 'obsidian-dev-utils/HTMLElement';
 import { toJson } from 'obsidian-dev-utils/ObjectUtils';
 import { applyFileChanges } from 'obsidian-dev-utils/obsidian/FileChange';
 import {
+  getFile,
   getPath,
   isCanvasFile,
   isNote
@@ -36,13 +37,16 @@ import { loop } from 'obsidian-dev-utils/obsidian/Loop';
 import {
   getAllLinks,
   getBacklinksForFileSafe,
-  getCacheSafe
+  getCacheSafe,
+  registerFiles,
+  unregisterFiles
 } from 'obsidian-dev-utils/obsidian/MetadataCache';
 import { confirm } from 'obsidian-dev-utils/obsidian/Modals/Confirm';
 import { addToQueue } from 'obsidian-dev-utils/obsidian/Queue';
 import { referenceToFileChange } from 'obsidian-dev-utils/obsidian/Reference';
 import {
   copySafe,
+  getSafeRenamePath,
   process,
   renameSafe
 } from 'obsidian-dev-utils/obsidian/Vault';
@@ -94,6 +98,9 @@ export async function collectAttachments(
 
   const attachmentsMap = new Map<string, string>();
   const isCanvas = isCanvasFile(app, note);
+
+  const attachmentMoveResults: AttachmentMoveResult[] = [];
+  const fakeFiles: TFile[] = [];
 
   await applyFileChanges(
     app,
@@ -168,7 +175,7 @@ export async function collectAttachments(
                 attachmentMoveResult.newAttachmentPath = await copySafe(app, attachmentMoveResult.oldAttachmentPath, attachmentMoveResult.newAttachmentPath);
                 break;
               case CollectAttachmentUsedByMultipleNotesMode.Move:
-                await moveAttachment();
+                registerMoveAttachment();
                 abortSignal2.throwIfAborted();
                 break;
               case CollectAttachmentUsedByMultipleNotesMode.Prompt: {
@@ -204,20 +211,21 @@ export async function collectAttachments(
           }
         } else {
           abortSignal2.throwIfAborted();
-          await moveAttachment();
+          registerMoveAttachment();
           abortSignal2.throwIfAborted();
         }
 
-        async function moveAttachment(): Promise<void> {
+        function registerMoveAttachment(): void {
           abortSignal2.throwIfAborted();
           if (!attachmentMoveResult) {
             return;
           }
 
-          // eslint-disable-next-line require-atomic-updates
-          attachmentMoveResult.newAttachmentPath = await renameSafe(app, attachmentMoveResult.oldAttachmentPath, attachmentMoveResult.newAttachmentPath);
-          abortSignal2.throwIfAborted();
-          await deleteEmptyFolderHierarchy(app, dirname(attachmentMoveResult.oldAttachmentPath));
+          attachmentMoveResult.newAttachmentPath = getSafeRenamePath(app, attachmentMoveResult.oldAttachmentPath, attachmentMoveResult.newAttachmentPath);
+          const fakeFile = getFile(app, attachmentMoveResult.newAttachmentPath, true);
+          fakeFiles.push(fakeFile);
+          registerFiles(app, [fakeFile]);
+          attachmentMoveResults.push(attachmentMoveResult);
         }
 
         attachmentsMap.set(attachmentMoveResult.oldAttachmentPath, attachmentMoveResult.newAttachmentPath);
@@ -241,6 +249,15 @@ export async function collectAttachments(
       timeoutInMilliseconds: getTimeoutInMilliseconds(plugin)
     }
   );
+
+  unregisterFiles(app, fakeFiles);
+
+  for (const attachmentMoveResult of attachmentMoveResults) {
+    await renameSafe(app, attachmentMoveResult.oldAttachmentPath, attachmentMoveResult.newAttachmentPath);
+    abortSignal.throwIfAborted();
+    await deleteEmptyFolderHierarchy(app, dirname(attachmentMoveResult.oldAttachmentPath));
+    abortSignal.throwIfAborted();
+  }
 
   if (isCanvas) {
     await process(app, note, (abortSignal2, content) => {

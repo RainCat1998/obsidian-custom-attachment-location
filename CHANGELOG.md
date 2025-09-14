@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 9.15.3
+
+- Fix infinite rename (#211)
+
 ## 9.15.2
 
 - Additional check for dummy path (#210)

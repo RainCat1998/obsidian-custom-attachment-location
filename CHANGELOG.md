@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 9.15.4
+
+- Minor changes
+
 ## 9.15.3
 
 - Fix infinite rename (#211)

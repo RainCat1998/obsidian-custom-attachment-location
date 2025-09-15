@@ -127,6 +127,15 @@ export class Plugin extends PluginBase<PluginTypes> {
   private lastOpenFilePath: null | string = null;
   private readonly pathMarkdownUrlMap = new Map<string, string>();
 
+  public replaceSpecialCharacters(str: string): string {
+    if (!this.settings.specialCharacters) {
+      return str;
+    }
+
+    str = str.replace(this.settings.specialCharactersRegExp, this.settings.specialCharactersReplacement);
+    return str;
+  }
+
   protected override createSettingsManager(): PluginSettingsManager {
     return new PluginSettingsManager(this);
   }
@@ -385,12 +394,12 @@ export class Plugin extends PluginBase<PluginTypes> {
           this,
           new Substitutions({
             actionContext: options.context as string as ActionContext,
-            app: this.app,
             attachmentFileContent,
             attachmentFileStat,
             noteFilePath,
             oldNoteFilePath,
-            originalAttachmentFileName: attachmentFileName
+            originalAttachmentFileName: attachmentFileName,
+            plugin: this
           })
         );
         generatedAttachmentFileName = makeFileName(generatedAttachmentFileBaseName, attachmentFileExtension);
@@ -551,10 +560,10 @@ export class Plugin extends PluginBase<PluginTypes> {
       const attachmentFileContent = await response.arrayBuffer();
       const substitutions = new Substitutions({
         actionContext: ActionContext.ImportFiles,
-        app: this.app,
         attachmentFileContent,
         noteFilePath: this.app.workspace.getActiveFile()?.path ?? '',
-        originalAttachmentFileName: file.name
+        originalAttachmentFileName: file.name,
+        plugin: this
       });
       const attachmentFileBaseName = await getGeneratedAttachmentFileBaseName(this, substitutions);
       const attachmentFileExtension = extname(file.name).slice(1);
@@ -621,11 +630,11 @@ export class Plugin extends PluginBase<PluginTypes> {
         this,
         new Substitutions({
           actionContext: ActionContext.SaveAttachment,
-          app: this.app,
           attachmentFileContent,
           attachmentFileStat: this.arrayBufferFileStatMap.get(attachmentFileContent),
           noteFilePath: activeNoteFile.path,
-          originalAttachmentFileName: makeFileName(attachmentFileBaseName, attachmentFileExtension)
+          originalAttachmentFileName: makeFileName(attachmentFileBaseName, attachmentFileExtension),
+          plugin: this
         })
       );
     }
@@ -634,13 +643,13 @@ export class Plugin extends PluginBase<PluginTypes> {
     if (this.settings.markdownUrlFormat) {
       const markdownUrl = await new Substitutions({
         actionContext: ActionContext.SaveAttachment,
-        app: this.app,
         attachmentFileContent,
         attachmentFileStat: this.arrayBufferFileStatMap.get(attachmentFileContent),
         generatedAttachmentFileName: attachmentFile.name,
         generatedAttachmentFilePath: attachmentFile.path,
         noteFilePath: activeNoteFile.path,
-        originalAttachmentFileName: makeFileName(attachmentFileBaseName, attachmentFileExtension)
+        originalAttachmentFileName: makeFileName(attachmentFileBaseName, attachmentFileExtension),
+        plugin: this
       }).fillTemplate(this.settings.markdownUrlFormat);
       this.pathMarkdownUrlMap.set(attachmentFile.path, markdownUrl);
     } else {

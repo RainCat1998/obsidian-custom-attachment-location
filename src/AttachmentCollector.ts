@@ -454,12 +454,12 @@ async function prepareAttachmentToMove(
         plugin,
         new Substitutions({
           actionContext: ActionContext.CollectAttachments,
-          app: plugin.app,
           attachmentFileContent,
           attachmentFileStat: oldAttachmentFile.stat,
           cursorLine: isReferenceCache(link) ? link.position.start.line : 0,
           noteFilePath: newNotePath,
-          originalAttachmentFileName: oldAttachmentFile.name
+          originalAttachmentFileName: oldAttachmentFile.name,
+          plugin
         })
       ),
       oldAttachmentFile.extension

@@ -31,6 +31,7 @@ import {
 // eslint-disable-next-line import-x/no-rename-default
 import slugify_ from 'slugify';
 
+import type { Plugin } from './Plugin.ts';
 import type { TokenEvaluatorContext } from './TokenEvaluatorContext.ts';
 
 import { promptWithPreview } from './PromptWithPreviewModal.ts';
@@ -69,7 +70,6 @@ type RegisterCustomTokensWrapperFn = (registerCustomToken: RegisterCustomTokenFn
 
 interface SubstitutionsOptions {
   actionContext: ActionContext;
-  app: App;
   attachmentFileContent?: ArrayBuffer | undefined;
   attachmentFileStat?: FileStats | undefined;
   cursorLine?: number | undefined;
@@ -78,19 +78,20 @@ interface SubstitutionsOptions {
   noteFilePath: string;
   oldNoteFilePath?: string | undefined;
   originalAttachmentFileName?: string;
+  plugin: Plugin;
 }
 
 interface ValidateFileNameOptions {
-  app: App;
   areSingleDotsAllowed: boolean;
   fileName: string;
   isEmptyAllowed: boolean;
+  plugin: Plugin;
   tokenValidationMode: TokenValidationMode;
 }
 interface ValidatePathOptions {
-  app: App;
   areTokensAllowed: boolean;
   path: string;
+  plugin: Plugin;
 }
 
 export function parseCustomTokens(customTokensStr: string): Map<string, TokenEvaluator> | null {
@@ -267,29 +268,6 @@ function getFrontmatterValue(app: App, filePath: string, key: string): string {
   return String(value);
 }
 
-async function prompt(ctx: TokenEvaluatorContext): Promise<string> {
-  // Validate format
-  formatString('', ctx.format);
-
-  if (ctx.actionContext === ActionContext.ValidateTokens || ctx.originalAttachmentFileName === DUMMY_PATH) {
-    return DUMMY_PATH;
-  }
-
-  const promptResult = await promptWithPreview({
-    ctx,
-    valueValidator: (value) =>
-      validatePath({
-        app: ctx.app,
-        areTokensAllowed: false,
-        path: value
-      })
-  });
-  if (promptResult === null) {
-    throw new Error('Prompt cancelled');
-  }
-  return formatString(promptResult, ctx.format);
-}
-
 export class Substitutions {
   private static readonly evaluators = new Map<string, TokenEvaluator>();
   static {
@@ -315,9 +293,11 @@ export class Substitutions {
   private readonly oldNoteFolderPath: string;
   private readonly originalAttachmentFileExtension: string;
   private readonly originalAttachmentFileName: string;
+  private readonly plugin: Plugin;
 
   public constructor(options: SubstitutionsOptions) {
-    this.app = options.app;
+    this.plugin = options.plugin;
+    this.app = options.plugin.app;
     this.actionContext = options.actionContext;
 
     this.noteFilePath = options.noteFilePath;
@@ -389,7 +369,7 @@ export class Substitutions {
     this.registerToken('originalAttachmentFileExtension', (ctx) => ctx.originalAttachmentFileExtension);
     this.registerToken('originalAttachmentFileName', (ctx) => formatString(ctx.originalAttachmentFileName, ctx.format));
 
-    this.registerToken('prompt', (ctx) => prompt(ctx));
+    this.registerToken('prompt', (ctx, substitutions) => substitutions.prompt(ctx));
 
     this.registerToken('random', (ctx) => generateRandomValue(ctx.format));
 
@@ -465,6 +445,29 @@ export class Substitutions {
     });
   }
 
+  public async prompt(ctx: TokenEvaluatorContext): Promise<string> {
+    // Validate format
+    formatString('', ctx.format);
+
+    if (ctx.actionContext === ActionContext.ValidateTokens || ctx.originalAttachmentFileName === DUMMY_PATH) {
+      return DUMMY_PATH;
+    }
+
+    const promptResult = await promptWithPreview({
+      ctx,
+      valueValidator: (value) =>
+        validatePath({
+          areTokensAllowed: false,
+          path: value,
+          plugin: this.plugin
+        })
+    });
+    if (promptResult === null) {
+      throw new Error('Prompt cancelled');
+    }
+    return formatString(promptResult, ctx.format);
+  }
+
   private async getHeading(format: string): Promise<string> {
     format ||= 'any';
     if (!(HEADING_LEVELS as readonly string[]).includes(format)) {
@@ -472,7 +475,8 @@ export class Substitutions {
     }
 
     const headingsInfo = await this.initHeadings();
-    return headingsInfo.get(format as HeadingLevel) ?? '';
+    const rawHeading = headingsInfo.get(format as HeadingLevel) ?? '';
+    return this.plugin.replaceSpecialCharacters(rawHeading);
   }
 
   private async initHeadings(): Promise<Map<HeadingLevel, string>> {
@@ -531,7 +535,7 @@ export async function validateFileName(options: ValidateFileNameOptions): Promis
     case TokenValidationMode.Skip:
       break;
     case TokenValidationMode.Validate: {
-      const validationMessage = await validateTokens(options.app, options.fileName);
+      const validationMessage = await validateTokens(options.plugin, options.fileName);
       if (validationMessage) {
         return validationMessage;
       }
@@ -568,7 +572,7 @@ export async function validateFileName(options: ValidateFileNameOptions): Promis
 
 export async function validatePath(options: ValidatePathOptions): Promise<string> {
   if (options.areTokensAllowed) {
-    const unknownToken = await validateTokens(options.app, options.path);
+    const unknownToken = await validateTokens(options.plugin, options.path);
     if (unknownToken) {
       return `Unknown token: ${unknownToken}`;
     }
@@ -589,10 +593,10 @@ export async function validatePath(options: ValidatePathOptions): Promise<string
   const pathParts = path.split('/');
   for (const part of pathParts) {
     const partValidationError = await validateFileName({
-      app: options.app,
       areSingleDotsAllowed: true,
       fileName: part,
       isEmptyAllowed: true,
+      plugin: options.plugin,
       tokenValidationMode: TokenValidationMode.Skip
     });
 
@@ -642,12 +646,12 @@ function slugifyEx(str: string): string {
   });
 }
 
-async function validateTokens(app: App, str: string): Promise<null | string> {
+async function validateTokens(plugin: Plugin, str: string): Promise<null | string> {
   const FAKE_SUBSTITUTION = new Substitutions({
     actionContext: ActionContext.ValidateTokens,
-    app,
     noteFilePath: DUMMY_PATH,
-    originalAttachmentFileName: DUMMY_PATH
+    originalAttachmentFileName: DUMMY_PATH,
+    plugin
   });
 
   const tokens = extractTokens(str);

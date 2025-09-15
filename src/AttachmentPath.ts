@@ -31,12 +31,12 @@ export async function getAttachmentFolderFullPathForPath(
     plugin,
     new Substitutions({
       actionContext,
-      app: plugin.app,
       attachmentFileContent,
       attachmentFileStat,
       noteFilePath: notePath,
       oldNoteFilePath,
-      originalAttachmentFileName: attachmentFileName
+      originalAttachmentFileName: attachmentFileName,
+      plugin
     })
   );
 }
@@ -44,19 +44,19 @@ export async function getAttachmentFolderFullPathForPath(
 export async function getGeneratedAttachmentFileBaseName(plugin: Plugin, substitutions: Substitutions): Promise<string> {
   const path = await resolvePathTemplate(plugin, plugin.settings.generatedAttachmentFileName, substitutions, true);
   let validationMessage = await validatePath({
-    app: plugin.app,
     areTokensAllowed: false,
-    path
+    path,
+    plugin
   });
   if (!validationMessage) {
     const parts = path.split('/');
     const fileName = parts.at(-1) ?? '';
     // eslint-disable-next-line require-atomic-updates
     validationMessage = await validateFileName({
-      app: plugin.app,
       areSingleDotsAllowed: false,
       fileName,
       isEmptyAllowed: false,
+      plugin,
       tokenValidationMode: TokenValidationMode.Error
     });
   }
@@ -75,13 +75,15 @@ export async function getGeneratedAttachmentFileBaseName(plugin: Plugin, substit
   return path;
 }
 
-export function replaceSpecialCharacters(plugin: Plugin, str: string): string {
-  if (!plugin.settings.specialCharacters) {
-    return str;
+function cleanFilePathPart(plugin: Plugin, part: string): string {
+  let cleanPart = part.trimEnd();
+  if (cleanPart === '.' || cleanPart === '..') {
+    return cleanPart;
   }
 
-  str = str.replace(plugin.settings.specialCharactersRegExp, plugin.settings.specialCharactersReplacement);
-  return str;
+  cleanPart = cleanPart.replace(/[\s.]+$/, '');
+  cleanPart = plugin.replaceSpecialCharacters(cleanPart);
+  return cleanPart;
 }
 
 async function getAttachmentFolderPath(plugin: Plugin, substitutions: Substitutions): Promise<string> {
@@ -90,18 +92,17 @@ async function getAttachmentFolderPath(plugin: Plugin, substitutions: Substituti
 
 async function resolvePathTemplate(plugin: Plugin, template: string, substitutions: Substitutions, isFileNamePart: boolean): Promise<string> {
   let resolvedPath = await substitutions.fillTemplate(template);
-  const resolvedPathParts = resolvedPath.split('/').map((part) => part.replace(/[\s.]+$/, '') || part);
+  const resolvedPathParts = resolvedPath.split('/').map((part) => cleanFilePathPart(plugin, part));
   resolvedPath = resolvedPathParts.join('/');
+
   const validationError = await validatePath({
-    app: plugin.app,
     areTokensAllowed: false,
-    path: resolvedPath
+    path: resolvedPath,
+    plugin
   });
   if (validationError) {
     throw new Error(`Resolved path ${resolvedPath} is invalid: ${validationError}`);
   }
-
-  resolvedPath = replaceSpecialCharacters(plugin, resolvedPath);
 
   if (!isFileNamePart) {
     if (resolvedPath.startsWith('./') || resolvedPath.startsWith('../')) {

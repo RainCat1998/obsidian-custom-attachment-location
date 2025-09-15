@@ -212,21 +212,16 @@ ${commentOut(legacySettings.customTokensStr)}
   protected override registerValidators(): void {
     this.registerValidator('attachmentFolderPath', async (value) =>
       await validatePath({
-        app: this.app,
         areTokensAllowed: true,
-        path: value
+        path: value,
+        plugin: this.plugin
       }));
     this.registerValidator('generatedAttachmentFileName', async (value) =>
       await validatePath({
-        app: this.app,
         areTokensAllowed: true,
-        path: value
+        path: value,
+        plugin: this.plugin
       }));
-    this.registerValidator('specialCharacters', (value): MaybeReturn<string> => {
-      if (value.includes('/')) {
-        return t(($) => $.pluginSettingsManager.validation.specialCharactersMustNotContainSlash);
-      }
-    });
 
     this.registerValidator('specialCharactersReplacement', (value): MaybeReturn<string> => {
       if (getOsUnsafePathCharsRegExp().exec(value)) {
@@ -236,10 +231,10 @@ ${commentOut(legacySettings.customTokensStr)}
 
     this.registerValidator('duplicateNameSeparator', async (value): Promise<MaybeReturn<string>> => {
       return await validateFileName({
-        app: this.app,
         areSingleDotsAllowed: false,
         fileName: `foo${value}1`,
         isEmptyAllowed: false,
+        plugin: this.plugin,
         tokenValidationMode: TokenValidationMode.Error
       });
     });

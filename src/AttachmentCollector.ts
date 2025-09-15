@@ -56,6 +56,7 @@ import {
   join,
   makeFileName
 } from 'obsidian-dev-utils/Path';
+import { isReferenceCache } from 'obsidian-typings/implementations';
 
 import type { Plugin } from './Plugin.ts';
 
@@ -456,6 +457,7 @@ async function prepareAttachmentToMove(
           app: plugin.app,
           attachmentFileContent,
           attachmentFileStat: oldAttachmentFile.stat,
+          cursorLine: isReferenceCache(link) ? link.position.start.line : undefined,
           noteFilePath: newNotePath,
           originalAttachmentFileName: oldAttachmentFile.name
         })

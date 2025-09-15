@@ -72,6 +72,7 @@ interface SubstitutionsOptions {
   app: App;
   attachmentFileContent?: ArrayBuffer | undefined;
   attachmentFileStat?: FileStats | undefined;
+  cursorLine?: number | undefined;
   generatedAttachmentFileName?: string;
   generatedAttachmentFilePath?: string;
   noteFilePath: string;
@@ -340,13 +341,17 @@ export class Substitutions {
     this.generatedAttachmentFileName = options.generatedAttachmentFileName ?? '';
     this.generatedAttachmentFilePath = options.generatedAttachmentFilePath ?? '';
 
-    this.cursorLine = null;
+    if (options.cursorLine === undefined) {
+      this.cursorLine = null;
 
-    if (this.app.workspace.activeEditor?.file?.path === this.noteFilePath) {
-      const cursor = this.app.workspace.activeEditor.editor?.getCursor();
-      if (cursor) {
-        this.cursorLine = cursor.line;
+      if (this.app.workspace.activeEditor?.file?.path === this.noteFilePath) {
+        const cursor = this.app.workspace.activeEditor.editor?.getCursor();
+        if (cursor) {
+          this.cursorLine = cursor.line;
+        }
       }
+    } else {
+      this.cursorLine = options.cursorLine;
     }
   }
 

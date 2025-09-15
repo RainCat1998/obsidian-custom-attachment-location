@@ -57,7 +57,7 @@ export class PluginSettings {
   // eslint-disable-next-line no-magic-numbers
   public timeoutInSeconds = 5;
   public treatAsAttachmentExtensions: readonly string[] = ['.excalidraw.md'];
-  public warningVersion = '';
+  public version = '';
   public get customTokensStr(): string {
     return this._customTokensStr;
   }

@@ -49,6 +49,7 @@ class LegacySettings {
   public shouldRenameAttachments = true;
   public shouldRenameAttachmentsToLowerCase = false;
   public toLowerCase = false;
+  public warningVersion = '';
   public whitespaceReplacement = '';
 }
 
@@ -64,6 +65,10 @@ export class PluginSettingsManager extends PluginSettingsManagerBase<PluginTypes
   protected override registerLegacySettingsConverters(): void {
     // eslint-disable-next-line complexity
     this.registerLegacySettingsConverter(LegacySettings, (legacySettings) => {
+      if (legacySettings.warningVersion !== undefined) {
+        legacySettings.version = legacySettings.warningVersion;
+      }
+
       const dateTimeFormat = legacySettings.dateTimeFormat ?? 'YYYYMMDDHHmmssSSS';
       legacySettings.attachmentFolderPath = addDateTimeFormat(legacySettings.attachmentFolderPath ?? '', dateTimeFormat);
 
@@ -131,7 +136,7 @@ export class PluginSettingsManager extends PluginSettingsManagerBase<PluginTypes
         });
       }
 
-      if (legacySettings.customTokensStr && legacySettings.warningVersion && compare(legacySettings.warningVersion, '9.0.0') < 0) {
+      if (legacySettings.customTokensStr && legacySettings.version && compare(legacySettings.version, '9.0.0') < 0) {
         legacySettings.customTokensStr = `${t(($) => $.pluginSettingsManager.customToken.codeComment)}
 
 ${commentOut(legacySettings.customTokensStr)}
@@ -180,7 +185,7 @@ ${commentOut(legacySettings.customTokensStr)}
       }
 
       if (
-        legacySettings.warningVersion && compare(legacySettings.warningVersion, '9.2.0') < 0
+        legacySettings.version && compare(legacySettings.version, '9.2.0') < 0
         // eslint-disable-next-line no-template-curly-in-string
         && (legacySettings.markdownUrlFormat === '${generatedAttachmentFilePath}' || legacySettings.markdownUrlFormat === '${noteFilePath}')
       ) {
@@ -205,7 +210,7 @@ ${commentOut(legacySettings.customTokensStr)}
         });
       }
 
-      legacySettings.warningVersion = this.plugin.manifest.version;
+      legacySettings.version = this.plugin.manifest.version;
     });
   }
 

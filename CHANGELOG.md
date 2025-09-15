@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 9.15.6
+
+- Clarify term `pasted image` (#215)
+
 ## 9.15.5
 
 - Fix enum binding (#213)

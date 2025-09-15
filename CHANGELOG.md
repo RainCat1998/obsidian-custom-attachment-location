@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 9.15.5
+
+- Fix enum binding (#213)
+
 ## 9.15.4
 
 - Minor changes

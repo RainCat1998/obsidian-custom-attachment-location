@@ -472,7 +472,8 @@ export class Substitutions {
     }
 
     const headingsInfo = await this.initHeadings();
-    return headingsInfo.get(format as HeadingLevel) ?? '';
+    const heading = headingsInfo.get(format as HeadingLevel) ?? '';
+    return obsidian.stripHeading(heading);
   }
 
   private async initHeadings(): Promise<Map<HeadingLevel, string>> {

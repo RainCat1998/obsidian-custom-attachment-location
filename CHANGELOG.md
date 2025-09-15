@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 9.15.8
+
+- Ensure frontmatter links headings are not used
+
 ## 9.15.7
 
 - Substitute headings on collect (#214)

@@ -9,10 +9,6 @@ import {
   convertAsyncToSync,
   invokeAsyncSafely
 } from 'obsidian-dev-utils/Async';
-import {
-  getEnumKey,
-  getEnumValue
-} from 'obsidian-dev-utils/Enum';
 import { appendCodeBlock } from 'obsidian-dev-utils/HTMLElement';
 import { t } from 'obsidian-dev-utils/obsidian/i18n/i18n';
 import { confirm } from 'obsidian-dev-utils/obsidian/Modals/Confirm';
@@ -142,10 +138,7 @@ export class PluginSettingsTab extends PluginSettingsTabBase<PluginTypes> {
           [AttachmentRenameMode.All]: t(($) => $.pluginSettings.attachmentRenameMode.all.displayText)
           /* eslint-enable perfectionist/sort-objects */
         });
-        this.bind(dropdown, 'attachmentRenameMode', {
-          componentToPluginSettingsValueConverter: (value) => getEnumValue(AttachmentRenameMode, value),
-          pluginSettingsToComponentValueConverter: (value) => getEnumKey(AttachmentRenameMode, value)
-        });
+        this.bind(dropdown, 'attachmentRenameMode');
       });
 
     new SettingEx(this.containerEl)
@@ -263,10 +256,7 @@ export class PluginSettingsTab extends PluginSettingsTabBase<PluginTypes> {
           [CollectAttachmentUsedByMultipleNotesMode.Prompt]: t(($) => $.pluginSettings.collectAttachmentUsedByMultipleNotesMode.prompt.displayText)
           /* eslint-enable perfectionist/sort-objects */
         });
-        this.bind(dropdown, 'collectAttachmentUsedByMultipleNotesMode', {
-          componentToPluginSettingsValueConverter: (value) => getEnumValue(CollectAttachmentUsedByMultipleNotesMode, value),
-          pluginSettingsToComponentValueConverter: (value) => getEnumKey(CollectAttachmentUsedByMultipleNotesMode, value)
-        });
+        this.bind(dropdown, 'collectAttachmentUsedByMultipleNotesMode');
       });
 
     new SettingEx(this.containerEl)
@@ -319,10 +309,7 @@ export class PluginSettingsTab extends PluginSettingsTabBase<PluginTypes> {
           [EmptyAttachmentFolderBehavior.DeleteWithEmptyParents]: t(($) => $.pluginSettings.emptyAttachmentFolderBehavior.deleteWithEmptyParents.displayText)
           /* eslint-enable perfectionist/sort-objects */
         });
-        this.bind(dropdown, 'emptyAttachmentFolderBehavior', {
-          componentToPluginSettingsValueConverter: (value) => getEnumValue(EmptyAttachmentFolderBehavior, value),
-          pluginSettingsToComponentValueConverter: (value) => getEnumKey(EmptyAttachmentFolderBehavior, value)
-        });
+        this.bind(dropdown, 'emptyAttachmentFolderBehavior');
       });
 
     new SettingEx(this.containerEl)

@@ -166,7 +166,8 @@ export class PluginSettingsTab extends PluginSettingsTabBase<PluginTypes> {
         this.bind(text, 'specialCharacters', {
           componentToPluginSettingsValueConverter: (value: string): string => value.replaceAll(VISIBLE_WHITESPACE_CHARACTER, ''),
           pluginSettingsToComponentValueConverter: (value: string): string => value.replaceAll(' ', VISIBLE_WHITESPACE_CHARACTER),
-          shouldResetSettingWhenComponentIsEmpty: false
+          shouldResetSettingWhenComponentIsEmpty: false,
+          shouldShowPlaceholderForDefaultValues: false
         });
         text.inputEl.addEventListener('input', () => {
           text.inputEl.value = showWhitespaceCharacter(text.inputEl.value);
@@ -182,7 +183,8 @@ export class PluginSettingsTab extends PluginSettingsTabBase<PluginTypes> {
       }))
       .addText((text) => {
         this.bind(text, 'specialCharactersReplacement', {
-          shouldResetSettingWhenComponentIsEmpty: false
+          shouldResetSettingWhenComponentIsEmpty: false,
+          shouldShowPlaceholderForDefaultValues: false
         });
       });
 

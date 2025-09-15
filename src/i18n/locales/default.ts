@@ -68,7 +68,7 @@ export const defaultTranslations = {
         displayText: 'None'
       },
       onlyPastedImages: {
-        description: 'only pasted images are renamed.',
+        description: 'only pasted images are renamed. Applies only when the PNG image content is pasted from the clipboard directly. Typically, for pasting screenshots.',
         displayText: 'Only pasted images'
       }
     },
@@ -248,7 +248,7 @@ export const defaultTranslations = {
       title: 'Reset to sample custom tokens'
     },
     shouldConvertPastedImagesToJpeg: {
-      description: 'Whether to convert pasted images to JPEG.',
+      description: 'Whether to convert pasted images to JPEG. Applies only when the PNG image content is pasted from the clipboard directly. Typically, for pasting screenshots.',
       name: 'Should convert pasted images to JPEG'
     },
     shouldDeleteOrphanAttachments: {

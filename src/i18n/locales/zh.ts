@@ -70,7 +70,7 @@ export const zh: Translations<PluginTypes> = {
         displayText: '无'
       },
       onlyPastedImages: {
-        description: '只有粘贴的图片会被重命名。',
+        description: '仅对粘贴的图片进行重命名。仅当 PNG 图像内容直接从剪贴板粘贴时适用。通常用于粘贴屏幕截图。',
         displayText: '仅粘贴的图片'
       }
     },
@@ -249,7 +249,7 @@ export const zh: Translations<PluginTypes> = {
       title: '重置为示例自定义令牌'
     },
     shouldConvertPastedImagesToJpeg: {
-      description: '是否将粘贴的图片转换为 JPEG。',
+      description: '是否将粘贴的图片转换为 JPEG。仅当 PNG 图像内容直接从剪贴板粘贴时适用。通常用于粘贴屏幕截图。',
       name: '是否将粘贴的图片转换为 JPEG'
     },
     shouldDeleteOrphanAttachments: {

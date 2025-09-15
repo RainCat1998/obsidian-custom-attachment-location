@@ -457,7 +457,7 @@ async function prepareAttachmentToMove(
           app: plugin.app,
           attachmentFileContent,
           attachmentFileStat: oldAttachmentFile.stat,
-          cursorLine: isReferenceCache(link) ? link.position.start.line : undefined,
+          cursorLine: isReferenceCache(link) ? link.position.start.line : 0,
           noteFilePath: newNotePath,
           originalAttachmentFileName: oldAttachmentFile.name
         })

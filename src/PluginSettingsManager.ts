@@ -190,7 +190,7 @@ ${commentOut(legacySettings.customTokensStr)}
             app: this.app,
             message: createFragment((f) => {
               f.appendText(t(($) => $.pluginSettingsManager.markdownUrlFormat.deprecated.part1));
-              appendCodeBlock(f, 'Markdown URL format');
+              appendCodeBlock(f, t(($) => $.pluginSettingsTab.markdownUrlFormat.name));
               f.appendText(t(($) => $.pluginSettingsManager.markdownUrlFormat.deprecated.part2));
               f.createEl('a', {
                 href: 'https://github.com/RainCat1998/obsidian-custom-attachment-location?tab=readme-ov-file#markdown-url-format',

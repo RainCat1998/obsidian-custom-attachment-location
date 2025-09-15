@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 9.15.7
+
+- Substitute headings on collect (#214)
+
 ## 9.15.6
 
 - Clarify term `pasted image` (#215)

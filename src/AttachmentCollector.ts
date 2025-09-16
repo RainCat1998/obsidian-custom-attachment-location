@@ -101,6 +101,7 @@ export async function collectAttachments(
   const isCanvas = isCanvasFile(app, note);
 
   const attachmentMoveResults: AttachmentMoveResult[] = [];
+  const oldAttachmentPaths = new Set<string>();
   const fakeFiles: TFile[] = [];
 
   await applyFileChanges(
@@ -136,7 +137,7 @@ export async function collectAttachments(
           return changes;
         }
 
-        const attachmentMoveResult = await prepareAttachmentToMove(plugin, link, note.path, note.path);
+        const attachmentMoveResult = await prepareAttachmentToMove(plugin, link, note.path, note.path, oldAttachmentPaths);
         abortSignal2.throwIfAborted();
         if (!attachmentMoveResult) {
           continue;
@@ -426,18 +427,29 @@ async function prepareAttachmentToMove(
   plugin: Plugin,
   link: Reference,
   newNotePath: string,
-  oldNotePath: string
+  oldNotePath: string,
+  oldAttachmentPaths: Set<string>
 ): Promise<AttachmentMoveResult | null> {
   const app = plugin.app;
 
-  const oldAttachmentFile = extractLinkFile(app, link, oldNotePath);
+  const oldAttachmentFile = extractLinkFile(app, link, oldNotePath, true);
+
   if (!oldAttachmentFile) {
-    console.warn(`Skipping collecting attachment ${link.link} as it could not be resolved.`);
     return null;
   }
 
   if (isNoteEx(plugin, oldAttachmentFile)) {
-    console.warn(`Skipping collecting attachment ${oldAttachmentFile.path} as it is a note.`);
+    return null;
+  }
+
+  if (oldAttachmentPaths.has(oldAttachmentFile.path)) {
+    return null;
+  }
+
+  oldAttachmentPaths.add(oldAttachmentFile.path);
+
+  if (oldAttachmentFile.deleted) {
+    console.warn(`Skipping collecting attachment ${link.link} as it could not be resolved.`);
     return null;
   }
 

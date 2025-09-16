@@ -210,6 +210,21 @@ ${commentOut(legacySettings.customTokensStr)}
         });
       }
 
+      if (legacySettings.version && compare(legacySettings.version, '9.16.0') < 0 && legacySettings.specialCharacters === '#^[]|*\\<>:?') {
+        legacySettings.specialCharacters = '#^[]|*\\<>:?/';
+        invokeAsyncSafely(async () => {
+          await this.plugin.waitForLifecycleEvent('layoutReady');
+          await alert({
+            app: this.app,
+            message: createFragment((f) => {
+              f.appendText(t(($) => $.pluginSettingsManager.specialCharacters.part1));
+              appendCodeBlock(f, t(($) => $.pluginSettingsTab.specialCharacters.name));
+              f.appendText(t(($) => $.pluginSettingsManager.specialCharacters.part2));
+            })
+          });
+        });
+      }
+
       legacySettings.version = this.plugin.manifest.version;
     });
   }

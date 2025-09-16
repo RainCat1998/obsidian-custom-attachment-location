@@ -1,5 +1,14 @@
 # CHANGELOG
 
+## 9.16.0
+
+- Add all translations
+- Validate plugin version
+- Warn about special characters change
+- Add missing i18n
+- Replace special characters in headings
+- Don't mix empty and default setting UI
+
 ## 9.15.8
 
 - Ensure frontmatter links headings are not used

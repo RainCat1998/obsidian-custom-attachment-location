@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## 9.16.1
+
+- Update libs (#217)
+- Improve default placeholders
+
 ## 9.16.0
 
 - Add all translations

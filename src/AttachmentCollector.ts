@@ -95,7 +95,7 @@ export async function collectAttachments(
     return;
   }
 
-  const notice = new Notice(t(($) => $.notice.collectingAttachments, { noteFilePath: note.path }));
+  const notice = new Notice(t(($) => $.notice.collectingAttachments, { noteFilePath: note.path }), 0);
 
   const attachmentsMap = new Map<string, string>();
   const isCanvas = isCanvasFile(app, note);

@@ -137,11 +137,21 @@ export const zh: Translations<PluginTypes> = {
         part5: '此消息不会再次显示。'
       }
     },
+    specialCharacters: {
+      part1: '在插件版本 9.16.0 中，',
+      part2: '默认设置值已更改。您的设置值已更新为新的默认值。'
+    },
     validation: {
       invalidCustomTokensCode: '无效的自定义令牌代码',
       invalidRegularExpression: '无效的正则表达式 {{regExp}}',
       specialCharactersMustNotContainSlash: '特殊字符不能包含 /',
       specialCharactersReplacementMustNotContainInvalidFileNamePathCharacters: '特殊字符替换不能包含无效的文件名路径字符。'
+    },
+    version: {
+      part1: '您的设置文件 ',
+      part2: '版本为',
+      part3: '，比当前插件版本更新',
+      part4: '插件可能无法正常工作。请将插件更新到最新版本或确保设置正确。'
     }
   },
   pluginSettingsTab: {

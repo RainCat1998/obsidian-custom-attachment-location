@@ -40,7 +40,9 @@ export class PluginSettingsTab extends PluginSettingsTabBase<PluginTypes> {
       },
       pluginSettingsToComponentValueConverter(pluginSettingsValue: string): string {
         return pluginSettingsValue.trimEnd();
-      }
+      },
+      shouldResetSettingWhenComponentIsEmpty: true,
+      shouldShowPlaceholderForDefaultValues: false
     };
 
     new SettingEx(this.containerEl)
@@ -411,7 +413,6 @@ export class PluginSettingsTab extends PluginSettingsTabBase<PluginTypes> {
             registerCustomTokensDebounced(newValue);
           }
         });
-        codeHighlighter.setPlaceholder(SAMPLE_CUSTOM_TOKENS);
       });
     this.plugin.settingsManager.shouldDebounceCustomTokensValidation = true;
 

@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## 9.16.2
+
+- Don't hide Notice until done
+- Collect each attachment once (#219)
+
 ## 9.16.1
 
 - Update libs (#217)

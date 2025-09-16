@@ -69,6 +69,32 @@ export class PluginSettingsManager extends PluginSettingsManagerBase<PluginTypes
         legacySettings.version = legacySettings.warningVersion;
       }
 
+      if (legacySettings.version && compare(legacySettings.version, this.plugin.manifest.version) > 0) {
+        invokeAsyncSafely(async () => {
+          await this.plugin.waitForLifecycleEvent('layoutReady');
+          await alert({
+            app: this.app,
+            message: createFragment((f) => {
+              f.appendText(t(($) => $.pluginSettingsManager.version.part1));
+              f.appendText(' ');
+              appendCodeBlock(f, `${this.plugin.manifest.dir ?? ''}/data.json`);
+              f.appendText(' ');
+              f.appendText(t(($) => $.pluginSettingsManager.version.part2));
+              f.appendText(' ');
+              appendCodeBlock(f, legacySettings.version ?? '');
+              f.appendText(', ');
+              f.appendText(t(($) => $.pluginSettingsManager.version.part3));
+              f.appendText(' ');
+              appendCodeBlock(f, this.plugin.manifest.version);
+              f.appendText('. ');
+              f.appendText(t(($) => $.pluginSettingsManager.version.part4));
+            })
+          });
+        });
+        legacySettings.version = this.plugin.manifest.version;
+        return;
+      }
+
       const dateTimeFormat = legacySettings.dateTimeFormat ?? 'YYYYMMDDHHmmssSSS';
       legacySettings.attachmentFolderPath = addDateTimeFormat(legacySettings.attachmentFolderPath ?? '', dateTimeFormat);
 

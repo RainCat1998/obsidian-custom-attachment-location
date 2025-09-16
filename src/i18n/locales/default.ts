@@ -136,12 +136,22 @@ export const defaultTranslations = {
         part5: 'This message will not be shown again.'
       }
     },
+    specialCharacters: {
+      part1: 'In plugin version 9.16.0, the',
+      part2: 'default setting value was changed. Your setting value was updated to the new default value.'
+    },
     validation: {
       invalidCustomTokensCode: 'Invalid custom tokens code',
       invalidRegularExpression: 'Invalid regular expression {{regExp}}',
       specialCharactersMustNotContainSlash: 'Special characters must not contain /',
       specialCharactersReplacementMustNotContainInvalidFileNamePathCharacters:
         'Special character replacement must not contain invalid file name path characters.'
+    },
+    version: {
+      part1: 'Your settings file ',
+      part2: 'has version',
+      part3: 'which is newer than the current plugin version',
+      part4: 'The plugin might not work as expected. Please update the plugin to the latest version or ensure that the settings are correct.'
     }
   },
   pluginSettingsTab: {

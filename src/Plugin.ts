@@ -122,7 +122,7 @@ const IMPORT_FILES_PREFIX = '__IMPORT_FILES__';
 export class Plugin extends PluginBase<PluginTypes> {
   private readonly arrayBufferFileStatMap = new WeakMap<ArrayBuffer, FileStats>();
   private currentAttachmentFolderPath: null | string = null;
-  private getAvailablePathForAttachmentsOriginal: GetAvailablePathForAttachmentsFn | null = null;
+  private readonly getAvailablePathForAttachmentsOriginal: GetAvailablePathForAttachmentsFn | null = null;
   private isMarkdownViewPatched = false;
   private lastOpenFilePath: null | string = null;
   private readonly pathMarkdownUrlMap = new Map<string, string>();

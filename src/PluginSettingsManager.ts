@@ -55,7 +55,7 @@ class LegacySettings {
 
 export class PluginSettingsManager extends PluginSettingsManagerBase<PluginTypes> {
   public shouldDebounceCustomTokensValidation = false;
-  private customTokensValidatorDebounced = debounce(this.customTokensValidatorImpl.bind(this), CUSTOM_TOKENS_VALIDATOR_DEBOUNCE_IN_MILLISECONDS);
+  private readonly customTokensValidatorDebounced = debounce(this.customTokensValidatorImpl.bind(this), CUSTOM_TOKENS_VALIDATOR_DEBOUNCE_IN_MILLISECONDS);
   private lastCustomTokenValidatorResult: string | undefined = undefined;
 
   protected override createDefaultSettings(): PluginSettings {

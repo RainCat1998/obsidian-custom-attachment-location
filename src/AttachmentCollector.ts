@@ -4,7 +4,6 @@ import type {
   TFile,
   TFolder
 } from 'obsidian';
-import type { FileChange } from 'obsidian-dev-utils/obsidian/FileChange';
 import type { PathOrAbstractFile } from 'obsidian-dev-utils/obsidian/FileSystem';
 import type { CanvasData } from 'obsidian/canvas.d.ts';
 
@@ -20,39 +19,26 @@ import {
 } from 'obsidian-dev-utils/AbortController';
 import { throwExpression } from 'obsidian-dev-utils/Error';
 import { appendCodeBlock } from 'obsidian-dev-utils/HTMLElement';
-import { toJson } from 'obsidian-dev-utils/ObjectUtils';
-import { applyFileChanges } from 'obsidian-dev-utils/obsidian/FileChange';
 import {
-  getFile,
   getPath,
   isCanvasFile,
   isNote
 } from 'obsidian-dev-utils/obsidian/FileSystem';
 import { t } from 'obsidian-dev-utils/obsidian/i18n/i18n';
-import {
-  extractLinkFile,
-  updateLink
-} from 'obsidian-dev-utils/obsidian/Link';
+import { extractLinkFile } from 'obsidian-dev-utils/obsidian/Link';
 import { loop } from 'obsidian-dev-utils/obsidian/Loop';
 import {
   getAllLinks,
   getBacklinksForFileSafe,
-  getCacheSafe,
-  registerFiles,
-  unregisterFiles
+  getCacheSafe
 } from 'obsidian-dev-utils/obsidian/MetadataCache';
 import { confirm } from 'obsidian-dev-utils/obsidian/Modals/Confirm';
 import { addToQueue } from 'obsidian-dev-utils/obsidian/Queue';
-import { referenceToFileChange } from 'obsidian-dev-utils/obsidian/Reference';
 import {
   copySafe,
-  getSafeRenamePath,
-  process,
   renameSafe
 } from 'obsidian-dev-utils/obsidian/Vault';
-import { deleteEmptyFolderHierarchy } from 'obsidian-dev-utils/obsidian/VaultEx';
 import {
-  dirname,
   join,
   makeFileName
 } from 'obsidian-dev-utils/Path';
@@ -97,188 +83,120 @@ export async function collectAttachments(
 
   const notice = new Notice(t(($) => $.notice.collectingAttachments, { noteFilePath: note.path }), 0);
 
-  const attachmentsMap = new Map<string, string>();
   const isCanvas = isCanvasFile(app, note);
 
-  const attachmentMoveResults: AttachmentMoveResult[] = [];
   const oldAttachmentPaths = new Set<string>();
-  const fakeFiles: TFile[] = [];
 
-  await applyFileChanges(
-    app,
-    note,
-    async (abortSignal2, content) => {
-      abortSignal2.throwIfAborted();
-      const cache = await getCacheSafe(app, note);
-      abortSignal2.throwIfAborted();
+  const cache = await getCacheSafe(app, note);
+  abortSignal.throwIfAborted();
 
-      const cachedContent = await app.vault.cachedRead(note);
-      abortSignal2.throwIfAborted();
-
-      if (ctx.isAborted) {
-        return [];
-      }
-
-      if (content !== cachedContent) {
-        return null;
-      }
-
-      if (!cache) {
-        return [];
-      }
-
-      const links = isCanvas ? await getCanvasLinks(app, note) : getAllLinks(cache);
-      abortSignal2.throwIfAborted();
-      const changes: FileChange[] = [];
-
-      for (const link of links) {
-        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-        if (ctx.isAborted) {
-          return changes;
-        }
-
-        const attachmentMoveResult = await prepareAttachmentToMove(plugin, link, note.path, note.path, oldAttachmentPaths);
-        abortSignal2.throwIfAborted();
-        if (!attachmentMoveResult) {
-          continue;
-        }
-
-        if (plugin.settings.isExcludedFromAttachmentCollecting(attachmentMoveResult.oldAttachmentPath)) {
-          console.warn(`Skipping collecting attachment ${attachmentMoveResult.oldAttachmentPath} as it is excluded from attachment collecting.`);
-          continue;
-        }
-
-        const backlinks = await getBacklinksForFileSafe(app, attachmentMoveResult.oldAttachmentPath, {
-          timeoutInMilliseconds: plugin.settings.getTimeoutInMilliseconds()
-        });
-        abortSignal2.throwIfAborted();
-        if (backlinks.keys().length > 1) {
-          const backlinksSorted = backlinks.keys().sort((a, b) => a.localeCompare(b));
-          const backlinksStr = backlinksSorted.map((backlink) => `- ${backlink}`).join('\n');
-
-          async function applyCollectAttachmentUsedByMultipleNotesMode(
-            collectAttachmentUsedByMultipleNotesMode: CollectAttachmentUsedByMultipleNotesMode
-          ): Promise<boolean> {
-            abortSignal2.throwIfAborted();
-            if (!attachmentMoveResult) {
-              return false;
-            }
-
-            switch (collectAttachmentUsedByMultipleNotesMode) {
-              case CollectAttachmentUsedByMultipleNotesMode.Cancel:
-                console.error(
-                  `Cancelling collecting attachments, as attachment ${attachmentMoveResult.oldAttachmentPath} is referenced by multiple notes.\n${backlinksStr}`
-                );
-                new Notice(t(($) => $.notice.collectingAttachmentsCancelled));
-                ctx.isAborted = true;
-                return false;
-              case CollectAttachmentUsedByMultipleNotesMode.Copy:
-                // eslint-disable-next-line require-atomic-updates
-                attachmentMoveResult.newAttachmentPath = await copySafe(app, attachmentMoveResult.oldAttachmentPath, attachmentMoveResult.newAttachmentPath);
-                break;
-              case CollectAttachmentUsedByMultipleNotesMode.Move:
-                registerMoveAttachment();
-                abortSignal2.throwIfAborted();
-                break;
-              case CollectAttachmentUsedByMultipleNotesMode.Prompt: {
-                const { mode, shouldUseSameActionForOtherProblematicAttachments } = await selectMode(
-                  app,
-                  attachmentMoveResult.oldAttachmentPath,
-                  backlinksSorted
-                );
-                if (shouldUseSameActionForOtherProblematicAttachments) {
-                  ctx.collectAttachmentUsedByMultipleNotesMode = mode;
-                }
-                return applyCollectAttachmentUsedByMultipleNotesMode(mode);
-              }
-              case CollectAttachmentUsedByMultipleNotesMode.Skip:
-                console.warn(
-                  `Skipping collecting attachment ${attachmentMoveResult.oldAttachmentPath} as it is referenced by multiple notes.\n${backlinksStr}`
-                );
-                return false;
-              default:
-                throw new Error(`Unknown collect attachment used by multiple notes mode: ${plugin.settings.collectAttachmentUsedByMultipleNotesMode}`);
-            }
-
-            return true;
-          }
-
-          if (
-            !await applyCollectAttachmentUsedByMultipleNotesMode(
-              ctx.collectAttachmentUsedByMultipleNotesMode ?? plugin.settings.collectAttachmentUsedByMultipleNotesMode
-            )
-          ) {
-            abortSignal2.throwIfAborted();
-            continue;
-          }
-        } else {
-          abortSignal2.throwIfAborted();
-          registerMoveAttachment();
-          abortSignal2.throwIfAborted();
-        }
-
-        function registerMoveAttachment(): void {
-          abortSignal2.throwIfAborted();
-          if (!attachmentMoveResult) {
-            return;
-          }
-
-          attachmentMoveResult.newAttachmentPath = getSafeRenamePath(app, attachmentMoveResult.oldAttachmentPath, attachmentMoveResult.newAttachmentPath);
-          const fakeFile = getFile(app, attachmentMoveResult.newAttachmentPath, true);
-          fakeFiles.push(fakeFile);
-          registerFiles(app, [fakeFile]);
-          attachmentMoveResults.push(attachmentMoveResult);
-        }
-
-        attachmentsMap.set(attachmentMoveResult.oldAttachmentPath, attachmentMoveResult.newAttachmentPath);
-
-        if (!isCanvas) {
-          const newContent = updateLink({
-            app,
-            link,
-            newSourcePathOrFile: note,
-            newTargetPathOrFile: attachmentMoveResult.newAttachmentPath,
-            oldTargetPathOrFile: attachmentMoveResult.oldAttachmentPath
-          });
-
-          changes.push(referenceToFileChange(link, newContent));
-        }
-      }
-
-      return changes;
-    },
-    {
-      timeoutInMilliseconds: getTimeoutInMilliseconds(plugin)
-    }
-  );
-
-  unregisterFiles(app, fakeFiles);
-
-  for (const attachmentMoveResult of attachmentMoveResults) {
-    await renameSafe(app, attachmentMoveResult.oldAttachmentPath, attachmentMoveResult.newAttachmentPath);
-    abortSignal.throwIfAborted();
-    await deleteEmptyFolderHierarchy(app, dirname(attachmentMoveResult.oldAttachmentPath));
-    abortSignal.throwIfAborted();
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+  if (ctx.isAborted) {
+    return;
   }
 
-  if (isCanvas) {
-    await process(app, note, (abortSignal2, content) => {
-      abortSignal2.throwIfAborted();
-      const canvasData = JSON.parse(content) as CanvasData;
-      for (const node of canvasData.nodes) {
-        if (node.type !== 'file') {
-          continue;
-        }
-        const newPath = attachmentsMap.get(node.file);
-        if (!newPath) {
-          continue;
-        }
-        node.file = newPath;
-      }
-      return toJson(canvasData);
-    }, {
+  if (!cache) {
+    return;
+  }
+
+  const links = isCanvas ? await getCanvasLinks(app, note) : getAllLinks(cache);
+  abortSignal.throwIfAborted();
+
+  for (const link of links) {
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    if (ctx.isAborted) {
+      return;
+    }
+
+    const attachmentMoveResult = await prepareAttachmentToMove(plugin, link, note.path, note.path, oldAttachmentPaths);
+    abortSignal.throwIfAborted();
+    if (!attachmentMoveResult) {
+      continue;
+    }
+
+    if (plugin.settings.isExcludedFromAttachmentCollecting(attachmentMoveResult.oldAttachmentPath)) {
+      console.warn(`Skipping collecting attachment ${attachmentMoveResult.oldAttachmentPath} as it is excluded from attachment collecting.`);
+      continue;
+    }
+
+    const backlinks = await getBacklinksForFileSafe(app, attachmentMoveResult.oldAttachmentPath, {
       timeoutInMilliseconds: plugin.settings.getTimeoutInMilliseconds()
     });
+    abortSignal.throwIfAborted();
+    if (backlinks.keys().length > 1) {
+      const backlinksSorted = backlinks.keys().sort((a, b) => a.localeCompare(b));
+      const backlinksStr = backlinksSorted.map((backlink) => `- ${backlink}`).join('\n');
+
+      async function applyCollectAttachmentUsedByMultipleNotesMode(
+        collectAttachmentUsedByMultipleNotesMode: CollectAttachmentUsedByMultipleNotesMode
+      ): Promise<boolean> {
+        abortSignal.throwIfAborted();
+        if (!attachmentMoveResult) {
+          return false;
+        }
+
+        switch (collectAttachmentUsedByMultipleNotesMode) {
+          case CollectAttachmentUsedByMultipleNotesMode.Cancel:
+            console.error(
+              `Cancelling collecting attachments, as attachment ${attachmentMoveResult.oldAttachmentPath} is referenced by multiple notes.\n${backlinksStr}`
+            );
+            new Notice(t(($) => $.notice.collectingAttachmentsCancelled));
+            ctx.isAborted = true;
+            return false;
+          case CollectAttachmentUsedByMultipleNotesMode.Copy:
+            // eslint-disable-next-line require-atomic-updates
+            attachmentMoveResult.newAttachmentPath = await copySafe(app, attachmentMoveResult.oldAttachmentPath, attachmentMoveResult.newAttachmentPath);
+            break;
+          case CollectAttachmentUsedByMultipleNotesMode.Move:
+            await registerMoveAttachment();
+            abortSignal.throwIfAborted();
+            break;
+          case CollectAttachmentUsedByMultipleNotesMode.Prompt: {
+            const { mode, shouldUseSameActionForOtherProblematicAttachments } = await selectMode(
+              app,
+              attachmentMoveResult.oldAttachmentPath,
+              backlinksSorted
+            );
+            if (shouldUseSameActionForOtherProblematicAttachments) {
+              ctx.collectAttachmentUsedByMultipleNotesMode = mode;
+            }
+            return applyCollectAttachmentUsedByMultipleNotesMode(mode);
+          }
+          case CollectAttachmentUsedByMultipleNotesMode.Skip:
+            console.warn(
+              `Skipping collecting attachment ${attachmentMoveResult.oldAttachmentPath} as it is referenced by multiple notes.\n${backlinksStr}`
+            );
+            return false;
+          default:
+            throw new Error(`Unknown collect attachment used by multiple notes mode: ${plugin.settings.collectAttachmentUsedByMultipleNotesMode}`);
+        }
+
+        return true;
+      }
+
+      if (
+        !await applyCollectAttachmentUsedByMultipleNotesMode(
+          ctx.collectAttachmentUsedByMultipleNotesMode ?? plugin.settings.collectAttachmentUsedByMultipleNotesMode
+        )
+      ) {
+        abortSignal.throwIfAborted();
+        continue;
+      }
+    } else {
+      abortSignal.throwIfAborted();
+      await registerMoveAttachment();
+      abortSignal.throwIfAborted();
+    }
+
+    async function registerMoveAttachment(): Promise<void> {
+      abortSignal.throwIfAborted();
+      if (!attachmentMoveResult) {
+        return;
+      }
+
+      // eslint-disable-next-line require-atomic-updates
+      attachmentMoveResult.newAttachmentPath = await renameSafe(app, attachmentMoveResult.oldAttachmentPath, attachmentMoveResult.newAttachmentPath);
+    }
   }
 
   notice.hide();

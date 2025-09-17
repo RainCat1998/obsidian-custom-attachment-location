@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 9.16.4
+
+- Update libs (#222)
+
 ## 9.16.3
 
 - Simplify AttachmentCollector as links already handled by Rename handler (#221)

@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## 9.16.3
+
+- Simplify AttachmentCollector as links already handled by Rename handler (#221)
+- Ensure MetadataDeleted processed before queue (#220)
+
 ## 9.16.2
 
 - Don't hide Notice until done

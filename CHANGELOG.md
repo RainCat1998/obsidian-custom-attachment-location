@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 9.17.0
+
+- Add default image size (#224)
+
 ## 9.16.5
 
 - Update libs (#223)

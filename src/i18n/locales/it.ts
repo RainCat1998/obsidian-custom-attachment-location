@@ -97,6 +97,10 @@ export const it: Translations<PluginTypes> = {
         displayText: 'Salta'
       }
     },
+    defaultImageSizeDimension: {
+      height: 'Altezza',
+      width: 'Larghezza'
+    },
     emptyAttachmentFolderBehavior: {
       delete: {
         description: 'eliminerà la cartella allegati vuota.',
@@ -144,6 +148,7 @@ export const it: Translations<PluginTypes> = {
       part2: 'valore predefinito dell\'impostazione è stato modificato. Il tuo valore è stato aggiornato al nuovo valore predefinito.'
     },
     validation: {
+      defaultImageSizeMustBePercentageOrPixels: 'La dimensione predefinita dell\'immagine deve essere in pixel o percentuale',
       invalidCustomTokensCode: 'Codice token personalizzati non valido',
       invalidRegularExpression: 'Espressione regolare non valida {{regExp}}',
       specialCharactersMustNotContainSlash: 'I caratteri speciali non devono contenere /',
@@ -179,6 +184,15 @@ export const it: Translations<PluginTypes> = {
         part5: '⚠️ I token personalizzati possono essere codice JavaScript arbitrario. Se scritti male, possono causare perdita di dati. Usali a tuo rischio.'
       },
       name: 'Token personalizzati'
+    },
+    defaultImageSize: {
+      description: {
+        part1: 'Dimensione predefinita dell\'immagine.',
+        part2: 'Può essere specificata in pixel',
+        part3: 'o come percentuale della dimensione totale dell\'immagine',
+        part4: 'Lasciare vuoto per usare la dimensione originale.'
+      },
+      name: 'Dimensione immagine predefinita'
     },
     duplicateNameSeparator: {
       description: {

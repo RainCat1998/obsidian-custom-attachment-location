@@ -97,6 +97,10 @@ export const id: Translations<PluginTypes> = {
         displayText: 'Lewati'
       }
     },
+    defaultImageSizeDimension: {
+      height: 'Tinggi',
+      width: 'Lebar'
+    },
     emptyAttachmentFolderBehavior: {
       delete: {
         description: 'akan menghapus folder lampiran yang kosong.',
@@ -143,6 +147,7 @@ export const id: Translations<PluginTypes> = {
       part2: 'berubah. Nilai pengaturan Anda diperbarui ke nilai default baru.'
     },
     validation: {
+      defaultImageSizeMustBePercentageOrPixels: 'Ukuran gambar default harus dalam piksel atau persentase',
       invalidCustomTokensCode: 'Kode token kustom tidak valid',
       invalidRegularExpression: 'Ekspresi reguler tidak valid {{regExp}}',
       specialCharactersMustNotContainSlash: 'Karakter khusus tidak boleh mengandung /',
@@ -179,6 +184,15 @@ export const id: Translations<PluginTypes> = {
           '⚠️ Token kustom dapat berupa kode JavaScript arbitrer. Jika ditulis dengan buruk, dapat menyebabkan kehilangan data. Gunakan dengan risiko sendiri.'
       },
       name: 'Token kustom'
+    },
+    defaultImageSize: {
+      description: {
+        part1: 'The default image size.',
+        part2: 'Can be specified in pixels',
+        part3: 'or percentage of the full image size',
+        part4: 'Leave blank to use the original image size.'
+      },
+      name: 'Default image size'
     },
     duplicateNameSeparator: {
       description: {

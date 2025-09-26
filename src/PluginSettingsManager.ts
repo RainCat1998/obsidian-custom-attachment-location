@@ -275,6 +275,13 @@ ${commentOut(legacySettings.customTokensStr)}
       }
     });
 
+    this.registerValidator('defaultImageSize', (value): MaybeReturn<string> => {
+      const REG_EXP = /^(?:\d+(?:px|%))?$/g;
+      if (!REG_EXP.exec(value)) {
+        return t(($) => $.pluginSettingsManager.validation.defaultImageSizeMustBePercentageOrPixels);
+      }
+    });
+
     this.registerValidator('duplicateNameSeparator', async (value): Promise<MaybeReturn<string>> => {
       return await validateFileName({
         areSingleDotsAllowed: false,

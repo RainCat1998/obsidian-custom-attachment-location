@@ -97,6 +97,10 @@ export const nl: Translations<PluginTypes> = {
         displayText: 'Overslaan'
       }
     },
+    defaultImageSizeDimension: {
+      height: 'Hoogte',
+      width: 'Breedte'
+    },
     emptyAttachmentFolderBehavior: {
       delete: {
         description: 'zal de lege bijlagenmap verwijderen.',
@@ -143,6 +147,7 @@ export const nl: Translations<PluginTypes> = {
       part2: 'standaard instellingswaarde veranderd. Je instellingswaarde is bijgewerkt naar de nieuwe standaardwaarde.'
     },
     validation: {
+      defaultImageSizeMustBePercentageOrPixels: 'De standaardafmeting van de afbeelding moet in pixels of procenten zijn',
       invalidCustomTokensCode: 'Ongeldige aangepaste tokens code',
       invalidRegularExpression: 'Ongeldige reguliere expressie {{regExp}}',
       specialCharactersMustNotContainSlash: 'Speciale karakters mogen geen / bevatten',
@@ -179,6 +184,15 @@ export const nl: Translations<PluginTypes> = {
           '⚠️ Aangepaste tokens kunnen willekeurige JavaScript code zijn. Als ze slecht geschreven zijn, kunnen ze gegevensverlies veroorzaken. Gebruik ze op eigen risico.'
       },
       name: 'Aangepaste tokens'
+    },
+    defaultImageSize: {
+      description: {
+        part1: 'De standaardafmeting van de afbeelding.',
+        part2: 'Kan worden opgegeven in pixels',
+        part3: 'of als percentage van de volledige afbeeldingsgrootte',
+        part4: 'Laat leeg om de originele afbeeldingsgrootte te gebruiken.'
+      },
+      name: 'Standaardafmeting afbeelding'
     },
     duplicateNameSeparator: {
       description: {

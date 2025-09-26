@@ -97,6 +97,10 @@ export const uk: Translations<PluginTypes> = {
         displayText: 'Пропустити'
       }
     },
+    defaultImageSizeDimension: {
+      height: 'Висота',
+      width: 'Ширина'
+    },
     emptyAttachmentFolderBehavior: {
       delete: {
         description: 'видалить порожню папку вкладень.',
@@ -132,9 +136,10 @@ export const uk: Translations<PluginTypes> = {
     markdownUrlFormat: {
       deprecated: {
         part1: 'У вас встановлене потенційно некоректне значення для',
-        part2: 'формату. Будь ласка, див. документацію',
-        part3: '',
-        part4: 'Це повідомлення більше не буде відображатися.'
+        part2: 'формату. Будь ласка, дивіться',
+        part3: 'документацію',
+        part4: 'Для більш детальної інформації',
+        part5: 'Це повідомлення більше не буде відображатися.'
       }
     },
     specialCharacters: {
@@ -142,6 +147,7 @@ export const uk: Translations<PluginTypes> = {
       part2: 'значення за замовчуванням було змінено. Ваше значення оновлено відповідно до нового стандарту.'
     },
     validation: {
+      defaultImageSizeMustBePercentageOrPixels: 'Розмір зображення за замовчуванням має бути в пікселях або відсотках',
       invalidCustomTokensCode: 'Невірний код користувацьких токенів',
       invalidRegularExpression: 'Невірний регулярний вираз {{regExp}}',
       specialCharactersMustNotContainSlash: 'Спеціальні символи не повинні містити /',
@@ -171,12 +177,22 @@ export const uk: Translations<PluginTypes> = {
     customTokens: {
       description: {
         part1: 'Користувацькі токени для використання.',
-        part2: 'Див. документацію',
-        part3: '',
-        part4:
+        part2: 'Дивіться',
+        part3: 'документацію',
+        part4: 'Для більш детальної інформації',
+        part5:
           '⚠️ Користувацькі токени можуть містити довільний код JavaScript. При неправильному використанні можливі втрати даних. Використовуйте на свій ризик.'
       },
       name: 'Користувацькі токени'
+    },
+    defaultImageSize: {
+      description: {
+        part1: 'Розмір зображення за замовчуванням.',
+        part2: 'Можна вказати в пікселях',
+        part3: 'або відсотках від повного розміру зображення',
+        part4: 'Залиште порожнім, щоб використовувати оригінальний розмір зображення.'
+      },
+      name: 'Розмір зображення за замовчуванням'
     },
     duplicateNameSeparator: {
       description: {

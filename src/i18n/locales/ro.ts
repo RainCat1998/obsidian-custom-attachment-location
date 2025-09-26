@@ -97,6 +97,10 @@ export const ro: Translations<PluginTypes> = {
         displayText: 'Sari peste'
       }
     },
+    defaultImageSizeDimension: {
+      height: 'Înălțime',
+      width: 'Lățime'
+    },
     emptyAttachmentFolderBehavior: {
       delete: {
         description: 'va șterge dosarul de atașamente gol.',
@@ -144,6 +148,7 @@ export const ro: Translations<PluginTypes> = {
       part2: 'valoarea implicită a setării a fost schimbată. Valoarea voastră a fost actualizată la noua valoare implicită.'
     },
     validation: {
+      defaultImageSizeMustBePercentageOrPixels: 'Dimensiunea implicită a imaginii trebuie să fie în pixeli sau procente',
       invalidCustomTokensCode: 'Cod de token personalizat invalid',
       invalidRegularExpression: 'Expresie regulată invalidă {{regExp}}',
       specialCharactersMustNotContainSlash: 'Caracterele speciale nu trebuie să conțină /',
@@ -180,6 +185,15 @@ export const ro: Translations<PluginTypes> = {
           '⚠️ Tokenurile personalizate pot conține cod JavaScript arbitrar. Dacă sunt scrise greșit, pot cauza pierderi de date. Folosiți-le pe propria răspundere.'
       },
       name: 'Tokenuri personalizate'
+    },
+    defaultImageSize: {
+      description: {
+        part1: 'Dimensiunea implicită a imaginii.',
+        part2: 'Poate fi specificată în pixeli',
+        part3: 'sau ca procent din dimensiunea totală a imaginii',
+        part4: 'Lăsați gol pentru a folosi dimensiunea originală a imaginii.'
+      },
+      name: 'Dimensiune implicită imagine'
     },
     duplicateNameSeparator: {
       description: {

@@ -96,6 +96,10 @@ export const kh: Translations<PluginTypes> = {
         displayText: 'រំលង'
       }
     },
+    defaultImageSizeDimension: {
+      height: 'កម្ពស់',
+      width: 'ទទឹង'
+    },
     emptyAttachmentFolderBehavior: {
       delete: {
         description: 'នឹងលុបទឹតែកឯកសារចំណាប់ទទេ។',
@@ -142,6 +146,7 @@ export const kh: Translations<PluginTypes> = {
       part2: 'បានផ្លាស់ប្តូរ។ តម្លៃការកំណត់របស់អ្នកត្រូវបានធ្វើបច្ចុប្បន្នភាពទៅតម្លៃលំនាំដើមថ្មី។'
     },
     validation: {
+      defaultImageSizeMustBePercentageOrPixels: 'ទំហំរូបភាពលំនាំដើមត្រូវតែជាភាគរយ ឬ ភីកសែល',
       invalidCustomTokensCode: 'កូដសញ្ញាសម្គាល់ផ្ទាល់ខ្លួនមិនត្រឹមត្រូវ',
       invalidRegularExpression: 'កន្សោមធម្មតាមិនត្រឹមត្រូវ {{regExp}}',
       specialCharactersMustNotContainSlash: 'តួអក្សរពិសេសមិនត្រូវមាន /',
@@ -176,6 +181,15 @@ export const kh: Translations<PluginTypes> = {
         part5: '⚠️ សញ្ញាសម្គាល់ផ្ទាល់ខ្លួនអាចជាកូដ JavaScript បំពាន។ ប្រសិនបើសរសេរមិនល្អ វាអាចបណ្តាលឱ្យបាត់បង់ទិន្នន័យ។ ប្រើវាតាមហានុភាពរបស់អ្នក។'
       },
       name: 'សញ្ញាសម្គាល់ផ្ទាល់ខ្លួន'
+    },
+    defaultImageSize: {
+      description: {
+        part1: 'ទំហំរូបភាពលំនាំដើម។',
+        part2: 'អាចកំណត់ជាភីកសែលបាន',
+        part3: 'ឬជាភាគរយនៃទំហំរូបភាពពេញ',
+        part4: 'ទុកឲ្យទទេដើម្បីប្រើទំហំដើម។'
+      },
+      name: 'ទំហំរូបភាពលំនាំដើម'
     },
     duplicateNameSeparator: {
       description: {

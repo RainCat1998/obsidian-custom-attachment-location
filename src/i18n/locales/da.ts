@@ -97,6 +97,10 @@ export const da: Translations<PluginTypes> = {
         displayText: 'Spring over'
       }
     },
+    defaultImageSizeDimension: {
+      height: 'Højde',
+      width: 'Bredde'
+    },
     emptyAttachmentFolderBehavior: {
       delete: {
         description: 'vil slette den tomme vedhæftningsmappe.',
@@ -143,6 +147,7 @@ export const da: Translations<PluginTypes> = {
       part2: 'standardindstillingsværdien ændret. Din indstillingsværdi blev opdateret til den nye standardværdi.'
     },
     validation: {
+      defaultImageSizeMustBePercentageOrPixels: 'Standardbilledstørrelsen skal angives i pixels eller procent',
       invalidCustomTokensCode: 'Ugyldig brugerdefineret tokens-kode',
       invalidRegularExpression: 'Ugyldigt regulært udtryk {{regExp}}',
       specialCharactersMustNotContainSlash: 'Særlige tegn må ikke indeholde /',
@@ -177,6 +182,15 @@ export const da: Translations<PluginTypes> = {
         part5: '⚠️ Brugerdefinerede tokens kan være vilkårlig JavaScript-kode. Hvis de er dårligt skrevet, kan de forårsage datatab. Brug dem på egen risiko.'
       },
       name: 'Brugerdefinerede tokens'
+    },
+    defaultImageSize: {
+      description: {
+        part1: 'Standardbilledstørrelsen.',
+        part2: 'Kan angives i pixels',
+        part3: 'eller i procent af den fulde billedstørrelse',
+        part4: 'Lad stå tomt for at bruge den originale billedstørrelse.'
+      },
+      name: 'Standardbilledstørrelse'
     },
     duplicateNameSeparator: {
       description: {

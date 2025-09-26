@@ -97,6 +97,10 @@ export const fr: Translations<PluginTypes> = {
         displayText: 'Ignorer'
       }
     },
+    defaultImageSizeDimension: {
+      height: 'Hauteur',
+      width: 'Largeur'
+    },
     emptyAttachmentFolderBehavior: {
       delete: {
         description: 'supprimera le dossier de pièces jointes vide.',
@@ -144,6 +148,7 @@ export const fr: Translations<PluginTypes> = {
       part2: 'valeur de paramètre par défaut a été modifiée. Votre valeur de paramètre a été mise à jour vers la nouvelle valeur par défaut.'
     },
     validation: {
+      defaultImageSizeMustBePercentageOrPixels: 'La taille d\'image par défaut doit être en pixels ou en pourcentage',
       invalidCustomTokensCode: 'Code de jetons personnalisés invalide',
       invalidRegularExpression: 'Expression régulière invalide {{regExp}}',
       specialCharactersMustNotContainSlash: 'Les caractères spéciaux ne doivent pas contenir /',
@@ -181,6 +186,15 @@ export const fr: Translations<PluginTypes> = {
           '⚠️ Les jetons personnalisés peuvent être du code JavaScript arbitraire. S\'ils sont mal écrits, ils peuvent causer une perte de données. Utilisez-les à vos propres risques.'
       },
       name: 'Jetons personnalisés'
+    },
+    defaultImageSize: {
+      description: {
+        part1: 'La taille d\'image par défaut.',
+        part2: 'Peut être spécifiée en pixels',
+        part3: 'ou en pourcentage de la taille totale de l\'image',
+        part4: 'Laissez vide pour utiliser la taille originale.'
+      },
+      name: 'Taille d\'image par défaut'
     },
     duplicateNameSeparator: {
       description: {

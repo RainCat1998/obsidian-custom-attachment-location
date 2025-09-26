@@ -97,6 +97,10 @@ export const es: Translations<PluginTypes> = {
         displayText: 'Omitir'
       }
     },
+    defaultImageSizeDimension: {
+      height: 'Altura',
+      width: 'Ancho'
+    },
     emptyAttachmentFolderBehavior: {
       delete: {
         description: 'eliminará la carpeta de archivos adjuntos vacía.',
@@ -144,6 +148,7 @@ export const es: Translations<PluginTypes> = {
       part2: 'valor de configuración por defecto fue cambiado. Tu valor de configuración fue actualizado al nuevo valor por defecto.'
     },
     validation: {
+      defaultImageSizeMustBePercentageOrPixels: 'El tamaño de imagen predeterminado debe estar en píxeles o porcentaje',
       invalidCustomTokensCode: 'Código de tokens personalizados inválido',
       invalidRegularExpression: 'Expresión regular inválida {{regExp}}',
       specialCharactersMustNotContainSlash: 'Los caracteres especiales no deben contener /',
@@ -180,6 +185,15 @@ export const es: Translations<PluginTypes> = {
           '⚠️ Los tokens personalizados pueden ser código JavaScript arbitrario. Si están mal escritos, pueden causar pérdida de datos. Úsalos bajo tu propio riesgo.'
       },
       name: 'Tokens personalizados'
+    },
+    defaultImageSize: {
+      description: {
+        part1: 'El tamaño de imagen predeterminado.',
+        part2: 'Puede especificarse en píxeles',
+        part3: 'o como porcentaje del tamaño total de la imagen',
+        part4: 'Déjalo en blanco para usar el tamaño original de la imagen.'
+      },
+      name: 'Tamaño de imagen predeterminado'
     },
     duplicateNameSeparator: {
       description: {

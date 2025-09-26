@@ -97,6 +97,10 @@ export const enGB: Translations<PluginTypes> = {
         displayText: 'Skip'
       }
     },
+    defaultImageSizeDimension: {
+      height: 'Height',
+      width: 'Width'
+    },
     emptyAttachmentFolderBehavior: {
       delete: {
         description: 'will delete the empty attachment folder.',
@@ -143,6 +147,7 @@ export const enGB: Translations<PluginTypes> = {
       part2: 'default setting value was changed. Your setting value was updated to the new default value.'
     },
     validation: {
+      defaultImageSizeMustBePercentageOrPixels: 'The default image size must be in pixels or percentage',
       invalidCustomTokensCode: 'Invalid custom tokens code',
       invalidRegularExpression: 'Invalid regular expression {{regExp}}',
       specialCharactersMustNotContainSlash: 'Special characters must not contain /',
@@ -178,6 +183,15 @@ export const enGB: Translations<PluginTypes> = {
         part5: '⚠️ Custom tokens can be an arbitrary JavaScript code. If poorly written, it can cause the data loss. Use it at your own risk.'
       },
       name: 'Custom tokens'
+    },
+    defaultImageSize: {
+      description: {
+        part1: 'The default image size.',
+        part2: 'Can be specified in pixels',
+        part3: 'or percentage of the full image size',
+        part4: 'Leave blank to use the original image size.'
+      },
+      name: 'Default image size'
     },
     duplicateNameSeparator: {
       description: {

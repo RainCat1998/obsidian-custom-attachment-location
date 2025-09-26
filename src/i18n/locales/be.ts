@@ -97,6 +97,10 @@ export const be: Translations<PluginTypes> = {
         displayText: 'Прапусціць'
       }
     },
+    defaultImageSizeDimension: {
+      height: 'Вышыня',
+      width: 'Шырыня'
+    },
     emptyAttachmentFolderBehavior: {
       delete: {
         description: 'выдаліць пустую папку далучэнняў.',
@@ -143,6 +147,7 @@ export const be: Translations<PluginTypes> = {
       part2: 'значэнне па змаўчанні было зменена. Ваша значэнне параметра было абноўлена да новага значэння па змаўчанні.'
     },
     validation: {
+      defaultImageSizeMustBePercentageOrPixels: 'Прадвызначаны памер выявы павінен быць у пікселях або ў працэнтах',
       invalidCustomTokensCode: 'Няправільны код карыстальніцкіх токенаў',
       invalidRegularExpression: 'Няправільны рэгулярны выраз {{regExp}}',
       specialCharactersMustNotContainSlash: 'Спецыяльныя сімвалы не павінны змяшчаць /',
@@ -179,6 +184,15 @@ export const be: Translations<PluginTypes> = {
           '⚠️ Карыстальніцкія токены могуць быць адвольным JavaScript кодам. Калі яны дрэнна напісаны, гэта можа прывесці да страты даных. Выкарыстоўвайце на свой рызыку.'
       },
       name: 'Карыстальніцкія токены'
+    },
+    defaultImageSize: {
+      description: {
+        part1: 'Прадвызначаны памер выявы.',
+        part2: 'Можа быць указаны ў пікселях',
+        part3: 'або ў працэнтах поўнага памеру выявы',
+        part4: 'Пакіньце пуста, каб выкарыстоўваць арыгінальны памер.'
+      },
+      name: 'Прадвызначаны памер выявы'
     },
     duplicateNameSeparator: {
       description: {

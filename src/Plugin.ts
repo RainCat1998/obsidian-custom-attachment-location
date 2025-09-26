@@ -93,6 +93,7 @@ import {
   getGeneratedAttachmentFileBaseName
 } from './AttachmentPath.ts';
 import { translationsMap } from './i18n/locales/translationsMap.ts';
+import { getImageSize } from './Image.ts';
 import { AttachmentRenameMode } from './PluginSettings.ts';
 import { PluginSettingsManager } from './PluginSettingsManager.ts';
 import { PluginSettingsTab } from './PluginSettingsTab.ts';
@@ -123,6 +124,7 @@ export class Plugin extends PluginBase<PluginTypes> {
   private readonly arrayBufferFileStatMap = new WeakMap<ArrayBuffer, FileStats>();
   private currentAttachmentFolderPath: null | string = null;
   private readonly getAvailablePathForAttachmentsOriginal: GetAvailablePathForAttachmentsFn | null = null;
+  private readonly imageAttachmentSizeMap = new Map<string, string>();
   private isMarkdownViewPatched = false;
   private lastOpenFilePath: null | string = null;
   private readonly pathMarkdownUrlMap = new Map<string, string>();
@@ -282,6 +284,13 @@ export class Plugin extends PluginBase<PluginTypes> {
   }
 
   private generateMarkdownLink(next: GenerateMarkdownLinkFn, file: TFile, sourcePath: string, subpath?: string, alias?: string): string {
+    if (alias === undefined) {
+      const imageSize = this.imageAttachmentSizeMap.get(file.path);
+      if (imageSize) {
+        this.imageAttachmentSizeMap.delete(file.path);
+        alias = imageSize;
+      }
+    }
     let defaultLink = next.call(this.app.fileManager, file, sourcePath, subpath, alias);
 
     if (!this.settings.markdownUrlFormat) {
@@ -677,6 +686,12 @@ export class Plugin extends PluginBase<PluginTypes> {
       shouldSkipGeneratedAttachmentFileName: true,
       shouldSkipMissingAttachmentFolderCreation: false
     });
+
+    const imageSize = await getImageSize(this, attachmentFileExtension, attachmentFileContent);
+    if (imageSize !== null) {
+      this.imageAttachmentSizeMap.set(attachmentPath, imageSize);
+    }
+
     return await this.app.vault.createBinary(
       attachmentPath,
       attachmentFileContent,

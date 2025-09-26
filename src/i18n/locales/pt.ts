@@ -97,6 +97,10 @@ export const pt: Translations<PluginTypes> = {
         displayText: 'Saltar'
       }
     },
+    defaultImageSizeDimension: {
+      height: 'Altura',
+      width: 'Largura'
+    },
     emptyAttachmentFolderBehavior: {
       delete: {
         description: 'irá eliminar a pasta de anexos vazia.',
@@ -143,6 +147,7 @@ export const pt: Translations<PluginTypes> = {
       part2: 'valor padrão da configuração foi alterado. O seu valor foi atualizado para o novo padrão.'
     },
     validation: {
+      defaultImageSizeMustBePercentageOrPixels: 'O tamanho predefinido da imagem deve estar em pixels ou percentagem',
       invalidCustomTokensCode: 'Código de tokens personalizados inválido',
       invalidRegularExpression: 'Expressão regular inválida {{regExp}}',
       specialCharactersMustNotContainSlash: 'Caracteres especiais não devem conter /',
@@ -178,6 +183,15 @@ export const pt: Translations<PluginTypes> = {
         part5: '⚠️ Tokens personalizados podem conter código JavaScript arbitrário. Se mal escritos, podem causar perda de dados. Use por sua conta e risco.'
       },
       name: 'Tokens personalizados'
+    },
+    defaultImageSize: {
+      description: {
+        part1: 'O tamanho predefinido da imagem.',
+        part2: 'Pode ser especificado em pixels',
+        part3: 'ou como percentagem do tamanho total da imagem',
+        part4: 'Deixe em branco para usar o tamanho original da imagem.'
+      },
+      name: 'Tamanho predefinido da imagem'
     },
     duplicateNameSeparator: {
       description: {

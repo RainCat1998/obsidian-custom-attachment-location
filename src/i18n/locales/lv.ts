@@ -97,6 +97,10 @@ export const lv: Translations<PluginTypes> = {
         displayText: 'Izlaist'
       }
     },
+    defaultImageSizeDimension: {
+      height: 'Augstums',
+      width: 'Platums'
+    },
     emptyAttachmentFolderBehavior: {
       delete: {
         description: 'dzēsīs tukšo pielikumu mapi.',
@@ -143,6 +147,7 @@ export const lv: Translations<PluginTypes> = {
       part2: 'noklusējuma iestatījuma vērtība mainījās. Jūsu iestatījuma vērtība tika atjaunināta uz jauno noklusējuma vērtību.'
     },
     validation: {
+      defaultImageSizeMustBePercentageOrPixels: 'Noklusējuma attēla izmēram jābūt pikseļos vai procentos',
       invalidCustomTokensCode: 'Nederīgs pielāgoto tokenu kods',
       invalidRegularExpression: 'Nederīga regulārā izteiksme {{regExp}}',
       specialCharactersMustNotContainSlash: 'Īpašajos rakstzīmēs nedrīkst būt /',
@@ -178,6 +183,15 @@ export const lv: Translations<PluginTypes> = {
         part5: '⚠️ Pielāgotie tokeni var būt patvaļīgs JavaScript kods. Ja slikti uzrakstīts, tas var izraisīt datu zudumu. Izmantojiet uz savu risku.'
       },
       name: 'Pielāgotie tokeni'
+    },
+    defaultImageSize: {
+      description: {
+        part1: 'Noklusējuma attēla izmērs.',
+        part2: 'Var norādīt pikseļos',
+        part3: 'vai procentos no pilnā attēla izmēra',
+        part4: 'Atstājiet tukšu, lai izmantotu oriģinālo izmēru.'
+      },
+      name: 'Noklusējuma attēla izmērs'
     },
     duplicateNameSeparator: {
       description: {

@@ -97,6 +97,10 @@ export const ca: Translations<PluginTypes> = {
         displayText: 'Ometre'
       }
     },
+    defaultImageSizeDimension: {
+      height: 'Alçada',
+      width: 'Amplada'
+    },
     emptyAttachmentFolderBehavior: {
       delete: {
         description: 'esborrarà la carpeta d\'adjunts buida.',
@@ -144,6 +148,7 @@ export const ca: Translations<PluginTypes> = {
       part2: 'valor de configuració per defecte va canviar. El vostre valor de configuració va ser actualitzat al nou valor per defecte.'
     },
     validation: {
+      defaultImageSizeMustBePercentageOrPixels: 'La mida predeterminada de la imatge s\'ha d\'expressar en píxels o percentatge',
       invalidCustomTokensCode: 'Codi de tokens personalitzats no vàlid',
       invalidRegularExpression: 'Expressió regular no vàlida {{regExp}}',
       specialCharactersMustNotContainSlash: 'Els caràcters especials no han de contenir /',
@@ -181,6 +186,15 @@ export const ca: Translations<PluginTypes> = {
           '⚠️ Els tokens personalitzats poden ser codi JavaScript arbitrari. Si estan mal escrits, poden causar pèrdua de dades. Utilitzeu-los sota la vostra responsabilitat.'
       },
       name: 'Tokens personalitzats'
+    },
+    defaultImageSize: {
+      description: {
+        part1: 'La mida predeterminada de la imatge.',
+        part2: 'Es pot especificar en píxels',
+        part3: 'o en percentatge de la mida completa de la imatge',
+        part4: 'Deixa-ho en blanc per utilitzar la mida original de la imatge.'
+      },
+      name: 'Mida predeterminada de la imatge'
     },
     duplicateNameSeparator: {
       description: {

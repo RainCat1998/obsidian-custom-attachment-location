@@ -97,6 +97,10 @@ export const pl: Translations<PluginTypes> = {
         displayText: 'Pomiń'
       }
     },
+    defaultImageSizeDimension: {
+      height: 'Wysokość',
+      width: 'Szerokość'
+    },
     emptyAttachmentFolderBehavior: {
       delete: {
         description: 'usunie pusty folder załączników.',
@@ -143,6 +147,7 @@ export const pl: Translations<PluginTypes> = {
       part2: 'domyślna wartość ustawienia została zmieniona. Twoje ustawienie zostało zaktualizowane do nowej wartości domyślnej.'
     },
     validation: {
+      defaultImageSizeMustBePercentageOrPixels: 'Domyślny rozmiar obrazu musi być w pikselach lub procentach',
       invalidCustomTokensCode: 'Nieprawidłowy kod niestandardowych tokenów',
       invalidRegularExpression: 'Nieprawidłowe wyrażenie regularne {{regExp}}',
       specialCharactersMustNotContainSlash: 'Znaki specjalne nie mogą zawierać /',
@@ -179,6 +184,15 @@ export const pl: Translations<PluginTypes> = {
           '⚠️ Niestandardowe tokeny mogą być dowolnym kodem JavaScript. Jeśli są napisane nieprawidłowo, mogą spowodować utratę danych. Używasz ich na własne ryzyko.'
       },
       name: 'Niestandardowe tokeny'
+    },
+    defaultImageSize: {
+      description: {
+        part1: 'Domyślny rozmiar obrazu.',
+        part2: 'Można określić w pikselach',
+        part3: 'lub jako procent pełnego rozmiaru obrazu',
+        part4: 'Pozostaw puste, aby użyć oryginalnego rozmiaru obrazu.'
+      },
+      name: 'Domyślny rozmiar obrazu'
     },
     duplicateNameSeparator: {
       description: {

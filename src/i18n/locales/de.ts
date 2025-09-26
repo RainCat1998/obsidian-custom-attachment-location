@@ -97,6 +97,10 @@ export const de: Translations<PluginTypes> = {
         displayText: 'Überspringen'
       }
     },
+    defaultImageSizeDimension: {
+      height: 'Höhe',
+      width: 'Breite'
+    },
     emptyAttachmentFolderBehavior: {
       delete: {
         description: 'wird den leeren Anhang-Ordner löschen.',
@@ -144,6 +148,7 @@ export const de: Translations<PluginTypes> = {
       part2: 'Standard-Einstellungswert geändert. Ihr Einstellungswert wurde auf den neuen Standardwert aktualisiert.'
     },
     validation: {
+      defaultImageSizeMustBePercentageOrPixels: 'Die Standardbildgröße muss in Pixel oder Prozent angegeben werden',
       invalidCustomTokensCode: 'Ungültiger benutzerdefinierter Token-Code',
       invalidRegularExpression: 'Ungültiger regulärer Ausdruck {{regExp}}',
       specialCharactersMustNotContainSlash: 'Sonderzeichen dürfen nicht / enthalten',
@@ -180,6 +185,15 @@ export const de: Translations<PluginTypes> = {
           '⚠️ Benutzerdefinierte Tokens können beliebiger JavaScript-Code sein. Wenn sie schlecht geschrieben sind, können sie Datenverlust verursachen. Verwenden Sie sie auf eigene Gefahr.'
       },
       name: 'Benutzerdefinierte Tokens'
+    },
+    defaultImageSize: {
+      description: {
+        part1: 'Die Standardbildgröße.',
+        part2: 'Kann in Pixel angegeben werden',
+        part3: 'oder als Prozentsatz der vollen Bildgröße',
+        part4: 'Frei lassen, um die Originalgröße zu verwenden.'
+      },
+      name: 'Standardbildgröße'
     },
     duplicateNameSeparator: {
       description: {

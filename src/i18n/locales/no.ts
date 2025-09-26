@@ -97,6 +97,10 @@ export const no: Translations<PluginTypes> = {
         displayText: 'Hopp over'
       }
     },
+    defaultImageSizeDimension: {
+      height: 'Høyde',
+      width: 'Bredde'
+    },
     emptyAttachmentFolderBehavior: {
       delete: {
         description: 'vil slette den tomme vedleggsmappen.',
@@ -143,6 +147,7 @@ export const no: Translations<PluginTypes> = {
       part2: 'standard innstillingsverdi endret. Din innstillingsverdi ble oppdatert til den nye standardverdien.'
     },
     validation: {
+      defaultImageSizeMustBePercentageOrPixels: 'Standard bildestørrelse må være i piksler eller prosent',
       invalidCustomTokensCode: 'Ugyldig tilpasset tokens kode',
       invalidRegularExpression: 'Ugyldig regulært uttrykk {{regExp}}',
       specialCharactersMustNotContainSlash: 'Spesialtegn må ikke inneholde /',
@@ -177,6 +182,15 @@ export const no: Translations<PluginTypes> = {
         part5: '⚠️ Tilpassede tokens kan være vilkårlig JavaScript-kode. Hvis dårlig skrevet, kan det føre til tap av data. Bruk det på egen risiko.'
       },
       name: 'Tilpassede tokens'
+    },
+    defaultImageSize: {
+      description: {
+        part1: 'Standard bildestørrelse.',
+        part2: 'Kan spesifiseres i piksler',
+        part3: 'eller prosent av hele bildestørrelsen',
+        part4: 'La stå tomt for å bruke original bildestørrelse.'
+      },
+      name: 'Standard bildestørrelse'
     },
     duplicateNameSeparator: {
       description: {

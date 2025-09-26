@@ -96,6 +96,10 @@ export const am: Translations<PluginTypes> = {
         displayText: 'መዝለፍ'
       }
     },
+    defaultImageSizeDimension: {
+      height: 'እርዝመት',
+      width: 'ስፋት'
+    },
     emptyAttachmentFolderBehavior: {
       delete: {
         description: 'ባዶውን ተያያዥ ፎልደር ይሰርዛል።',
@@ -142,6 +146,7 @@ export const am: Translations<PluginTypes> = {
       part2: 'የመሰረት ቅንብር እሴት ተለወጠ። የእርስዎ ቅንብር እሴት ወደ አዲሱ የመሰረት እሴት ተዘመነ።'
     },
     validation: {
+      defaultImageSizeMustBePercentageOrPixels: 'ነባሪ የምስል መጠን በፒክስል ወይም በመቶኛ መሆን አለበት',
       invalidCustomTokensCode: 'የማይሰራ የተለመዱ ቶከኖች ኮድ',
       invalidRegularExpression: 'የማይሰራ መደበኛ አገላለጽ {{regExp}}',
       specialCharactersMustNotContainSlash: 'ልዩ ቁምፊዎች / መያዝ የለባቸውም',
@@ -176,6 +181,15 @@ export const am: Translations<PluginTypes> = {
         part5: '⚠️ የተለመዱ ቶከኖች የዘፈቀደ JavaScript ኮድ ሊሆኑ ይችላሉ። በመጥፎ ሁኔታ ከተጻፉ፣ የመረጃ ኪሳራ ሊያስከትሉ ይችላሉ። በራስዎ አደጋ ይጠቀሙት።'
       },
       name: 'የተለመዱ ቶከኖች'
+    },
+    defaultImageSize: {
+      description: {
+        part1: 'ነባሪ የምስል መጠን።',
+        part2: 'በፒክስል መወሰን ይችላል',
+        part3: 'ወይም ከሙሉ የምስል መጠን መቶኛ',
+        part4: 'ኦሪጅናል መጠን ለመጠቀም ባዶ ይተው።'
+      },
+      name: 'ነባሪ የምስል መጠን'
     },
     duplicateNameSeparator: {
       description: {

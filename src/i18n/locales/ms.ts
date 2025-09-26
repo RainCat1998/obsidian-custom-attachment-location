@@ -97,6 +97,10 @@ export const ms: Translations<PluginTypes> = {
         displayText: 'Langkau'
       }
     },
+    defaultImageSizeDimension: {
+      height: 'Ketinggian',
+      width: 'Kelebaran'
+    },
     emptyAttachmentFolderBehavior: {
       delete: {
         description: 'akan memadamkan folder lampiran kosong.',
@@ -143,6 +147,7 @@ export const ms: Translations<PluginTypes> = {
       part2: 'telah berubah. Nilai tetapan anda telah dikemas kini ke nilai lalai baharu.'
     },
     validation: {
+      defaultImageSizeMustBePercentageOrPixels: 'Saiz imej lalai mesti dalam piksel atau peratusan',
       invalidCustomTokensCode: 'Kod token kustom tidak sah',
       invalidRegularExpression: 'Ungkapan biasa tidak sah {{regExp}}',
       specialCharactersMustNotContainSlash: 'Aksara khas tidak boleh mengandungi /',
@@ -179,6 +184,15 @@ export const ms: Translations<PluginTypes> = {
           '⚠️ Token kustom boleh menjadi kod JavaScript sewenang-wenangnya. Jika ditulis dengan buruk, ia boleh menyebabkan kehilangan data. Gunakan dengan risiko sendiri.'
       },
       name: 'Token kustom'
+    },
+    defaultImageSize: {
+      description: {
+        part1: 'Saiz imej lalai.',
+        part2: 'Boleh dinyatakan dalam piksel',
+        part3: 'atau sebagai peratusan daripada saiz imej penuh',
+        part4: 'Biarkan kosong untuk menggunakan saiz asal.'
+      },
+      name: 'Saiz imej lalai'
     },
     duplicateNameSeparator: {
       description: {

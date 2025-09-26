@@ -96,6 +96,10 @@ export const ne: Translations<PluginTypes> = {
         displayText: 'छोड्नुहोस्'
       }
     },
+    defaultImageSizeDimension: {
+      height: 'उचाइ',
+      width: 'चौडाइ'
+    },
     emptyAttachmentFolderBehavior: {
       delete: {
         description: 'खाली संलग्नक फोल्डर मेटाउनेछ।',
@@ -142,6 +146,7 @@ export const ne: Translations<PluginTypes> = {
       part2: 'पूर्वनिर्धारित सेटिङ मान परिवर्तन भयो। तपाईँको सेटिङ मान नयाँ पूर्वनिर्धारित मानमा अपडेट गरियो।'
     },
     validation: {
+      defaultImageSizeMustBePercentageOrPixels: 'पूर्वनिर्धारित तस्वीरको आकार पिक्सेल या प्रतिशतमा हुनुपर्छ',
       invalidCustomTokensCode: 'अमान्य कस्टम टोकन कोड',
       invalidRegularExpression: 'अमान्य नियमित अभिव्यक्ति {{regExp}}',
       specialCharactersMustNotContainSlash: 'विशेष अक्षरहरूमा / हुनुहुन्न',
@@ -176,6 +181,15 @@ export const ne: Translations<PluginTypes> = {
         part5: '⚠️ कस्टम टोकनहरू मनमाना JavaScript कोड हुन सक्छन्। यदि खराब लेखिएको छ भने, यसले डाटा हानि गर्न सक्छ। आफ्नै जोखिममा प्रयोग गर्नुहोस्।'
       },
       name: 'कस्टम टोकनहरू'
+    },
+    defaultImageSize: {
+      description: {
+        part1: 'पूर्वनिर्धारित तस्वीरको आकार।',
+        part2: 'पिक्सेलमा निर्दिष्ट गर्न सकिन्छ',
+        part3: 'वा पूर्ण तस्वीरको आकारको प्रतिशतमा',
+        part4: 'मूल आकार प्रयोग गर्न खाली राख्नुहोस्।'
+      },
+      name: 'पूर्वनिर्धारित तस्वीरको आकार'
     },
     duplicateNameSeparator: {
       description: {

@@ -97,6 +97,10 @@ export const sq: Translations<PluginTypes> = {
         displayText: 'Anashkalo'
       }
     },
+    defaultImageSizeDimension: {
+      height: 'Gjatësia',
+      width: 'Gjerësia'
+    },
     emptyAttachmentFolderBehavior: {
       delete: {
         description: 'do të fshijë dosjen e zbrazët të bashkëngjitjeve.',
@@ -144,6 +148,7 @@ export const sq: Translations<PluginTypes> = {
       part2: 'vlera e parazgjedhur e cilësimit u ndryshua. Vlera juaj u përditësua me atë të re.'
     },
     validation: {
+      defaultImageSizeMustBePercentageOrPixels: 'Madhësia e paracaktuar e imazhit duhet të jetë në pika ose në përqindje',
       invalidCustomTokensCode: 'Kod i pavlefshëm i tokenave të personalizuar',
       invalidRegularExpression: 'Shprehje e rregullt e pavlefshme {{regExp}}',
       specialCharactersMustNotContainSlash: 'Karaketret specialë nuk duhet të përmbajnë /',
@@ -180,6 +185,15 @@ export const sq: Translations<PluginTypes> = {
           '⚠️ Tokenat e personalizuar mund të përmbajnë kod arbitrar JavaScript. Nëse shkruhen gabim, mund të shkaktojnë humbje të të dhënave. Përdoreni me kujdes.'
       },
       name: 'Tokena të personalizuar'
+    },
+    defaultImageSize: {
+      description: {
+        part1: 'Madhësia e paracaktuar e imazhit.',
+        part2: 'Mund të specifikohet në pika',
+        part3: 'ose në përqindje të madhësisë së plotë të imazhit',
+        part4: 'Lëreni bosh për të përdorur madhësinë origjinale të imazhit.'
+      },
+      name: 'Madhësia e paracaktuar e imazhit'
     },
     duplicateNameSeparator: {
       description: {

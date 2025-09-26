@@ -97,6 +97,10 @@ export const ko: Translations<PluginTypes> = {
         displayText: '건너뛰기'
       }
     },
+    defaultImageSizeDimension: {
+      height: '높이',
+      width: '너비'
+    },
     emptyAttachmentFolderBehavior: {
       delete: {
         description: '빈 첨부 파일 폴더를 삭제합니다.',
@@ -143,6 +147,7 @@ export const ko: Translations<PluginTypes> = {
       part2: '기본 설정 값이 변경되었습니다. 설정 값이 새로운 기본 값으로 업데이트되었습니다.'
     },
     validation: {
+      defaultImageSizeMustBePercentageOrPixels: '기본 이미지 크기는 픽셀 또는 백분율이어야 합니다',
       invalidCustomTokensCode: '유효하지 않은 사용자 정의 토큰 코드',
       invalidRegularExpression: '유효하지 않은 정규식 {{regExp}}',
       specialCharactersMustNotContainSlash: '특수 문자에는 /가 포함되어서는 안 됩니다',
@@ -177,6 +182,15 @@ export const ko: Translations<PluginTypes> = {
         part5: '⚠️ 사용자 정의 토큰은 임의의 JavaScript 코드일 수 있습니다. 잘못 작성되면 데이터 손실을 일으킬 수 있습니다. 본인 책임하에 사용하세요.'
       },
       name: '사용자 정의 토큰'
+    },
+    defaultImageSize: {
+      description: {
+        part1: '기본 이미지 크기입니다.',
+        part2: '픽셀로 지정할 수 있습니다',
+        part3: '또는 전체 이미지 크기의 백분율로 지정할 수 있습니다',
+        part4: '원본 이미지 크기를 사용하려면 비워두세요.'
+      },
+      name: '기본 이미지 크기'
     },
     duplicateNameSeparator: {
       description: {
@@ -301,8 +315,9 @@ export const ko: Translations<PluginTypes> = {
     },
     timeoutInSeconds: {
       description: {
-        part1: '모든 작업에 대한 시간 초과(초)입니다.',
-        part2: '이 설정되면 작업 실행 시간 초과가 비활성화됩니다.'
+        part1: '모든 작업에 대한 타임아웃(초)입니다.',
+        part2: '만약',
+        part3: '이(가) 설정되면 작업 실행 타임아웃이 비활성화됩니다.'
       },
       name: '시간 초과(초)'
     },

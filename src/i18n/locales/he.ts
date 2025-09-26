@@ -96,6 +96,10 @@ export const he: Translations<PluginTypes> = {
         displayText: 'דילוג'
       }
     },
+    defaultImageSizeDimension: {
+      height: 'גובה',
+      width: 'רוחב'
+    },
     emptyAttachmentFolderBehavior: {
       delete: {
         description: 'ימחק את תיקיית הקבצים המצורפים הריקה.',
@@ -142,6 +146,7 @@ export const he: Translations<PluginTypes> = {
       part2: 'ההגדרה ברירת המחדל השתנה. ערך ההגדרה שלך עודכן לערך ברירת המחדל החדש.'
     },
     validation: {
+      defaultImageSizeMustBePercentageOrPixels: 'גודל התמונה ברירת המחדל חייב להיות בפיקסלים או באחוזים',
       invalidCustomTokensCode: 'קוד טוקנים מותאמים אישיים לא תקף',
       invalidRegularExpression: 'ביטוי רגולרי לא תקף {{regExp}}',
       specialCharactersMustNotContainSlash: 'תווים מיוחדים לא יכולים להכיל /',
@@ -176,6 +181,15 @@ export const he: Translations<PluginTypes> = {
         part5: '⚠️ טוקנים מותאמים אישיים יכולים להיות קוד JavaScript שרירותי. אם הם כתובים בצורה גרועה, הם עלולים לגרום לאובדן נתונים. השתמש בהם על אחריותך.'
       },
       name: 'טוקנים מותאמים אישיים'
+    },
+    defaultImageSize: {
+      description: {
+        part1: 'גודל התמונה ברירת המחדל.',
+        part2: 'ניתן לציין בפיקסלים',
+        part3: 'או באחוז מגודל התמונה המלא',
+        part4: 'השאר ריק כדי להשתמש בגודל המקורי.'
+      },
+      name: 'גודל התמונה ברירת המחדל'
     },
     duplicateNameSeparator: {
       description: {

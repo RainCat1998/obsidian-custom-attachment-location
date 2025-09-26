@@ -97,6 +97,10 @@ export const vi: Translations<PluginTypes> = {
         displayText: 'Bỏ qua'
       }
     },
+    defaultImageSizeDimension: {
+      height: 'Сhiều cao',
+      width: 'Сhiều rộng'
+    },
     emptyAttachmentFolderBehavior: {
       delete: {
         description: 'Sẽ xóa thư mục tệp đính kèm trống.',
@@ -123,10 +127,11 @@ export const vi: Translations<PluginTypes> = {
       }
     },
     legacyRenameAttachmentsToLowerCase: {
-      part1: 'Trong phiên bản plugin 9.0.0, cài đặt này đã bị loại bỏ. Hãy sử dụng',
-      part2: 'định dạng thay thế. Xem',
-      part3: 'tài liệu',
-      part4: 'để biết thêm thông tin'
+      part1: 'Trong phiên bản plugin 9.0.0, ',
+      part2: 'thiết lập này đã bị ngừng hỗ trợ. Hãy dùng ',
+      part3: 'định dạng thay thế. Xem ',
+      part4: 'tài liệu ',
+      part5: 'để biết thêm thông tin'
     },
     markdownUrlFormat: {
       deprecated: {
@@ -142,6 +147,7 @@ export const vi: Translations<PluginTypes> = {
       part2: 'giá trị cài đặt mặc định đã được thay đổi. Giá trị của bạn đã được cập nhật theo giá trị mặc định mới.'
     },
     validation: {
+      defaultImageSizeMustBePercentageOrPixels: 'Kích thước hình ảnh mặc định phải được tính bằng pixel hoặc phần trăm',
       invalidCustomTokensCode: 'Mã token tùy chỉnh không hợp lệ',
       invalidRegularExpression: 'Biểu thức chính quy không hợp lệ {{regExp}}',
       specialCharactersMustNotContainSlash: 'Ký tự đặc biệt không được chứa dấu /',
@@ -177,6 +183,15 @@ export const vi: Translations<PluginTypes> = {
         part5: '⚠️ Token tùy chỉnh có thể chứa mã JavaScript tùy ý. Nếu viết sai, có thể gây mất dữ liệu. Sử dụng cẩn thận.'
       },
       name: 'Token tùy chỉnh'
+    },
+    defaultImageSize: {
+      description: {
+        part1: 'Kích thước hình ảnh mặc định.',
+        part2: 'Có thể được chỉ định bằng pixel',
+        part3: 'hoặc phần trăm kích thước đầy đủ của hình ảnh',
+        part4: 'Bỏ trống để sử dụng kích thước gốc của hình ảnh.'
+      },
+      name: 'Kích thước hình ảnh mặc định'
     },
     duplicateNameSeparator: {
       description: {

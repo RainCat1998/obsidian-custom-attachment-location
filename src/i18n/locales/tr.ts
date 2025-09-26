@@ -96,6 +96,10 @@ export const tr: Translations<PluginTypes> = {
         displayText: 'Atla'
       }
     },
+    defaultImageSizeDimension: {
+      height: 'Yükseklik',
+      width: 'Genişlik'
+    },
     emptyAttachmentFolderBehavior: {
       delete: {
         description: 'Boş eki klasörünü silecek.',
@@ -142,15 +146,17 @@ export const tr: Translations<PluginTypes> = {
       part2: 'varsayılan ayar değiştirildi. Ayarınız yeni varsayılan olarak güncellendi.'
     },
     validation: {
+      defaultImageSizeMustBePercentageOrPixels: 'Varsayılan resim boyutu piksel veya yüzde olmalıdır',
       invalidCustomTokensCode: 'Geçersiz özel token kodu',
       invalidRegularExpression: 'Geçersiz düzenli ifade {{regExp}}',
       specialCharactersMustNotContainSlash: 'Özel karakterler / içermemelidir',
       specialCharactersReplacementMustNotContainInvalidFileNamePathCharacters: 'Özel karakterler geçersiz dosya adı veya yol karakterleri içermemelidir'
     },
     version: {
-      part1: 'Ayar dosyanızın versiyonu ',
-      part2: 'şu anki eklenti versiyonundan daha yenidir.',
-      part3: 'Eklenti beklenildiği gibi çalışmayabilir. Lütfen eklentiyi güncelleyin veya ayarları kontrol edin.'
+      part1: 'Ayarlar dosyanız ',
+      part2: 'şu sürüme sahip: ',
+      part3: 'Bu sürüm, mevcut eklenti sürümünden daha yenidir.',
+      part4: 'Eklenti beklendiği gibi çalışmayabilir. Lütfen eklentiyi en son sürüme güncelleyin veya ayarların doğru olduğundan emin olun.'
     }
   },
   pluginSettingsTab: {
@@ -175,6 +181,15 @@ export const tr: Translations<PluginTypes> = {
         part5: '⚠️ Özel tokenlar herhangi bir JavaScript kodu olabilir. Hatalı yazılırsa veri kaybına yol açabilir. Kendi sorumluluğunuzda kullanın.'
       },
       name: 'Özel tokenlar'
+    },
+    defaultImageSize: {
+      description: {
+        part1: 'Varsayılan resim boyutu.',
+        part2: 'Piksel olarak belirtilebilir',
+        part3: 'Tam resim boyutunun yüzdesi olarak',
+        part4: 'Orijinal resim boyutunu kullanmak için boş bırakın.'
+      },
+      name: 'Varsayılan resim boyutu'
     },
     duplicateNameSeparator: {
       description: {

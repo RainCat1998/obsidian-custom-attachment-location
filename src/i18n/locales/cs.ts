@@ -97,6 +97,10 @@ export const cs: Translations<PluginTypes> = {
         displayText: 'Přeskočit'
       }
     },
+    defaultImageSizeDimension: {
+      height: 'Výška',
+      width: 'Šířka'
+    },
     emptyAttachmentFolderBehavior: {
       delete: {
         description: 'smaže prázdnou složku příloh.',
@@ -143,6 +147,7 @@ export const cs: Translations<PluginTypes> = {
       part2: 'výchozí hodnota nastavení změnila. Vaše hodnota nastavení byla aktualizována na novou výchozí hodnotu.'
     },
     validation: {
+      defaultImageSizeMustBePercentageOrPixels: 'Výchozí velikost obrázku musí být v pixelech nebo procentech',
       invalidCustomTokensCode: 'Neplatný kód vlastních tokenů',
       invalidRegularExpression: 'Neplatný regulární výraz {{regExp}}',
       specialCharactersMustNotContainSlash: 'Speciální znaky nesmí obsahovat /',
@@ -177,6 +182,15 @@ export const cs: Translations<PluginTypes> = {
         part5: '⚠️ Vlastní tokeny mohou být libovolný JavaScript kód. Pokud jsou špatně napsané, mohou způsobit ztrátu dat. Používejte je na vlastní riziko.'
       },
       name: 'Vlastní tokeny'
+    },
+    defaultImageSize: {
+      description: {
+        part1: 'Výchozí velikost obrázku.',
+        part2: 'Lze zadat v pixelech',
+        part3: 'nebo jako procento z plné velikosti obrázku',
+        part4: 'Ponechte prázdné, chcete-li použít původní velikost obrázku.'
+      },
+      name: 'Výchozí velikost obrázku'
     },
     duplicateNameSeparator: {
       description: {

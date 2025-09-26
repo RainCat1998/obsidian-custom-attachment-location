@@ -97,6 +97,10 @@ export const ga: Translations<PluginTypes> = {
         displayText: 'Léim thar'
       }
     },
+    defaultImageSizeDimension: {
+      height: 'Airde',
+      width: 'Leithead'
+    },
     emptyAttachmentFolderBehavior: {
       delete: {
         description: 'scriosfaidh an fhillteán ceangaltán folamh.',
@@ -143,6 +147,7 @@ export const ga: Translations<PluginTypes> = {
       part2: 'luach socrú réamhshocraithe. Nuashonraíodh do luach socrú chuig an luach réamhshocraithe nua.'
     },
     validation: {
+      defaultImageSizeMustBePercentageOrPixels: 'Caithfidh méid réamhshocraithe na híomhá a bheith i bpicteilíní nó i gcéatadán',
       invalidCustomTokensCode: 'Cód comharthaí saincheaptha neamhbhailí',
       invalidRegularExpression: 'Slonn rialta neamhbhailí {{regExp}}',
       specialCharactersMustNotContainSlash: 'Níor cheart go mbeadh / sna carachtair speisialta',
@@ -180,6 +185,15 @@ export const ga: Translations<PluginTypes> = {
           '⚠️ Is féidir le comharthaí saincheaptha a bheith ina chód JavaScript treallach. Má tá siad drochscríofa, is féidir leo cailliúint sonraí a chur faoi deara. Úsáid iad ar do riosca féin.'
       },
       name: 'Comharthaí saincheaptha'
+    },
+    defaultImageSize: {
+      description: {
+        part1: 'Méid réamhshocraithe na híomhá.',
+        part2: 'Is féidir a shonrú i bpicteilíní',
+        part3: 'nó i gcéatadán de mhéid na híomhá iomláine',
+        part4: 'Fág folamh chun an méid bunaidh a úsáid.'
+      },
+      name: 'Méid réamhshocraithe na híomhá'
     },
     duplicateNameSeparator: {
       description: {

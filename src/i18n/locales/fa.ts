@@ -97,6 +97,10 @@ export const fa: Translations<PluginTypes> = {
         displayText: 'رد کردن'
       }
     },
+    defaultImageSizeDimension: {
+      height: 'ارتفاع',
+      width: 'عرض'
+    },
     emptyAttachmentFolderBehavior: {
       delete: {
         description: 'پوشه خالی پیوست‌ها را حذف خواهد کرد.',
@@ -143,6 +147,7 @@ export const fa: Translations<PluginTypes> = {
       part2: 'مقدار پیش‌فرض تنظیمات تغییر کرده است. مقدار تنظیمات شما به مقدار پیش‌فرض جدید به‌روزرسانی شد.'
     },
     validation: {
+      defaultImageSizeMustBePercentageOrPixels: 'اندازه پیش‌فرض تصویر باید بر حسب پیکسل یا درصد باشد',
       invalidCustomTokensCode: 'کد نشان‌های سفارشی نامعتبر',
       invalidRegularExpression: 'عبارت قانونی نامعتبر {{regExp}}',
       specialCharactersMustNotContainSlash: 'کراکترهای ویژه نباید حاوی / باشند',
@@ -177,6 +182,15 @@ export const fa: Translations<PluginTypes> = {
         part5: '⚠️ نشان‌های سفارشی می‌توانند کد JavaScript دلخواهی باشند. اگر بد نوشته شوند، می‌توانند باعث از دست رفتن داده‌ها شوند. به عهده خودتان استفاده کنید.'
       },
       name: 'نشان‌های سفارشی'
+    },
+    defaultImageSize: {
+      description: {
+        part1: 'اندازه پیش‌فرض تصویر.',
+        part2: 'می‌تواند بر حسب پیکسل مشخص شود',
+        part3: 'یا بر حسب درصدی از اندازه کامل تصویر',
+        part4: 'برای استفاده از اندازه اصلی خالی بگذارید.'
+      },
+      name: 'اندازه پیش‌فرض تصویر'
     },
     duplicateNameSeparator: {
       description: {

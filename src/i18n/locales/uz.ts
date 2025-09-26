@@ -97,6 +97,10 @@ export const uz: Translations<PluginTypes> = {
         displayText: 'O\'tkazib yuborish'
       }
     },
+    defaultImageSizeDimension: {
+      height: 'Balandlik',
+      width: 'Kenglik'
+    },
     emptyAttachmentFolderBehavior: {
       delete: {
         description: 'Bo\'sh qo\'shimcha papkasini o\'chiradi.',
@@ -143,6 +147,7 @@ export const uz: Translations<PluginTypes> = {
       part2: 'sozlamaning standart qiymati o\'zgardi. Sizning sozlamangiz yangi standart qiymatga yangilandi.'
     },
     validation: {
+      defaultImageSizeMustBePercentageOrPixels: 'Standart rasm o‘lchami piksel yoki foizda bo‘lishi kerak',
       invalidCustomTokensCode: 'Noto\'g\'ri maxsus token kodi',
       invalidRegularExpression: 'Noto\'g\'ri tartibiy ifoda {{regExp}}',
       specialCharactersMustNotContainSlash: 'Maxsus belgilar / ni o\'z ichiga olmang',
@@ -179,6 +184,15 @@ export const uz: Translations<PluginTypes> = {
           '⚠️ Maxsus tokenlar istalgan JavaScript kodi bo\'lishi mumkin. Noto\'g\'ri yozilganda ma\'lumot yo\'qolishi mumkin. O\'z xataringizga foydalaning.'
       },
       name: 'Maxsus tokenlar'
+    },
+    defaultImageSize: {
+      description: {
+        part1: 'Standart rasm o‘lchami.',
+        part2: 'Pikselda ko‘rsatilishi mumkin',
+        part3: 'Rasm to‘liq o‘lchamining foizi sifatida',
+        part4: 'Asl o‘lchamdan foydalanish uchun bo‘sh qoldiring.'
+      },
+      name: 'Standart rasm o‘lchami'
     },
     duplicateNameSeparator: {
       description: {

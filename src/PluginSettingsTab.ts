@@ -22,6 +22,7 @@ import type { PluginTypes } from './PluginTypes.ts';
 import {
   AttachmentRenameMode,
   CollectAttachmentUsedByMultipleNotesMode,
+  DefaultImageSizeDimension,
   SAMPLE_CUSTOM_TOKENS
 } from './PluginSettings.ts';
 import { TOKENIZED_STRING_LANGUAGE } from './PrismComponent.ts';
@@ -488,6 +489,36 @@ export class PluginSettingsTab extends PluginSettingsTabBase<PluginTypes> {
       .addNumber((number) => {
         number.setMin(0);
         this.bind(number, 'timeoutInSeconds');
+      });
+
+    new SettingEx(this.containerEl)
+      .setName(t(($) => $.pluginSettingsTab.defaultImageSize.name))
+      .setDesc(createFragment((f) => {
+        f.appendText(t(($) => $.pluginSettingsTab.defaultImageSize.description.part1));
+        f.createEl('br');
+        f.appendText(t(($) => $.pluginSettingsTab.defaultImageSize.description.part2));
+        f.appendText(' (');
+        appendCodeBlock(f, '300px');
+        f.appendText(') ');
+        f.appendText(t(($) => $.pluginSettingsTab.defaultImageSize.description.part3));
+        f.appendText(' (');
+        appendCodeBlock(f, '50%');
+        f.appendText(').');
+        f.createEl('br');
+        f.appendText(t(($) => $.pluginSettingsTab.defaultImageSize.description.part4));
+      }))
+      .addText((text) => {
+        this.bind(text, 'defaultImageSize');
+      })
+      .addDropdown((dropdown) => {
+        dropdown.selectEl.addClass('default-image-size-dimension-setting-control');
+        dropdown.addOptions({
+          /* eslint-disable perfectionist/sort-objects */
+          [DefaultImageSizeDimension.Width]: t(($) => $.pluginSettings.defaultImageSizeDimension.width),
+          [DefaultImageSizeDimension.Height]: t(($) => $.pluginSettings.defaultImageSizeDimension.height)
+          /* eslint-enable perfectionist/sort-objects */
+        });
+        this.bind(dropdown, 'defaultImageSizeDimension');
       });
   }
 

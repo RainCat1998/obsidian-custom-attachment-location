@@ -97,6 +97,10 @@ export const hu: Translations<PluginTypes> = {
         displayText: 'Kihagyás'
       }
     },
+    defaultImageSizeDimension: {
+      height: 'Magasság',
+      width: 'Szélesség'
+    },
     emptyAttachmentFolderBehavior: {
       delete: {
         description: 'törli az üres melléklet mappát.',
@@ -143,6 +147,7 @@ export const hu: Translations<PluginTypes> = {
       part2: 'alapértelmezett beállítási érték megváltozott. A beállítási értéked frissítésre került az új alapértelmezett értékre.'
     },
     validation: {
+      defaultImageSizeMustBePercentageOrPixels: 'Az alapértelmezett képméretnek pixelben vagy százalékban kell megadva lennie',
       invalidCustomTokensCode: 'Érvénytelen egyéni token kód',
       invalidRegularExpression: 'Érvénytelen reguláris kifejezés {{regExp}}',
       specialCharactersMustNotContainSlash: 'A speciális karakterek nem tartalmazhatnak / jelet',
@@ -178,6 +183,15 @@ export const hu: Translations<PluginTypes> = {
         part5: '⚠️ Az egyéni tokenek tetszőleges JavaScript kód lehetnek. Ha rosszul írták, adatvesztést okozhatnak. Saját felelősségre használd.'
       },
       name: 'Egyéni tokenek'
+    },
+    defaultImageSize: {
+      description: {
+        part1: 'Az alapértelmezett képméret.',
+        part2: 'Meghatározható pixelben',
+        part3: 'vagy a teljes képméret százalékában',
+        part4: 'Hagyja üresen az eredeti méret használatához.'
+      },
+      name: 'Alapértelmezett képméret'
     },
     duplicateNameSeparator: {
       description: {

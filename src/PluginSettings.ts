@@ -35,11 +35,18 @@ export enum CollectAttachmentUsedByMultipleNotesMode {
   Skip = 'Skip'
 }
 
+export enum DefaultImageSizeDimension {
+  Height = 'height',
+  Width = 'width'
+}
+
 export class PluginSettings {
   // eslint-disable-next-line no-template-curly-in-string
   public attachmentFolderPath = './assets/${noteFileName}';
   public attachmentRenameMode: AttachmentRenameMode = AttachmentRenameMode.OnlyPastedImages;
   public collectAttachmentUsedByMultipleNotesMode: CollectAttachmentUsedByMultipleNotesMode = CollectAttachmentUsedByMultipleNotesMode.Skip;
+  public defaultImageSize = '';
+  public defaultImageSizeDimension: DefaultImageSizeDimension = DefaultImageSizeDimension.Width;
   public duplicateNameSeparator = ' ';
   public emptyAttachmentFolderBehavior: EmptyAttachmentFolderBehavior = EmptyAttachmentFolderBehavior.DeleteWithEmptyParents;
   // eslint-disable-next-line no-template-curly-in-string

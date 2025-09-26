@@ -96,6 +96,10 @@ export const ar: Translations<PluginTypes> = {
         displayText: 'تخطي'
       }
     },
+    defaultImageSizeDimension: {
+      height: 'الارتفاع',
+      width: 'العرض'
+    },
     emptyAttachmentFolderBehavior: {
       delete: {
         description: 'سيحذف مجلد المرفقات الفارغ.',
@@ -142,6 +146,7 @@ export const ar: Translations<PluginTypes> = {
       part2: 'تم تغيير قيمة الإعداد الافتراضية. تم تحديث قيمة إعدادك إلى القيمة الافتراضية الجديدة.'
     },
     validation: {
+      defaultImageSizeMustBePercentageOrPixels: 'يجب أن يكون حجم الصورة الافتراضي بالبكسل أو بالنسبة المئوية',
       invalidCustomTokensCode: 'كود الرموز المخصصة غير صالح',
       invalidRegularExpression: 'التعبير النمطي غير صالح {{regExp}}',
       specialCharactersMustNotContainSlash: 'الأحرف الخاصة يجب ألا تحتوي على /',
@@ -176,6 +181,15 @@ export const ar: Translations<PluginTypes> = {
         part5: '⚠️ يمكن أن تكون الرموز المخصصة كود JavaScript عشوائي. إذا كانت مكتوبة بشكل سيء، يمكن أن تسبب فقدان البيانات. استخدمها على مسؤوليتك الخاصة.'
       },
       name: 'الرموز المخصصة'
+    },
+    defaultImageSize: {
+      description: {
+        part1: 'الحجم الافتراضي للصورة.',
+        part2: 'يمكن تحديده بالبكسل',
+        part3: 'أو كنسبة مئوية من الحجم الكامل للصورة',
+        part4: 'اتركه فارغًا لاستخدام الحجم الأصلي.'
+      },
+      name: 'الحجم الافتراضي للصورة'
     },
     duplicateNameSeparator: {
       description: {

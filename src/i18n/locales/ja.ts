@@ -97,6 +97,10 @@ export const ja: Translations<PluginTypes> = {
         displayText: 'スキップ'
       }
     },
+    defaultImageSizeDimension: {
+      height: '高さ',
+      width: '幅'
+    },
     emptyAttachmentFolderBehavior: {
       delete: {
         description: '空の添付ファイルフォルダを削除します。',
@@ -143,6 +147,7 @@ export const ja: Translations<PluginTypes> = {
       part2: 'デフォルト設定値が変更されました。設定値は新しいデフォルト値に更新されました。'
     },
     validation: {
+      defaultImageSizeMustBePercentageOrPixels: 'デフォルトの画像サイズはピクセルまたはパーセンテージで指定する必要があります',
       invalidCustomTokensCode: '無効なカスタムトークンコード',
       invalidRegularExpression: '無効な正規表現 {{regExp}}',
       specialCharactersMustNotContainSlash: '特殊文字には / を含めることはできません',
@@ -178,6 +183,15 @@ export const ja: Translations<PluginTypes> = {
           '⚠️ カスタムトークンは任意のJavaScriptコードにすることができます。不適切に記述された場合、データ損失を引き起こす可能性があります。自己責任で使用してください。'
       },
       name: 'カスタムトークン'
+    },
+    defaultImageSize: {
+      description: {
+        part1: 'デフォルトの画像サイズです。',
+        part2: 'ピクセルで指定できます',
+        part3: 'または画像全体のサイズのパーセンテージで指定できます',
+        part4: '元の画像サイズを使用する場合は空欄にしてください。'
+      },
+      name: 'デフォルトの画像サイズ'
     },
     duplicateNameSeparator: {
       description: {
@@ -303,7 +317,8 @@ export const ja: Translations<PluginTypes> = {
     timeoutInSeconds: {
       description: {
         part1: 'すべての操作のタイムアウト（秒）。',
-        part2: 'が設定されている場合、操作実行タイムアウトは無効になります。'
+        part2: 'もし',
+        part3: 'が設定されている場合、操作の実行タイムアウトは無効になります。'
       },
       name: 'タイムアウト（秒）'
     },

@@ -97,6 +97,10 @@ export const ptBR: Translations<PluginTypes> = {
         displayText: 'Pular'
       }
     },
+    defaultImageSizeDimension: {
+      height: 'Altura',
+      width: 'Largura'
+    },
     emptyAttachmentFolderBehavior: {
       delete: {
         description: 'excluirá a pasta de anexos vazia.',
@@ -143,6 +147,7 @@ export const ptBR: Translations<PluginTypes> = {
       part2: 'valor padrão da configuração foi alterado. Seu valor de configuração foi atualizado para o novo valor padrão.'
     },
     validation: {
+      defaultImageSizeMustBePercentageOrPixels: 'O tamanho padrão da imagem deve estar em pixels ou porcentagem',
       invalidCustomTokensCode: 'Código de tokens personalizados inválido',
       invalidRegularExpression: 'Expressão regular inválida {{regExp}}',
       specialCharactersMustNotContainSlash: 'Caracteres especiais não devem conter /',
@@ -180,6 +185,15 @@ export const ptBR: Translations<PluginTypes> = {
           '⚠️ Tokens personalizados podem ser código JavaScript arbitrário. Se mal escritos, podem causar perda de dados. Use por sua própria conta e risco.'
       },
       name: 'Tokens personalizados'
+    },
+    defaultImageSize: {
+      description: {
+        part1: 'O tamanho padrão da imagem.',
+        part2: 'Pode ser especificado em pixels',
+        part3: 'ou como porcentagem do tamanho total da imagem',
+        part4: 'Deixe em branco para usar o tamanho original da imagem.'
+      },
+      name: 'Tamanho padrão da imagem'
     },
     duplicateNameSeparator: {
       description: {

@@ -96,6 +96,10 @@ export const zhTW: Translations<PluginTypes> = {
         displayText: '跳過'
       }
     },
+    defaultImageSizeDimension: {
+      height: '高度',
+      width: '寬度'
+    },
     emptyAttachmentFolderBehavior: {
       delete: {
         description: '將刪除空附件資料夾。',
@@ -141,6 +145,7 @@ export const zhTW: Translations<PluginTypes> = {
       part2: '預設設定值已更改。您的設定已更新為新預設值。'
     },
     validation: {
+      defaultImageSizeMustBePercentageOrPixels: '預設圖片大小必須是像素或百分比',
       invalidCustomTokensCode: '無效的自訂令牌代碼',
       invalidRegularExpression: '無效的正則表達式 {{regExp}}',
       specialCharactersMustNotContainSlash: '特殊字元不得包含 /',
@@ -175,6 +180,15 @@ export const zhTW: Translations<PluginTypes> = {
         part5: '⚠️ 自訂令牌可包含任意 JavaScript 代碼，若撰寫不當可能導致資料遺失，請自行斟酌使用。'
       },
       name: '自訂令牌'
+    },
+    defaultImageSize: {
+      description: {
+        part1: '預設圖片大小。',
+        part2: '可以指定為像素',
+        part3: '或是圖片完整大小的百分比',
+        part4: '留空以使用原始圖片大小。'
+      },
+      name: '預設圖片大小'
     },
     duplicateNameSeparator: {
       description: {

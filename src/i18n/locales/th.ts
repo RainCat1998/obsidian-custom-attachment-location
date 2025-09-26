@@ -96,6 +96,10 @@ export const th: Translations<PluginTypes> = {
         displayText: 'ข้าม'
       }
     },
+    defaultImageSizeDimension: {
+      height: 'ความสูง',
+      width: 'ความกว้าง'
+    },
     emptyAttachmentFolderBehavior: {
       delete: {
         description: 'จะลบโฟลเดอร์ไฟล์แนบที่ว่างเปล่า',
@@ -142,6 +146,7 @@ export const th: Translations<PluginTypes> = {
       part2: 'ค่าเริ่มต้นของการตั้งค่านี้ถูกเปลี่ยนไป และค่าของคุณจึงถูกอัปเดตตามค่าใหม่'
     },
     validation: {
+      defaultImageSizeMustBePercentageOrPixels: 'ขนาดภาพเริ่มต้นต้องเป็นพิกเซลหรือเปอร์เซ็นต์',
       invalidCustomTokensCode: 'โค้ดโทเคนที่กำหนดเองไม่ถูกต้อง',
       invalidRegularExpression: 'นิพจน์ปกติไม่ถูกต้อง {{regExp}}',
       specialCharactersMustNotContainSlash: 'อักขระพิเศษต้องไม่มีเครื่องหมาย /',
@@ -176,6 +181,15 @@ export const th: Translations<PluginTypes> = {
         part5: '⚠️ โทเคนที่กำหนดเองสามารถเป็นโค้ด JavaScript ใดก็ได้ ถ้าเขียนผิด อาจทำให้ข้อมูลสูญหาย ใช้ด้วยความระมัดระวัง'
       },
       name: 'โทเคนที่กำหนดเอง'
+    },
+    defaultImageSize: {
+      description: {
+        part1: 'ขนาดภาพเริ่มต้น',
+        part2: 'สามารถกำหนดเป็นพิกเซลได้',
+        part3: 'หรือตามเปอร์เซ็นต์ของขนาดภาพเต็ม',
+        part4: 'ปล่อยว่างเพื่อใช้ขนาดภาพต้นฉบับ'
+      },
+      name: 'ขนาดภาพเริ่มต้น'
     },
     duplicateNameSeparator: {
       description: {

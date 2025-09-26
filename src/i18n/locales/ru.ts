@@ -97,6 +97,10 @@ export const ru: Translations<PluginTypes> = {
         displayText: 'Пропустить'
       }
     },
+    defaultImageSizeDimension: {
+      height: 'Высота',
+      width: 'Ширина'
+    },
     emptyAttachmentFolderBehavior: {
       delete: {
         description: 'удалит пустую папку вложений.',
@@ -143,6 +147,7 @@ export const ru: Translations<PluginTypes> = {
       part2: 'значение настройки по умолчанию было изменено. Ваше значение обновлено на новое значение по умолчанию.'
     },
     validation: {
+      defaultImageSizeMustBePercentageOrPixels: 'Размер изображения по умолчанию должен быть в пикселях или процентах',
       invalidCustomTokensCode: 'Неверный код пользовательских токенов',
       invalidRegularExpression: 'Неверное регулярное выражение {{regExp}}',
       specialCharactersMustNotContainSlash: 'Специальные символы не должны содержать /',
@@ -179,6 +184,15 @@ export const ru: Translations<PluginTypes> = {
           '⚠️ Пользовательские токены могут содержать произвольный JavaScript-код. Если написаны неверно, это может привести к потере данных. Используйте на свой риск.'
       },
       name: 'Пользовательские токены'
+    },
+    defaultImageSize: {
+      description: {
+        part1: 'Размер изображения по умолчанию.',
+        part2: 'Можно указать в пикселях',
+        part3: 'или в процентах от полного размера изображения',
+        part4: 'Оставьте пустым, чтобы использовать оригинальный размер изображения.'
+      },
+      name: 'Размер изображения по умолчанию'
     },
     duplicateNameSeparator: {
       description: {

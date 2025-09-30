@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 9.17.1
+
+- chore: enable conventional commits
+
 ## 9.17.0
 
 - Add default image size (#224)

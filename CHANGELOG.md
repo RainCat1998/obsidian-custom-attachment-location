@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## 9.17.2
+
+- fix: build
+- chore: update libs
+
 ## 9.17.1
 
 - chore: enable conventional commits

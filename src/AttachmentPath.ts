@@ -51,7 +51,7 @@ export async function getGeneratedAttachmentFileBaseName(plugin: Plugin, substit
   if (!validationMessage) {
     const parts = path.split('/');
     const fileName = parts.at(-1) ?? '';
-    // eslint-disable-next-line require-atomic-updates
+    // eslint-disable-next-line require-atomic-updates -- Ignore possible race condition.
     validationMessage = await validateFileName({
       areSingleDotsAllowed: false,
       fileName,

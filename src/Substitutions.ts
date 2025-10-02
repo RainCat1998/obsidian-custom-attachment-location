@@ -6,7 +6,7 @@ import type {
 import type { Promisable } from 'type-fest';
 
 import moment from 'moment';
-// eslint-disable-next-line import-x/no-namespace
+// eslint-disable-next-line import-x/no-namespace -- Need to pass entire obsidian module.
 import * as obsidian from 'obsidian';
 import { printError } from 'obsidian-dev-utils/Error';
 import {
@@ -28,7 +28,7 @@ import {
   trimEnd,
   trimStart
 } from 'obsidian-dev-utils/String';
-// eslint-disable-next-line import-x/no-rename-default
+// eslint-disable-next-line import-x/no-rename-default -- Need to rename default export.
 import slugify_ from 'slugify';
 
 import type { Plugin } from './Plugin.ts';
@@ -97,7 +97,7 @@ interface ValidatePathOptions {
 export function parseCustomTokens(customTokensStr: string): Map<string, TokenEvaluator> | null {
   const evaluators = new Map<string, TokenEvaluator>();
   try {
-    // eslint-disable-next-line @typescript-eslint/no-implied-eval, no-new-func
+    // eslint-disable-next-line @typescript-eslint/no-implied-eval, no-new-func -- Need to create function from string.
     const registerCustomTokensWrapperFn = new Function('registerCustomToken', customTokensStr) as RegisterCustomTokensWrapperFn;
 
     registerCustomTokensWrapperFn(registerCustomToken);
@@ -264,7 +264,7 @@ function getFrontmatterValue(app: App, filePath: string, key: string): string {
   }
 
   const value = getNestedPropertyValue(cache.frontmatter, key) ?? '';
-  // eslint-disable-next-line @typescript-eslint/no-base-to-string
+  // eslint-disable-next-line @typescript-eslint/no-base-to-string -- Need to convert to string.
   return String(value);
 }
 

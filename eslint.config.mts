@@ -6,5 +6,5 @@ const configs: Linter.Config[] = [
   ...obsidianDevUtilsConfigs
 ];
 
-// eslint-disable-next-line import-x/no-default-export
+// eslint-disable-next-line import-x/no-default-export -- ESLint infrastructure requires a default export.
 export default configs;

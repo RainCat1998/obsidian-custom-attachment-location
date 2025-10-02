@@ -23,7 +23,7 @@ export enum AttachmentRenameMode {
   None = 'None',
 
   OnlyPastedImages = 'Only pasted images',
-  // eslint-disable-next-line perfectionist/sort-enums
+  // eslint-disable-next-line perfectionist/sort-enums -- Need to keep enum order.
   All = 'All'
 }
 
@@ -41,7 +41,7 @@ export enum DefaultImageSizeDimension {
 }
 
 export class PluginSettings {
-  // eslint-disable-next-line no-template-curly-in-string
+  // eslint-disable-next-line no-template-curly-in-string -- Valid token.
   public attachmentFolderPath = './assets/${noteFileName}';
   public attachmentRenameMode: AttachmentRenameMode = AttachmentRenameMode.OnlyPastedImages;
   public collectAttachmentUsedByMultipleNotesMode: CollectAttachmentUsedByMultipleNotesMode = CollectAttachmentUsedByMultipleNotesMode.Skip;
@@ -49,9 +49,9 @@ export class PluginSettings {
   public defaultImageSizeDimension: DefaultImageSizeDimension = DefaultImageSizeDimension.Width;
   public duplicateNameSeparator = ' ';
   public emptyAttachmentFolderBehavior: EmptyAttachmentFolderBehavior = EmptyAttachmentFolderBehavior.DeleteWithEmptyParents;
-  // eslint-disable-next-line no-template-curly-in-string
+  // eslint-disable-next-line no-template-curly-in-string -- Valid token.
   public generatedAttachmentFileName = 'file-${date:YYYYMMDDHHmmssSSS}';
-  // eslint-disable-next-line no-magic-numbers
+  // eslint-disable-next-line no-magic-numbers -- Magic numbers are OK in settings.
   public jpegQuality = 0.8;
   public markdownUrlFormat = '';
   public shouldConvertPastedImagesToJpeg = false;
@@ -61,7 +61,7 @@ export class PluginSettings {
   public shouldRenameCollectedAttachments = false;
   public specialCharacters = '#^[]|*\\<>:?/';
   public specialCharactersReplacement = '-';
-  // eslint-disable-next-line no-magic-numbers
+  // eslint-disable-next-line no-magic-numbers -- Magic numbers are OK in settings.
   public timeoutInSeconds = 5;
   public treatAsAttachmentExtensions: readonly string[] = ['.excalidraw.md'];
   public version = '';

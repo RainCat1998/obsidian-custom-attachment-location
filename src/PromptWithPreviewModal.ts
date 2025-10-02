@@ -23,8 +23,8 @@ interface PromptWithPreviewModalOptions {
 }
 
 class PreviewModal extends Modal {
-  private embedComponent!: EmbedComponent;
-  private tempFile!: TFile;
+  private embedComponent?: EmbedComponent;
+  private tempFile?: TFile;
 
   public constructor(private readonly options: PromptWithPreviewModalOptions) {
     super(options.ctx.app);
@@ -33,9 +33,11 @@ class PreviewModal extends Modal {
 
   public override onClose(): void {
     super.onClose();
-    this.embedComponent.unload();
+    this.embedComponent?.unload();
     invokeAsyncSafely(async () => {
-      await this.app.vault.delete(this.tempFile);
+      if (this.tempFile) {
+        await this.app.vault.delete(this.tempFile);
+      }
     });
   }
 

@@ -90,7 +90,7 @@ export async function collectAttachments(
   const cache = await getCacheSafe(app, note);
   abortSignal.throwIfAborted();
 
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- Could be changed in await call.
   if (ctx.isAborted) {
     return;
   }
@@ -103,7 +103,7 @@ export async function collectAttachments(
   abortSignal.throwIfAborted();
 
   for (const link of links) {
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- Could be changed in await call.
     if (ctx.isAborted) {
       return;
     }
@@ -144,7 +144,7 @@ export async function collectAttachments(
             ctx.isAborted = true;
             return false;
           case CollectAttachmentUsedByMultipleNotesMode.Copy:
-            // eslint-disable-next-line require-atomic-updates
+            // eslint-disable-next-line require-atomic-updates -- Ignore possible race condition.
             attachmentMoveResult.newAttachmentPath = await copySafe(app, attachmentMoveResult.oldAttachmentPath, attachmentMoveResult.newAttachmentPath);
             break;
           case CollectAttachmentUsedByMultipleNotesMode.Move:
@@ -194,7 +194,7 @@ export async function collectAttachments(
         return;
       }
 
-      // eslint-disable-next-line require-atomic-updates
+      // eslint-disable-next-line require-atomic-updates -- Ignore possible race condition.
       attachmentMoveResult.newAttachmentPath = await renameSafe(app, attachmentMoveResult.oldAttachmentPath, attachmentMoveResult.newAttachmentPath);
     }
   }

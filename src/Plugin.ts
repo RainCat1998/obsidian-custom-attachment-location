@@ -175,7 +175,7 @@ export class Plugin extends PluginBase<PluginTypes> {
       }
     });
 
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- Actually not available on some platforms.
     if (webUtils) {
       registerPatch(this, webUtils, {
         getPathForFile: (next: GetPathForFileFn): GetPathForFileFn => {
@@ -323,7 +323,7 @@ export class Plugin extends PluginBase<PluginTypes> {
   private getAvailablePath(attachmentFileName: string, attachmentExtension: string): string {
     let suffixNum = 0;
 
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- Easiest infinite loop.
     while (true) {
       const path = makeFileName(
         suffixNum === 0 ? attachmentFileName : `${attachmentFileName}${this.settings.duplicateNameSeparator}${String(suffixNum)}`,

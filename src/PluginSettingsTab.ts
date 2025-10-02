@@ -135,11 +135,11 @@ export class PluginSettingsTab extends PluginSettingsTabBase<PluginTypes> {
       }))
       .addDropdown((dropdown) => {
         dropdown.addOptions({
-          /* eslint-disable perfectionist/sort-objects */
+          /* eslint-disable perfectionist/sort-objects -- Need to keep enum order. */
           [AttachmentRenameMode.None]: t(($) => $.pluginSettings.attachmentRenameMode.none.displayText),
           [AttachmentRenameMode.OnlyPastedImages]: t(($) => $.pluginSettings.attachmentRenameMode.onlyPastedImages.displayText),
           [AttachmentRenameMode.All]: t(($) => $.pluginSettings.attachmentRenameMode.all.displayText)
-          /* eslint-enable perfectionist/sort-objects */
+          /* eslint-enable perfectionist/sort-objects -- Need to keep enum order. */
         });
         this.bind(dropdown, 'attachmentRenameMode');
       });
@@ -253,13 +253,13 @@ export class PluginSettingsTab extends PluginSettingsTabBase<PluginTypes> {
       }))
       .addDropdown((dropdown) => {
         dropdown.addOptions({
-          /* eslint-disable perfectionist/sort-objects */
+          /* eslint-disable perfectionist/sort-objects -- Need to keep enum order. */
           [CollectAttachmentUsedByMultipleNotesMode.Skip]: t(($) => $.pluginSettings.collectAttachmentUsedByMultipleNotesMode.skip.displayText),
           [CollectAttachmentUsedByMultipleNotesMode.Move]: t(($) => $.pluginSettings.collectAttachmentUsedByMultipleNotesMode.move.displayText),
           [CollectAttachmentUsedByMultipleNotesMode.Copy]: t(($) => $.pluginSettings.collectAttachmentUsedByMultipleNotesMode.copy.displayText),
           [CollectAttachmentUsedByMultipleNotesMode.Cancel]: t(($) => $.pluginSettings.collectAttachmentUsedByMultipleNotesMode.cancel.displayText),
           [CollectAttachmentUsedByMultipleNotesMode.Prompt]: t(($) => $.pluginSettings.collectAttachmentUsedByMultipleNotesMode.prompt.displayText)
-          /* eslint-enable perfectionist/sort-objects */
+          /* eslint-enable perfectionist/sort-objects -- Need to keep enum order. */
         });
         this.bind(dropdown, 'collectAttachmentUsedByMultipleNotesMode');
       });
@@ -308,11 +308,11 @@ export class PluginSettingsTab extends PluginSettingsTabBase<PluginTypes> {
       }))
       .addDropdown((dropdown) => {
         dropdown.addOptions({
-          /* eslint-disable perfectionist/sort-objects */
+          /* eslint-disable perfectionist/sort-objects -- Need to keep enum order. */
           [EmptyAttachmentFolderBehavior.Keep]: t(($) => $.pluginSettings.emptyAttachmentFolderBehavior.keep.displayText),
           [EmptyAttachmentFolderBehavior.Delete]: t(($) => $.pluginSettings.emptyAttachmentFolderBehavior.delete.displayText),
           [EmptyAttachmentFolderBehavior.DeleteWithEmptyParents]: t(($) => $.pluginSettings.emptyAttachmentFolderBehavior.deleteWithEmptyParents.displayText)
-          /* eslint-enable perfectionist/sort-objects */
+          /* eslint-enable perfectionist/sort-objects -- Need to keep enum order. */
         });
         this.bind(dropdown, 'emptyAttachmentFolderBehavior');
       });
@@ -513,10 +513,10 @@ export class PluginSettingsTab extends PluginSettingsTabBase<PluginTypes> {
       .addDropdown((dropdown) => {
         dropdown.selectEl.addClass('default-image-size-dimension-setting-control');
         dropdown.addOptions({
-          /* eslint-disable perfectionist/sort-objects */
+          /* eslint-disable perfectionist/sort-objects -- Need to keep enum order. */
           [DefaultImageSizeDimension.Width]: t(($) => $.pluginSettings.defaultImageSizeDimension.width),
           [DefaultImageSizeDimension.Height]: t(($) => $.pluginSettings.defaultImageSizeDimension.height)
-          /* eslint-enable perfectionist/sort-objects */
+          /* eslint-enable perfectionist/sort-objects -- Need to keep enum order. */
         });
         this.bind(dropdown, 'defaultImageSizeDimension');
       });

@@ -18,7 +18,7 @@ export class PrismComponent extends Component {
       expression: {
         greedy: true,
         inside: {
-          /* eslint-disable perfectionist/sort-objects */
+          /* eslint-disable perfectionist/sort-objects -- Need to keep object order. */
           prefix: {
             alias: 'regex',
             pattern: /\${/
@@ -39,7 +39,7 @@ export class PrismComponent extends Component {
             alias: 'regex',
             pattern: /}/
           }
-          /* eslint-enable perfectionist/sort-objects */
+          /* eslint-enable perfectionist/sort-objects -- Need to keep object order. */
         },
         pattern: /\${.+?}/
       },
@@ -53,7 +53,7 @@ export class PrismComponent extends Component {
     };
 
     this.register(() => {
-      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete -- Need to delete language.
       delete prism.languages[TOKENIZED_STRING_LANGUAGE];
     });
   }

@@ -49,7 +49,7 @@
     "@antfu/utils": "9.2.0",
     "boolean": "npm:dry-uninstall",
     "dompurify": "3.0.1",
-    "type-fest": "5.0.1"
+    "type-fest": "latest"
   },
   "type": "module"
 }

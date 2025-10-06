@@ -15,6 +15,8 @@
     "format:check": "obsidian-dev-utils format:check",
     "lint": "obsidian-dev-utils lint",
     "lint:fix": "obsidian-dev-utils lint:fix",
+    "lint:md": "obsidian-dev-utils lint:md",
+    "lint:md:fix": "obsidian-dev-utils lint:md:fix",
     "prepare": "husky",
     "spellcheck": "obsidian-dev-utils spellcheck",
     "version": "obsidian-dev-utils version"
@@ -41,7 +43,6 @@
     "obsidian-typings": "obsidian-public-latest",
     "semver": "latest",
     "slugify": "latest",
-    "tsx": "latest",
     "type-fest": "latest",
     "typescript": "latest"
   },

@@ -148,7 +148,8 @@
 
 ## 9.10.1
 
-- Fix closing active note on load https://github.com/RainCat1998/obsidian-custom-attachment-location/issues/199#issuecomment-3241586013
+- Fix closing active note on load
+  - fix: <https://github.com/RainCat1998/obsidian-custom-attachment-location/issues/199#issuecomment-3241586013>
 
 ## 9.10.0
 
@@ -918,25 +919,25 @@
 
 ## 1.0.0
 
-- Fix README.md template example to prevent inappropriate latex rendering by @kaiiiz in https://github.com/RainCat1998/obsidian-custom-attachment-location/pull/28
-- Handle pasting multiple images by @mnaoumov in https://github.com/RainCat1998/obsidian-custom-attachment-location/pull/58
-- Support date var template(moment.js) in folder path & image name by @Harrd in https://github.com/RainCat1998/obsidian-custom-attachment-location/pull/56
-- Add mobile support by @mengbo in https://github.com/RainCat1998/obsidian-custom-attachment-location/pull/44
-- Add name sanitization when creating folder. by @EricWiener in https://github.com/RainCat1998/obsidian-custom-attachment-location/pull/35
-- Feature: Compress images from png to jpeg while pasting from the clipboard by @kaiiiz in https://github.com/RainCat1998/obsidian-custom-attachment-location/pull/29
+- Fix README.md template example to prevent inappropriate latex rendering by @kaiiiz in <https://github.com/RainCat1998/obsidian-custom-attachment-location/pull/28>
+- Handle pasting multiple images by @mnaoumov in <https://github.com/RainCat1998/obsidian-custom-attachment-location/pull/58>
+- Support date var template(moment.js) in folder path & image name by @Harrd in <https://github.com/RainCat1998/obsidian-custom-attachment-location/pull/56>
+- Add mobile support by @mengbo in <https://github.com/RainCat1998/obsidian-custom-attachment-location/pull/44>
+- Add name sanitization when creating folder. by @EricWiener in <https://github.com/RainCat1998/obsidian-custom-attachment-location/pull/35>
+- Feature: Compress images from png to jpeg while pasting from the clipboard by @kaiiiz in <https://github.com/RainCat1998/obsidian-custom-attachment-location/pull/29>
 
 ## 0.0.9
 
-- Update attachment folder config when note renamed by @mnaoumov in https://github.com/RainCat1998/obsidian-custom-attachment-location/pull/26
+- Update attachment folder config when note renamed by @mnaoumov in <https://github.com/RainCat1998/obsidian-custom-attachment-location/pull/26>
 
 ## 0.0.8
 
-- Move attachments when note is moved by @mnaoumov in https://github.com/RainCat1998/obsidian-custom-attachment-location/pull/21
-- Make attachment folder setting modified every time file opens by @mnaoumov in https://github.com/RainCat1998/obsidian-custom-attachment-location/pull/23
+- Move attachments when note is moved by @mnaoumov in <https://github.com/RainCat1998/obsidian-custom-attachment-location/pull/21>
+- Make attachment folder setting modified every time file opens by @mnaoumov in <https://github.com/RainCat1998/obsidian-custom-attachment-location/pull/23>
 
 ## 0.0.7
 
-- Fixed minor typo in the settings by @astrodad in https://github.com/RainCat1998/obsidian-custom-attachment-location/pull/10
+- Fixed minor typo in the settings by @astrodad in <https://github.com/RainCat1998/obsidian-custom-attachment-location/pull/10>
 - Temporarily fix Drag-n-Drop file from explorer doesn't copy file to obsidian vault.
 
 ## 0.0.6
@@ -947,7 +948,7 @@
 ## 0.0.5
 
 - Add support for drop event
-- Fix typos & grammar by @TypicalHog in https://github.com/RainCat1998/obsidian-custom-attachment-location/pull/2
+- Fix typos & grammar by @TypicalHog in <https://github.com/RainCat1998/obsidian-custom-attachment-location/pull/2>
 
 ## 0.0.4
 

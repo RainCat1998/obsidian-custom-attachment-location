@@ -10,6 +10,7 @@ import type {
   GetAvailablePathForAttachmentsExtendedFnOptions,
   GetAvailablePathForAttachmentsFnExtended
 } from 'obsidian-dev-utils/obsidian/AttachmentPath';
+import type { PathOrFile } from 'obsidian-dev-utils/obsidian/FileSystem';
 import type { TranslationsMap } from 'obsidian-dev-utils/obsidian/i18n/i18n';
 import type { RenameDeleteHandlerSettings } from 'obsidian-dev-utils/obsidian/RenameDeleteHandler';
 import type {
@@ -54,11 +55,16 @@ import {
 import { t } from 'obsidian-dev-utils/obsidian/i18n/i18n';
 import {
   encodeUrl,
+  extractLinkFile,
   generateMarkdownLink,
   LinkStyle,
   testAngleBrackets,
   testWikilink
 } from 'obsidian-dev-utils/obsidian/Link';
+import {
+  getAllLinks,
+  getCacheSafe
+} from 'obsidian-dev-utils/obsidian/MetadataCache';
 import { registerPatch } from 'obsidian-dev-utils/obsidian/MonkeyAround';
 import { PluginBase } from 'obsidian-dev-utils/obsidian/Plugin/PluginBase';
 import {
@@ -75,6 +81,7 @@ import {
 } from 'obsidian-dev-utils/Path';
 import { trimStart } from 'obsidian-dev-utils/String';
 import {
+  isReferenceCache,
   parentFolderPath,
   ViewType
 } from 'obsidian-typings/implementations';
@@ -399,12 +406,14 @@ export class Plugin extends PluginBase<PluginTypes> {
       if (shouldSkipGeneratedAttachmentFileName) {
         generatedAttachmentFileName = attachmentFileName;
       } else {
+        const cursorLine = await this.getCursorLine(noteFilePath, options.oldAttachmentPathOrFile);
         const generatedAttachmentFileBaseName = await getGeneratedAttachmentFileBaseName(
           this,
           new Substitutions({
             actionContext: options.context as string as ActionContext,
             attachmentFileContent,
             attachmentFileStat,
+            cursorLine,
             noteFilePath,
             oldNoteFilePath,
             originalAttachmentFileName: attachmentFileName,
@@ -442,6 +451,35 @@ export class Plugin extends PluginBase<PluginTypes> {
     }
 
     return this.currentAttachmentFolderPath;
+  }
+
+  private async getCursorLine(noteFilePath: string, oldAttachmentPathOrFile: PathOrFile): Promise<number> {
+    const oldAttachmentFile = getFileOrNull(this.app, oldAttachmentPathOrFile);
+    if (!oldAttachmentFile) {
+      return 0;
+    }
+
+    const cache = await getCacheSafe(this.app, noteFilePath);
+    if (!cache) {
+      return 0;
+    }
+
+    for (const link of getAllLinks(cache)) {
+      if (!isReferenceCache(link)) {
+        continue;
+      }
+
+      const linkFile = extractLinkFile(this.app, link, noteFilePath);
+      if (!linkFile) {
+        continue;
+      }
+
+      if (linkFile === oldAttachmentFile) {
+        return link.position.start.line;
+      }
+    }
+
+    return 0;
   }
 
   private getPathForFile(file: File, next: GetPathForFileFn): string {
@@ -682,6 +720,7 @@ export class Plugin extends PluginBase<PluginTypes> {
       attachmentFileStat,
       context: ActionContext.SaveAttachment as string as AttachmentPathContext,
       notePathOrFile: noteFile,
+      oldAttachmentPathOrFile: makeFileName(attachmentFileBaseName, attachmentFileExtension),
       shouldSkipDuplicateCheck: false,
       shouldSkipGeneratedAttachmentFileName: true,
       shouldSkipMissingAttachmentFolderCreation: false

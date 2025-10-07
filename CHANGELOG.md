@@ -1,5 +1,12 @@
 # CHANGELOG
 
+## 9.17.4
+
+- fix: init cursor line to extract headings
+  - fix: #228
+- chore: update libs
+- chore: enable markdownlint
+
 ## 9.17.3
 
 - chore: update libs

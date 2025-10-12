@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## 9.17.6
+
+- fix: properly handle unicode chars
+  - fix #229
+
 ## 9.17.5
 
 - fix: properly resolve empty folders

@@ -302,13 +302,13 @@ export class Substitutions {
 
     this.noteFilePath = options.noteFilePath;
     this.noteFileName = basename(this.noteFilePath, extname(this.noteFilePath));
-    this.noteFolderName = basename(dirname(this.noteFilePath));
-    this.noteFolderPath = dirname(this.noteFilePath);
+    this.noteFolderName = dotToEmpty(basename(dirname(this.noteFilePath)));
+    this.noteFolderPath = dotToEmpty(dirname(this.noteFilePath));
 
     this.oldNoteFilePath = options.oldNoteFilePath ?? '';
     this.oldNoteFileName = basename(this.oldNoteFilePath, extname(this.oldNoteFilePath));
-    this.oldNoteFolderName = basename(dirname(this.oldNoteFilePath));
-    this.oldNoteFolderPath = dirname(this.oldNoteFilePath);
+    this.oldNoteFolderName = dotToEmpty(basename(dirname(this.oldNoteFilePath)));
+    this.oldNoteFolderPath = dotToEmpty(dirname(this.oldNoteFilePath));
 
     const originalAttachmentFileName = options.originalAttachmentFileName ?? '';
     const originalAttachmentFileExtension = extname(originalAttachmentFileName);
@@ -606,6 +606,10 @@ export async function validatePath(options: ValidatePathOptions): Promise<string
   }
 
   return '';
+}
+
+function dotToEmpty(name: string): string {
+  return name === '.' ? '' : name;
 }
 
 function extractTokens(str: string): Token[] {

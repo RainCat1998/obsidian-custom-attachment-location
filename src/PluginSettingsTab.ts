@@ -28,7 +28,7 @@ import {
 import { TOKENIZED_STRING_LANGUAGE } from './PrismComponent.ts';
 import { Substitutions } from './Substitutions.ts';
 
-const VISIBLE_WHITESPACE_CHARACTER = '␣';
+const VISIBLE_SPACE_CHARACTER = '␣';
 
 export class PluginSettingsTab extends PluginSettingsTabBase<PluginTypes> {
   public override display(): void {
@@ -167,13 +167,13 @@ export class PluginSettingsTab extends PluginSettingsTabBase<PluginTypes> {
       }))
       .addText((text) => {
         this.bind(text, 'specialCharacters', {
-          componentToPluginSettingsValueConverter: (value: string): string => value.replaceAll(VISIBLE_WHITESPACE_CHARACTER, ''),
-          pluginSettingsToComponentValueConverter: (value: string): string => value.replaceAll(' ', VISIBLE_WHITESPACE_CHARACTER),
+          componentToPluginSettingsValueConverter: restoreSpaceCharacter,
+          pluginSettingsToComponentValueConverter: showSpaceCharacter,
           shouldResetSettingWhenComponentIsEmpty: false,
           shouldShowPlaceholderForDefaultValues: false
         });
         text.inputEl.addEventListener('input', () => {
-          text.inputEl.value = showWhitespaceCharacter(text.inputEl.value);
+          text.inputEl.value = showSpaceCharacter(text.inputEl.value);
         });
       });
 
@@ -281,11 +281,11 @@ export class PluginSettingsTab extends PluginSettingsTabBase<PluginTypes> {
       }))
       .addText((text) => {
         this.bind(text, 'duplicateNameSeparator', {
-          componentToPluginSettingsValueConverter: (value: string) => value.replaceAll(VISIBLE_WHITESPACE_CHARACTER, ' '),
-          pluginSettingsToComponentValueConverter: showWhitespaceCharacter
+          componentToPluginSettingsValueConverter: restoreSpaceCharacter,
+          pluginSettingsToComponentValueConverter: showSpaceCharacter
         });
         text.inputEl.addEventListener('input', () => {
-          text.inputEl.value = showWhitespaceCharacter(text.inputEl.value);
+          text.inputEl.value = showSpaceCharacter(text.inputEl.value);
         });
       });
 
@@ -539,6 +539,10 @@ function generateJpegQualityOptions(): Record<string, string> {
   return ans;
 }
 
-function showWhitespaceCharacter(value: string): string {
-  return value.replaceAll(' ', VISIBLE_WHITESPACE_CHARACTER);
+function restoreSpaceCharacter(str: string): string {
+  return str.replaceAll(VISIBLE_SPACE_CHARACTER, ' ');
+}
+
+function showSpaceCharacter(str: string): string {
+  return str.replaceAll(' ', VISIBLE_SPACE_CHARACTER);
 }

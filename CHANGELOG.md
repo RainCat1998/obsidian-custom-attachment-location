@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 9.17.5
+
+- fix: properly resolve empty folders
+
 ## 9.17.4
 
 - fix: init cursor line to extract headings

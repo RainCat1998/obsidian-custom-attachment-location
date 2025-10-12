@@ -101,7 +101,7 @@ export class PluginSettings {
   }
 
   public get specialCharactersRegExp(): RegExp {
-    return new RegExp(`[${escapeRegExp(this.specialCharacters)}]+`, 'g');
+    return new RegExp(`[${escapeRegExp(this.specialCharacters)}]+`, 'gu');
   }
 
   private _customTokensStr = '';

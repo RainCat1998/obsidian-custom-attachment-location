@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 9.17.7
+
+- fix: proper space replacement
+
 ## 9.17.6
 
 - fix: properly handle unicode chars

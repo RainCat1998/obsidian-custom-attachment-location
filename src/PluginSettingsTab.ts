@@ -3,7 +3,8 @@ import type { ConditionalKeys } from 'type-fest';
 
 import {
   debounce,
-  normalizePath
+  normalizePath,
+  TextComponent
 } from 'obsidian';
 import {
   convertAsyncToSync,
@@ -172,9 +173,8 @@ export class PluginSettingsTab extends PluginSettingsTabBase<PluginTypes> {
           shouldResetSettingWhenComponentIsEmpty: false,
           shouldShowPlaceholderForDefaultValues: false
         });
-        text.inputEl.addEventListener('input', () => {
-          text.inputEl.value = showSpaceCharacter(text.inputEl.value);
-        });
+
+        handleWhitespace(text);
       });
 
     new SettingEx(this.containerEl)
@@ -284,9 +284,8 @@ export class PluginSettingsTab extends PluginSettingsTabBase<PluginTypes> {
           componentToPluginSettingsValueConverter: restoreSpaceCharacter,
           pluginSettingsToComponentValueConverter: showSpaceCharacter
         });
-        text.inputEl.addEventListener('input', () => {
-          text.inputEl.value = showSpaceCharacter(text.inputEl.value);
-        });
+
+        handleWhitespace(text);
       });
 
     new SettingEx(this.containerEl)
@@ -537,6 +536,15 @@ function generateJpegQualityOptions(): Record<string, string> {
   }
 
   return ans;
+}
+
+function handleWhitespace(text: TextComponent): void {
+  text.inputEl.addEventListener('input', () => {
+    const start = text.inputEl.selectionStart ?? 0;
+    const end = text.inputEl.selectionEnd ?? 0;
+    text.inputEl.value = showSpaceCharacter(text.inputEl.value);
+    text.inputEl.setSelectionRange(start, end);
+  });
 }
 
 function restoreSpaceCharacter(str: string): string {

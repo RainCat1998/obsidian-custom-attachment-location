@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 9.17.8
+
+- fix: preserve settings cursor position
+
 ## 9.17.7
 
 - fix: proper space replacement

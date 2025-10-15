@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 9.17.9
+
+- chore: update libs
+
 ## 9.17.8
 
 - fix: preserve settings cursor position

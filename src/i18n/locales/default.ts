@@ -248,8 +248,8 @@ export const defaultTranslations = {
     },
     locationForNewAttachments: {
       description: {
-        part1: 'Start with',
-        part2: 'to use relative path.',
+        part1: 'Use',
+        part2: 'for paths relative to parent folder of note.',
         part3: 'See available',
         part4: 'tokens',
         part5: 'Dot-folders like',

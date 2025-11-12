@@ -1,8 +1,6 @@
-import {
-  Component,
-  loadPrism
-} from 'obsidian';
+import { Component } from 'obsidian';
 import { invokeAsyncSafely } from 'obsidian-dev-utils/Async';
+import { loadPrism } from 'obsidian-typings/implementations';
 
 export const TOKENIZED_STRING_LANGUAGE = 'custom-attachment-location-tokenized-string';
 

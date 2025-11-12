@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## 9.17.12
+
+- fix: compilation
+- chore: update libs
+
 ## 9.17.11
 
 - chore: update libs

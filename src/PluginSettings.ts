@@ -138,10 +138,19 @@ function makeRegExp(paths: string[], defaultRegExp: RegExp): RegExp {
   }
 
   const regExpStrCombined = paths.map((path) => {
+    if (path === '/') {
+      return defaultRegExp.source;
+    }
+
     if (path.startsWith('/') && path.endsWith('/')) {
       return path.slice(1, -1);
     }
-    return `^${escapeRegExp(path)}`;
+
+    if (path.endsWith('/')) {
+      return `^${escapeRegExp(path)}`;
+    }
+
+    return `^${escapeRegExp(path)}(/|$)`;
   })
     .map((regExpStr) => `(${regExpStr})`)
     .join('|');

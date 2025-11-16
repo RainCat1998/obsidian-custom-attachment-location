@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 9.17.14
+
+- fix: handling include/exclude paths not ending with /
+
 ## 9.17.13
 
 - chore: update libs

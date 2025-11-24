@@ -5,9 +5,9 @@ import type {
 } from 'obsidian';
 import type { Promisable } from 'type-fest';
 
-import moment from 'moment';
 // eslint-disable-next-line import-x/no-namespace -- Need to pass entire obsidian module.
 import * as obsidian from 'obsidian';
+import { moment as moment_ } from 'obsidian';
 import { printError } from 'obsidian-dev-utils/Error';
 import {
   extractDefaultExportInterop,
@@ -38,6 +38,8 @@ import { promptWithPreview } from './PromptWithPreviewModal.ts';
 import { ActionContext } from './TokenEvaluatorContext.ts';
 
 const slugify = extractDefaultExportInterop(slugify_);
+
+const moment = extractDefaultExportInterop(moment_);
 
 interface FormatWithParameter {
   base: string;

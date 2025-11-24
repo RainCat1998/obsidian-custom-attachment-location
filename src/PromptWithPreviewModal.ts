@@ -36,7 +36,7 @@ class PreviewModal extends Modal {
     this.embedComponent?.unload();
     invokeAsyncSafely(async () => {
       if (this.tempFile) {
-        await this.app.vault.delete(this.tempFile);
+        await this.app.fileManager.trashFile(this.tempFile);
       }
     });
   }

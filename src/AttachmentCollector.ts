@@ -1,7 +1,6 @@
 import type {
   Reference,
   ReferenceCache,
-  TFile,
   TFolder
 } from 'obsidian';
 import type { PathOrAbstractFile } from 'obsidian-dev-utils/obsidian/FileSystem';
@@ -11,6 +10,7 @@ import {
   App,
   Notice,
   setIcon,
+  TFile,
   Vault
 } from 'obsidian';
 import {
@@ -277,8 +277,8 @@ export async function collectAttachmentsInFolder(plugin: Plugin, folder: TFolder
   plugin.consoleDebug(`Collect attachments in folder: ${folder.path}`);
   const noteFiles: TFile[] = [];
   Vault.recurseChildren(folder, (child) => {
-    if (isNoteEx(plugin, child)) {
-      noteFiles.push(child as TFile);
+    if (isNoteEx(plugin, child) && child instanceof TFile) {
+      noteFiles.push(child);
     }
   });
 

@@ -24,13 +24,13 @@ import type {
 } from 'obsidian-typings/implementations';
 
 import { webUtils } from 'electron';
-import moment from 'moment';
 import {
   CapacitorAdapter,
   FileSystemAdapter,
   MarkdownView,
   Menu,
   MenuItem,
+  moment as moment_,
   TAbstractFile,
   TFile,
   TFolder,
@@ -39,6 +39,7 @@ import {
 import { convertAsyncToSync } from 'obsidian-dev-utils/Async';
 import { blobToJpegArrayBuffer } from 'obsidian-dev-utils/Blob';
 import {
+  extractDefaultExportInterop,
   getPrototypeOf,
   normalizeOptionalProperties,
   removeUndefinedProperties
@@ -107,6 +108,8 @@ import { PluginSettingsTab } from './PluginSettingsTab.ts';
 import { PrismComponent } from './PrismComponent.ts';
 import { Substitutions } from './Substitutions.ts';
 import { ActionContext } from './TokenEvaluatorContext.ts';
+
+const moment = extractDefaultExportInterop(moment_);
 
 type ArrayBufferFn = File['arrayBuffer'];
 interface FileEx {
@@ -603,6 +606,7 @@ export class Plugin extends PluginBase<PluginTypes> {
   private async importFiles(next: ImportFilesFn, files: SharedFile[]): Promise<void> {
     for (const file of files) {
       const fileUri = window.Capacitor.convertFileSrc(file.uri);
+      // eslint-disable-next-line no-restricted-globals -- `requestUrl()` doesn't work for those Capacitor urls.
       const response = await fetch(fileUri);
       const attachmentFileContent = await response.arrayBuffer();
       const substitutions = new Substitutions({

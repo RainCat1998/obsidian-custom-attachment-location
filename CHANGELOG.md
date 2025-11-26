@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 9.17.17
+
+- fix: show version mismatch alert only once. re #246
+
 ## 9.17.16
 
 - chore: update libs

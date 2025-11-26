@@ -290,6 +290,10 @@ ${commentOut(this.legacySettings.customTokensStr)}
 
   private handleNewVersion(): boolean {
     if (this.legacySettings.version && compare(this.legacySettings.version, this.plugin.manifest.version) > 0) {
+      if (window.sessionStorage.getItem('custom-attachment-location-version-mismatch-alert-shown') === 'true') {
+        return false;
+      }
+      window.sessionStorage.setItem('custom-attachment-location-version-mismatch-alert-shown', 'true');
       invokeAsyncSafely(async () => {
         await this.plugin.waitForLifecycleEvent('layoutReady');
         await alert({
@@ -311,7 +315,6 @@ ${commentOut(this.legacySettings.customTokensStr)}
           })
         });
       });
-      this.legacySettings.version = this.plugin.manifest.version;
       return true;
     }
 

@@ -410,6 +410,7 @@ export class Plugin extends PluginBase<PluginTypes> {
         generatedAttachmentFileName = attachmentFileName;
       } else {
         const cursorLine = await this.getCursorLine(noteFilePath, options.oldAttachmentPathOrFile);
+        const sequenceNumber = await this.getSequenceNumber(noteFilePath, options.oldAttachmentPathOrFile);
         const generatedAttachmentFileBaseName = await getGeneratedAttachmentFileBaseName(
           this,
           new Substitutions({
@@ -420,7 +421,8 @@ export class Plugin extends PluginBase<PluginTypes> {
             noteFilePath,
             oldNoteFilePath,
             originalAttachmentFileName: attachmentFileName,
-            plugin: this
+            plugin: this,
+            sequenceNumber
           })
         );
         generatedAttachmentFileName = makeFileName(generatedAttachmentFileBaseName, attachmentFileExtension);
@@ -491,6 +493,34 @@ export class Plugin extends PluginBase<PluginTypes> {
       return fileEx.path;
     }
     return next(file);
+  }
+
+  private async getSequenceNumber(noteFilePath: string, oldAttachmentPathOrFile: PathOrFile): Promise<number> {
+    const oldAttachmentFile = getFileOrNull(this.app, oldAttachmentPathOrFile);
+    if (!oldAttachmentFile) {
+      return 0;
+    }
+
+    const cache = await getCacheSafe(this.app, noteFilePath);
+    if (!cache) {
+      return 0;
+    }
+
+    let sequenceNumber = 1;
+    for (const link of getAllLinks(cache)) {
+      const linkFile = extractLinkFile(this.app, link, noteFilePath);
+      if (!linkFile) {
+        continue;
+      }
+
+      if (linkFile === oldAttachmentFile) {
+        return sequenceNumber;
+      }
+
+      sequenceNumber++;
+    }
+
+    return 0;
   }
 
   private async handleActiveLeafChange(leaf: null | WorkspaceLeaf): Promise<void> {

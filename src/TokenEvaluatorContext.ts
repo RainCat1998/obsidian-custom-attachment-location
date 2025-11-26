@@ -170,6 +170,13 @@ export interface TokenEvaluatorContext {
   originalAttachmentFileName: string;
 
   /**
+   * A sequence number of the attachment file.
+   *
+   * `0` if the sequence number is not known.
+   */
+  sequenceNumber: number;
+
+  /**
    * A token being evaluated.
    */
   token: string;

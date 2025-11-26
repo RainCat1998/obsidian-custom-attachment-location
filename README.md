@@ -284,6 +284,16 @@ Random value.
 - `DL`**`n`**: `n` random digits or letters. `n` is a number (`1` if omitted).
 - `uuid`: Random UUID.
 
+### `${sequenceNumber}`
+
+Sequential number of the first link within the note to the attachment file. Applicable only during note rename and collecting attachments.
+
+When the link cannot be found, the value of the token is `0`.
+
+**Format**:
+
+- **`n`**: Output `n` digits, pad with zeros if needed. `n` is a number (`1` if omitted). **Example**: `4` -> `0002`.
+
 ## Custom tokens
 
 You can define custom tokens in the `Custom tokens` setting.

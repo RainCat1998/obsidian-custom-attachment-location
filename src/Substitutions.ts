@@ -81,6 +81,7 @@ interface SubstitutionsOptions {
   oldNoteFilePath?: string | undefined;
   originalAttachmentFileName?: string;
   plugin: Plugin;
+  sequenceNumber?: number | undefined;
 }
 
 interface ValidateFileNameOptions {
@@ -296,6 +297,7 @@ export class Substitutions {
   private readonly originalAttachmentFileExtension: string;
   private readonly originalAttachmentFileName: string;
   private readonly plugin: Plugin;
+  private readonly sequenceNumber: number | undefined;
 
   public constructor(options: SubstitutionsOptions) {
     this.plugin = options.plugin;
@@ -382,6 +384,14 @@ export class Substitutions {
 
     this.registerToken('heading', async (ctx, substitutions) => substitutions.getHeading(ctx.format));
 
+    this.registerToken('sequenceNumber', (ctx) => {
+      let length = Number(ctx.format);
+      if (Number.isNaN(length) || length < 1) {
+        length = 1;
+      }
+      return String(ctx.sequenceNumber).padStart(length, '0');
+    });
+
     const customTokens = parseCustomTokens(customTokensStr) ?? new Map<string, TokenEvaluator>();
     for (const [token, evaluator] of customTokens.entries()) {
       this.registerToken(token, evaluator);
@@ -423,6 +433,7 @@ export class Substitutions {
         oldNoteFolderPath: this.oldNoteFolderPath,
         originalAttachmentFileExtension: this.originalAttachmentFileExtension,
         originalAttachmentFileName: this.originalAttachmentFileName,
+        sequenceNumber: this.sequenceNumber ?? 0,
         token,
         tokenEndOffset: args.offset + args.substring.length,
         tokenStartOffset: args.offset,

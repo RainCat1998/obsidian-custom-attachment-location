@@ -173,6 +173,15 @@ export const fa: Translations<PluginTypes> = {
       },
       name: 'حالت جمع‌آوری پیوست استفاده شده توسط چندین یادداشت'
     },
+    collectedAttachmentFileName: {
+      description: {
+        part1: 'نشان‌های موجود',
+        part2: 'را ببینید',
+        part3: 'برای استفاده از',
+        part4: 'تنظیمات خالی بگذارید.'
+      },
+      name: 'نام فایل پیوست جمع‌آوری شده'
+    },
     customTokens: {
       description: {
         part1: 'نشان‌های سفارشی که استفاده خواهند شد.',
@@ -269,6 +278,15 @@ export const fa: Translations<PluginTypes> = {
       name: 'فرمت URL Markdown'
     },
     renameAttachmentsToLowerCase: 'تغییر نام پیوست‌ها به حروف کوچک',
+    renamedAttachmentFileName: {
+      description: {
+        part1: 'نشان‌های موجود',
+        part2: 'را ببینید',
+        part3: 'برای استفاده از',
+        part4: 'تنظیمات خالی بگذارید.'
+      },
+      name: 'نام فایل پیوست تغییر نام یافته'
+    },
     resetToSampleCustomTokens: {
       message: 'آیا مطمئن هستید که می‌خواهید نشان‌های سفارشی را به نشان‌های سفارشی نمونع بازنشانی کنید؟ تغییرات شما از دست خواهد رفت.',
       title: 'بازنشانی به نشان‌های سفارشی نمونه'
@@ -283,7 +301,10 @@ export const fa: Translations<PluginTypes> = {
       name: 'آیا پیوست‌های یتیم حذف شوند'
     },
     shouldRenameAttachmentFiles: {
-      description: 'آیا زمانی که یادداشت تغییر نام یا انتقال پیدا می‌کند، فایل‌های پیوست نیز تغییر نام پیدا کنند.',
+      description: {
+        part1: 'اگر فعال باشد، زمانی که یادداشت تغییر نام یا انتقال پیدا می‌کند، فایل‌های پیوست بر اساس',
+        part2: 'تنظیمات تغییر نام خواهند یافت.'
+      },
       name: 'آیا فایل‌های پیوست تغییر نام پیدا کنند'
     },
     shouldRenameAttachmentFolders: {

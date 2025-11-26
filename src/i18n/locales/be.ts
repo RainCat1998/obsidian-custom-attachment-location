@@ -174,6 +174,15 @@ export const be: Translations<PluginTypes> = {
       },
       name: 'Рэжым збору далучэння, якое выкарыстоўваецца некалькімі нататкамі'
     },
+    collectedAttachmentFileName: {
+      description: {
+        part1: 'Глядзіце даступныя',
+        part2: 'токены',
+        part3: 'Пакіньце пуста, каб выкарыстоўваць',
+        part4: 'параметр замест гэтага.'
+      },
+      name: 'Імя файла сабранага далучэння'
+    },
     customTokens: {
       description: {
         part1: 'Карыстальніцкія токены для выкарыстання.',
@@ -271,6 +280,15 @@ export const be: Translations<PluginTypes> = {
       name: 'Фармат URL Markdown'
     },
     renameAttachmentsToLowerCase: 'Перайменаваць далучэнні ў ніжні рэгістр',
+    renamedAttachmentFileName: {
+      description: {
+        part1: 'Глядзіце даступныя',
+        part2: 'токены',
+        part3: 'Пакіньце пуста, каб выкарыстоўваць',
+        part4: 'параметр замест гэтага.'
+      },
+      name: 'Імя перайменаванага файла далучэння'
+    },
     resetToSampleCustomTokens: {
       message: 'Вы ўпэўнены, што хочаце скінуць карыстальніцкія токены да ўзорных карыстальніцкіх токенаў? Вашы змены будуць страчаны.',
       title: 'Скінуць да ўзорных карыстальніцкіх токенаў'
@@ -285,7 +303,10 @@ export const be: Translations<PluginTypes> = {
       name: 'Ці выдаляць сіроцкія далучэнні'
     },
     shouldRenameAttachmentFiles: {
-      description: 'Ці перайменаваць файлы далучэнняў калі нататка перайменавана або перамешчана.',
+      description: {
+        part1: 'Калі ўключана, калі нататка перайменавана або перамешчана, яе далучэнні будуць перайменаваны згодна з',
+        part2: 'параметрам.'
+      },
       name: 'Ці перайменаваць файлы далучэнняў'
     },
     shouldRenameAttachmentFolders: {

@@ -174,6 +174,15 @@ export const id: Translations<PluginTypes> = {
       },
       name: 'Mode pengumpulan lampiran yang digunakan oleh beberapa catatan'
     },
+    collectedAttachmentFileName: {
+      description: {
+        part1: 'Lihat',
+        part2: 'token yang tersedia',
+        part3: 'Biarkan kosong untuk menggunakan',
+        part4: 'pengaturan sebagai gantinya.'
+      },
+      name: 'Nama file lampiran yang dikumpulkan'
+    },
     customTokens: {
       description: {
         part1: 'Token kustom yang akan digunakan.',
@@ -271,6 +280,15 @@ export const id: Translations<PluginTypes> = {
       name: 'Format URL Markdown'
     },
     renameAttachmentsToLowerCase: 'Ubah nama lampiran menjadi huruf kecil',
+    renamedAttachmentFileName: {
+      description: {
+        part1: 'Lihat',
+        part2: 'token yang tersedia',
+        part3: 'Biarkan kosong untuk menggunakan',
+        part4: 'pengaturan sebagai gantinya.'
+      },
+      name: 'Nama file lampiran yang diubah namanya'
+    },
     resetToSampleCustomTokens: {
       message: 'Apakah Anda yakin ingin mengatur ulang token kustom ke token kustom sampel? Perubahan Anda akan hilang.',
       title: 'Atur ulang ke token kustom sampel'
@@ -285,7 +303,10 @@ export const id: Translations<PluginTypes> = {
       name: 'Haruskah menghapus lampiran yatim'
     },
     shouldRenameAttachmentFiles: {
-      description: 'Apakah akan mengubah nama file lampiran ketika catatan diubah namanya atau dipindahkan.',
+      description: {
+        part1: 'Jika diaktifkan, ketika catatan diubah namanya atau dipindahkan, file lampirannya akan diubah namanya sesuai dengan',
+        part2: 'pengaturan.'
+      },
       name: 'Haruskah mengubah nama file lampiran'
     },
     shouldRenameAttachmentFolders: {

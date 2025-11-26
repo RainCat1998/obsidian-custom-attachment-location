@@ -175,6 +175,13 @@ export const sq: Translations<PluginTypes> = {
       },
       name: 'Mënyra e mbledhjes së bashkëngjitjeve të përdorura nga disa shënime'
     },
+    collectedAttachmentFileName: {
+      description: {
+        part1: 'Shih',
+        part2: 'tokenat e disponueshëm'
+      },
+      name: 'Emri i skedarit të bashkëngjitur të mbledhur'
+    },
     customTokens: {
       description: {
         part1: 'Tokena të personalizuar që do të përdoren.',
@@ -272,6 +279,13 @@ export const sq: Translations<PluginTypes> = {
       name: 'Formati i URL-së Markdown'
     },
     renameAttachmentsToLowerCase: 'Riemërto bashkëngjitjet me shkronja të vogla',
+    renamedAttachmentFileName: {
+      description: {
+        part1: 'Shih',
+        part2: 'tokenat e disponueshëm'
+      },
+      name: 'Emri i skedarit të bashkëngjitur të riemërtuar'
+    },
     resetToSampleCustomTokens: {
       message: 'Jeni i sigurt që doni të rivendosni tokenat e personalizuar në tokenat shembullorë? Ndryshimet tuaja do të humbasin.',
       title: 'Rivendos tek tokenat shembullorë'
@@ -286,7 +300,10 @@ export const sq: Translations<PluginTypes> = {
       name: 'Fshi bashkëngjitjet jetim'
     },
     shouldRenameAttachmentFiles: {
-      description: 'Nëse skedarët e bashkëngjitjes do të riemërtohen kur një shënim riemërtohet ose zhvendoset.',
+      description: {
+        part1: 'Nëse aktivizohet, kur një shënim riemërtohet ose zhvendoset, bashkëngjitjet do të riemërtohen sipas',
+        part2: 'vendosjes.'
+      },
       name: 'Riemërto skedarët e bashkëngjitjes'
     },
     shouldRenameAttachmentFolders: {

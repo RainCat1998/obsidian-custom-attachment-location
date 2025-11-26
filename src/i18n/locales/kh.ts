@@ -172,6 +172,13 @@ export const kh: Translations<PluginTypes> = {
       },
       name: 'របៀបប្រក័បឯកសារចំណាប់ដែលប្រើដោយការចំណាំច្រើន'
     },
+    collectedAttachmentFileName: {
+      description: {
+        part1: 'មើល',
+        part2: 'សញ្ញាសម្គាល់ដែលមាន'
+      },
+      name: 'ឈ្មោះឯកសារចំណាប់ដែលបានប្រក័ប'
+    },
     customTokens: {
       description: {
         part1: 'សញ្ញាសម្គាល់ផ្ទាល់ខ្លួនដែលត្រូវប្រើ។',
@@ -268,6 +275,13 @@ export const kh: Translations<PluginTypes> = {
       name: 'ទម្រង់ URL Markdown'
     },
     renameAttachmentsToLowerCase: 'ប្តូរឈ្មោះឯកសារចំណាប់ទៅជាអក្សរតូច',
+    renamedAttachmentFileName: {
+      description: {
+        part1: 'មើល',
+        part2: 'សញ្ញាសម្គាល់ដែលមាន'
+      },
+      name: 'ឈ្មោះឯកសារចំណាប់ដែលបានប្តូរឈ្មោះ'
+    },
     resetToSampleCustomTokens: {
       message: 'តើអ្នកប្រាកដថាចង់កំណត់ឡើងវិញសញ្ញាសម្គាល់ផ្ទាល់ខ្លួនទៅសញ្ញាសម្គាល់ផ្ទាល់ខ្លួនគំរូ? ការផ្លាស់ប្តូររបស់អ្នកនឹងបាត់បង់។',
       title: 'កំណត់ឡើងវិញទៅសញ្ញាសម្គាល់ផ្ទាល់ខ្លួនគំរូ'
@@ -281,7 +295,10 @@ export const kh: Translations<PluginTypes> = {
       name: 'តើត្រូវលុបឯកសារចំណាប់កំព្រា'
     },
     shouldRenameAttachmentFiles: {
-      description: 'តើត្រូវប្តូរឈ្មោះឯកសារចំណាប់នៅពេលការចំណាំត្រូវបានប្តូរឈ្មោះ ឬផ្លាស់ទី។',
+      description: {
+        part1: 'ប្រសិនបើបើក នៅពេលការចំណាំត្រូវបានប្តូរឈ្មោះ ឬផ្លាស់ទី ឯកសារចំណាប់នឹងត្រូវបានប្តូរឈ្មោះតាម',
+        part2: 'ការកំណត់។'
+      },
       name: 'តើត្រូវប្តូរឈ្មោះឯកសារចំណាប់'
     },
     shouldRenameAttachmentFolders: {

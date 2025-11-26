@@ -154,9 +154,37 @@ export class PluginSettingsTab extends PluginSettingsTabBase<PluginTypes> {
 
     new SettingEx(this.containerEl)
       .setName(t(($) => $.pluginSettingsTab.shouldRenameAttachmentFiles.name))
-      .setDesc(t(($) => $.pluginSettingsTab.shouldRenameAttachmentFiles.description))
+      .setDesc(createFragment((f) => {
+        f.appendText(t(($) => $.pluginSettingsTab.shouldRenameAttachmentFiles.description.part1));
+        f.appendText(' ');
+        appendCodeBlock(f, t(($) => $.pluginSettingsTab.renamedAttachmentFileName.name));
+        f.appendText(' ');
+        f.appendText(t(($) => $.pluginSettingsTab.shouldRenameAttachmentFiles.description.part2));
+      }))
       .addToggle((toggle) => {
         this.bind(toggle, 'shouldRenameAttachmentFiles');
+      });
+
+    new SettingEx(this.containerEl)
+      .setName(t(($) => $.pluginSettingsTab.renamedAttachmentFileName.name))
+      .setDesc(createFragment((f) => {
+        f.appendText(t(($) => $.pluginSettingsTab.renamedAttachmentFileName.description.part1));
+        f.appendText(' ');
+        f.createEl('a', {
+          href: 'https://github.com/RainCat1998/obsidian-custom-attachment-location?tab=readme-ov-file#tokens',
+          text: t(($) => $.pluginSettingsTab.renamedAttachmentFileName.description.part2)
+        });
+        f.appendText('.');
+        f.createEl('br');
+        f.appendText(t(($) => $.pluginSettingsTab.renamedAttachmentFileName.description.part3));
+        f.appendText(' ');
+        appendCodeBlock(f, t(($) => $.pluginSettingsTab.generatedAttachmentFileName.name));
+        f.appendText(t(($) => $.pluginSettingsTab.renamedAttachmentFileName.description.part4));
+      }))
+      .addCodeHighlighter((codeHighlighter) => {
+        codeHighlighter.setLanguage(TOKENIZED_STRING_LANGUAGE);
+        codeHighlighter.inputEl.addClass('tokenized-string-setting-control');
+        this.bind(codeHighlighter, 'renamedAttachmentFileName', bindOptionsWithTrim);
       });
 
     new SettingEx(this.containerEl)
@@ -218,12 +246,34 @@ export class PluginSettingsTab extends PluginSettingsTabBase<PluginTypes> {
         f.appendText(' ');
         f.appendText(t(($) => $.pluginSettingsTab.shouldRenameCollectedAttachments.description.part3));
         f.appendText(' ');
-        appendCodeBlock(f, t(($) => $.pluginSettingsTab.generatedAttachmentFileName.name));
+        appendCodeBlock(f, t(($) => $.pluginSettingsTab.collectedAttachmentFileName.name));
         f.appendText(' ');
         f.appendText(t(($) => $.pluginSettingsTab.shouldRenameCollectedAttachments.description.part4));
       }))
       .addToggle((toggle) => {
         this.bind(toggle, 'shouldRenameCollectedAttachments');
+      });
+
+    new SettingEx(this.containerEl)
+      .setName(t(($) => $.pluginSettingsTab.collectedAttachmentFileName.name))
+      .setDesc(createFragment((f) => {
+        f.appendText(t(($) => $.pluginSettingsTab.collectedAttachmentFileName.description.part1));
+        f.appendText(' ');
+        f.createEl('a', {
+          href: 'https://github.com/RainCat1998/obsidian-custom-attachment-location?tab=readme-ov-file#tokens',
+          text: t(($) => $.pluginSettingsTab.collectedAttachmentFileName.description.part2)
+        });
+        f.appendText('.');
+        f.createEl('br');
+        f.appendText(t(($) => $.pluginSettingsTab.collectedAttachmentFileName.description.part3));
+        f.appendText(' ');
+        appendCodeBlock(f, t(($) => $.pluginSettingsTab.generatedAttachmentFileName.name));
+        f.appendText(t(($) => $.pluginSettingsTab.collectedAttachmentFileName.description.part4));
+      }))
+      .addCodeHighlighter((codeHighlighter) => {
+        codeHighlighter.setLanguage(TOKENIZED_STRING_LANGUAGE);
+        codeHighlighter.inputEl.addClass('tokenized-string-setting-control');
+        this.bind(codeHighlighter, 'collectedAttachmentFileName', bindOptionsWithTrim);
       });
 
     new SettingEx(this.containerEl)

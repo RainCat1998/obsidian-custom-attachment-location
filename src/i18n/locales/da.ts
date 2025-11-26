@@ -173,6 +173,15 @@ export const da: Translations<PluginTypes> = {
       },
       name: 'Saml vedhæftning brugt af flere noter tilstand'
     },
+    collectedAttachmentFileName: {
+      description: {
+        part1: 'Se tilgængelige',
+        part2: 'tokens',
+        part3: 'Lad stå tomt for at bruge',
+        part4: 'indstillingen i stedet.'
+      },
+      name: 'Samlet vedhæftningsfilnavn'
+    },
     customTokens: {
       description: {
         part1: 'Brugerdefinerede tokens der skal bruges.',
@@ -269,6 +278,15 @@ export const da: Translations<PluginTypes> = {
       name: 'Markdown URL-format'
     },
     renameAttachmentsToLowerCase: 'Omdøb vedhæftninger til små bogstaver',
+    renamedAttachmentFileName: {
+      description: {
+        part1: 'Se tilgængelige',
+        part2: 'tokens',
+        part3: 'Lad stå tomt for at bruge',
+        part4: 'indstillingen i stedet.'
+      },
+      name: 'Omdøbt vedhæftningsfilnavn'
+    },
     resetToSampleCustomTokens: {
       message: 'Er du sikker på, at du vil nulstille de brugerdefinerede tokens til de eksempel-brugerdefinerede tokens? Dine ændringer vil gå tabt.',
       title: 'Nulstil til eksempel-brugerdefinerede tokens'
@@ -283,7 +301,10 @@ export const da: Translations<PluginTypes> = {
       name: 'Skal slette forældreløse vedhæftninger'
     },
     shouldRenameAttachmentFiles: {
-      description: 'Om vedhæftningsfiler skal omdøbes når en note omdøbes eller flyttes.',
+      description: {
+        part1: 'Hvis aktiveret, når en note omdøbes eller flyttes, vil dens vedhæftninger blive omdøbt i henhold til',
+        part2: 'indstillingen.'
+      },
       name: 'Skal omdøbe vedhæftningsfiler'
     },
     shouldRenameAttachmentFolders: {

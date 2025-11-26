@@ -173,6 +173,15 @@ export const ja: Translations<PluginTypes> = {
       },
       name: '複数のノートで使用される添付ファイル収集モード'
     },
+    collectedAttachmentFileName: {
+      description: {
+        part1: '利用可能な',
+        part2: 'トークンを参照',
+        part3: '代わりに',
+        part4: '設定を使用する場合は空白のままにしてください。'
+      },
+      name: '収集された添付ファイル名'
+    },
     customTokens: {
       description: {
         part1: '使用するカスタムトークン。',
@@ -270,6 +279,15 @@ export const ja: Translations<PluginTypes> = {
       name: 'Markdown URL形式'
     },
     renameAttachmentsToLowerCase: '添付ファイルを小文字にリネーム',
+    renamedAttachmentFileName: {
+      description: {
+        part1: '利用可能な',
+        part2: 'トークンを参照',
+        part3: '代わりに',
+        part4: '設定を使用する場合は空白のままにしてください。'
+      },
+      name: 'リネームされた添付ファイル名'
+    },
     resetToSampleCustomTokens: {
       message: 'カスタムトークンをサンプルカスタムトークンにリセットしてもよろしいですか？変更は失われます。',
       title: 'サンプルカスタムトークンにリセット'
@@ -284,7 +302,10 @@ export const ja: Translations<PluginTypes> = {
       name: '孤立した添付ファイルを削除する'
     },
     shouldRenameAttachmentFiles: {
-      description: 'ノートがリネームまたは移動されたときに添付ファイルをリネームするかどうか。',
+      description: {
+        part1: '有効にすると、ノートがリネームまたは移動されたときに、その添付ファイルは',
+        part2: '設定に従ってリネームされます。'
+      },
       name: '添付ファイルをリネームする'
     },
     shouldRenameAttachmentFolders: {

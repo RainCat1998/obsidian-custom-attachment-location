@@ -174,6 +174,13 @@ export const ms: Translations<PluginTypes> = {
       },
       name: 'Mod pengumpulan lampiran yang digunakan oleh beberapa nota'
     },
+    collectedAttachmentFileName: {
+      description: {
+        part1: 'Lihat token',
+        part2: 'yang tersedia'
+      },
+      name: 'Nama fail lampiran yang dikumpulkan'
+    },
     customTokens: {
       description: {
         part1: 'Token kustom yang akan digunakan.',
@@ -271,6 +278,13 @@ export const ms: Translations<PluginTypes> = {
       name: 'Format URL Markdown'
     },
     renameAttachmentsToLowerCase: 'Nama semula lampiran kepada huruf kecil',
+    renamedAttachmentFileName: {
+      description: {
+        part1: 'Lihat token',
+        part2: 'yang tersedia'
+      },
+      name: 'Nama fail lampiran yang dinamakan semula'
+    },
     resetToSampleCustomTokens: {
       message: 'Adakah anda pasti mahu menetapkan semula token kustom kepada token kustom sampel? Perubahan anda akan hilang.',
       title: 'Tetapkan semula kepada token kustom sampel'
@@ -285,7 +299,10 @@ export const ms: Translations<PluginTypes> = {
       name: 'Sama ada memadamkan lampiran yatim'
     },
     shouldRenameAttachmentFiles: {
-      description: 'Sama ada untuk menamakan semula fail lampiran apabila nota dinamakan semula atau dipindahkan.',
+      description: {
+        part1: 'Jika diaktifkan, apabila nota dinamakan semula atau dipindahkan, lampirannya akan dinamakan semula mengikut',
+        part2: 'tetapan.'
+      },
       name: 'Sama ada menamakan semula fail lampiran'
     },
     shouldRenameAttachmentFolders: {

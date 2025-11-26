@@ -42,7 +42,22 @@ export async function getAttachmentFolderFullPathForPath(
 }
 
 export async function getGeneratedAttachmentFileBaseName(plugin: Plugin, substitutions: Substitutions): Promise<string> {
-  const path = await resolvePathTemplate(plugin, plugin.settings.generatedAttachmentFileName, substitutions, true);
+  let baseTemplate: string;
+  switch (substitutions.actionContext) {
+    case ActionContext.CollectAttachments:
+      baseTemplate = plugin.settings.collectedAttachmentFileName;
+      break;
+    case ActionContext.RenameNote:
+      baseTemplate = plugin.settings.renamedAttachmentFileName;
+      break;
+    default:
+      baseTemplate = plugin.settings.generatedAttachmentFileName;
+      break;
+  }
+
+  baseTemplate ||= plugin.settings.generatedAttachmentFileName;
+
+  const path = await resolvePathTemplate(plugin, baseTemplate, substitutions, true);
   let validationMessage = await validatePath({
     areTokensAllowed: false,
     path,

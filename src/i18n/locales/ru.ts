@@ -174,6 +174,13 @@ export const ru: Translations<PluginTypes> = {
       },
       name: 'Режим сбора вложений, используемых несколькими заметками'
     },
+    collectedAttachmentFileName: {
+      description: {
+        part1: 'См.',
+        part2: 'доступные токены'
+      },
+      name: 'Собранное имя файла вложения'
+    },
     customTokens: {
       description: {
         part1: 'Пользовательские токены для использования.',
@@ -271,6 +278,13 @@ export const ru: Translations<PluginTypes> = {
       name: 'Формат URL для Markdown'
     },
     renameAttachmentsToLowerCase: 'Переименовывать вложения строчными буквами',
+    renamedAttachmentFileName: {
+      description: {
+        part1: 'См.',
+        part2: 'доступные токены'
+      },
+      name: 'Переименованное имя файла вложения'
+    },
     resetToSampleCustomTokens: {
       message: 'Вы уверены, что хотите сбросить пользовательские токены до образцов? Все ваши изменения будут потеряны.',
       title: 'Сбросить к образцам токенов'
@@ -285,7 +299,10 @@ export const ru: Translations<PluginTypes> = {
       name: 'Удалять осиротевшие вложения'
     },
     shouldRenameAttachmentFiles: {
-      description: 'Определяет, нужно ли переименовывать файлы вложений при переименовании или перемещении заметки.',
+      description: {
+        part1: 'Если включено, при переименовании или перемещении заметки её вложения будут переименованы согласно',
+        part2: 'настройке.'
+      },
       name: 'Переименовывать файлы вложений'
     },
     shouldRenameAttachmentFolders: {

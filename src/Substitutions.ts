@@ -277,9 +277,9 @@ export class Substitutions {
     this.registerCustomTokens('');
   }
 
+  public readonly actionContext: ActionContext;
   public readonly noteFolderPath: string;
 
-  private readonly actionContext: ActionContext;
   private readonly app: App;
   private readonly attachmentFileContent: ArrayBuffer | undefined;
   private readonly attachmentFileStat: FileStats | undefined;

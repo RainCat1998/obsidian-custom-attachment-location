@@ -175,6 +175,15 @@ export const es: Translations<PluginTypes> = {
       },
       name: 'Modo de recopilar archivo adjunto usado por múltiples notas'
     },
+    collectedAttachmentFileName: {
+      description: {
+        part1: 'Ver',
+        part2: 'tokens disponibles',
+        part3: 'Dejar en blanco para usar',
+        part4: 'configuración en su lugar.'
+      },
+      name: 'Nombre de archivo adjunto recopilado'
+    },
     customTokens: {
       description: {
         part1: 'Tokens personalizados a usar.',
@@ -272,6 +281,15 @@ export const es: Translations<PluginTypes> = {
       name: 'Formato de URL Markdown'
     },
     renameAttachmentsToLowerCase: 'Renombrar archivos adjuntos a minúsculas',
+    renamedAttachmentFileName: {
+      description: {
+        part1: 'Ver',
+        part2: 'tokens disponibles',
+        part3: 'Dejar en blanco para usar',
+        part4: 'configuración en su lugar.'
+      },
+      name: 'Nombre de archivo adjunto renombrado'
+    },
     resetToSampleCustomTokens: {
       message: '¿Estás seguro de que quieres resetear los tokens personalizados a los tokens personalizados de muestra? Tus cambios se perderán.',
       title: 'Resetear a tokens personalizados de muestra'
@@ -286,7 +304,10 @@ export const es: Translations<PluginTypes> = {
       name: 'Si eliminar archivos adjuntos huérfanos'
     },
     shouldRenameAttachmentFiles: {
-      description: 'Si renombrar archivos adjuntos cuando una nota es renombrada o movida.',
+      description: {
+        part1: 'Si está habilitado, cuando una nota es renombrada o movida, sus archivos adjuntos serán renombrados según la',
+        part2: 'configuración.'
+      },
       name: 'Si renombrar archivos adjuntos'
     },
     shouldRenameAttachmentFolders: {

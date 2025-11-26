@@ -174,6 +174,15 @@ export const hu: Translations<PluginTypes> = {
       },
       name: 'Több jegyzet által használt melléklet gyűjtési mód'
     },
+    collectedAttachmentFileName: {
+      description: {
+        part1: 'Lásd az elérhető',
+        part2: 'tokeneket',
+        part3: 'Hagyd üresen, hogy a',
+        part4: 'beállítást használd helyette.'
+      },
+      name: 'Gyűjtött melléklet fájlnév'
+    },
     customTokens: {
       description: {
         part1: 'Használandó egyéni tokenek.',
@@ -270,6 +279,15 @@ export const hu: Translations<PluginTypes> = {
       name: 'Markdown URL formátum'
     },
     renameAttachmentsToLowerCase: 'Mellékletek átnevezése kisbetűre',
+    renamedAttachmentFileName: {
+      description: {
+        part1: 'Lásd az elérhető',
+        part2: 'tokeneket',
+        part3: 'Hagyd üresen, hogy a',
+        part4: 'beállítást használd helyette.'
+      },
+      name: 'Átnevezett melléklet fájlnév'
+    },
     resetToSampleCustomTokens: {
       message: 'Biztosan visszaállítod az egyéni tokeneket a minta egyéni tokenekre? A változtatásaid elvesznek.',
       title: 'Visszaállítás minta egyéni tokenekre'
@@ -284,7 +302,10 @@ export const hu: Translations<PluginTypes> = {
       name: 'Árva mellékletek törlése'
     },
     shouldRenameAttachmentFiles: {
-      description: 'Melléklet fájlok átnevezése, amikor egy jegyzet átnevezésre kerül vagy áthelyezésre.',
+      description: {
+        part1: 'Ha engedélyezve, amikor egy jegyzet átnevezésre kerül vagy áthelyezésre, a melléklet fájljai átnevezésre kerülnek a',
+        part2: 'beállítás szerint.'
+      },
       name: 'Melléklet fájlok átnevezése'
     },
     shouldRenameAttachmentFolders: {

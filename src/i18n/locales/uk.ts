@@ -174,6 +174,13 @@ export const uk: Translations<PluginTypes> = {
       },
       name: 'Режим збору вкладень, які використовуються кількома нотатками'
     },
+    collectedAttachmentFileName: {
+      description: {
+        part1: 'Див. доступні',
+        part2: 'токени'
+      },
+      name: 'Назва зібраного файлу вкладення'
+    },
     customTokens: {
       description: {
         part1: 'Користувацькі токени для використання.',
@@ -271,6 +278,13 @@ export const uk: Translations<PluginTypes> = {
       name: 'Формат URL Markdown'
     },
     renameAttachmentsToLowerCase: 'Перейменовувати вкладення з маленьких літер',
+    renamedAttachmentFileName: {
+      description: {
+        part1: 'Див. доступні',
+        part2: 'токени'
+      },
+      name: 'Назва перейменованого файлу вкладення'
+    },
     resetToSampleCustomTokens: {
       message: 'Ви впевнені, що хочете скинути користувацькі токени до прикладу? Ваші зміни буде втрачено.',
       title: 'Скинути до прикладу'
@@ -285,7 +299,10 @@ export const uk: Translations<PluginTypes> = {
       name: 'Видаляти осиротілі вкладення'
     },
     shouldRenameAttachmentFiles: {
-      description: 'Перейменовувати файли вкладень при перейменуванні або переміщенні нотатки.',
+      description: {
+        part1: 'Якщо увімкнено, при перейменуванні або переміщенні нотатки її вкладення будуть перейменовані згідно з',
+        part2: 'налаштуванням.'
+      },
       name: 'Перейменовувати файли вкладень'
     },
     shouldRenameAttachmentFolders: {

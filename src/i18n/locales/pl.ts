@@ -174,6 +174,13 @@ export const pl: Translations<PluginTypes> = {
       },
       name: 'Tryb zbierania załączników używanych przez wiele notatek'
     },
+    collectedAttachmentFileName: {
+      description: {
+        part1: 'Zobacz dostępne',
+        part2: 'tokeny'
+      },
+      name: 'Zebrana nazwa pliku załącznika'
+    },
     customTokens: {
       description: {
         part1: 'Niestandardowe tokeny do użycia.',
@@ -271,6 +278,13 @@ export const pl: Translations<PluginTypes> = {
       name: 'Format adresu URL w Markdown'
     },
     renameAttachmentsToLowerCase: 'Przemianuj załączniki na małe litery',
+    renamedAttachmentFileName: {
+      description: {
+        part1: 'Zobacz dostępne',
+        part2: 'tokeny'
+      },
+      name: 'Przemianowana nazwa pliku załącznika'
+    },
     resetToSampleCustomTokens: {
       message: 'Czy na pewno chcesz zresetować niestandardowe tokeny do przykładowych? Twoje zmiany zostaną utracone.',
       title: 'Resetuj do przykładowych niestandardowych tokenów'
@@ -285,7 +299,10 @@ export const pl: Translations<PluginTypes> = {
       name: 'Czy usuwać osierocone załączniki'
     },
     shouldRenameAttachmentFiles: {
-      description: 'Czy przemianowywać pliki załączników, gdy notatka jest przemianowana lub przeniesiona.',
+      description: {
+        part1: 'Jeśli włączone, gdy notatka jest przemianowana lub przeniesiona, jej załączniki będą przemianowane zgodnie z',
+        part2: 'ustawieniem.'
+      },
       name: 'Czy przemianować pliki załączników'
     },
     shouldRenameAttachmentFolders: {

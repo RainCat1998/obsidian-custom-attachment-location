@@ -171,6 +171,13 @@ export const zhTW: Translations<PluginTypes> = {
       },
       name: '多筆記共用附件收集模式'
     },
+    collectedAttachmentFileName: {
+      description: {
+        part1: '參見可用',
+        part2: '令牌'
+      },
+      name: '收集的附件檔案名稱'
+    },
     customTokens: {
       description: {
         part1: '自訂令牌用於。',
@@ -267,6 +274,13 @@ export const zhTW: Translations<PluginTypes> = {
       name: 'Markdown URL 格式'
     },
     renameAttachmentsToLowerCase: '將附件名稱改成小寫',
+    renamedAttachmentFileName: {
+      description: {
+        part1: '參見可用',
+        part2: '令牌'
+      },
+      name: '重新命名的附件檔案名稱'
+    },
     resetToSampleCustomTokens: {
       message: '您確定要重設自訂令牌為範例令牌嗎？您的更改將會遺失。',
       title: '重設為範例令牌'
@@ -280,7 +294,10 @@ export const zhTW: Translations<PluginTypes> = {
       name: '刪除孤立附件'
     },
     shouldRenameAttachmentFiles: {
-      description: '筆記被重新命名或移動時，是否重新命名附件檔案。',
+      description: {
+        part1: '如果啟用，當筆記被重新命名或移動時，其附件將根據',
+        part2: '設定進行重新命名。'
+      },
       name: '重新命名附件檔案'
     },
     shouldRenameAttachmentFolders: {

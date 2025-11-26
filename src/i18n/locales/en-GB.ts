@@ -174,6 +174,15 @@ export const enGB: Translations<PluginTypes> = {
       },
       name: 'Collect attachment used by multiple notes mode'
     },
+    collectedAttachmentFileName: {
+      description: {
+        part1: 'See available',
+        part2: 'tokens',
+        part3: 'Leave blank to use',
+        part4: 'setting instead.'
+      },
+      name: 'Collected attachment file name'
+    },
     customTokens: {
       description: {
         part1: 'Custom tokens to be used.',
@@ -270,6 +279,15 @@ export const enGB: Translations<PluginTypes> = {
       name: 'Markdown URL format'
     },
     renameAttachmentsToLowerCase: 'Rename attachments to lower case',
+    renamedAttachmentFileName: {
+      description: {
+        part1: 'See available',
+        part2: 'tokens',
+        part3: 'Leave blank to use',
+        part4: 'setting instead.'
+      },
+      name: 'Renamed attachment file name'
+    },
     resetToSampleCustomTokens: {
       message: 'Are you sure you want to reset the custom tokens to the sample custom tokens? Your changes will be lost.',
       title: 'Reset to sample custom tokens'
@@ -284,7 +302,10 @@ export const enGB: Translations<PluginTypes> = {
       name: 'Should delete orphan attachments'
     },
     shouldRenameAttachmentFiles: {
-      description: 'Whether to rename attachment files when a note is renamed or moved.',
+      description: {
+        part1: 'If enabled, when a note is renamed or moved, its attachments will be renamed according to the',
+        part2: 'setting.'
+      },
       name: 'Should rename attachment files'
     },
     shouldRenameAttachmentFolders: {

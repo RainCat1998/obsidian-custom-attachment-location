@@ -45,6 +45,7 @@ export class PluginSettings {
   public attachmentFolderPath = './assets/${noteFileName}';
   public attachmentRenameMode: AttachmentRenameMode = AttachmentRenameMode.OnlyPastedImages;
   public collectAttachmentUsedByMultipleNotesMode: CollectAttachmentUsedByMultipleNotesMode = CollectAttachmentUsedByMultipleNotesMode.Skip;
+  public collectedAttachmentFileName = '';
   public defaultImageSize = '';
   public defaultImageSizeDimension: DefaultImageSizeDimension = DefaultImageSizeDimension.Width;
   public duplicateNameSeparator = ' ';
@@ -54,6 +55,7 @@ export class PluginSettings {
   // eslint-disable-next-line no-magic-numbers -- Magic numbers are OK in settings.
   public jpegQuality = 0.8;
   public markdownUrlFormat = '';
+  public renamedAttachmentFileName = '';
   public shouldConvertPastedImagesToJpeg = false;
   public shouldDeleteOrphanAttachments = false;
   public shouldRenameAttachmentFiles = false;

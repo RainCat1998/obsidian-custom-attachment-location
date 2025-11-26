@@ -176,6 +176,15 @@ export const ca: Translations<PluginTypes> = {
       },
       name: 'Mode de recollida d\'adjunt utilitzat per múltiples notes'
     },
+    collectedAttachmentFileName: {
+      description: {
+        part1: 'Vegeu els',
+        part2: 'tokens disponibles',
+        part3: 'Deixeu buit per utilitzar la',
+        part4: 'configuració en lloc d\'això.'
+      },
+      name: 'Nom de fitxer adjunt recollit'
+    },
     customTokens: {
       description: {
         part1: 'Tokens personalitzats a utilitzar.',
@@ -273,6 +282,15 @@ export const ca: Translations<PluginTypes> = {
       name: 'Format URL Markdown'
     },
     renameAttachmentsToLowerCase: 'Reanomenar adjunts a minúscules',
+    renamedAttachmentFileName: {
+      description: {
+        part1: 'Vegeu els',
+        part2: 'tokens disponibles',
+        part3: 'Deixeu buit per utilitzar la',
+        part4: 'configuració en lloc d\'això.'
+      },
+      name: 'Nom de fitxer adjunt reanomenat'
+    },
     resetToSampleCustomTokens: {
       message: 'Esteu segurs que voleu restablir els tokens personalitzats als tokens personalitzats de mostra? Les vostres canvis es perdran.',
       title: 'Restablir als tokens personalitzats de mostra'
@@ -287,7 +305,10 @@ export const ca: Translations<PluginTypes> = {
       name: 'Si esborrar adjunts òrfes'
     },
     shouldRenameAttachmentFiles: {
-      description: 'Si reanomenar fitxers adjunts quan una nota es reanomena o es mou.',
+      description: {
+        part1: 'Si està habilitat, quan una nota es reanomena o es mou, els seus adjunts es reanomenaran segons la',
+        part2: 'configuració.'
+      },
       name: 'Si reanomenar fitxers adjunts'
     },
     shouldRenameAttachmentFolders: {

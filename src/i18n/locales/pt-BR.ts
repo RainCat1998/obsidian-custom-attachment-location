@@ -175,6 +175,13 @@ export const ptBR: Translations<PluginTypes> = {
       },
       name: 'Modo de coleta de anexos usados por múltiplas notas'
     },
+    collectedAttachmentFileName: {
+      description: {
+        part1: 'Veja os',
+        part2: 'tokens disponíveis'
+      },
+      name: 'Nome do arquivo de anexo coletado'
+    },
     customTokens: {
       description: {
         part1: 'Tokens personalizados a serem usados.',
@@ -272,6 +279,13 @@ export const ptBR: Translations<PluginTypes> = {
       name: 'Formato de URL no Markdown'
     },
     renameAttachmentsToLowerCase: 'Renomear anexos para letras minúsculas',
+    renamedAttachmentFileName: {
+      description: {
+        part1: 'Veja os',
+        part2: 'tokens disponíveis'
+      },
+      name: 'Nome do arquivo de anexo renomeado'
+    },
     resetToSampleCustomTokens: {
       message: 'Tem certeza de que deseja redefinir os tokens personalizados para os tokens de exemplo? Suas alterações serão perdidas.',
       title: 'Redefinir para tokens de exemplo'
@@ -286,7 +300,10 @@ export const ptBR: Translations<PluginTypes> = {
       name: 'Excluir anexos órfãos'
     },
     shouldRenameAttachmentFiles: {
-      description: 'Se deve renomear arquivos de anexos quando uma nota é renomeada ou movida.',
+      description: {
+        part1: 'Se ativado, quando uma nota é renomeada ou movida, seus anexos serão renomeados de acordo com a',
+        part2: 'configuração.'
+      },
       name: 'Renomear arquivos de anexos'
     },
     shouldRenameAttachmentFolders: {

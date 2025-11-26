@@ -173,6 +173,13 @@ export const ko: Translations<PluginTypes> = {
       },
       name: '여러 노트에서 사용되는 첨부 파일 수집 모드'
     },
+    collectedAttachmentFileName: {
+      description: {
+        part1: '사용 가능한',
+        part2: '토큰을 참조하세요'
+      },
+      name: '수집된 첨부 파일 이름'
+    },
     customTokens: {
       description: {
         part1: '사용할 사용자 정의 토큰입니다.',
@@ -269,6 +276,13 @@ export const ko: Translations<PluginTypes> = {
       name: 'Markdown URL 형식'
     },
     renameAttachmentsToLowerCase: '첨부 파일을 소문자로 이름 변경',
+    renamedAttachmentFileName: {
+      description: {
+        part1: '사용 가능한',
+        part2: '토큰을 참조하세요'
+      },
+      name: '이름이 변경된 첨부 파일 이름'
+    },
     resetToSampleCustomTokens: {
       message: '사용자 정의 토큰을 샘플 사용자 정의 토큰으로 재설정하시겠습니까? 변경사항이 손실됩니다.',
       title: '샘플 사용자 정의 토큰으로 재설정'
@@ -283,7 +297,10 @@ export const ko: Translations<PluginTypes> = {
       name: '고아 첨부 파일 삭제'
     },
     shouldRenameAttachmentFiles: {
-      description: '노트의 이름이 변경되거나 이동될 때 첨부 파일의 이름을 변경할지 여부입니다.',
+      description: {
+        part1: '활성화하면 노트의 이름이 변경되거나 이동될 때 첨부 파일이',
+        part2: '설정에 따라 이름이 변경됩니다.'
+      },
       name: '첨부 파일 이름 변경'
     },
     shouldRenameAttachmentFolders: {

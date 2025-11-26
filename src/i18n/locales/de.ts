@@ -175,6 +175,15 @@ export const de: Translations<PluginTypes> = {
       },
       name: 'Sammle Anhang, der von mehreren Notizen verwendet wird - Modus'
     },
+    collectedAttachmentFileName: {
+      description: {
+        part1: 'Siehe verfügbare',
+        part2: 'Tokens',
+        part3: 'Leer lassen, um',
+        part4: 'Einstellung zu verwenden.'
+      },
+      name: 'Gesammelter Anhang-Dateiname'
+    },
     customTokens: {
       description: {
         part1: 'Zu verwendende benutzerdefinierte Tokens.',
@@ -272,6 +281,15 @@ export const de: Translations<PluginTypes> = {
       name: 'Markdown URL-Format'
     },
     renameAttachmentsToLowerCase: 'Anhänge in Kleinbuchstaben umbenennen',
+    renamedAttachmentFileName: {
+      description: {
+        part1: 'Siehe verfügbare',
+        part2: 'Tokens',
+        part3: 'Leer lassen, um',
+        part4: 'Einstellung zu verwenden.'
+      },
+      name: 'Umbenannter Anhang-Dateiname'
+    },
     resetToSampleCustomTokens: {
       message: 'Sind Sie sicher, dass Sie die benutzerdefinierten Tokens auf die Beispiel-Tokens zurücksetzen möchten? Ihre Änderungen gehen verloren.',
       title: 'Auf Beispiel-Tokens zurücksetzen'
@@ -286,7 +304,10 @@ export const de: Translations<PluginTypes> = {
       name: 'Soll verwaiste Anhänge löschen'
     },
     shouldRenameAttachmentFiles: {
-      description: 'Ob Anhang-Dateien umbenannt werden sollen, wenn eine Notiz umbenannt oder verschoben wird.',
+      description: {
+        part1: 'Wenn aktiviert, werden beim Umbenennen oder Verschieben einer Notiz ihre Anhänge entsprechend der',
+        part2: 'Einstellung umbenannt.'
+      },
       name: 'Soll Anhang-Dateien umbenennen'
     },
     shouldRenameAttachmentFolders: {

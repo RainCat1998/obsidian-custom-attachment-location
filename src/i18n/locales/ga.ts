@@ -175,6 +175,15 @@ export const ga: Translations<PluginTypes> = {
       },
       name: 'Mód bailiú ceangaltán atá in úsáid ag nótaí iomadúla'
     },
+    collectedAttachmentFileName: {
+      description: {
+        part1: 'Féach ar na',
+        part2: 'comharthaí atá ar fáil',
+        part3: 'Fág folamh chun',
+        part4: 'a úsáid ina ionad.'
+      },
+      name: 'Ainm comhad ceangaltán bailithe'
+    },
     customTokens: {
       description: {
         part1: 'Comharthaí saincheaptha le húsáid.',
@@ -272,6 +281,15 @@ export const ga: Translations<PluginTypes> = {
       name: 'Formáid URL Markdown'
     },
     renameAttachmentsToLowerCase: 'Athainmnigh ceangaltáin go litreacha beaga',
+    renamedAttachmentFileName: {
+      description: {
+        part1: 'Féach ar na',
+        part2: 'comharthaí atá ar fáil',
+        part3: 'Fág folamh chun',
+        part4: 'a úsáid ina ionad.'
+      },
+      name: 'Ainm comhad ceangaltán athainmnithe'
+    },
     resetToSampleCustomTokens: {
       message: 'An bhfuil tú cinnte gur mhaith leat na comharthaí saincheaptha a athshocrú chuig na comharthaí saincheaptha samplacha? Caillfear do athruithe.',
       title: 'Athshocraigh chuig comharthaí saincheaptha samplacha'
@@ -286,7 +304,10 @@ export const ga: Translations<PluginTypes> = {
       name: 'An gcaithfear ceangaltáin dílleachta a scriosadh'
     },
     shouldRenameAttachmentFiles: {
-      description: 'Cibé an gcaithfear comhaid ceangaltán a athainmniú nuair a athainmnítear nó a aistrítear nóta.',
+      description: {
+        part1: 'Má tá sé cumasaithe, nuair a athainmnítear nó a aistrítear nóta, athainmneofar a chomhaid ceangaltán de réir an',
+        part2: 'socraithe.'
+      },
       name: 'An gcaithfear comhaid ceangaltán a athainmniú'
     },
     shouldRenameAttachmentFolders: {

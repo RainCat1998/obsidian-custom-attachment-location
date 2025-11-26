@@ -174,6 +174,13 @@ export const lv: Translations<PluginTypes> = {
       },
       name: 'Vairākās piezimēs izmantoto pielikumu apkopošanas režīms'
     },
+    collectedAttachmentFileName: {
+      description: {
+        part1: 'Skatiet pieejamos',
+        part2: 'tokenus'
+      },
+      name: 'Apkopotais pielikuma faila nosaukums'
+    },
     customTokens: {
       description: {
         part1: 'Izmantojamie pielāgotie tokeni.',
@@ -270,6 +277,13 @@ export const lv: Translations<PluginTypes> = {
       name: 'Markdown URL formāts'
     },
     renameAttachmentsToLowerCase: 'Pārdēvēt pielikumus uz mazajiem burtiem',
+    renamedAttachmentFileName: {
+      description: {
+        part1: 'Skatiet pieejamos',
+        part2: 'tokenus'
+      },
+      name: 'Pārdēvētais pielikuma faila nosaukums'
+    },
     resetToSampleCustomTokens: {
       message: 'Vai tiešām vēlaties atiestatīt pielāgotos tokenus uz parauga pielāgotajiem tokeniem? Jūsu izmaiņas tiks zaudētas.',
       title: 'Atiestatīt uz parauga pielāgotajiem tokeniem'
@@ -284,7 +298,10 @@ export const lv: Translations<PluginTypes> = {
       name: 'Vai dzēst bāreņu pielikumus'
     },
     shouldRenameAttachmentFiles: {
-      description: 'Vai pārdēvēt pielikumu failus, kad piezime tiek pārdēvēta vai pārvietota.',
+      description: {
+        part1: 'Ja iespējots, kad piezime tiek pārdēvēta vai pārvietota, tās pielikumi tiks pārdēvēti saskaņā ar',
+        part2: 'iestatījumu.'
+      },
       name: 'Vai pārdēvēt pielikumu failus'
     },
     shouldRenameAttachmentFolders: {

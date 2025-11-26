@@ -174,6 +174,13 @@ export const vi: Translations<PluginTypes> = {
       },
       name: 'Chế độ thu thập tệp đính kèm được sử dụng bởi nhiều ghi chú'
     },
+    collectedAttachmentFileName: {
+      description: {
+        part1: 'Xem các',
+        part2: 'token có thể sử dụng'
+      },
+      name: 'Tên tệp đính kèm được thu thập'
+    },
     customTokens: {
       description: {
         part1: 'Các token tùy chỉnh để sử dụng.',
@@ -270,6 +277,13 @@ export const vi: Translations<PluginTypes> = {
       name: 'Định dạng URL Markdown'
     },
     renameAttachmentsToLowerCase: 'Đổi tên tệp đính kèm thành chữ thường',
+    renamedAttachmentFileName: {
+      description: {
+        part1: 'Xem các',
+        part2: 'token có thể sử dụng'
+      },
+      name: 'Tên tệp đính kèm được đổi tên'
+    },
     resetToSampleCustomTokens: {
       message: 'Bạn có chắc muốn đặt lại token tùy chỉnh về token mẫu? Mọi thay đổi sẽ bị mất.',
       title: 'Đặt lại token mẫu'
@@ -284,7 +298,10 @@ export const vi: Translations<PluginTypes> = {
       name: 'Xóa tệp đính kèm mồ côi'
     },
     shouldRenameAttachmentFiles: {
-      description: 'Có đổi tên các tệp đính kèm khi ghi chú được đổi tên hoặc di chuyển không.',
+      description: {
+        part1: 'Nếu bật, khi ghi chú được đổi tên hoặc di chuyển, các tệp đính kèm sẽ được đổi tên theo',
+        part2: 'cài đặt.'
+      },
       name: 'Đổi tên tệp đính kèm'
     },
     shouldRenameAttachmentFolders: {

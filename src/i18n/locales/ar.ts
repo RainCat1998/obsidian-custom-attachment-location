@@ -172,6 +172,15 @@ export const ar: Translations<PluginTypes> = {
       },
       name: 'وضع جمع المرفق المستخدم من عدة ملاحظات'
     },
+    collectedAttachmentFileName: {
+      description: {
+        part1: 'انظر',
+        part2: 'الرموز المتاحة',
+        part3: 'اتركه فارغاً لاستخدام',
+        part4: 'الإعداد بدلاً من ذلك.'
+      },
+      name: 'اسم ملف المرفق المجموع'
+    },
     customTokens: {
       description: {
         part1: 'الرموز المخصصة المراد استخدامها.',
@@ -268,6 +277,15 @@ export const ar: Translations<PluginTypes> = {
       name: 'تنسيق رابط Markdown'
     },
     renameAttachmentsToLowerCase: 'إعادة تسمية المرفقات بأحرف صغيرة',
+    renamedAttachmentFileName: {
+      description: {
+        part1: 'انظر',
+        part2: 'الرموز المتاحة',
+        part3: 'اتركه فارغاً لاستخدام',
+        part4: 'الإعداد بدلاً من ذلك.'
+      },
+      name: 'اسم ملف المرفق المُعاد تسميته'
+    },
     resetToSampleCustomTokens: {
       message: 'هل أنت متأكد من أنك تريد إعادة تعيين الرموز المخصصة إلى الرموز المخصصة النموذجية؟ ستضيع تغييراتك.',
       title: 'إعادة تعيين إلى الرموز المخصصة النموذجية'
@@ -281,7 +299,10 @@ export const ar: Translations<PluginTypes> = {
       name: 'يجب حذف المرفقات اليتيمة'
     },
     shouldRenameAttachmentFiles: {
-      description: 'ما إذا كان يجب إعادة تسمية ملفات المرفقات عند إعادة تسمية أو نقل الملاحظة.',
+      description: {
+        part1: 'إذا تم تفعيله، عند إعادة تسمية أو نقل الملاحظة، سيتم إعادة تسمية مرفقاتها وفقاً لـ',
+        part2: 'الإعداد.'
+      },
       name: 'يجب إعادة تسمية ملفات المرفقات'
     },
     shouldRenameAttachmentFolders: {

@@ -172,6 +172,15 @@ export const he: Translations<PluginTypes> = {
       },
       name: 'מצב איסוף קובץ מצורף המשמש מספר רשימות'
     },
+    collectedAttachmentFileName: {
+      description: {
+        part1: 'ראה',
+        part2: 'טוקנים זמינים',
+        part3: 'השאר ריק לשימוש בהגדרת',
+        part4: 'במקום.'
+      },
+      name: 'שם קובץ מצורף שנאסף'
+    },
     customTokens: {
       description: {
         part1: 'טוקנים מותאמים אישיים לשימוש.',
@@ -268,6 +277,15 @@ export const he: Translations<PluginTypes> = {
       name: 'פורמט URL Markdown'
     },
     renameAttachmentsToLowerCase: 'שנה שמות קבצים מצורפים לאותיות קטנות',
+    renamedAttachmentFileName: {
+      description: {
+        part1: 'ראה',
+        part2: 'טוקנים זמינים',
+        part3: 'השאר ריק לשימוש בהגדרת',
+        part4: 'במקום.'
+      },
+      name: 'שם קובץ מצורף ששמו שונה'
+    },
     resetToSampleCustomTokens: {
       message: 'האם אתה בטוח שברצונך לאפס את הטוקנים המותאמים אישיים לטוקנים המותאמים אישיים לדוגמה? השינויים שלך יאבדו.',
       title: 'אפס לטוקנים מותאמים אישיים לדוגמה'
@@ -281,7 +299,10 @@ export const he: Translations<PluginTypes> = {
       name: 'האם למחוק קבצים מצורפים יתומים'
     },
     shouldRenameAttachmentFiles: {
-      description: 'האם לשנות שמות קבצים מצורפים כאשר רשימה מקבלת שם חדש או מועברת.',
+      description: {
+        part1: 'אם מופעל, כאשר רשימה מקבלת שם חדש או מועברת, קבצי המצורפים שלה יקבלו שמות חדשים לפי הגדרת',
+        part2: '.'
+      },
       name: 'האם לשנות שמות קבצים מצורפים'
     },
     shouldRenameAttachmentFolders: {

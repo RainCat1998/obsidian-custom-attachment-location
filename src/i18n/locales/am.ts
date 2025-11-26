@@ -172,6 +172,15 @@ export const am: Translations<PluginTypes> = {
       },
       name: 'በበርካታ ማስታወሻዎች የሚጠቀም ተያያዥ መሰብሰብ ሁነታ'
     },
+    collectedAttachmentFileName: {
+      description: {
+        part1: 'የሚገኙ',
+        part2: 'ቶከኖችን ይመልከቱ',
+        part3: 'ባዶ ይተው',
+        part4: 'ቅንብርን በምትኩ ለመጠቀም።'
+      },
+      name: 'የተሰበሰበ ተያያዥ ፋይል ስም'
+    },
     customTokens: {
       description: {
         part1: 'የሚጠቀሙ የተለመዱ ቶከኖች።',
@@ -268,6 +277,15 @@ export const am: Translations<PluginTypes> = {
       name: 'Markdown URL ቅርጸት'
     },
     renameAttachmentsToLowerCase: 'ተያያዦችን ወደ ትንሽ ፊደል መለወጥ',
+    renamedAttachmentFileName: {
+      description: {
+        part1: 'የሚገኙ',
+        part2: 'ቶከኖችን ይመልከቱ',
+        part3: 'ባዶ ይተው',
+        part4: 'ቅንብርን በምትኩ ለመጠቀም።'
+      },
+      name: 'የተሰየመ ተያያዥ ፋይል ስም'
+    },
     resetToSampleCustomTokens: {
       message: 'የተለመዱ ቶከኖችን ወደ ናሙና የተለመዱ ቶከኖች ማዳከም እርግጠኛ ነዎት? የእርስዎ ለውጦች ይጠፋሉ።',
       title: 'ወደ ናሙና የተለመዱ ቶከኖች መለስ'
@@ -281,7 +299,10 @@ export const am: Translations<PluginTypes> = {
       name: 'የራሱ የሆኑ ተያያዦችን መሰረዝ አለበት'
     },
     shouldRenameAttachmentFiles: {
-      description: 'ማስታወሻ ሲሰየም ወይም ሲወሰድ፣ ተያያዥ ፋይሎችን መሰየም አለበት።',
+      description: {
+        part1: 'ከተንቃ፣ ማስታወሻ ሲሰየም ወይም ሲወሰድ፣ ተያያዦቹ በ',
+        part2: 'ቅንብር መሰረት ይሰየማሉ።'
+      },
       name: 'ተያያዥ ፋይሎችን መሰየም አለበት'
     },
     shouldRenameAttachmentFolders: {

@@ -175,6 +175,15 @@ export const it: Translations<PluginTypes> = {
       },
       name: 'Modalità raccolta allegato usato da più note'
     },
+    collectedAttachmentFileName: {
+      description: {
+        part1: 'Vedi',
+        part2: 'token disponibili',
+        part3: 'Lascia vuoto per usare l\'impostazione',
+        part4: 'al suo posto.'
+      },
+      name: 'Nome file allegato raccolto'
+    },
     customTokens: {
       description: {
         part1: 'Token personalizzati da utilizzare.',
@@ -271,6 +280,15 @@ export const it: Translations<PluginTypes> = {
       name: 'Formato URL Markdown'
     },
     renameAttachmentsToLowerCase: 'Rinomina allegati in minuscolo',
+    renamedAttachmentFileName: {
+      description: {
+        part1: 'Vedi',
+        part2: 'token disponibili',
+        part3: 'Lascia vuoto per usare l\'impostazione',
+        part4: 'al suo posto.'
+      },
+      name: 'Nome file allegato rinominato'
+    },
     resetToSampleCustomTokens: {
       message: 'Sei sicuro di voler ripristinare i token personalizzati ai token personalizzati di esempio? Le tue modifiche andranno perse.',
       title: 'Ripristina ai token personalizzati di esempio'
@@ -285,7 +303,10 @@ export const it: Translations<PluginTypes> = {
       name: 'Elimina allegati orfani'
     },
     shouldRenameAttachmentFiles: {
-      description: 'Se rinominare i file allegati quando una nota viene rinominata o spostata.',
+      description: {
+        part1: 'Se abilitato, quando una nota viene rinominata o spostata, i suoi file allegati verranno rinominati secondo l\'impostazione',
+        part2: '.'
+      },
       name: 'Rinomina file allegati'
     },
     shouldRenameAttachmentFolders: {

@@ -173,6 +173,15 @@ export const cs: Translations<PluginTypes> = {
       },
       name: 'Režim shromažďování přílohy používané více poznámkami'
     },
+    collectedAttachmentFileName: {
+      description: {
+        part1: 'Viz dostupné',
+        part2: 'tokeny',
+        part3: 'Ponechte prázdné, chcete-li použít',
+        part4: 'nastavení místo toho.'
+      },
+      name: 'Jméno souboru shromážděné přílohy'
+    },
     customTokens: {
       description: {
         part1: 'Vlastní tokeny k použití.',
@@ -269,6 +278,15 @@ export const cs: Translations<PluginTypes> = {
       name: 'Formát URL Markdown'
     },
     renameAttachmentsToLowerCase: 'Přejmenovat přílohy na malá písmena',
+    renamedAttachmentFileName: {
+      description: {
+        part1: 'Viz dostupné',
+        part2: 'tokeny',
+        part3: 'Ponechte prázdné, chcete-li použít',
+        part4: 'nastavení místo toho.'
+      },
+      name: 'Jméno souboru přejmenované přílohy'
+    },
     resetToSampleCustomTokens: {
       message: 'Jste si jisti, že chcete resetovat vlastní tokeny na ukázkové vlastní tokeny? Vaše změny budou ztraceny.',
       title: 'Resetovat na ukázkové vlastní tokeny'
@@ -283,7 +301,10 @@ export const cs: Translations<PluginTypes> = {
       name: 'Zda smazat sirotčí přílohy'
     },
     shouldRenameAttachmentFiles: {
-      description: 'Zda přejmenovat soubory příloh když je poznámka přejmenována nebo přesunuta.',
+      description: {
+        part1: 'Pokud je povoleno, když je poznámka přejmenována nebo přesunuta, její přílohy budou přejmenovány podle',
+        part2: 'nastavení.'
+      },
       name: 'Zda přejmenovat soubory příloh'
     },
     shouldRenameAttachmentFolders: {

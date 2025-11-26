@@ -173,6 +173,13 @@ export const no: Translations<PluginTypes> = {
       },
       name: 'Samle vedlegg brukt av flere notater modus'
     },
+    collectedAttachmentFileName: {
+      description: {
+        part1: 'Se tilgjengelige',
+        part2: 'tokens'
+      },
+      name: 'Samlet vedleggsfilnavn'
+    },
     customTokens: {
       description: {
         part1: 'Tilpassede tokens som skal brukes.',
@@ -269,6 +276,13 @@ export const no: Translations<PluginTypes> = {
       name: 'Markdown URL format'
     },
     renameAttachmentsToLowerCase: 'Omdøp vedlegg til små bokstaver',
+    renamedAttachmentFileName: {
+      description: {
+        part1: 'Se tilgjengelige',
+        part2: 'tokens'
+      },
+      name: 'Omdøpt vedleggsfilnavn'
+    },
     resetToSampleCustomTokens: {
       message: 'Er du sikker på at du vil tilbakestille de tilpassede tokens til eksempel tilpassede tokens? Endringene dine vil gå tapt.',
       title: 'Tilbakestill til eksempel tilpassede tokens'
@@ -283,7 +297,10 @@ export const no: Translations<PluginTypes> = {
       name: 'Skal slette forældreløse vedlegg'
     },
     shouldRenameAttachmentFiles: {
-      description: 'Om vedleggsfiler skal omdøpes når et notat omdøpes eller flyttes.',
+      description: {
+        part1: 'Hvis aktivert, når et notat omdøpes eller flyttes, vil vedleggene bli omdøpt i henhold til',
+        part2: 'innstillingen.'
+      },
       name: 'Skal omdøpe vedleggsfiler'
     },
     shouldRenameAttachmentFolders: {

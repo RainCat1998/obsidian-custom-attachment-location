@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## 9.18.0
+
+- feat: add individual rename/collect name settings
+- feat: add ${sequenceNumber} token re #247
+
 ## 9.17.17
 
 - fix: show version mismatch alert only once. re #246

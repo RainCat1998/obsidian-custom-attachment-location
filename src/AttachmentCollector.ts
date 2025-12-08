@@ -4,6 +4,7 @@ import type {
   TFolder
 } from 'obsidian';
 import type { PathOrAbstractFile } from 'obsidian-dev-utils/obsidian/FileSystem';
+import type { MaybeReturn } from 'obsidian-dev-utils/Type';
 import type { CanvasData } from 'obsidian/canvas.d.ts';
 
 import {
@@ -25,7 +26,11 @@ import {
   isNote
 } from 'obsidian-dev-utils/obsidian/FileSystem';
 import { t } from 'obsidian-dev-utils/obsidian/i18n/i18n';
-import { extractLinkFile } from 'obsidian-dev-utils/obsidian/Link';
+import {
+  editLinks,
+  extractLinkFile,
+  updateLink
+} from 'obsidian-dev-utils/obsidian/Link';
 import { loop } from 'obsidian-dev-utils/obsidian/Loop';
 import {
   getAllLinks,
@@ -146,6 +151,20 @@ export async function collectAttachments(
           case CollectAttachmentUsedByMultipleNotesMode.Copy:
             // eslint-disable-next-line require-atomic-updates -- Ignore possible race condition.
             attachmentMoveResult.newAttachmentPath = await copySafe(app, attachmentMoveResult.oldAttachmentPath, attachmentMoveResult.newAttachmentPath);
+            await editLinks(app, note, (link2): MaybeReturn<string> => {
+              const linkFile = extractLinkFile(app, link2, note);
+              if (linkFile?.path !== attachmentMoveResult.oldAttachmentPath) {
+                return;
+              }
+              return updateLink({
+                app,
+                link: link2,
+                newSourcePathOrFile: note,
+                newTargetPathOrFile: attachmentMoveResult.newAttachmentPath,
+                oldSourcePathOrFile: note,
+                oldTargetPathOrFile: attachmentMoveResult.oldAttachmentPath
+              });
+            });
             break;
           case CollectAttachmentUsedByMultipleNotesMode.Move:
             await registerMoveAttachment();

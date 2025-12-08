@@ -51,7 +51,8 @@ import {
 import {
   getAbstractFileOrNull,
   getFileOrNull,
-  getPath
+  getPath,
+  isNote
 } from 'obsidian-dev-utils/obsidian/FileSystem';
 import { t } from 'obsidian-dev-utils/obsidian/i18n/i18n';
 import {
@@ -385,7 +386,7 @@ export class Plugin extends PluginBase<PluginTypes> {
     }
 
     let attachmentPath: string;
-    if (!noteFilePath || !isNoteEx(this, noteFilePath)) {
+    if (!noteFilePath || !isNote(this.app, noteFilePath)) {
       attachmentPath = await getAvailablePathForAttachments({
         app: this.app,
         attachmentFileBaseName,

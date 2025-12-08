@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## 9.18.1
+
+- fix: change link on copied collected attachment re #250
+- chore: update libs
+
 ## 9.18.0
 
 - feat: add individual rename/collect name settings

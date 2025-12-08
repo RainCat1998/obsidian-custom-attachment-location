@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 9.18.2
+
+- fix: attachment paths for excalidraw re #249
+
 ## 9.18.1
 
 - fix: change link on copied collected attachment re #250

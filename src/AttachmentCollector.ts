@@ -228,12 +228,13 @@ export function collectAttachmentsCurrentFolder(plugin: Plugin, checking: boolea
   }
 
   if (!checking) {
-    addToQueue(
-      plugin.app,
-      (abortSignal) => collectAttachmentsInFolder(plugin, note?.parent ?? throwExpression(new Error('Parent folder not found')), abortSignal),
-      plugin.abortSignal,
-      getTimeoutInMilliseconds(plugin)
-    );
+    addToQueue({
+      abortSignal: plugin.abortSignal,
+      app: plugin.app,
+      operationFn: (abortSignal) => collectAttachmentsInFolder(plugin, note?.parent ?? throwExpression(new Error('Parent folder not found')), abortSignal),
+      operationName: 'Collect attachments in current folder',
+      timeoutInMilliseconds: getTimeoutInMilliseconds(plugin)
+    });
   }
 
   return true;
@@ -252,19 +253,26 @@ export function collectAttachmentsCurrentNote(plugin: Plugin, checking: boolean)
       return true;
     }
 
-    addToQueue(plugin.app, (abortSignal) => collectAttachments(plugin, note, {}, abortSignal), plugin.abortSignal, getTimeoutInMilliseconds(plugin));
+    addToQueue({
+      abortSignal: plugin.abortSignal,
+      app: plugin.app,
+      operationFn: (abortSignal) => collectAttachments(plugin, note, {}, abortSignal),
+      operationName: 'Collect attachments in current note',
+      timeoutInMilliseconds: getTimeoutInMilliseconds(plugin)
+    });
   }
 
   return true;
 }
 
 export function collectAttachmentsEntireVault(plugin: Plugin): void {
-  addToQueue(
-    plugin.app,
-    (abortSignal) => collectAttachmentsInFolder(plugin, plugin.app.vault.getRoot(), abortSignal),
-    plugin.abortSignal,
-    getTimeoutInMilliseconds(plugin)
-  );
+  addToQueue({
+    abortSignal: plugin.abortSignal,
+    app: plugin.app,
+    operationFn: (abortSignal) => collectAttachmentsInFolder(plugin, plugin.app.vault.getRoot(), abortSignal),
+    operationName: 'Collect attachments in entire vault',
+    timeoutInMilliseconds: getTimeoutInMilliseconds(plugin)
+  });
 }
 
 export async function collectAttachmentsInFolder(plugin: Plugin, folder: TFolder, abortSignal: AbortSignal): Promise<void> {

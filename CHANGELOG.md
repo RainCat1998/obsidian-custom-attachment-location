@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 9.18.3
+
+- fix: don't interrupt on timeout re #243
+
 ## 9.18.2
 
 - fix: attachment paths for excalidraw re #249

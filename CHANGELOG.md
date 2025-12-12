@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 9.18.4
+
+- chore: update libs
+
 ## 9.18.3
 
 - fix: don't interrupt on timeout re #243

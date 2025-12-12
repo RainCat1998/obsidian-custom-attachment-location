@@ -338,6 +338,72 @@ export async function collectAttachmentsInFolder(plugin: Plugin, folder: TFolder
   });
 }
 
+export async function collectAttachment(plugin: Plugin, file: TFile, abortSignal: AbortSignal): Promise<void> {
+  abortSignal.throwIfAborted();
+  const app = plugin.app;
+
+  if (plugin.settings.isExcludedFromAttachmentCollecting(file.path)) {
+    console.warn(`Skipping collecting attachment ${file.path} as it is excluded from attachment collecting.`);
+    return;
+  }
+
+  const backlinks = await getBacklinksForFileSafe(app, file.path, {
+    timeoutInMilliseconds: plugin.settings.getTimeoutInMilliseconds()
+  });
+  abortSignal.throwIfAborted();
+
+  const backlinkPaths = backlinks.keys();
+  const noteFilePath = backlinkPaths.length > 0 ? backlinkPaths[0] ?? '' : '';
+
+  const notice = new Notice(t(($) => $.notice.collectingAttachments, { noteFilePath: noteFilePath || file.path }), 0);
+
+  const attachmentFileContent = await app.vault.readBinary(file);
+  
+  let newAttachmentName: string;
+  if (plugin.settings.shouldRenameCollectedAttachments) {
+    newAttachmentName = makeFileName(
+      await getGeneratedAttachmentFileBaseName(
+        plugin,
+        new Substitutions({
+          actionContext: ActionContext.CollectAttachments,
+          attachmentFileContent,
+          attachmentFileStat: file.stat,
+          noteFilePath,
+          originalAttachmentFileName: file.name,
+          plugin
+        })
+      ),
+      file.extension
+    );
+  } else {
+    newAttachmentName = file.name;
+  }
+
+  const newAttachmentFolderPath = await getAttachmentFolderFullPathForPath(
+    plugin,
+    ActionContext.CollectAttachments,
+    noteFilePath,
+    newAttachmentName,
+    undefined,
+    attachmentFileContent,
+    file.stat
+  );
+  const newAttachmentPath = join(newAttachmentFolderPath, newAttachmentName);
+
+  abortSignal.throwIfAborted();
+
+  if (file.path === newAttachmentPath) {
+    notice.hide();
+    new Notice(t(($) => $.notice.attachmentAlreadyInCorrectLocation));
+    return;
+  }
+
+  await renameSafe(app, file.path, newAttachmentPath);
+  
+  notice.hide();
+  new Notice(t(($) => $.notice.movedAttachmentTo, { newAttachmentPath }));
+}
+
 export function isNoteEx(plugin: Plugin, pathOrFile: null | PathOrAbstractFile): boolean {
   if (!pathOrFile || !isNote(plugin.app, pathOrFile)) {
     return false;

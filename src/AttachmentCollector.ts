@@ -232,7 +232,7 @@ export function collectAttachmentsCurrentFolder(plugin: Plugin, checking: boolea
       abortSignal: plugin.abortSignal,
       app: plugin.app,
       operationFn: (abortSignal) => collectAttachmentsInFolder(plugin, note?.parent ?? throwExpression(new Error('Parent folder not found')), abortSignal),
-      operationName: 'Collect attachments in current folder',
+      operationName: t(($) => $.commands.collectAttachmentsCurrentFolder),
       timeoutInMilliseconds: getTimeoutInMilliseconds(plugin)
     });
   }
@@ -257,7 +257,7 @@ export function collectAttachmentsCurrentNote(plugin: Plugin, checking: boolean)
       abortSignal: plugin.abortSignal,
       app: plugin.app,
       operationFn: (abortSignal) => collectAttachments(plugin, note, {}, abortSignal),
-      operationName: 'Collect attachments in current note',
+      operationName: t(($) => $.commands.collectAttachmentsCurrentNote),
       timeoutInMilliseconds: getTimeoutInMilliseconds(plugin)
     });
   }
@@ -270,7 +270,7 @@ export function collectAttachmentsEntireVault(plugin: Plugin): void {
     abortSignal: plugin.abortSignal,
     app: plugin.app,
     operationFn: (abortSignal) => collectAttachmentsInFolder(plugin, plugin.app.vault.getRoot(), abortSignal),
-    operationName: 'Collect attachments in entire vault',
+    operationName: t(($) => $.commands.collectAttachmentsEntireVault),
     timeoutInMilliseconds: getTimeoutInMilliseconds(plugin)
   });
 }

@@ -5,9 +5,8 @@ import type { PluginTypes } from '../../PluginTypes.ts';
 export const fr: Translations<PluginTypes> = {
   attachmentCollector: {
     confirm: {
-      part1: 'Voulez-vous collecter les pièces jointes pour toutes les notes du dossier :',
-      part2: 'et tous ses sous-dossiers ?',
-      part3: 'Cette opération ne peut pas être annulée.'
+      part1: 'Voulez-vous collecter les pièces jointes pour toutes les notes dans les dossiers de manière récursive ?',
+      part2: 'Cette opération ne peut pas être annulée.'
     },
     progressBar: {
       message: 'Collecte des pièces jointes {{iterationStr}} - \'{{noteFilePath}}\'.',
@@ -34,7 +33,8 @@ export const fr: Translations<PluginTypes> = {
     collectAttachmentsEntireVault: 'Collecter les pièces jointes dans tout le coffre'
   },
   menuItems: {
-    collectAttachmentsInFolder: 'Collecter les pièces jointes dans le dossier'
+    collectAttachmentsInFile: 'Collecter les pièces jointes dans le fichier',
+    collectAttachmentsInFiles: 'Collecter les pièces jointes dans les fichiers'
   },
   notice: {
     collectingAttachments: 'Collecte des pièces jointes pour \'{{noteFilePath}}\'',

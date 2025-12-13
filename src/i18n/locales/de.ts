@@ -5,9 +5,8 @@ import type { PluginTypes } from '../../PluginTypes.ts';
 export const de: Translations<PluginTypes> = {
   attachmentCollector: {
     confirm: {
-      part1: 'Möchten Sie Anhänge für alle Notizen im Ordner sammeln:',
-      part2: 'und alle seine Unterordner?',
-      part3: 'Diese Operation kann nicht rückgängig gemacht werden.'
+      part1: 'Möchten Sie Anhänge für alle Notizen in Ordnern rekursiv sammeln?',
+      part2: 'Dieser Vorgang kann nicht rückgängig gemacht werden.'
     },
     progressBar: {
       message: 'Sammle Anhänge {{iterationStr}} - \'{{noteFilePath}}\'.',
@@ -34,7 +33,8 @@ export const de: Translations<PluginTypes> = {
     collectAttachmentsEntireVault: 'Sammle Anhänge im gesamten Vault'
   },
   menuItems: {
-    collectAttachmentsInFolder: 'Sammle Anhänge im Ordner'
+    collectAttachmentsInFile: 'Anhänge in Datei sammeln',
+    collectAttachmentsInFiles: 'Anhänge in Dateien sammeln'
   },
   notice: {
     collectingAttachments: 'Sammle Anhänge für \'{{noteFilePath}}\'',

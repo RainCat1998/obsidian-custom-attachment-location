@@ -5,9 +5,8 @@ import type { PluginTypes } from '../../PluginTypes.ts';
 export const ga: Translations<PluginTypes> = {
   attachmentCollector: {
     confirm: {
-      part1: 'An bhfuil tú ag iarraidh ceangaltáin a bhailiú do na nótaí go léir sa fhillteán:',
-      part2: 'agus a chuid fofhillteáin ar fad?',
-      part3: 'Ní féidir an obráid seo a chesú.'
+      part1: 'Ar mhaith leat na ceangaltáin a bhailiú do gach nóta i bhfillteáin go hathchúrsach?',
+      part2: 'Ní féidir an oibríocht seo a chealú.'
     },
     progressBar: {
       message: 'Ag bailiú ceangaltán {{iterationStr}} - \'{{noteFilePath}}\'.',
@@ -34,7 +33,8 @@ export const ga: Translations<PluginTypes> = {
     collectAttachmentsEntireVault: 'Bailigh ceangaltáin sa taisc iomplán'
   },
   menuItems: {
-    collectAttachmentsInFolder: 'Bailigh ceangaltáin sa fhillteán'
+    collectAttachmentsInFile: 'Bailigh ceangaltáin sa chomhad',
+    collectAttachmentsInFiles: 'Bailigh ceangaltáin sna comhaid'
   },
   notice: {
     collectingAttachments: 'Ag bailiú ceangaltán do \'{{noteFilePath}}\'',

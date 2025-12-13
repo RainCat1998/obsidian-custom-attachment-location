@@ -5,9 +5,8 @@ import type { PluginTypes } from '../../PluginTypes.ts';
 export const be: Translations<PluginTypes> = {
   attachmentCollector: {
     confirm: {
-      part1: 'Ці хочаце сабраць далучэнні для ўсіх нататак у папцы:',
-      part2: 'і ўсіх яе падпапак?',
-      part3: 'Гэтую аперацыю немагчыма адмяніць.'
+      part1: 'Сабраць укладанні для ўсіх нататак у папках рэкурсіўна?',
+      part2: 'Гэтую аперацыю нельга адмяніць.'
     },
     progressBar: {
       message: 'Збор далучэнняў {{iterationStr}} - \'{{noteFilePath}}\'.',
@@ -34,7 +33,8 @@ export const be: Translations<PluginTypes> = {
     collectAttachmentsEntireVault: 'Сабраць далучэнні ва ўсёй сховішчы'
   },
   menuItems: {
-    collectAttachmentsInFolder: 'Сабраць далучэнні ў папцы'
+    collectAttachmentsInFile: 'Сабраць укладанні ў файле',
+    collectAttachmentsInFiles: 'Сабраць укладанні ў файлах'
   },
   notice: {
     collectingAttachments: 'Збор далучэнняў для \'{{noteFilePath}}\'',

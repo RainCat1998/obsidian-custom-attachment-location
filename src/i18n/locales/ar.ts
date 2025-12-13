@@ -5,9 +5,8 @@ import type { PluginTypes } from '../../PluginTypes.ts';
 export const ar: Translations<PluginTypes> = {
   attachmentCollector: {
     confirm: {
-      part1: 'هل تريد جمع المرفقات لجميع الملاحظات في المجلد:',
-      part2: 'وجميع المجلدات الفرعية؟',
-      part3: 'لا يمكن التراجع عن هذه العملية.'
+      part1: 'هل تريد جمع المرفقات لكل الملاحظات داخل المجلدات بشكلٍ متكرر؟',
+      part2: 'لا يمكن التراجع عن هذه العملية.'
     },
     progressBar: {
       message: 'جمع المرفقات {{iterationStr}} - \'{{noteFilePath}}\'.',
@@ -34,7 +33,8 @@ export const ar: Translations<PluginTypes> = {
     collectAttachmentsEntireVault: 'جمع المرفقات في الخزانة بأكملها'
   },
   menuItems: {
-    collectAttachmentsInFolder: 'جمع المرفقات في المجلد'
+    collectAttachmentsInFile: 'جمع المرفقات في الملف',
+    collectAttachmentsInFiles: 'جمع المرفقات في الملفات'
   },
   notice: {
     collectingAttachments: 'جمع المرفقات لـ \'{{noteFilePath}}\'',

@@ -5,9 +5,8 @@ import type { PluginTypes } from '../../PluginTypes.ts';
 export const kh: Translations<PluginTypes> = {
   attachmentCollector: {
     confirm: {
-      part1: 'តើអ្នកចង់ប្រក័បអទឹងដេរសម្រាប់ការចំណាំទាំងអស់នៅក្នុងទឹតែក:',
-      part2: 'និងទឹតែករងរបស់វាទាំងអស់?',
-      part3: 'ការប្រតិបត្តិការនេះមិនអាចបុកចេលបានទេ។'
+      part1: 'តើអ្នកចង់ប្រមូលឯកសារភ្ជាប់សម្រាប់កំណត់ត្រាទាំងអស់ក្នុងថតដោយធ្វើជាច្រើនកម្រិត (recursive) ដែរឬទេ?',
+      part2: 'ប្រតិបត្តិការនេះមិនអាចបង្រ្កាបវិញបានទេ។'
     },
     progressBar: {
       message: 'កំពុងប្រក័បអទឹងដេរ {{iterationStr}} - \'{{noteFilePath}}\'.',
@@ -34,7 +33,8 @@ export const kh: Translations<PluginTypes> = {
     collectAttachmentsEntireVault: 'កំពុងប្រក័បអទឹងដេរនៅក្នុងក្និនគ្រាប់មួយ'
   },
   menuItems: {
-    collectAttachmentsInFolder: 'កំពុងប្រក័បអទឹងដេរនៅក្នុងទឹតែក'
+    collectAttachmentsInFile: 'ប្រមូលឯកសារភ្ជាប់ក្នុងឯកសារ',
+    collectAttachmentsInFiles: 'ប្រមូលឯកសារភ្ជាប់ក្នុងឯកសារច្រើន'
   },
   notice: {
     collectingAttachments: 'កំពុងប្រក័បអទឹងដេរសម្រាប់ \'{{noteFilePath}}\'',

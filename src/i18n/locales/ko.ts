@@ -5,9 +5,8 @@ import type { PluginTypes } from '../../PluginTypes.ts';
 export const ko: Translations<PluginTypes> = {
   attachmentCollector: {
     confirm: {
-      part1: '폴더의 모든 노트에 대한 첨부 파일을 수집하시겠습니까:',
-      part2: '그리고 모든 하위 폴더도?',
-      part3: '이 작업은 취소할 수 없습니다.'
+      part1: '폴더의 모든 노트에 대해 첨부 파일을 재귀적으로 수집하시겠습니까?',
+      part2: '이 작업은 되돌릴 수 없습니다.'
     },
     progressBar: {
       message: '첨부 파일 수집 중 {{iterationStr}} - \'{{noteFilePath}}\'.',
@@ -34,7 +33,8 @@ export const ko: Translations<PluginTypes> = {
     collectAttachmentsEntireVault: '전체 볼트의 첨부 파일 수집'
   },
   menuItems: {
-    collectAttachmentsInFolder: '폴더의 첨부 파일 수집'
+    collectAttachmentsInFile: '파일에서 첨부 파일 수집',
+    collectAttachmentsInFiles: '여러 파일에서 첨부 파일 수집'
   },
   notice: {
     collectingAttachments: '\'{{noteFilePath}}\'의 첨부 파일 수집 중',

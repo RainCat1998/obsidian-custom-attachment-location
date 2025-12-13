@@ -5,9 +5,8 @@ import type { PluginTypes } from '../../PluginTypes.ts';
 export const ca: Translations<PluginTypes> = {
   attachmentCollector: {
     confirm: {
-      part1: 'Voleu recollir adjunts per a totes les notes de la carpeta:',
-      part2: 'i totes les seves subcarpetes?',
-      part3: 'Aquesta operació no es pot desfer.'
+      part1: 'Vols recopilar els adjunts de totes les notes de les carpetes de manera recursiva?',
+      part2: 'Aquesta operació no es pot desfer.'
     },
     progressBar: {
       message: 'Recollint adjunts {{iterationStr}} - \'{{noteFilePath}}\'.',
@@ -34,7 +33,8 @@ export const ca: Translations<PluginTypes> = {
     collectAttachmentsEntireVault: 'Recollir adjunts a tot el dipòsit'
   },
   menuItems: {
-    collectAttachmentsInFolder: 'Recollir adjunts a la carpeta'
+    collectAttachmentsInFile: 'Recopila els adjunts al fitxer',
+    collectAttachmentsInFiles: 'Recopila els adjunts als fitxers'
   },
   notice: {
     collectingAttachments: 'Recollint adjunts per a \'{{noteFilePath}}\'',

@@ -5,9 +5,8 @@ import type { PluginTypes } from '../../PluginTypes.ts';
 export const zh: Translations<PluginTypes> = {
   attachmentCollector: {
     confirm: {
-      part1: '是否要为文件夹中的所有笔记收集附件：',
-      part2: '以及其所有子文件夹？',
-      part3: '此操作无法撤销。'
+      part1: '是否要递归收集文件夹中所有笔记的附件？',
+      part2: '此操作无法撤销。'
     },
     progressBar: {
       message: '正在收集附件 {{iterationStr}} - \'{{noteFilePath}}\'。',
@@ -34,7 +33,8 @@ export const zh: Translations<PluginTypes> = {
     collectAttachmentsEntireVault: '收集整个库中的附件'
   },
   menuItems: {
-    collectAttachmentsInFolder: '收集文件夹中的附件'
+    collectAttachmentsInFile: '在文件中收集附件',
+    collectAttachmentsInFiles: '在多个文件中收集附件'
   },
   notice: {
     collectingAttachments: '正在为 \'{{noteFilePath}}\' 收集附件',

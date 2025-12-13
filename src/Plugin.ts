@@ -31,9 +31,7 @@ import {
   Menu,
   MenuItem,
   moment as moment_,
-  TAbstractFile,
   TFile,
-  TFolder,
   Vault
 } from 'obsidian';
 import { convertAsyncToSync } from 'obsidian-dev-utils/Async';
@@ -54,7 +52,6 @@ import {
   getPath,
   isNote
 } from 'obsidian-dev-utils/obsidian/FileSystem';
-import { t } from 'obsidian-dev-utils/obsidian/i18n/i18n';
 import {
   encodeUrl,
   extractLinkFile,
@@ -90,17 +87,14 @@ import {
 
 import type { PluginTypes } from './PluginTypes.ts';
 
-import {
-  collectAttachmentsCurrentFolder,
-  collectAttachmentsCurrentNote,
-  collectAttachmentsEntireVault,
-  collectAttachmentsInFolder,
-  isNoteEx
-} from './AttachmentCollector.ts';
+import { isNoteEx } from './AttachmentCollector.ts';
 import {
   getAttachmentFolderFullPathForPath,
   getGeneratedAttachmentFileBaseName
 } from './AttachmentPath.ts';
+import { CollectAttachmentsEntireVaultCommand } from './Commands/CollectAttachmentsEntireVaultCommand.ts';
+import { CollectAttachmentsInCurrentFolderCommand } from './Commands/CollectAttachmentsInCurrentFolderCommand.ts';
+import { CollectAttachmentsInFileCommand } from './Commands/CollectAttachmentsInFileCommand.ts';
 import { translationsMap } from './i18n/locales/translationsMap.ts';
 import { getImageSize } from './Image.ts';
 import { AttachmentRenameMode } from './PluginSettings.ts';
@@ -239,27 +233,9 @@ export class Plugin extends PluginBase<PluginTypes> {
       return settings;
     });
 
-    this.addCommand({
-      checkCallback: (checking) => collectAttachmentsCurrentNote(this, checking),
-      id: 'collect-attachments-current-note',
-      name: t(($) => $.commands.collectAttachmentsCurrentNote)
-    });
-
-    this.addCommand({
-      checkCallback: (checking) => collectAttachmentsCurrentFolder(this, checking),
-      id: 'collect-attachments-current-folder',
-      name: t(($) => $.commands.collectAttachmentsCurrentFolder)
-    });
-
-    this.addCommand({
-      callback: () => {
-        collectAttachmentsEntireVault(this);
-      },
-      id: 'collect-attachments-entire-vault',
-      name: t(($) => $.commands.collectAttachmentsEntireVault)
-    });
-
-    this.registerEvent(this.app.workspace.on('file-menu', this.handleFileMenu.bind(this)));
+    new CollectAttachmentsInFileCommand(this).register();
+    new CollectAttachmentsInCurrentFolderCommand(this).register();
+    new CollectAttachmentsEntireVaultCommand(this).register();
 
     registerPatch(this, this.app, {
       saveAttachment: (): SaveAttachmentFn => {
@@ -551,18 +527,6 @@ export class Plugin extends PluginBase<PluginTypes> {
     });
 
     this.isMarkdownViewPatched = true;
-  }
-
-  private handleFileMenu(menu: Menu, file: TAbstractFile): void {
-    if (!(file instanceof TFolder)) {
-      return;
-    }
-
-    menu.addItem((item) => {
-      item.setTitle(t(($) => $.menuItems.collectAttachmentsInFolder))
-        .setIcon('download')
-        .onClick(() => collectAttachmentsInFolder(this, file, this.abortSignal));
-    });
   }
 
   private async handleFileOpen(file: null | TFile): Promise<void> {

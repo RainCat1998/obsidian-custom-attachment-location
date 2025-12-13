@@ -5,9 +5,8 @@ import type { PluginTypes } from '../../PluginTypes.ts';
 export const th: Translations<PluginTypes> = {
   attachmentCollector: {
     confirm: {
-      part1: 'คุณต้องการรวบรวมไฟล์แนบสำหรับโน้ตทั้งหมดในโฟลเดอร์:',
-      part2: 'และโฟลเดอร์ย่อยทั้งหมดหรือไม่?',
-      part3: 'การดำเนินการนี้ไม่สามารถย้อนกลับได้'
+      part1: 'คุณต้องการรวบรวมไฟล์แนบสำหรับโน้ตทั้งหมดในโฟลเดอร์แบบเรียกซ้ำหรือไม่?',
+      part2: 'การดำเนินการนี้ไม่สามารถยกเลิกได้'
     },
     progressBar: {
       message: 'กำลังรวบรวมไฟล์แนบ {{iterationStr}} - \'{{noteFilePath}}\'.',
@@ -34,7 +33,8 @@ export const th: Translations<PluginTypes> = {
     collectAttachmentsEntireVault: 'รวบรวมไฟล์แนบในคลังข้อมูลทั้งหมด'
   },
   menuItems: {
-    collectAttachmentsInFolder: 'รวบรวมไฟล์แนบในโฟลเดอร์'
+    collectAttachmentsInFile: 'รวบรวมไฟล์แนบในไฟล์',
+    collectAttachmentsInFiles: 'รวบรวมไฟล์แนบในหลายไฟล์'
   },
   notice: {
     collectingAttachments: 'กำลังรวบรวมไฟล์แนบสำหรับ \'{{noteFilePath}}\'',

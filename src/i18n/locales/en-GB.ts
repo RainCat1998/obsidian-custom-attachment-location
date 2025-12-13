@@ -5,9 +5,8 @@ import type { PluginTypes } from '../../PluginTypes.ts';
 export const enGB: Translations<PluginTypes> = {
   attachmentCollector: {
     confirm: {
-      part1: 'Do you want to collect attachments for all notes in folder:',
-      part2: 'and all its subfolders?',
-      part3: 'This operation cannot be undone.'
+      part1: 'Do you want to collect attachments for all notes in folders recursively?',
+      part2: 'This operation cannot be undone.'
     },
     progressBar: {
       message: 'Collecting attachments {{iterationStr}} - \'{{noteFilePath}}\'.',
@@ -34,7 +33,8 @@ export const enGB: Translations<PluginTypes> = {
     collectAttachmentsEntireVault: 'Collect attachments in entire vault'
   },
   menuItems: {
-    collectAttachmentsInFolder: 'Collect attachments in folder'
+    collectAttachmentsInFile: 'Collect attachments in file',
+    collectAttachmentsInFiles: 'Collect attachments in files'
   },
   notice: {
     collectingAttachments: 'Collecting attachments for \'{{noteFilePath}}\'',

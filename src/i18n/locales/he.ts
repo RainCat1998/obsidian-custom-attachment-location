@@ -5,9 +5,8 @@ import type { PluginTypes } from '../../PluginTypes.ts';
 export const he: Translations<PluginTypes> = {
   attachmentCollector: {
     confirm: {
-      part1: 'האם אתה רוצה לאסוף קבצים מצורפים עבור כל הרשימות בתיקייה:',
-      part2: 'וכל תת-התיקיות שלה?',
-      part3: 'פעולה זו לא ניתנת לביטול.'
+      part1: 'האם ברצונך לאסוף קבצים מצורפים לכל ההערות בתיקיות באופן רקורסיבי?',
+      part2: 'לא ניתן לבטל פעולה זו.'
     },
     progressBar: {
       message: 'אוסף קבצים מצורפים {{iterationStr}} - \'{{noteFilePath}}\'.',
@@ -34,7 +33,8 @@ export const he: Translations<PluginTypes> = {
     collectAttachmentsEntireVault: 'אסוף קבצים מצורפים בכל הכספת'
   },
   menuItems: {
-    collectAttachmentsInFolder: 'אסוף קבצים מצורפים בתיקייה'
+    collectAttachmentsInFile: 'איסוף קבצים מצורפים בקובץ',
+    collectAttachmentsInFiles: 'איסוף קבצים מצורפים בקבצים'
   },
   notice: {
     collectingAttachments: 'אוסף קבצים מצורפים עבור \'{{noteFilePath}}\'',

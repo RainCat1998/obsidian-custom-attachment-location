@@ -5,9 +5,8 @@ import type { PluginTypes } from '../../PluginTypes.ts';
 export const ru: Translations<PluginTypes> = {
   attachmentCollector: {
     confirm: {
-      part1: 'Хотите ли вы собрать вложения для всех заметок в папке:',
-      part2: 'и во всех её подпапках?',
-      part3: 'Эта операция не может быть отменена.'
+      part1: 'Собрать вложения для всех заметок в папках (рекурсивно)?',
+      part2: 'Эту операцию нельзя отменить.'
     },
     progressBar: {
       message: 'Сбор вложений {{iterationStr}} - \'{{noteFilePath}}\'.',
@@ -34,7 +33,8 @@ export const ru: Translations<PluginTypes> = {
     collectAttachmentsEntireVault: 'Собрать вложения во всём хранилище'
   },
   menuItems: {
-    collectAttachmentsInFolder: 'Собрать вложения в папке'
+    collectAttachmentsInFile: 'Собрать вложения в файле',
+    collectAttachmentsInFiles: 'Собрать вложения в файлах'
   },
   notice: {
     collectingAttachments: 'Сбор вложений для \'{{noteFilePath}}\'',

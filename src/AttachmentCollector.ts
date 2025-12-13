@@ -1,7 +1,7 @@
 import type {
   Reference,
   ReferenceCache,
-  TFolder
+  TAbstractFile
 } from 'obsidian';
 import type { PathOrAbstractFile } from 'obsidian-dev-utils/obsidian/FileSystem';
 import type { MaybeReturn } from 'obsidian-dev-utils/Type';
@@ -18,11 +18,12 @@ import {
   abortSignalAny,
   INFINITE_TIMEOUT
 } from 'obsidian-dev-utils/AbortController';
-import { throwExpression } from 'obsidian-dev-utils/Error';
 import { appendCodeBlock } from 'obsidian-dev-utils/HTMLElement';
 import {
   getPath,
   isCanvasFile,
+  isFile,
+  isFolder,
   isNote
 } from 'obsidian-dev-utils/obsidian/FileSystem';
 import { t } from 'obsidian-dev-utils/obsidian/i18n/i18n';
@@ -221,94 +222,91 @@ export async function collectAttachments(
   notice.hide();
 }
 
-export function collectAttachmentsCurrentFolder(plugin: Plugin, checking: boolean): boolean {
-  const note = plugin.app.workspace.getActiveFile();
-  if (!isNoteEx(plugin, note)) {
-    return false;
-  }
-
-  if (!checking) {
-    addToQueue({
-      abortSignal: plugin.abortSignal,
-      app: plugin.app,
-      operationFn: (abortSignal) => collectAttachmentsInFolder(plugin, note?.parent ?? throwExpression(new Error('Parent folder not found')), abortSignal),
-      operationName: t(($) => $.commands.collectAttachmentsCurrentFolder),
-      timeoutInMilliseconds: getTimeoutInMilliseconds(plugin)
-    });
-  }
-
-  return true;
-}
-
-export function collectAttachmentsCurrentNote(plugin: Plugin, checking: boolean): boolean {
-  const note = plugin.app.workspace.getActiveFile();
-  if (!note || !isNoteEx(plugin, note)) {
-    return false;
-  }
-
-  if (!checking) {
-    if (plugin.settings.isPathIgnored(note.path)) {
-      new Notice(t(($) => $.notice.notePathIsIgnored));
-      console.warn(`Cannot collect attachments in the note as note path is ignored: ${note.path}.`);
-      return true;
-    }
-
-    addToQueue({
-      abortSignal: plugin.abortSignal,
-      app: plugin.app,
-      operationFn: (abortSignal) => collectAttachments(plugin, note, {}, abortSignal),
-      operationName: t(($) => $.commands.collectAttachmentsCurrentNote),
-      timeoutInMilliseconds: getTimeoutInMilliseconds(plugin)
-    });
-  }
-
-  return true;
-}
-
 export function collectAttachmentsEntireVault(plugin: Plugin): void {
   addToQueue({
     abortSignal: plugin.abortSignal,
     app: plugin.app,
-    operationFn: (abortSignal) => collectAttachmentsInFolder(plugin, plugin.app.vault.getRoot(), abortSignal),
+    operationFn: (abortSignal) => collectAttachmentsInAbstractFilesImpl(plugin, [plugin.app.vault.getRoot()], abortSignal),
     operationName: t(($) => $.commands.collectAttachmentsEntireVault),
     timeoutInMilliseconds: getTimeoutInMilliseconds(plugin)
   });
 }
 
-export async function collectAttachmentsInFolder(plugin: Plugin, folder: TFolder, abortSignal: AbortSignal): Promise<void> {
+export function collectAttachmentsInAbstractFiles(plugin: Plugin, abstractFiles: TAbstractFile[]): void {
+  addToQueue({
+    abortSignal: plugin.abortSignal,
+    app: plugin.app,
+    operationFn: (abortSignal) => collectAttachmentsInAbstractFilesImpl(plugin, abstractFiles, abortSignal),
+    operationName: t(($) => $.menuItems.collectAttachmentsInFile),
+    timeoutInMilliseconds: getTimeoutInMilliseconds(plugin)
+  });
+}
+
+export function isNoteEx(plugin: Plugin, pathOrFile: null | PathOrAbstractFile): boolean {
+  if (!pathOrFile || !isNote(plugin.app, pathOrFile)) {
+    return false;
+  }
+
+  const path = getPath(plugin.app, pathOrFile);
+  return plugin.settings.treatAsAttachmentExtensions.every((extension) => !path.endsWith(extension));
+}
+
+async function collectAttachmentsInAbstractFilesImpl(plugin: Plugin, abstractFiles: TAbstractFile[], abortSignal: AbortSignal): Promise<void> {
   abortSignal.throwIfAborted();
-  if (
-    !await confirm({
-      app: plugin.app,
-      cancelButtonText: t(($) => $.obsidianDevUtils.buttons.cancel),
-      message: createFragment((f) => {
-        f.appendText(t(($) => $.attachmentCollector.confirm.part1));
-        f.appendText(' ');
-        appendCodeBlock(f, folder.path);
-        f.appendText(' ');
-        f.appendText(t(($) => $.attachmentCollector.confirm.part2));
-        f.createEl('br');
-        f.appendText(t(($) => $.attachmentCollector.confirm.part3));
-      }),
-      okButtonText: t(($) => $.obsidianDevUtils.buttons.ok),
-      title: createFragment((f) => {
-        setIcon(f.createSpan(), 'lucide-alert-triangle');
-        f.appendText(' ');
-        f.appendText(t(($) => $.menuItems.collectAttachmentsInFolder));
-      })
+  const singleFile: TFile | null = abstractFiles.length === 1 && isFile(abstractFiles[0]) ? abstractFiles[0] : null;
+
+  if (singleFile && plugin.settings.isPathIgnored(singleFile.path)) {
+    new Notice(t(($) => $.notice.notePathIsIgnored));
+    console.warn(`Cannot collect attachments in the note as note path is ignored: ${singleFile.path}.`);
+    return;
+  }
+
+  const canCollectAttachments = !!singleFile || (await confirm({
+    app: plugin.app,
+    cancelButtonText: t(($) => $.obsidianDevUtils.buttons.cancel),
+    message: createFragment((f) => {
+      f.appendText(t(($) => $.attachmentCollector.confirm.part1));
+      f.createEl('br');
+      f.createEl('ul', {}, (ul) => {
+        for (const abstractFile of abstractFiles) {
+          ul.createEl('li', {}, (li) => {
+            appendCodeBlock(li, abstractFile.path);
+          });
+        }
+      });
+      f.createEl('br');
+      f.appendText(t(($) => $.attachmentCollector.confirm.part2));
+    }),
+    okButtonText: t(($) => $.obsidianDevUtils.buttons.ok),
+    title: createFragment((f) => {
+      setIcon(f.createSpan(), 'lucide-alert-triangle');
+      f.appendText(' ');
+      f.appendText(t(($) => $.menuItems.collectAttachmentsInFiles));
     })
-  ) {
+  }));
+
+  if (!canCollectAttachments) {
     abortSignal.throwIfAborted();
     return;
   }
-  plugin.consoleDebug(`Collect attachments in folder: ${folder.path}`);
-  const noteFiles: TFile[] = [];
-  Vault.recurseChildren(folder, (child) => {
-    if (isNoteEx(plugin, child) && child instanceof TFile) {
-      noteFiles.push(child);
-    }
-  });
+  plugin.consoleDebug(`Collect attachments in files:\n${abstractFiles.map((abstractFile) => abstractFile.path).join('\n')}`);
+  const noteFilesSet = new Set<TFile>();
 
+  for (const abstractFile of abstractFiles) {
+    if (isFile(abstractFile) && isNote(plugin.app, abstractFile)) {
+      noteFilesSet.add(abstractFile);
+    }
+
+    if (isFolder(abstractFile)) {
+      Vault.recurseChildren(abstractFile, (child) => {
+        if (isFile(child) && isNote(plugin.app, child)) {
+          noteFilesSet.add(child);
+        }
+      });
+    }
+  }
+
+  const noteFiles = Array.from(noteFilesSet);
   noteFiles.sort((a, b) => a.path.localeCompare(b.path));
 
   const ctx: CollectAttachmentContext = {};
@@ -338,15 +336,6 @@ export async function collectAttachmentsInFolder(plugin: Plugin, folder: TFolder
   });
 }
 
-export function isNoteEx(plugin: Plugin, pathOrFile: null | PathOrAbstractFile): boolean {
-  if (!pathOrFile || !isNote(plugin.app, pathOrFile)) {
-    return false;
-  }
-
-  const path = getPath(plugin.app, pathOrFile);
-  return plugin.settings.treatAsAttachmentExtensions.every((extension) => !path.endsWith(extension));
-}
-
 async function getCanvasLinks(app: App, canvasFile: TFile): Promise<ReferenceCache[]> {
   const canvasData = await app.vault.readJson(canvasFile.path) as CanvasData;
   const paths = canvasData.nodes.filter((node) => node.type === 'file').map((node) => node.file);
@@ -362,8 +351,8 @@ async function getCanvasLinks(app: App, canvasFile: TFile): Promise<ReferenceCac
 
 function getTimeoutInMilliseconds(plugin: Plugin): number {
   return plugin.settings.collectAttachmentUsedByMultipleNotesMode === CollectAttachmentUsedByMultipleNotesMode.Prompt
-      || hasPromptToken(plugin.settings.attachmentFolderPath)
-      || hasPromptToken(plugin.settings.generatedAttachmentFileName)
+    || hasPromptToken(plugin.settings.attachmentFolderPath)
+    || hasPromptToken(plugin.settings.generatedAttachmentFileName)
     ? INFINITE_TIMEOUT
     : plugin.settings.getTimeoutInMilliseconds();
 }

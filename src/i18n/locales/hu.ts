@@ -5,9 +5,8 @@ import type { PluginTypes } from '../../PluginTypes.ts';
 export const hu: Translations<PluginTypes> = {
   attachmentCollector: {
     confirm: {
-      part1: 'Szeretné összegyűjteni a mellékleteket a mappa összes jegyzetéhez:',
-      part2: 'és az összes almappájához?',
-      part3: 'Ez a művelet nem vonható vissza.'
+      part1: 'Szeretnéd összegyűjteni a mellékleteket a mappákban lévő összes jegyzethez rekurzívan?',
+      part2: 'Ez a művelet nem vonható vissza.'
     },
     progressBar: {
       message: 'Mellékletek összegyűjtése {{iterationStr}} - \'{{noteFilePath}}\'.',
@@ -34,7 +33,8 @@ export const hu: Translations<PluginTypes> = {
     collectAttachmentsEntireVault: 'Mellékletek gyűjtése a teljes tárolóból'
   },
   menuItems: {
-    collectAttachmentsInFolder: 'Mellékletek gyűjtése a mappából'
+    collectAttachmentsInFile: 'Mellékletek összegyűjtése a fájlban',
+    collectAttachmentsInFiles: 'Mellékletek összegyűjtése a fájlokban'
   },
   notice: {
     collectingAttachments: 'Mellékletek gyűjtése a következőhöz: \'{{noteFilePath}}\'',

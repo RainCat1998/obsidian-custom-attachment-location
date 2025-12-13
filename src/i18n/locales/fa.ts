@@ -5,9 +5,8 @@ import type { PluginTypes } from '../../PluginTypes.ts';
 export const fa: Translations<PluginTypes> = {
   attachmentCollector: {
     confirm: {
-      part1: 'آیا می‌خواهید پیوست‌های همه یادداشت‌های موجود در پوشه جمع‌آوری شوند:',
-      part2: 'و همه زیرپوشه‌های آن؟',
-      part3: 'این عملیات قابل بازگشت نیست.'
+      part1: 'آیا می‌خواهید پیوست‌های همهٔ یادداشت‌ها را در پوشه‌ها به‌صورت بازگشتی جمع‌آوری کنید؟',
+      part2: 'این عملیات قابل بازگشت نیست.'
     },
     progressBar: {
       message: 'جمع‌آوری پیوست‌ها {{iterationStr}} - \'{{noteFilePath}}\'.',
@@ -34,7 +33,8 @@ export const fa: Translations<PluginTypes> = {
     collectAttachmentsEntireVault: 'جمع‌آوری پیوست‌ها در کل خزانه'
   },
   menuItems: {
-    collectAttachmentsInFolder: 'جمع‌آوری پیوست‌ها در پوشه'
+    collectAttachmentsInFile: 'جمع‌آوری پیوست‌ها در فایل',
+    collectAttachmentsInFiles: 'جمع‌آوری پیوست‌ها در فایل‌ها'
   },
   notice: {
     collectingAttachments: 'جمع‌آوری پیوست‌ها برای \'{{noteFilePath}}\'',

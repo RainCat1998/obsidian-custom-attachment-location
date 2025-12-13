@@ -5,9 +5,8 @@ import type { PluginTypes } from '../../PluginTypes.ts';
 export const vi: Translations<PluginTypes> = {
   attachmentCollector: {
     confirm: {
-      part1: 'Bạn có muốn thu thập các tệp đính kèm cho tất cả ghi chú trong thư mục:',
-      part2: 'và tất cả các thư mục con của nó?',
-      part3: 'Thao tác này không thể hoàn tác.'
+      part1: 'Bạn có muốn thu thập tệp đính kèm cho tất cả ghi chú trong các thư mục (đệ quy) không?',
+      part2: 'Thao tác này không thể hoàn tác.'
     },
     progressBar: {
       message: 'Đang thu thập tệp đính kèm {{iterationStr}} - \'{{noteFilePath}}\'.',
@@ -34,7 +33,8 @@ export const vi: Translations<PluginTypes> = {
     collectAttachmentsEntireVault: 'Thu thập tệp đính kèm trong toàn bộ kho'
   },
   menuItems: {
-    collectAttachmentsInFolder: 'Thu thập tệp đính kèm trong thư mục'
+    collectAttachmentsInFile: 'Thu thập tệp đính kèm trong tệp',
+    collectAttachmentsInFiles: 'Thu thập tệp đính kèm trong các tệp'
   },
   notice: {
     collectingAttachments: 'Đang thu thập tệp đính kèm cho \'{{noteFilePath}}\'',

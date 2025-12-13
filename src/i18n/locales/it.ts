@@ -5,9 +5,8 @@ import type { PluginTypes } from '../../PluginTypes.ts';
 export const it: Translations<PluginTypes> = {
   attachmentCollector: {
     confirm: {
-      part1: 'Vuoi raccogliere gli allegati per tutte le note nella cartella:',
-      part2: 'e tutte le sue sottocartelle?',
-      part3: 'Questa operazione non può essere annullata.'
+      part1: 'Vuoi raccogliere gli allegati per tutte le note nelle cartelle in modo ricorsivo?',
+      part2: 'Questa operazione non può essere annullata.'
     },
     progressBar: {
       message: 'Raccolta allegati {{iterationStr}} - \'{{noteFilePath}}\'.',
@@ -34,7 +33,8 @@ export const it: Translations<PluginTypes> = {
     collectAttachmentsEntireVault: 'Raccogli allegati nell\'intero vault'
   },
   menuItems: {
-    collectAttachmentsInFolder: 'Raccogli allegati nella cartella'
+    collectAttachmentsInFile: 'Raccogli allegati nel file',
+    collectAttachmentsInFiles: 'Raccogli allegati nei file'
   },
   notice: {
     collectingAttachments: 'Raccolta allegati per \'{{noteFilePath}}\'',

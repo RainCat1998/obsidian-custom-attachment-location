@@ -5,9 +5,8 @@ import type { PluginTypes } from '../../PluginTypes.ts';
 export const tr: Translations<PluginTypes> = {
   attachmentCollector: {
     confirm: {
-      part1: 'Klasördeki tüm notlar için ekleri toplamak istiyor musunuz:',
-      part2: 've tüm alt klasörlerinde?',
-      part3: 'Bu işlem geri alınamaz.'
+      part1: 'Klasörlerdeki tüm notlar için ekleri yinelemeli olarak toplamak ister misiniz?',
+      part2: 'Bu işlem geri alınamaz.'
     },
     progressBar: {
       message: 'Ekler toplanıyor {{iterationStr}} - \'{{noteFilePath}}\'.',
@@ -34,7 +33,8 @@ export const tr: Translations<PluginTypes> = {
     collectAttachmentsEntireVault: 'Tüm kasadaki ekleri topla'
   },
   menuItems: {
-    collectAttachmentsInFolder: 'Klasördeki ekleri topla'
+    collectAttachmentsInFile: 'Dosyada ekleri topla',
+    collectAttachmentsInFiles: 'Dosyalarda ekleri topla'
   },
   notice: {
     collectingAttachments: '\'{{noteFilePath}}\' için ekler toplanıyor',

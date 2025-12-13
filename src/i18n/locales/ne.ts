@@ -5,9 +5,8 @@ import type { PluginTypes } from '../../PluginTypes.ts';
 export const ne: Translations<PluginTypes> = {
   attachmentCollector: {
     confirm: {
-      part1: 'के तपाईँ फोल्डरमा सबै नोटहरूका लागि संलग्नकहरू संकलन गर्न चाहनुहुन्छ:',
-      part2: 'र यसका सबै उपफोल्डरहरूमा?',
-      part3: 'यो कार्य पूर्वावस्थामा फर्काउन सकिंदैन।'
+      part1: 'के तपाईं फोल्डरहरूभित्रका सबै नोटहरूका लागि संलग्नकहरूलाई पुनरावर्ती रूपमा सङ्कलन गर्न चाहनुहुन्छ?',
+      part2: 'यो कार्य उल्ट्याउन सकिँदैन।'
     },
     progressBar: {
       message: 'संलग्नकहरू संकलन गर्दै {{iterationStr}} - \'{{noteFilePath}}\'.',
@@ -34,7 +33,8 @@ export const ne: Translations<PluginTypes> = {
     collectAttachmentsEntireVault: 'सम्पूर्ण भाल्टमा संलग्नकहरू संकलन गर्नुहोस्'
   },
   menuItems: {
-    collectAttachmentsInFolder: 'फोल्डरमा संलग्नकहरू संकलन गर्नुहोस्'
+    collectAttachmentsInFile: 'फाइलमा संलग्नकहरू सङ्कलन गर्नुहोस्',
+    collectAttachmentsInFiles: 'फाइलहरूमा संलग्नकहरू सङ्कलन गर्नुहोस्'
   },
   notice: {
     collectingAttachments: '\'{{noteFilePath}}\' का लागि संलग्नकहरू संकलन गर्दै',

@@ -5,9 +5,8 @@ import type { PluginTypes } from '../../PluginTypes.ts';
 export const ro: Translations<PluginTypes> = {
   attachmentCollector: {
     confirm: {
-      part1: 'Doriți să colectați atașamentele pentru toate notițele din dosarul:',
-      part2: 'și toate subdosarele acestuia?',
-      part3: 'Această operațiune nu poate fi anulată.'
+      part1: 'Doriți să colectați atașamentele pentru toate notițele din foldere în mod recursiv?',
+      part2: 'Această operațiune nu poate fi anulată.'
     },
     progressBar: {
       message: 'Colectez atașamente {{iterationStr}} - \'{{noteFilePath}}\'.',
@@ -34,7 +33,8 @@ export const ro: Translations<PluginTypes> = {
     collectAttachmentsEntireVault: 'Colectează atașamentele din întregul seif'
   },
   menuItems: {
-    collectAttachmentsInFolder: 'Colectează atașamentele din dosar'
+    collectAttachmentsInFile: 'Colectează atașamentele în fișier',
+    collectAttachmentsInFiles: 'Colectează atașamentele în fișiere'
   },
   notice: {
     collectingAttachments: 'Colectez atașamentele pentru \'{{noteFilePath}}\'',

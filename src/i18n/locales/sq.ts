@@ -5,9 +5,8 @@ import type { PluginTypes } from '../../PluginTypes.ts';
 export const sq: Translations<PluginTypes> = {
   attachmentCollector: {
     confirm: {
-      part1: 'A doni të mblidhni bashkëngjitjet për të gjitha shënimet në dosjen:',
-      part2: 'dhe të gjitha nëndosjet e saj?',
-      part3: 'Ky veprim nuk mund të zhbëhet.'
+      part1: 'Dëshiron të mbledhësh bashkëngjitjet për të gjitha shënimet në dosje në mënyrë rekursive?',
+      part2: 'Ky veprim nuk mund të zhbëhet.'
     },
     progressBar: {
       message: 'Duke mbledhur bashkëngjitjet {{iterationStr}} - \'{{noteFilePath}}\'.',
@@ -34,7 +33,8 @@ export const sq: Translations<PluginTypes> = {
     collectAttachmentsEntireVault: 'Mblidh bashkëngjitjet në gjithë depozitën'
   },
   menuItems: {
-    collectAttachmentsInFolder: 'Mblidh bashkëngjitjet në dosje'
+    collectAttachmentsInFile: 'Mblidh bashkëngjitjet në skedar',
+    collectAttachmentsInFiles: 'Mblidh bashkëngjitjet në skedarë'
   },
   notice: {
     collectingAttachments: 'Duke mbledhur bashkëngjitjet për \'{{noteFilePath}}\'',

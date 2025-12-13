@@ -5,9 +5,8 @@ import type { PluginTypes } from '../../PluginTypes.ts';
 export const pt: Translations<PluginTypes> = {
   attachmentCollector: {
     confirm: {
-      part1: 'Deseja recolher anexos para todas as notas na pasta:',
-      part2: 'e todas as suas subpastas?',
-      part3: 'Esta operação não pode ser desfeita.'
+      part1: 'Você deseja coletar anexos para todas as notas nas pastas de forma recursiva?',
+      part2: 'Esta operação não pode ser desfeita.'
     },
     progressBar: {
       message: 'Recolhendo anexos {{iterationStr}} - \'{{noteFilePath}}\'.',
@@ -34,7 +33,8 @@ export const pt: Translations<PluginTypes> = {
     collectAttachmentsEntireVault: 'Recolher anexos em todo o cofre'
   },
   menuItems: {
-    collectAttachmentsInFolder: 'Recolher anexos na pasta'
+    collectAttachmentsInFile: 'Coletar anexos no arquivo',
+    collectAttachmentsInFiles: 'Coletar anexos nos arquivos'
   },
   notice: {
     collectingAttachments: 'Recolhendo anexos para \'{{noteFilePath}}\'',

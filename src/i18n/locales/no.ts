@@ -5,9 +5,8 @@ import type { PluginTypes } from '../../PluginTypes.ts';
 export const no: Translations<PluginTypes> = {
   attachmentCollector: {
     confirm: {
-      part1: 'Ønsker du å samle vedlegg for alle notater i mappen:',
-      part2: 'og alle undermappene?',
-      part3: 'Denne operasjonen kan ikke angres.'
+      part1: 'Vil du samle vedlegg for alle notater i mapper rekursivt?',
+      part2: 'Denne operasjonen kan ikke angres.'
     },
     progressBar: {
       message: 'Samler vedlegg {{iterationStr}} - \'{{noteFilePath}}\'.',
@@ -34,7 +33,8 @@ export const no: Translations<PluginTypes> = {
     collectAttachmentsEntireVault: 'Samle vedlegg i hele krypteret'
   },
   menuItems: {
-    collectAttachmentsInFolder: 'Samle vedlegg i mappe'
+    collectAttachmentsInFile: 'Samle vedlegg i fil',
+    collectAttachmentsInFiles: 'Samle vedlegg i filer'
   },
   notice: {
     collectingAttachments: 'Samler vedlegg for \'{{noteFilePath}}\'',

@@ -5,9 +5,8 @@ import type { PluginTypes } from '../../PluginTypes.ts';
 export const lv: Translations<PluginTypes> = {
   attachmentCollector: {
     confirm: {
-      part1: 'Vai vēlaties apkopot pielikumus visiem piezimēm mappē:',
-      part2: 'un visām tās apakšmappēm?',
-      part3: 'Šo darbību nevar atsaukt.'
+      part1: 'Vai vēlaties rekursīvi savākt pielikumus visām piezīmēm mapēs?',
+      part2: 'Šo darbību nevar atsaukt.'
     },
     progressBar: {
       message: 'Apkopoju pielikumus {{iterationStr}} - \'{{noteFilePath}}\'.',
@@ -34,7 +33,8 @@ export const lv: Translations<PluginTypes> = {
     collectAttachmentsEntireVault: 'Apkopot pielikumus visā glabatavā'
   },
   menuItems: {
-    collectAttachmentsInFolder: 'Apkopot pielikumus mappē'
+    collectAttachmentsInFile: 'Savākt pielikumus failā',
+    collectAttachmentsInFiles: 'Savākt pielikumus failos'
   },
   notice: {
     collectingAttachments: 'Apkopoju pielikumus priekš \'{{noteFilePath}}\'',

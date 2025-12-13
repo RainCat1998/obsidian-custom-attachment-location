@@ -5,9 +5,8 @@ import type { PluginTypes } from '../../PluginTypes.ts';
 export const pl: Translations<PluginTypes> = {
   attachmentCollector: {
     confirm: {
-      part1: 'Czy chcesz zebrać załączniki dla wszystkich notatek w folderze:',
-      part2: 'i wszystkich jego podfolderach?',
-      part3: 'Ta operacja nie może zostać cofnięta.'
+      part1: 'Czy chcesz zebrać załączniki dla wszystkich notatek w folderach rekursywnie?',
+      part2: 'Tej operacji nie można cofnąć.'
     },
     progressBar: {
       message: 'Zbieranie załączników {{iterationStr}} - \'{{noteFilePath}}\'.',
@@ -34,7 +33,8 @@ export const pl: Translations<PluginTypes> = {
     collectAttachmentsEntireVault: 'Zbierz załączniki w całym sejfie'
   },
   menuItems: {
-    collectAttachmentsInFolder: 'Zbierz załączniki w folderze'
+    collectAttachmentsInFile: 'Zbierz załączniki w pliku',
+    collectAttachmentsInFiles: 'Zbierz załączniki w plikach'
   },
   notice: {
     collectingAttachments: 'Zbieranie załączników dla \'{{noteFilePath}}\'',

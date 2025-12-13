@@ -5,9 +5,8 @@ import type { PluginTypes } from '../../PluginTypes.ts';
 export const cs: Translations<PluginTypes> = {
   attachmentCollector: {
     confirm: {
-      part1: 'Chcete shromáždit přílohy pro všechny poznámky ve složce:',
-      part2: 'a všech jejích podsložkách?',
-      part3: 'Tuto operaci nelze vrátit zpět.'
+      part1: 'Chcete shromáždit přílohy pro všechny poznámky ve složkách rekurzivně?',
+      part2: 'Tuto operaci nelze vrátit zpět.'
     },
     progressBar: {
       message: 'Shromažďování příloh {{iterationStr}} - \'{{noteFilePath}}\'.',
@@ -34,7 +33,8 @@ export const cs: Translations<PluginTypes> = {
     collectAttachmentsEntireVault: 'Shromáždit přílohy v celém úložišti'
   },
   menuItems: {
-    collectAttachmentsInFolder: 'Shromáždit přílohy ve složce'
+    collectAttachmentsInFile: 'Shromáždit přílohy v souboru',
+    collectAttachmentsInFiles: 'Shromáždit přílohy v souborech'
   },
   notice: {
     collectingAttachments: 'Shromažďování příloh pro \'{{noteFilePath}}\'',

@@ -5,9 +5,8 @@ import type { PluginTypes } from '../../PluginTypes.ts';
 export const es: Translations<PluginTypes> = {
   attachmentCollector: {
     confirm: {
-      part1: '¿Quieres recopilar archivos adjuntos para todas las notas en la carpeta:',
-      part2: 'y todas sus subcarpetas?',
-      part3: 'Esta operación no se puede deshacer.'
+      part1: '¿Quieres recopilar los archivos adjuntos de todas las notas en las carpetas de forma recursiva?',
+      part2: 'Esta operación no se puede deshacer.'
     },
     progressBar: {
       message: 'Recopilando archivos adjuntos {{iterationStr}} - \'{{noteFilePath}}\'.',
@@ -34,7 +33,8 @@ export const es: Translations<PluginTypes> = {
     collectAttachmentsEntireVault: 'Recopilar archivos adjuntos en toda la bóveda'
   },
   menuItems: {
-    collectAttachmentsInFolder: 'Recopilar archivos adjuntos en la carpeta'
+    collectAttachmentsInFile: 'Recopilar adjuntos en el archivo',
+    collectAttachmentsInFiles: 'Recopilar adjuntos en los archivos'
   },
   notice: {
     collectingAttachments: 'Recopilando archivos adjuntos para \'{{noteFilePath}}\'',

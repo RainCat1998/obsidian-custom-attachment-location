@@ -5,9 +5,8 @@ import type { PluginTypes } from '../../PluginTypes.ts';
 export const am: Translations<PluginTypes> = {
   attachmentCollector: {
     confirm: {
-      part1: 'በፎልደሩ ውስጥ ለሁሉም ማስታወሻዎች ተያያዥ ፋይሎችን መሰብሰብ ይፈልጋሉ:',
-      part2: 'እና ሁሉንም ንዑስ ፎልደሮች?',
-      part3: 'ይህ ስራ ሊመለስ አይችልም።'
+      part1: 'በአቃፊዎች ውስጥ ላሉ ሁሉም ማስታወሻዎች ተያያዥ ፋይሎችን በተደጋጋሚ መሰብሰብ ትፈልጋለህ?',
+      part2: 'ይህ እርምጃ መመለስ አይቻልም።'
     },
     progressBar: {
       message: 'ተያያዥ ፋይሎችን በመሰብሰብ ላይ {{iterationStr}} - \'{{noteFilePath}}\'።',
@@ -34,7 +33,8 @@ export const am: Translations<PluginTypes> = {
     collectAttachmentsEntireVault: 'በሙሉ ቫውልት ውስጥ ተያያዦችን መሰብሰብ'
   },
   menuItems: {
-    collectAttachmentsInFolder: 'በፎልደር ውስጥ ተያያዦችን መሰብሰብ'
+    collectAttachmentsInFile: 'በፋይል ውስጥ ተያያዥ ፋይሎችን ሰብስብ',
+    collectAttachmentsInFiles: 'በፋይሎች ውስጥ ተያያዥ ፋይሎችን ሰብስብ'
   },
   notice: {
     collectingAttachments: 'ለ \'{{noteFilePath}}\' ተያያዦችን በመሰብሰብ ላይ',

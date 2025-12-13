@@ -5,9 +5,8 @@ import type { PluginTypes } from '../../PluginTypes.ts';
 export const ja: Translations<PluginTypes> = {
   attachmentCollector: {
     confirm: {
-      part1: 'フォルダ内のすべてのノートの添付ファイルを収集しますか：',
-      part2: 'とすべてのサブフォルダ？',
-      part3: 'この操作は元に戻すことができません。'
+      part1: 'フォルダ内のすべてのノートの添付ファイルを再帰的に収集しますか？',
+      part2: 'この操作は元に戻せません。'
     },
     progressBar: {
       message: '添付ファイルを収集中 {{iterationStr}} - \'{{noteFilePath}}\'.',
@@ -34,7 +33,8 @@ export const ja: Translations<PluginTypes> = {
     collectAttachmentsEntireVault: 'ボルト全体の添付ファイルを収集'
   },
   menuItems: {
-    collectAttachmentsInFolder: 'フォルダの添付ファイルを収集'
+    collectAttachmentsInFile: 'ファイル内の添付ファイルを収集',
+    collectAttachmentsInFiles: '複数ファイル内の添付ファイルを収集'
   },
   notice: {
     collectingAttachments: '\'{{noteFilePath}}\'の添付ファイルを収集中',

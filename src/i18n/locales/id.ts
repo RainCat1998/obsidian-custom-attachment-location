@@ -5,9 +5,8 @@ import type { PluginTypes } from '../../PluginTypes.ts';
 export const id: Translations<PluginTypes> = {
   attachmentCollector: {
     confirm: {
-      part1: 'Apakah Anda ingin mengumpulkan lampiran untuk semua catatan di folder:',
-      part2: 'dan semua subfoldernya?',
-      part3: 'Operasi ini tidak dapat dibatalkan.'
+      part1: 'Apakah Anda ingin mengumpulkan lampiran untuk semua catatan di folder secara rekursif?',
+      part2: 'Operasi ini tidak dapat dibatalkan.'
     },
     progressBar: {
       message: 'Mengumpulkan lampiran {{iterationStr}} - \'{{noteFilePath}}\'.',
@@ -34,7 +33,8 @@ export const id: Translations<PluginTypes> = {
     collectAttachmentsEntireVault: 'Kumpulkan lampiran di seluruh vault'
   },
   menuItems: {
-    collectAttachmentsInFolder: 'Kumpulkan lampiran di folder'
+    collectAttachmentsInFile: 'Kumpulkan lampiran di file',
+    collectAttachmentsInFiles: 'Kumpulkan lampiran di file-file'
   },
   notice: {
     collectingAttachments: 'Mengumpulkan lampiran untuk \'{{noteFilePath}}\'',

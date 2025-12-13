@@ -33,7 +33,7 @@
     "@types/semver": "latest",
     "commitizen": "^4.3.1",
     "cz-conventional-changelog": "^3.3.0",
-    "electron": "latest",
+    "electron": "39.2.6",
     "husky": "^9.1.7",
     "i18next": "^25.7.2",
     "jiti": "latest",

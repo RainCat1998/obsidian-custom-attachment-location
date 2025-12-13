@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## 9.18.5
+
+- chore: update libs re #254
+- chore: fix electron version, same as in typings
+
 ## 9.18.4
 
 - chore: update libs

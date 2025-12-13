@@ -64,6 +64,14 @@ import {
 } from './Substitutions.ts';
 import { ActionContext } from './TokenEvaluatorContext.ts';
 
+export interface GetProperAttachmentPathOptions {
+  actionContext: ActionContext;
+  attachmentFile: TFile;
+  noteFilePath: string;
+  plugin: Plugin;
+  reference: Reference;
+}
+
 interface AttachmentMoveResult {
   newAttachmentPath: string;
   oldAttachmentPath: string;
@@ -242,6 +250,44 @@ export function collectAttachmentsInAbstractFiles(plugin: Plugin, abstractFiles:
   });
 }
 
+export async function getProperAttachmentPath(options: GetProperAttachmentPathOptions): Promise<null | string> {
+  const attachmentFileContent = await options.plugin.app.vault.readBinary(options.attachmentFile);
+  const newAttachmentName = options.plugin.settings.shouldRenameCollectedAttachments
+    ? makeFileName(
+      await getGeneratedAttachmentFileBaseName(
+        options.plugin,
+        new Substitutions({
+          actionContext: options.actionContext,
+          attachmentFileContent,
+          attachmentFileStat: options.attachmentFile.stat,
+          cursorLine: isReferenceCache(options.reference) ? options.reference.position.start.line : 0,
+          noteFilePath: options.noteFilePath,
+          originalAttachmentFileName: options.attachmentFile.name,
+          plugin: options.plugin
+        })
+      ),
+      options.attachmentFile.extension
+    )
+    : options.attachmentFile.name;
+
+  const newAttachmentFolderPath = await getAttachmentFolderFullPathForPath(
+    options.plugin,
+    options.actionContext,
+    options.noteFilePath,
+    newAttachmentName,
+    undefined,
+    attachmentFileContent,
+    options.attachmentFile.stat
+  );
+  const newAttachmentPath = join(newAttachmentFolderPath, newAttachmentName);
+
+  if (options.attachmentFile.path === newAttachmentPath) {
+    return null;
+  }
+
+  return newAttachmentPath;
+}
+
 export function isNoteEx(plugin: Plugin, pathOrFile: null | PathOrAbstractFile): boolean {
   if (!pathOrFile || !isNote(plugin.app, pathOrFile)) {
     return false;
@@ -253,7 +299,7 @@ export function isNoteEx(plugin: Plugin, pathOrFile: null | PathOrAbstractFile):
 
 async function collectAttachmentsInAbstractFilesImpl(plugin: Plugin, abstractFiles: TAbstractFile[], abortSignal: AbortSignal): Promise<void> {
   abortSignal.throwIfAborted();
-  const singleFile: TFile | null = abstractFiles.length === 1 && isFile(abstractFiles[0]) ? abstractFiles[0] : null;
+  const singleFile: null | TFile = abstractFiles.length === 1 && isFile(abstractFiles[0]) ? abstractFiles[0] : null;
 
   if (singleFile && plugin.settings.isPathIgnored(singleFile.path)) {
     new Notice(t(($) => $.notice.notePathIsIgnored));
@@ -351,22 +397,22 @@ async function getCanvasLinks(app: App, canvasFile: TFile): Promise<ReferenceCac
 
 function getTimeoutInMilliseconds(plugin: Plugin): number {
   return plugin.settings.collectAttachmentUsedByMultipleNotesMode === CollectAttachmentUsedByMultipleNotesMode.Prompt
-    || hasPromptToken(plugin.settings.attachmentFolderPath)
-    || hasPromptToken(plugin.settings.generatedAttachmentFileName)
+      || hasPromptToken(plugin.settings.attachmentFolderPath)
+      || hasPromptToken(plugin.settings.generatedAttachmentFileName)
     ? INFINITE_TIMEOUT
     : plugin.settings.getTimeoutInMilliseconds();
 }
 
 async function prepareAttachmentToMove(
   plugin: Plugin,
-  link: Reference,
+  reference: Reference,
   newNotePath: string,
   oldNotePath: string,
   oldAttachmentPaths: Set<string>
 ): Promise<AttachmentMoveResult | null> {
   const app = plugin.app;
 
-  const oldAttachmentFile = extractLinkFile(app, link, oldNotePath, true);
+  const oldAttachmentFile = extractLinkFile(app, reference, oldNotePath, true);
 
   if (!oldAttachmentFile) {
     return null;
@@ -383,55 +429,24 @@ async function prepareAttachmentToMove(
   oldAttachmentPaths.add(oldAttachmentFile.path);
 
   if (oldAttachmentFile.deleted) {
-    console.warn(`Skipping collecting attachment ${link.link} as it could not be resolved.`);
+    console.warn(`Skipping collecting attachment ${reference.link} as it could not be resolved.`);
     return null;
   }
 
-  const oldAttachmentPath = oldAttachmentFile.path;
-  const oldAttachmentName = oldAttachmentFile.name;
-
-  let newAttachmentName: string;
-
-  const attachmentFileContent = await plugin.app.vault.readBinary(oldAttachmentFile);
-
-  if (plugin.settings.shouldRenameCollectedAttachments) {
-    newAttachmentName = makeFileName(
-      await getGeneratedAttachmentFileBaseName(
-        plugin,
-        new Substitutions({
-          actionContext: ActionContext.CollectAttachments,
-          attachmentFileContent,
-          attachmentFileStat: oldAttachmentFile.stat,
-          cursorLine: isReferenceCache(link) ? link.position.start.line : 0,
-          noteFilePath: newNotePath,
-          originalAttachmentFileName: oldAttachmentFile.name,
-          plugin
-        })
-      ),
-      oldAttachmentFile.extension
-    );
-  } else {
-    newAttachmentName = oldAttachmentName;
-  }
-
-  const newAttachmentFolderPath = await getAttachmentFolderFullPathForPath(
+  const newAttachmentPath = await getProperAttachmentPath({
+    actionContext: ActionContext.CollectAttachments,
+    attachmentFile: oldAttachmentFile,
+    noteFilePath: newNotePath,
     plugin,
-    ActionContext.CollectAttachments,
-    newNotePath,
-    newAttachmentName,
-    undefined,
-    attachmentFileContent,
-    oldAttachmentFile.stat
-  );
-  const newAttachmentPath = join(newAttachmentFolderPath, newAttachmentName);
-
-  if (oldAttachmentPath === newAttachmentPath) {
+    reference
+  });
+  if (!newAttachmentPath) {
     console.warn(`Skipping collecting attachment ${oldAttachmentFile.path} as it is already in the destination folder.`);
     return null;
   }
 
   return {
     newAttachmentPath,
-    oldAttachmentPath
+    oldAttachmentPath: oldAttachmentFile.path
   };
 }

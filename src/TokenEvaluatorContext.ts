@@ -23,6 +23,11 @@ export enum ActionContext {
   ImportFiles = 'ImportFiles',
 
   /**
+   * Move attachment to proper folder.
+   */
+  MoveAttachmentToProperFolder = 'MoveAttachmentToProperFolder',
+
+  /**
    * Open file.
    */
   OpenFile = 'OpenFile',

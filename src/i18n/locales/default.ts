@@ -28,11 +28,19 @@ export const defaultTranslations = {
   commands: {
     collectAttachmentsCurrentFolder: 'Collect attachments in current folder',
     collectAttachmentsCurrentNote: 'Collect attachments in current note',
-    collectAttachmentsEntireVault: 'Collect attachments in entire vault'
+    collectAttachmentsEntireVault: 'Collect attachments in entire vault',
+    moveAttachmentToProperFolder: 'Move attachment to proper folder'
   },
   menuItems: {
     collectAttachmentsInFile: 'Collect attachments in file',
     collectAttachmentsInFiles: 'Collect attachments in files'
+  },
+  moveAttachmentToProperFolder: {
+    progressBar: {
+      message: 'Moving attachment to proper folder {{iterationStr}} - \'{{attachmentFilePath}}\'.',
+      title: 'Moving attachment to proper folder...'
+    },
+    unusedAttachment: 'Attachment {{attachmentPath}} is not used by any note. It will not be moved.'
   },
   notice: {
     collectingAttachments: 'Collecting attachments for \'{{noteFilePath}}\'',

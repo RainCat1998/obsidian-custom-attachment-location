@@ -95,6 +95,7 @@ import {
 import { CollectAttachmentsEntireVaultCommand } from './Commands/CollectAttachmentsEntireVaultCommand.ts';
 import { CollectAttachmentsInCurrentFolderCommand } from './Commands/CollectAttachmentsInCurrentFolderCommand.ts';
 import { CollectAttachmentsInFileCommand } from './Commands/CollectAttachmentsInFileCommand.ts';
+import { MoveAttachmentToProperFolderCommand } from './Commands/MoveAttachmentToProperFolderCommand.ts';
 import { translationsMap } from './i18n/locales/translationsMap.ts';
 import { getImageSize } from './Image.ts';
 import { AttachmentRenameMode } from './PluginSettings.ts';
@@ -236,6 +237,7 @@ export class Plugin extends PluginBase<PluginTypes> {
     new CollectAttachmentsInFileCommand(this).register();
     new CollectAttachmentsInCurrentFolderCommand(this).register();
     new CollectAttachmentsEntireVaultCommand(this).register();
+    new MoveAttachmentToProperFolderCommand(this).register();
 
     registerPatch(this, this.app, {
       saveAttachment: (): SaveAttachmentFn => {

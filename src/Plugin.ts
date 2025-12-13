@@ -91,6 +91,7 @@ import {
 import type { PluginTypes } from './PluginTypes.ts';
 
 import {
+  collectAttachment,
   collectAttachmentsCurrentFolder,
   collectAttachmentsCurrentNote,
   collectAttachmentsEntireVault,
@@ -555,6 +556,13 @@ export class Plugin extends PluginBase<PluginTypes> {
 
   private handleFileMenu(menu: Menu, file: TAbstractFile): void {
     if (!(file instanceof TFolder)) {
+      if (file instanceof TFile && !isNote(this.app, file.path)) {
+        menu.addItem((item) => {
+          item.setTitle(t(($) => $.menuItems.collectAttachment))
+            .setIcon('download')
+            .onClick(() => collectAttachment(this, file, this.abortSignal));
+        });
+      }
       return;
     }
 

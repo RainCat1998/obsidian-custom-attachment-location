@@ -32,15 +32,18 @@ export const defaultTranslations = {
     collectAttachmentsEntireVault: 'Collect attachments in entire vault'
   },
   menuItems: {
-    collectAttachmentsInFolder: 'Collect attachments in folder'
+    collectAttachmentsInFolder: 'Collect attachments in folder',
+    collectAttachment: 'Collect attachment'
   },
   notice: {
+    attachmentAlreadyInCorrectLocation: 'Attachment is already in the correct location',
     collectingAttachments: 'Collecting attachments for \'{{noteFilePath}}\'',
     collectingAttachmentsCancelled: 'Collecting attachments cancelled. See console for details.',
     generatedAttachmentFileNameIsInvalid: {
       part1: 'Generated attachment file name \'{{path}}\' is invalid.\n{{validationMessage}}\nCheck your',
       part2: 'setting.'
     },
+    movedAttachmentTo: 'Moved attachment to: {{newAttachmentPath}}',
     notePathIsIgnored: 'Note path is ignored'
   },
   obsidianDevUtils: {

@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## 9.19.0
+
+- feat: move attachment to proper folder re #253
+- feat: allow select multiple notes/folder to collect
+- fix: missed localization
+
 ## 9.18.5
 
 - chore: update libs re #254

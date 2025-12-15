@@ -1,5 +1,12 @@
 # CHANGELOG
 
+## 9.20.0
+
+- chore: lint
+- fix: hide notice on cancel re #252
+- feat: add cancel mode re #234
+- chore: update libs
+
 ## 9.19.0
 
 - feat: move attachment to proper folder re #253

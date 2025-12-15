@@ -401,8 +401,8 @@ async function getCanvasLinks(app: App, canvasFile: TFile): Promise<ReferenceCac
 
 function getTimeoutInMilliseconds(plugin: Plugin): number {
   return plugin.settings.collectAttachmentUsedByMultipleNotesMode === CollectAttachmentUsedByMultipleNotesMode.Prompt
-    || hasPromptToken(plugin.settings.attachmentFolderPath)
-    || hasPromptToken(plugin.settings.generatedAttachmentFileName)
+      || hasPromptToken(plugin.settings.attachmentFolderPath)
+      || hasPromptToken(plugin.settings.generatedAttachmentFileName)
     ? INFINITE_TIMEOUT
     : plugin.settings.getTimeoutInMilliseconds();
 }

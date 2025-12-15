@@ -146,10 +146,26 @@ export class PluginSettingsTab extends PluginSettingsTabBase<PluginTypes> {
       });
 
     new SettingEx(this.containerEl)
+      .setName(t(($) => $.pluginSettingsTab.shouldHandleRenames.name))
+      .setDesc(t(($) => $.pluginSettingsTab.shouldHandleRenames.description))
+      .addToggle((toggle) => {
+        this.bind(toggle, 'shouldHandleRenames', {
+          onChanged: () => {
+            this.display();
+          }
+        });
+      });
+
+    new SettingEx(this.containerEl)
       .setName(t(($) => $.pluginSettingsTab.shouldRenameAttachmentFolders.name))
       .setDesc(t(($) => $.pluginSettingsTab.shouldRenameAttachmentFolders.description))
       .addToggle((toggle) => {
-        this.bind(toggle, 'shouldRenameAttachmentFolder');
+        if (this.plugin.settings.shouldHandleRenames) {
+          this.bind(toggle, 'shouldRenameAttachmentFolder');
+        } else {
+          toggle.setDisabled(true);
+          toggle.setValue(false);
+        }
       });
 
     new SettingEx(this.containerEl)
@@ -162,7 +178,12 @@ export class PluginSettingsTab extends PluginSettingsTabBase<PluginTypes> {
         f.appendText(t(($) => $.pluginSettingsTab.shouldRenameAttachmentFiles.description.part2));
       }))
       .addToggle((toggle) => {
-        this.bind(toggle, 'shouldRenameAttachmentFiles');
+        if (this.plugin.settings.shouldHandleRenames) {
+          this.bind(toggle, 'shouldRenameAttachmentFiles');
+        } else {
+          toggle.setDisabled(true);
+          toggle.setValue(false);
+        }
       });
 
     new SettingEx(this.containerEl)

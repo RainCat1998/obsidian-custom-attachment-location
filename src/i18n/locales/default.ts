@@ -307,6 +307,10 @@ export const defaultTranslations = {
       description: 'If enabled, when the note is deleted, its orphan attachments are deleted as well.',
       name: 'Should delete orphan attachments'
     },
+    shouldHandleRenames: {
+      description: 'Whether to handle renames.',
+      name: 'Should handle renames'
+    },
     shouldRenameAttachmentFiles: {
       description: {
         part1: 'If enabled, when a note is renamed or moved, its attachments will be renamed according to the',

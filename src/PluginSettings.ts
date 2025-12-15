@@ -58,6 +58,7 @@ export class PluginSettings {
   public renamedAttachmentFileName = '';
   public shouldConvertPastedImagesToJpeg = false;
   public shouldDeleteOrphanAttachments = false;
+  public shouldHandleRenames = true;
   public shouldRenameAttachmentFiles = false;
   public shouldRenameAttachmentFolder = true;
   public shouldRenameCollectedAttachments = false;

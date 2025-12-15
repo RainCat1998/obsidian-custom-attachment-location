@@ -226,7 +226,7 @@ export class Plugin extends PluginBase<PluginTypes> {
         isNote: (path) => isNoteEx(this, path),
         isPathIgnored: (path) => this.settings.isPathIgnored(path),
         shouldHandleDeletions: this.settings.shouldDeleteOrphanAttachments,
-        shouldHandleRenames: true,
+        shouldHandleRenames: this.settings.shouldHandleRenames,
         shouldRenameAttachmentFiles: this.settings.shouldRenameAttachmentFiles,
         shouldRenameAttachmentFolder: this.settings.shouldRenameAttachmentFolder,
         shouldUpdateFileNameAliases: true

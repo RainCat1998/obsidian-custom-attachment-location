@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 9.21.0
+
+- feat: add shouldHandleRenames re #251
+
 ## 9.20.0
 
 - chore: lint

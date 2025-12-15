@@ -154,7 +154,9 @@ export async function collectAttachments(
             console.error(
               `Cancelling collecting attachments, as attachment ${attachmentMoveResult.oldAttachmentPath} is referenced by multiple notes.\n${backlinksStr}`
             );
-            new Notice(t(($) => $.notice.collectingAttachmentsCancelled));
+            if (plugin.settings.collectAttachmentUsedByMultipleNotesMode === CollectAttachmentUsedByMultipleNotesMode.Cancel) {
+              await selectMode(app, attachmentMoveResult.oldAttachmentPath, backlinksSorted, true);
+            }
             ctx.isAborted = true;
             return false;
           case CollectAttachmentUsedByMultipleNotesMode.Copy:

@@ -22,7 +22,8 @@ class CollectAttachmentUsedByMultipleNotesModal extends Modal {
     app: App,
     private readonly attachmentPath: string,
     private readonly backlinks: string[],
-    private readonly resolve: PromiseResolve<CollectAttachmentUsedByMultipleNotesModalResult>
+    private readonly resolve: PromiseResolve<CollectAttachmentUsedByMultipleNotesModalResult>,
+    private readonly isCancelMode: boolean
   ) {
     super(app);
   }
@@ -58,34 +59,41 @@ class CollectAttachmentUsedByMultipleNotesModal extends Modal {
 
     let shouldUseSameActionForOtherProblematicAttachments = false;
 
-    new Setting(this.contentEl)
-      .setName(t(($) => $.collectAttachmentUsedByMultipleNotesModal.shouldUseSameActionForOtherProblematicAttachmentsToggle))
-      .addToggle((toggle) => {
-        toggle.setValue(false);
-        toggle.onChange((value) => {
-          shouldUseSameActionForOtherProblematicAttachments = value;
+    if (!this.isCancelMode) {
+      new Setting(this.contentEl)
+        .setName(t(($) => $.collectAttachmentUsedByMultipleNotesModal.shouldUseSameActionForOtherProblematicAttachmentsToggle))
+        .addToggle((toggle) => {
+          toggle.setValue(false);
+          toggle.onChange((value) => {
+            shouldUseSameActionForOtherProblematicAttachments = value;
+          });
         });
-      });
+    }
 
-    new Setting(this.contentEl)
-      .addButton((button) => {
-        button.setButtonText(t(($) => $.buttons.skip));
-        button.onClick(() => {
-          this.select(CollectAttachmentUsedByMultipleNotesMode.Skip, shouldUseSameActionForOtherProblematicAttachments);
+    const buttonsSetting = new Setting(this.contentEl);
+    if (!this.isCancelMode) {
+      buttonsSetting
+        .addButton((button) => {
+          button.setButtonText(t(($) => $.buttons.skip));
+          button.onClick(() => {
+            this.select(CollectAttachmentUsedByMultipleNotesMode.Skip, shouldUseSameActionForOtherProblematicAttachments);
+          });
+        })
+        .addButton((button) => {
+          button.setButtonText(t(($) => $.buttons.move));
+          button.onClick(() => {
+            this.select(CollectAttachmentUsedByMultipleNotesMode.Move, shouldUseSameActionForOtherProblematicAttachments);
+          });
+        })
+        .addButton((button) => {
+          button.setButtonText(t(($) => $.buttons.copy));
+          button.onClick(() => {
+            this.select(CollectAttachmentUsedByMultipleNotesMode.Copy, shouldUseSameActionForOtherProblematicAttachments);
+          });
         });
-      })
-      .addButton((button) => {
-        button.setButtonText(t(($) => $.buttons.move));
-        button.onClick(() => {
-          this.select(CollectAttachmentUsedByMultipleNotesMode.Move, shouldUseSameActionForOtherProblematicAttachments);
-        });
-      })
-      .addButton((button) => {
-        button.setButtonText(t(($) => $.buttons.copy));
-        button.onClick(() => {
-          this.select(CollectAttachmentUsedByMultipleNotesMode.Copy, shouldUseSameActionForOtherProblematicAttachments);
-        });
-      })
+    }
+
+    buttonsSetting
       .addButton((button) => {
         button.setButtonText(t(($) => $.obsidianDevUtils.buttons.cancel));
         button.onClick(() => {
@@ -101,9 +109,14 @@ class CollectAttachmentUsedByMultipleNotesModal extends Modal {
   }
 }
 
-export function selectMode(app: App, attachmentPath: string, backlinks: string[]): Promise<CollectAttachmentUsedByMultipleNotesModalResult> {
+export function selectMode(
+  app: App,
+  attachmentPath: string,
+  backlinks: string[],
+  isCancelMode?: boolean
+): Promise<CollectAttachmentUsedByMultipleNotesModalResult> {
   return new Promise((resolve) => {
-    const modal = new CollectAttachmentUsedByMultipleNotesModal(app, attachmentPath, backlinks, resolve);
+    const modal = new CollectAttachmentUsedByMultipleNotesModal(app, attachmentPath, backlinks, resolve, isCancelMode ?? false);
     modal.open();
   });
 }

@@ -35,7 +35,7 @@
     "cz-conventional-changelog": "^3.3.0",
     "electron": "39.2.7",
     "husky": "^9.1.7",
-    "i18next": "^25.7.2",
+    "i18next": "^25.7.3",
     "jiti": "latest",
     "moment": "latest",
     "obsidian": "latest",

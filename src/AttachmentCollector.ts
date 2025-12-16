@@ -56,7 +56,7 @@ import {
   getAttachmentFolderFullPathForPath,
   getGeneratedAttachmentFileBaseName
 } from './AttachmentPath.ts';
-import { selectMode } from './CollectAttachmentUsedByMultipleNotesModal.ts';
+import { selectMode } from './Modals/CollectAttachmentUsedByMultipleNotesModal.ts';
 import { CollectAttachmentUsedByMultipleNotesMode } from './PluginSettings.ts';
 import {
   hasPromptToken,
@@ -73,7 +73,7 @@ export interface GetProperAttachmentPathOptions {
 }
 
 interface AttachmentMoveResult {
-  newAttachmentPath: string;
+  newAttachmentPath: null | string;
   oldAttachmentPath: string;
 }
 
@@ -161,6 +161,10 @@ export async function collectAttachments(
               ctx.isAborted = true;
               return false;
             case CollectAttachmentUsedByMultipleNotesMode.Copy:
+              if (!attachmentMoveResult.newAttachmentPath) {
+                console.warn(`Skipping collecting attachment ${attachmentMoveResult.oldAttachmentPath} as it is already in the destination folder.`);
+                return false;
+              }
               // eslint-disable-next-line require-atomic-updates -- Ignore possible race condition.
               attachmentMoveResult.newAttachmentPath = await copySafe(app, attachmentMoveResult.oldAttachmentPath, attachmentMoveResult.newAttachmentPath);
               await editLinks(app, note, (link2): MaybeReturn<string> => {
@@ -172,13 +176,17 @@ export async function collectAttachments(
                   app,
                   link: link2,
                   newSourcePathOrFile: note,
-                  newTargetPathOrFile: attachmentMoveResult.newAttachmentPath,
+                  newTargetPathOrFile: attachmentMoveResult.newAttachmentPath ?? '',
                   oldSourcePathOrFile: note,
                   oldTargetPathOrFile: attachmentMoveResult.oldAttachmentPath
                 });
               });
               break;
             case CollectAttachmentUsedByMultipleNotesMode.Move:
+              if (!attachmentMoveResult.newAttachmentPath) {
+                console.warn(`Skipping collecting attachment ${attachmentMoveResult.oldAttachmentPath} as it is already in the destination folder.`);
+                return false;
+              }
               await registerMoveAttachment();
               abortSignal.throwIfAborted();
               break;
@@ -221,7 +229,7 @@ export async function collectAttachments(
 
       async function registerMoveAttachment(): Promise<void> {
         abortSignal.throwIfAborted();
-        if (!attachmentMoveResult) {
+        if (!attachmentMoveResult?.newAttachmentPath) {
           return;
         }
 
@@ -444,10 +452,6 @@ async function prepareAttachmentToMove(
     plugin,
     reference
   });
-  if (!newAttachmentPath) {
-    console.warn(`Skipping collecting attachment ${oldAttachmentFile.path} as it is already in the destination folder.`);
-    return null;
-  }
 
   return {
     newAttachmentPath,

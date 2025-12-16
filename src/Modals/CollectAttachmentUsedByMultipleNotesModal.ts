@@ -8,7 +8,7 @@ import {
 import { appendCodeBlock } from 'obsidian-dev-utils/HTMLElement';
 import { t } from 'obsidian-dev-utils/obsidian/i18n/i18n';
 
-import { CollectAttachmentUsedByMultipleNotesMode } from './PluginSettings.ts';
+import { CollectAttachmentUsedByMultipleNotesMode } from '../PluginSettings.ts';
 
 interface CollectAttachmentUsedByMultipleNotesModalResult {
   mode: CollectAttachmentUsedByMultipleNotesMode;

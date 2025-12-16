@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## 9.22.0
+
+- feat: add modal for MoveAttachmentToProperFolder
+- feat: check for duplicates even if attachment is already in place re #257
+
 ## 9.21.0
 
 - feat: add shouldHandleRenames re #251

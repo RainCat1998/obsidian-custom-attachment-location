@@ -24,6 +24,7 @@ import {
   AttachmentRenameMode,
   CollectAttachmentUsedByMultipleNotesMode,
   DefaultImageSizeDimension,
+  MoveAttachmentToProperFolderUsedByMultipleNotesMode,
   SAMPLE_CUSTOM_TOKENS
 } from './PluginSettings.ts';
 import { TOKENIZED_STRING_LANGUAGE } from './PrismComponent.ts';
@@ -333,6 +334,47 @@ export class PluginSettingsTab extends PluginSettingsTabBase<PluginTypes> {
           /* eslint-enable perfectionist/sort-objects -- Need to keep enum order. */
         });
         this.bind(dropdown, 'collectAttachmentUsedByMultipleNotesMode');
+      });
+
+    new SettingEx(this.containerEl)
+      .setName(t(($) => $.pluginSettingsTab.moveAttachmentToProperFolderUsedByMultipleNotesMode.name))
+      .setDesc(createFragment((f) => {
+        f.appendText(t(($) => $.pluginSettingsTab.moveAttachmentToProperFolderUsedByMultipleNotesMode.description.part1));
+        f.createEl('br');
+        appendCodeBlock(f, t(($) => $.pluginSettings.moveAttachmentToProperFolderUsedByMultipleNotesMode.skip.displayText));
+        f.appendText(' - ');
+        f.appendText(t(($) => $.pluginSettings.moveAttachmentToProperFolderUsedByMultipleNotesMode.skip.description));
+        f.createEl('br');
+        appendCodeBlock(f, t(($) => $.pluginSettings.moveAttachmentToProperFolderUsedByMultipleNotesMode.copyAll.displayText));
+        f.appendText(' - ');
+        f.appendText(t(($) => $.pluginSettings.moveAttachmentToProperFolderUsedByMultipleNotesMode.copyAll.description));
+        f.createEl('br');
+        appendCodeBlock(f, t(($) => $.pluginSettings.moveAttachmentToProperFolderUsedByMultipleNotesMode.cancel.displayText));
+        f.appendText(' - ');
+        f.appendText(t(($) => $.pluginSettings.moveAttachmentToProperFolderUsedByMultipleNotesMode.cancel.description));
+        f.createEl('br');
+        appendCodeBlock(f, t(($) => $.pluginSettings.moveAttachmentToProperFolderUsedByMultipleNotesMode.prompt.displayText));
+        f.appendText(' - ');
+        f.appendText(t(($) => $.pluginSettings.moveAttachmentToProperFolderUsedByMultipleNotesMode.prompt.description));
+      }))
+      .addDropdown((dropdown) => {
+        dropdown.addOptions({
+          /* eslint-disable perfectionist/sort-objects -- Need to keep enum order. */
+          [MoveAttachmentToProperFolderUsedByMultipleNotesMode.Skip]: t(($) =>
+            $.pluginSettings.moveAttachmentToProperFolderUsedByMultipleNotesMode.skip.displayText
+          ),
+          [MoveAttachmentToProperFolderUsedByMultipleNotesMode.CopyAll]: t(($) =>
+            $.pluginSettings.moveAttachmentToProperFolderUsedByMultipleNotesMode.copyAll.displayText
+          ),
+          [MoveAttachmentToProperFolderUsedByMultipleNotesMode.Cancel]: t(($) =>
+            $.pluginSettings.moveAttachmentToProperFolderUsedByMultipleNotesMode.cancel.displayText
+          ),
+          [MoveAttachmentToProperFolderUsedByMultipleNotesMode.Prompt]: t(($) =>
+            $.pluginSettings.moveAttachmentToProperFolderUsedByMultipleNotesMode.prompt.displayText
+          )
+          /* eslint-enable perfectionist/sort-objects -- Need to keep enum order. */
+        });
+        this.bind(dropdown, 'moveAttachmentToProperFolderUsedByMultipleNotesMode');
       });
 
     new SettingEx(this.containerEl)

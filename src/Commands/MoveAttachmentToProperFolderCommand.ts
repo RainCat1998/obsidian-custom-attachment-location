@@ -35,7 +35,13 @@ import {
   getProperAttachmentPath,
   isNoteEx
 } from '../AttachmentCollector.ts';
+import { selectMode } from '../Modals/MoveAttachmentToProperFolderUsedByMultipleNotesModal.ts';
+import { MoveAttachmentToProperFolderUsedByMultipleNotesMode } from '../PluginSettings.ts';
 import { ActionContext } from '../TokenEvaluatorContext.ts';
+
+interface MoveAttachmentToProperFolderContext {
+  mode?: MoveAttachmentToProperFolderUsedByMultipleNotesMode;
+}
 
 class MoveAttachmentToProperFolderCommandInvocation extends AbstractFilesCommandInvocationBase<Plugin> {
   public constructor(plugin: Plugin, abstractFiles: TAbstractFile[]) {
@@ -78,6 +84,7 @@ class MoveAttachmentToProperFolderCommandInvocation extends AbstractFilesCommand
 
     const abortController = new AbortController();
     const combinedAbortSignal = abortSignalAny(abortController.signal, this.plugin.abortSignal);
+    const ctx: MoveAttachmentToProperFolderContext = {};
 
     await loop({
       abortSignal: combinedAbortSignal,
@@ -90,7 +97,9 @@ class MoveAttachmentToProperFolderCommandInvocation extends AbstractFilesCommand
           console.warn(`Cannot move attachment to proper folder as attachment path is ignored: ${attachmentFile.path}.`);
           return;
         }
-        await this.moveAttachmentToProperFolder(attachmentFile);
+        if (!await this.moveAttachmentToProperFolder(attachmentFile, ctx)) {
+          return;
+        }
         combinedAbortSignal.throwIfAborted();
       },
       progressBarTitle: `${this.plugin.manifest.name}: ${t(($) => $.moveAttachmentToProperFolder.progressBar.title)}`,
@@ -99,14 +108,21 @@ class MoveAttachmentToProperFolderCommandInvocation extends AbstractFilesCommand
     });
   }
 
-  private async moveAttachmentToProperFolder(attachmentFile: TFile): Promise<void> {
+  private async moveAttachmentToProperFolder(attachmentFile: TFile, ctx: MoveAttachmentToProperFolderContext): Promise<boolean> {
     let backlinks = await getBacklinksForFileSafe(this.plugin.app, attachmentFile);
     if (backlinks.keys().length === 0) {
       new Notice(t(($) => $.moveAttachmentToProperFolder.unusedAttachment, { attachmentPath: attachmentFile.path }));
-      return;
+      return true;
     }
 
-    for (const backlink of backlinks.keys()) {
+    let backlinksToCopy: string[] = [];
+    const that = this;
+
+    if (backlinks.keys().length > 1 && !await handleMode(ctx.mode ?? this.plugin.settings.moveAttachmentToProperFolderUsedByMultipleNotesMode)) {
+      return false;
+    }
+
+    for (const backlink of backlinksToCopy) {
       const backlinkFile = this.plugin.app.vault.getFileByPath(backlink);
       if (!backlinkFile) {
         continue;
@@ -148,9 +164,48 @@ class MoveAttachmentToProperFolderCommandInvocation extends AbstractFilesCommand
       });
     }
 
+    // eslint-disable-next-line require-atomic-updates -- Don't have a better way to do this.
     backlinks = await getBacklinksForFileSafe(this.plugin.app, attachmentFile);
+
     if (backlinks.keys().length === 0) {
       await deleteSafe(this.plugin.app, attachmentFile);
+    }
+
+    return true;
+
+    async function handleMode(mode: MoveAttachmentToProperFolderUsedByMultipleNotesMode): Promise<boolean> {
+      switch (mode) {
+        case MoveAttachmentToProperFolderUsedByMultipleNotesMode.Cancel:
+          if (that.plugin.settings.moveAttachmentToProperFolderUsedByMultipleNotesMode === MoveAttachmentToProperFolderUsedByMultipleNotesMode.Cancel) {
+            await selectMode(that.plugin.app, attachmentFile.path, Array.from(backlinks.keys()), true);
+          }
+          return false;
+        case MoveAttachmentToProperFolderUsedByMultipleNotesMode.CopyAll:
+          backlinksToCopy = Array.from(backlinks.keys());
+          return true;
+        case MoveAttachmentToProperFolderUsedByMultipleNotesMode.Prompt: {
+          const { backlinksToCopy: backlinksToCopy2, mode: mode2, shouldUseSameActionForOtherProblematicAttachments } = await selectMode(
+            that.plugin.app,
+            attachmentFile.path,
+            Array.from(backlinks.keys())
+          );
+          if (shouldUseSameActionForOtherProblematicAttachments) {
+            ctx.mode = mode2;
+          }
+
+          if (mode2 === MoveAttachmentToProperFolderUsedByMultipleNotesMode.Prompt) {
+            backlinksToCopy = backlinksToCopy2;
+            return true;
+          }
+
+          return handleMode(mode2);
+        }
+        case MoveAttachmentToProperFolderUsedByMultipleNotesMode.Skip:
+          backlinksToCopy = [];
+          return true;
+        default:
+          return false;
+      }
     }
   }
 }

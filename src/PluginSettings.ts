@@ -40,6 +40,13 @@ export enum DefaultImageSizeDimension {
   Width = 'width'
 }
 
+export enum MoveAttachmentToProperFolderUsedByMultipleNotesMode {
+  Cancel = 'Cancel',
+  CopyAll = 'CopyAll',
+  Prompt = 'Prompt',
+  Skip = 'Skip'
+}
+
 export class PluginSettings {
   // eslint-disable-next-line no-template-curly-in-string -- Valid token.
   public attachmentFolderPath = './assets/${noteFileName}';
@@ -55,6 +62,9 @@ export class PluginSettings {
   // eslint-disable-next-line no-magic-numbers -- Magic numbers are OK in settings.
   public jpegQuality = 0.8;
   public markdownUrlFormat = '';
+  public moveAttachmentToProperFolderUsedByMultipleNotesMode: MoveAttachmentToProperFolderUsedByMultipleNotesMode =
+    MoveAttachmentToProperFolderUsedByMultipleNotesMode.CopyAll;
+
   public renamedAttachmentFileName = '';
   public shouldConvertPastedImagesToJpeg = false;
   public shouldDeleteOrphanAttachments = false;

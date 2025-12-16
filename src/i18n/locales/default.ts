@@ -13,8 +13,10 @@ export const defaultTranslations = {
   },
   buttons: {
     copy: 'Copy',
+    copyAll: 'Copy all',
     move: 'Move',
     previewAttachmentFile: 'Preview attachment file',
+    select: 'Select',
     skip: 'Skip'
   },
   collectAttachmentUsedByMultipleNotesModal: {
@@ -41,6 +43,15 @@ export const defaultTranslations = {
       title: 'Moving attachment to proper folder...'
     },
     unusedAttachment: 'Attachment {{attachmentPath}} is not used by any note. It will not be moved.'
+  },
+  moveAttachmentToProperFolderUsedByMultipleNotesModal: {
+    content: {
+      part1: 'Attachment',
+      part2: 'is referenced by multiple notes.',
+      part3: 'Select notes to copy the attachment to.'
+    },
+    heading: 'Collecting attachment used by multiple notes',
+    shouldUseSameActionForOtherProblematicAttachmentsToggle: 'Should use the same action for other problematic attachments'
   },
   notice: {
     collectingAttachments: 'Collecting attachments for \'{{noteFilePath}}\'',
@@ -119,6 +130,24 @@ export const defaultTranslations = {
       keep: {
         description: 'will keep the empty attachment folder.',
         displayText: 'Keep'
+      }
+    },
+    moveAttachmentToProperFolderUsedByMultipleNotesMode: {
+      cancel: {
+        description: 'cancel the attachment collecting.',
+        displayText: 'Cancel'
+      },
+      copyAll: {
+        description: 'copy the attachment to the new location for all notes.',
+        displayText: 'Copy all'
+      },
+      prompt: {
+        description: 'prompt the user to choose the action.',
+        displayText: 'Prompt'
+      },
+      skip: {
+        description: 'skip the attachment and proceed to the next one.',
+        displayText: 'Skip'
       }
     }
   },
@@ -283,6 +312,12 @@ export const defaultTranslations = {
         part4: 'Leave blank to use the default format.'
       },
       name: 'Markdown URL format'
+    },
+    moveAttachmentToProperFolderUsedByMultipleNotesMode: {
+      description: {
+        part1: 'When the attachment is used by multiple notes:'
+      },
+      name: 'Move attachment to proper folder used by multiple notes mode'
     },
     renameAttachmentsToLowerCase: 'Rename attachments to lower case',
     renamedAttachmentFileName: {

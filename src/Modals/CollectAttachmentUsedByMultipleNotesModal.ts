@@ -5,8 +5,13 @@ import {
   Modal,
   Setting
 } from 'obsidian';
-import { appendCodeBlock } from 'obsidian-dev-utils/HTMLElement';
+import { invokeAsyncSafely } from 'obsidian-dev-utils/Async';
+import {
+  createElAsync,
+  createFragmentAsync
+} from 'obsidian-dev-utils/HTMLElement';
 import { t } from 'obsidian-dev-utils/obsidian/i18n/i18n';
+import { renderInternalLink } from 'obsidian-dev-utils/obsidian/Markdown';
 
 import { CollectAttachmentUsedByMultipleNotesMode } from '../PluginSettings.ts';
 
@@ -36,26 +41,35 @@ class CollectAttachmentUsedByMultipleNotesModal extends Modal {
 
   public override onOpen(): void {
     super.onOpen();
+    invokeAsyncSafely(() => this.onOpenAsync());
+  }
+
+  public async onOpenAsync(): Promise<void> {
+    super.onOpen();
     new Setting(this.contentEl)
       .setName(t(($) => $.collectAttachmentUsedByMultipleNotesModal.heading))
       .setHeading();
 
-    this.contentEl.appendChild(createFragment((f) => {
-      f.appendText(t(($) => $.collectAttachmentUsedByMultipleNotesModal.content.part1));
-      f.appendText(' ');
-      appendCodeBlock(f, this.attachmentPath);
-      f.appendText(' ');
-      f.appendText(t(($) => $.collectAttachmentUsedByMultipleNotesModal.content.part2));
-      f.createEl('ul', {}, (ul) => {
-        for (const backlink of this.backlinks) {
-          ul.createEl('li', {}, (li) => [
-            li.appendChild(createFragment((f2) => {
-              appendCodeBlock(f2, backlink);
-            }))
-          ]);
-        }
-      });
-    }));
+    this.contentEl.appendChild(
+      await createFragmentAsync(async (f) => {
+        f.appendText(t(($) => $.collectAttachmentUsedByMultipleNotesModal.content.part1));
+        f.appendText(' ');
+        f.appendChild(await renderInternalLink(this.app, this.attachmentPath));
+        f.appendText(' ');
+        f.appendText(t(($) => $.collectAttachmentUsedByMultipleNotesModal.content.part2));
+        f.appendChild(
+          await createElAsync('ul', {}, async (ul) => {
+            for (const backlink of this.backlinks) {
+              ul.appendChild(
+                await createElAsync('li', {}, async (li) => {
+                  li.appendChild(await renderInternalLink(this.app, backlink));
+                })
+              );
+            }
+          })
+        );
+      })
+    );
 
     let shouldUseSameActionForOtherProblematicAttachments = false;
 

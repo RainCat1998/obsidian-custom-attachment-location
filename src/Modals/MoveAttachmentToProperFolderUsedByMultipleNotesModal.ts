@@ -5,8 +5,10 @@ import {
   Modal,
   Setting
 } from 'obsidian';
-import { appendCodeBlock } from 'obsidian-dev-utils/HTMLElement';
+import { invokeAsyncSafely } from 'obsidian-dev-utils/Async';
+import { createFragmentAsync } from 'obsidian-dev-utils/HTMLElement';
 import { t } from 'obsidian-dev-utils/obsidian/i18n/i18n';
+import { renderInternalLink } from 'obsidian-dev-utils/obsidian/Markdown';
 
 import { MoveAttachmentToProperFolderUsedByMultipleNotesMode } from '../PluginSettings.ts';
 
@@ -38,28 +40,34 @@ class MoveAttachmentToProperFolderUsedByMultipleNotesModal extends Modal {
 
   public override onOpen(): void {
     super.onOpen();
+    invokeAsyncSafely(() => this.onOpenAsync());
+  }
+
+  public async onOpenAsync(): Promise<void> {
     new Setting(this.contentEl)
       .setName(t(($) => $.moveAttachmentToProperFolderUsedByMultipleNotesModal.heading))
       .setHeading();
 
-    this.contentEl.appendChild(createFragment((f) => {
-      f.appendText(t(($) => $.moveAttachmentToProperFolderUsedByMultipleNotesModal.content.part1));
-      f.appendText(' ');
-      appendCodeBlock(f, this.attachmentPath);
-      f.appendText(' ');
-      f.appendText(t(($) => $.moveAttachmentToProperFolderUsedByMultipleNotesModal.content.part2));
-      f.createEl('br');
-      f.appendText(t(($) => $.moveAttachmentToProperFolderUsedByMultipleNotesModal.content.part3));
-      f.createEl('br');
-      for (const backlink of this.backlinks) {
-        this.selectedBacklinks.add(backlink);
+    this.contentEl.appendChild(
+      await createFragmentAsync(async (f) => {
+        f.appendText(t(($) => $.moveAttachmentToProperFolderUsedByMultipleNotesModal.content.part1));
+        f.appendText(' ');
+        f.appendChild(await renderInternalLink(this.app, this.attachmentPath));
+        f.appendText(' ');
+        f.appendText(t(($) => $.moveAttachmentToProperFolderUsedByMultipleNotesModal.content.part2));
         f.createEl('br');
-        f.createEl('input', { attr: { checked: true }, type: 'checkbox' });
-        appendCodeBlock(f, backlink);
-      }
-      f.createEl('br');
-      f.createEl('br');
-    }));
+        f.appendText(t(($) => $.moveAttachmentToProperFolderUsedByMultipleNotesModal.content.part3));
+        f.createEl('br');
+        for (const backlink of this.backlinks) {
+          this.selectedBacklinks.add(backlink);
+          f.createEl('br');
+          f.createEl('input', { attr: { checked: true }, type: 'checkbox' });
+          f.appendChild(await renderInternalLink(this.app, backlink));
+        }
+        f.createEl('br');
+        f.createEl('br');
+      })
+    );
 
     let shouldUseSameActionForOtherProblematicAttachments = false;
 

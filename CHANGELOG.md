@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## 9.23.0
+
+- feat: add links to attachment/notes re #256
+- chore: update libs
+
 ## 9.22.0
 
 - feat: add modal for MoveAttachmentToProperFolder

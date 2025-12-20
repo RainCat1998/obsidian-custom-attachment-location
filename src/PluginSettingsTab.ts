@@ -31,6 +31,7 @@ import { TOKENIZED_STRING_LANGUAGE } from './PrismComponent.ts';
 import { Substitutions } from './Substitutions.ts';
 
 const VISIBLE_SPACE_CHARACTER = '␣';
+const JPEG_QUALITY_PRECISION = 2;
 
 export class PluginSettingsTab extends PluginSettingsTabBase<PluginTypes> {
   public override display(): void {
@@ -255,7 +256,7 @@ export class PluginSettingsTab extends PluginSettingsTabBase<PluginTypes> {
         dropDown.addOptions(generateJpegQualityOptions());
         this.bind(dropDown, 'jpegQuality', {
           componentToPluginSettingsValueConverter: (value) => Number(value),
-          pluginSettingsToComponentValueConverter: (value) => value.toString()
+          pluginSettingsToComponentValueConverter: (value) => value.toPrecision(JPEG_QUALITY_PRECISION)
         });
       });
 
@@ -643,10 +644,10 @@ export class PluginSettingsTab extends PluginSettingsTabBase<PluginTypes> {
 }
 
 function generateJpegQualityOptions(): Record<string, string> {
-  const MAX_QUALITY = 10;
+  const MAX_QUALITY = 20;
   const ans: Record<string, string> = {};
   for (let i = 1; i <= MAX_QUALITY; i++) {
-    const valueStr = (i / MAX_QUALITY).toFixed(1);
+    const valueStr = (i / MAX_QUALITY).toFixed(JPEG_QUALITY_PRECISION);
     ans[valueStr] = valueStr;
   }
 

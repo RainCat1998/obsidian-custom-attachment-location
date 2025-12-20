@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 9.23.1
+
+- feat: improve description re <https://github.com/dy-sh/obsidian-consistent-attachments-and-links/issues/144>
+
 ## 9.23.0
 
 - feat: add links to attachment/notes re #256

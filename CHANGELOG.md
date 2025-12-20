@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 9.23.2
+
+- fix: handle . and .. templates re #239
+
 ## 9.23.1
 
 - feat: improve description re <https://github.com/dy-sh/obsidian-consistent-attachments-and-links/issues/144>

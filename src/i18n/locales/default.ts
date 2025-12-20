@@ -56,6 +56,7 @@ export const defaultTranslations = {
   notice: {
     collectingAttachments: 'Collecting attachments for \'{{noteFilePath}}\'',
     collectingAttachmentsCancelled: 'Collecting attachments cancelled. See console for details.',
+    couldNotResolveTemplatePath: 'Could not resolve template path \'{{template}}\'. See console for details.',
     generatedAttachmentFileNameIsInvalid: {
       part1: 'Generated attachment file name \'{{path}}\' is invalid.\n{{validationMessage}}\nCheck your',
       part2: 'setting.'

@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 9.24.0
+
+- feat: increase JPEG quality choices re #236
+
 ## 9.23.3
 
 - docs: improve description re #238

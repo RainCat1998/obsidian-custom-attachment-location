@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 9.23.3
+
+- docs: improve description re #238
+
 ## 9.23.2
 
 - fix: handle . and .. templates re #239

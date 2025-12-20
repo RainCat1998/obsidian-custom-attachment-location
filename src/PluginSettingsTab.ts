@@ -582,6 +582,8 @@ export class PluginSettingsTab extends PluginSettingsTabBase<PluginTypes> {
         f.appendText(', ');
         appendCodeBlock(f, '.baz.base');
         f.appendText(t(($) => $.pluginSettingsTab.treatAsAttachmentExtensions.description.part6));
+        f.createEl('br');
+        f.appendText(t(($) => $.pluginSettingsTab.treatAsAttachmentExtensions.description.part7));
       }))
       .addMultipleText((multipleText) => {
         this.bind(multipleText, 'treatAsAttachmentExtensions');

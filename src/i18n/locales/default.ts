@@ -395,7 +395,8 @@ export const defaultTranslations = {
         part3: 'and',
         part4: 'linked files are not treated as attachments and are not moved with the note.',
         part5: 'You can add custom extensions, e.g.',
-        part6: ', to override this behavior.'
+        part6: ', to override this behavior.',
+        part7: 'Insert each extension on a new line.'
       },
       name: 'Treat as attachment extensions'
     }

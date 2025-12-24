@@ -35,6 +35,13 @@ export enum CollectAttachmentUsedByMultipleNotesMode {
   Skip = 'Skip'
 }
 
+export enum ConvertImagesToJpegMode {
+  AllImages = 'All images',
+  AllImagesExceptAlreadyJpegFiles = 'All images except already JPEG files',
+  None = 'None',
+  OnlyPastedClipboardPngImages = 'Only pasted clipboard PNG images'
+}
+
 export enum DefaultImageSizeDimension {
   Height = 'height',
   Width = 'width'
@@ -53,6 +60,7 @@ export class PluginSettings {
   public attachmentRenameMode: AttachmentRenameMode = AttachmentRenameMode.OnlyPastedImages;
   public collectAttachmentUsedByMultipleNotesMode: CollectAttachmentUsedByMultipleNotesMode = CollectAttachmentUsedByMultipleNotesMode.Skip;
   public collectedAttachmentFileName = '';
+  public convertImagesToJpegMode: ConvertImagesToJpegMode = ConvertImagesToJpegMode.None;
   public defaultImageSize = '';
   public defaultImageSizeDimension: DefaultImageSizeDimension = DefaultImageSizeDimension.Width;
   public duplicateNameSeparator = ' ';
@@ -66,7 +74,6 @@ export class PluginSettings {
     MoveAttachmentToProperFolderUsedByMultipleNotesMode.CopyAll;
 
   public renamedAttachmentFileName = '';
-  public shouldConvertPastedImagesToJpeg = false;
   public shouldDeleteOrphanAttachments = false;
   public shouldHandleRenames = true;
   public shouldRenameAttachmentFiles = false;

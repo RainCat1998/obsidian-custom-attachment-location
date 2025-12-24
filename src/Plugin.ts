@@ -97,8 +97,14 @@ import { CollectAttachmentsInCurrentFolderCommand } from './Commands/CollectAtta
 import { CollectAttachmentsInFileCommand } from './Commands/CollectAttachmentsInFileCommand.ts';
 import { MoveAttachmentToProperFolderCommand } from './Commands/MoveAttachmentToProperFolderCommand.ts';
 import { translationsMap } from './i18n/locales/translationsMap.ts';
-import { getImageSize } from './Image.ts';
-import { AttachmentRenameMode } from './PluginSettings.ts';
+import {
+  getImageSize,
+  getMimeType
+} from './Image.ts';
+import {
+  AttachmentRenameMode,
+  ConvertImagesToJpegMode
+} from './PluginSettings.ts';
 import { PluginSettingsManager } from './PluginSettingsManager.ts';
 import { PluginSettingsTab } from './PluginSettingsTab.ts';
 import { PrismComponent } from './PrismComponent.ts';
@@ -125,6 +131,12 @@ const PASTED_IMAGE_NAME_REG_EXP = /Pasted image (?<Timestamp>\d{14})/;
 const PASTED_IMAGE_DATE_FORMAT = 'YYYYMMDDHHmmss';
 const THRESHOLD_IN_SECONDS = 10;
 const IMPORT_FILES_PREFIX = '__IMPORT_FILES__';
+
+interface ConvertImageToJpegOptions {
+  attachmentFileContent: ArrayBuffer;
+  attachmentFileExtension: string;
+  isPastedImage: boolean;
+}
 
 export class Plugin extends PluginBase<PluginTypes> {
   private readonly arrayBufferFileStatMap = new WeakMap<ArrayBuffer, FileStats>();
@@ -253,6 +265,39 @@ export class Plugin extends PluginBase<PluginTypes> {
 
     this.registerEvent(this.app.workspace.on('receive-text-menu', this.handleReceiveTextMenu.bind(this)));
     this.registerEvent(this.app.workspace.on('receive-files-menu', this.handleReceiveFilesMenu.bind(this)));
+  }
+
+  private async convertImageToJpeg(options: ConvertImageToJpegOptions): Promise<void> {
+    const mimeType = getMimeType(options.attachmentFileExtension);
+    let shouldConvertImageToJpeg = false;
+
+    if (mimeType) {
+      switch (this.settings.convertImagesToJpegMode) {
+        case ConvertImagesToJpegMode.AllImages:
+          shouldConvertImageToJpeg = true;
+          break;
+        case ConvertImagesToJpegMode.AllImagesExceptAlreadyJpegFiles:
+          if (mimeType !== 'image/jpeg') {
+            shouldConvertImageToJpeg = true;
+          }
+          break;
+        case ConvertImagesToJpegMode.None:
+          break;
+        case ConvertImagesToJpegMode.OnlyPastedClipboardPngImages:
+          if (options.isPastedImage && mimeType === 'image/png') {
+            shouldConvertImageToJpeg = true;
+          }
+          break;
+        default:
+          throw new Error(`Invalid convert images to JPEG mode: ${this.settings.convertImagesToJpegMode as string}`);
+      }
+    }
+
+    if (shouldConvertImageToJpeg && mimeType) {
+      options.attachmentFileExtension = 'jpg';
+      // eslint-disable-next-line require-atomic-updates -- It's ok to update the content.
+      options.attachmentFileContent = await blobToJpegArrayBuffer(new Blob([options.attachmentFileContent], { type: mimeType }), this.settings.jpegQuality);
+    }
   }
 
   private async fileArrayBuffer(next: ArrayBufferFn, file: File): Promise<ArrayBuffer> {
@@ -653,10 +698,14 @@ export class Plugin extends PluginBase<PluginTypes> {
       }
     }
 
-    if (isPastedImage && attachmentFileExtension === 'png' && this.settings.shouldConvertPastedImagesToJpeg) {
-      attachmentFileExtension = 'jpg';
-      attachmentFileContent = await blobToJpegArrayBuffer(new Blob([attachmentFileContent], { type: 'image/png' }), this.settings.jpegQuality);
-    }
+    const convertImageToJpegOptions: ConvertImageToJpegOptions = {
+      attachmentFileContent,
+      attachmentFileExtension,
+      isPastedImage
+    };
+    await this.convertImageToJpeg(convertImageToJpegOptions);
+    attachmentFileExtension = convertImageToJpegOptions.attachmentFileExtension;
+    attachmentFileContent = convertImageToJpegOptions.attachmentFileContent;
 
     let shouldRename = false;
 

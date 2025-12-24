@@ -20,6 +20,7 @@ import type { PluginTypes } from './PluginTypes.ts';
 
 import {
   CollectAttachmentUsedByMultipleNotesMode,
+  ConvertImagesToJpegMode,
   PluginSettings
 } from './PluginSettings.ts';
 import {
@@ -48,6 +49,7 @@ class LegacySettings {
   public renameOnlyImages = false;
   public renamePastedFilesWithKnownNames = false;
   public replaceWhitespace = false;
+  public shouldConvertPastedImagesToJpeg = false;
   public shouldDuplicateCollectedAttachments = false;
   public shouldKeepEmptyAttachmentFolders = false;
   public shouldRenameAttachments = true;
@@ -112,8 +114,10 @@ class LegacySettingsConverter {
   }
 
   private convertConvertImagesToJpeg(): void {
-    if (this.legacySettings.convertImagesToJpeg !== undefined) {
-      this.legacySettings.shouldConvertPastedImagesToJpeg = this.legacySettings.convertImagesToJpeg;
+    if (this.legacySettings.shouldConvertPastedImagesToJpeg !== undefined || this.legacySettings.convertImagesToJpeg !== undefined) {
+      this.legacySettings.convertImagesToJpegMode = this.legacySettings.shouldConvertPastedImagesToJpeg ?? this.legacySettings.convertImagesToJpeg
+        ? ConvertImagesToJpegMode.OnlyPastedClipboardPngImages
+        : ConvertImagesToJpegMode.None;
     }
   }
 

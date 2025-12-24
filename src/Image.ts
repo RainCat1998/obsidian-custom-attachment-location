@@ -60,3 +60,7 @@ export async function getImageSize(plugin: Plugin, extension: string, content: A
 
   return `${String(width)}x${String(height)}`;
 }
+
+export function getMimeType(extension: string): null | string {
+  return IMAGE_MIME_TYPE_IMAGE_MAP[extension.toLowerCase()] ?? null;
+}

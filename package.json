@@ -37,7 +37,6 @@
     "husky": "^9.1.7",
     "i18next": "^25.7.3",
     "jiti": "latest",
-    "moment": "latest",
     "obsidian": "latest",
     "obsidian-dev-utils": "latest",
     "obsidian-typings": "obsidian-public-latest",

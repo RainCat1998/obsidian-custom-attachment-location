@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## 9.25.0
+
+- feat: visualize whitespace in replacement setting re #232
+- chore: update libs
+
 ## 9.24.0
 
 - feat: increase JPEG quality choices re #236

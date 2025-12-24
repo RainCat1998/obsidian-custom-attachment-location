@@ -237,6 +237,8 @@ export class PluginSettingsTab extends PluginSettingsTabBase<PluginTypes> {
       }))
       .addText((text) => {
         this.bind(text, 'specialCharactersReplacement', {
+          componentToPluginSettingsValueConverter: restoreSpaceCharacter,
+          pluginSettingsToComponentValueConverter: showSpaceCharacter,
           shouldResetSettingWhenComponentIsEmpty: false,
           shouldShowPlaceholderForDefaultValues: false
         });

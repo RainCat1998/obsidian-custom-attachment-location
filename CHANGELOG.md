@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 9.26.0
+
+- feat: convert images to jpeg re #258
+
 ## 9.25.0
 
 - feat: visualize whitespace in replacement setting re #232

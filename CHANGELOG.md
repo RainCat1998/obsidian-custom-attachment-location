@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## 9.26.1
+
+- fix: add reference to Backlink Cache re #235
+- chore: update libs
+
 ## 9.26.0
 
 - feat: convert images to jpeg re #258

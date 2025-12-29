@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 9.26.2
+
+- docs: change attribution
+
 ## 9.26.1
 
 - fix: add reference to Backlink Cache re #235

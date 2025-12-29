@@ -22,7 +22,16 @@
     "version": "obsidian-dev-utils version"
   },
   "keywords": [],
-  "author": "RainCat1998",
+  "author": {
+    "name": "RainCat1998",
+    "url": "https://github.com/RainCat1998"
+  },
+  "contributors": [
+    {
+      "name": "Michael Naumov",
+      "url": "https://github.com/mnaoumov/"
+    }
+  ],
   "license": "MIT",
   "devDependencies": {
     "@commitlint/cli": "^20.2.0",

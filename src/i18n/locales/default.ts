@@ -368,7 +368,11 @@ export const defaultTranslations = {
       name: 'Should delete orphan attachments'
     },
     shouldHandleRenames: {
-      description: 'Whether to handle renames.',
+      description: {
+        part1: 'Whether to handle renames.',
+        part2: 'To handle links to/from canvas files, you need to additionally install',
+        part3: 'plugin.'
+      },
       name: 'Should handle renames'
     },
     shouldRenameAttachmentFiles: {

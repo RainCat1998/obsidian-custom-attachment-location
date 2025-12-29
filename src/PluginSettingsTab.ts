@@ -150,7 +150,18 @@ export class PluginSettingsTab extends PluginSettingsTabBase<PluginTypes> {
 
     new SettingEx(this.containerEl)
       .setName(t(($) => $.pluginSettingsTab.shouldHandleRenames.name))
-      .setDesc(t(($) => $.pluginSettingsTab.shouldHandleRenames.description))
+      .setDesc(createFragment((f) => {
+        f.appendText(t(($) => $.pluginSettingsTab.shouldHandleRenames.description.part1));
+        f.createEl('br');
+        f.appendText(t(($) => $.pluginSettingsTab.shouldHandleRenames.description.part2));
+        f.appendText(' ');
+        f.createEl('a', {
+          href: 'obsidian://show-plugin?id=backlink-cache',
+          text: 'Backlink Cache'
+        });
+        f.appendText(' ');
+        f.appendText(t(($) => $.pluginSettingsTab.shouldHandleRenames.description.part3));
+      }))
       .addToggle((toggle) => {
         this.bind(toggle, 'shouldHandleRenames', {
           onChanged: () => {

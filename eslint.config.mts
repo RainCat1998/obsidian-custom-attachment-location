@@ -9,7 +9,10 @@ const configs: Linter.Config[] = [
       'obsidianmd/ui/sentence-case': [
         'error',
         {
-          brands: ['Show Hidden Files']
+          brands: [
+            'Backlink Cache',
+            'Show Hidden Files'
+          ]
         }
       ]
     }
